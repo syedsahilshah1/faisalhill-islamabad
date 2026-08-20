@@ -1,0 +1,1264 @@
+{
+  "societyStats": {
+    "totalArea": "12,000+ Kanals",
+    "totalBlocks": 11,
+    "developedPercentage": 85,
+    "nocStatus": "RDA Approved (Rawalpindi Development Authority)",
+    "activePlots": 14500,
+    "lastVerifiedDate": "August 2026"
+  },
+  "plotInventoryData": [
+    {
+      "id": "plot-101",
+      "plotNumber": "A-125",
+      "blockSlug": "block-a",
+      "blockName": "Block A",
+      "category": "Residential",
+      "size": "10 Marla",
+      "dimensions": "35 x 70",
+      "price": 9800000,
+      "priceFormatted": "PKR 98 Lacs",
+      "priceHistoryTrend": "+8.5% in last 3 months",
+      "status": "Available",
+      "facing": "Park Facing",
+      "mapCoords": {
+        "x": 38,
+        "y": 42
+      },
+      "features": [
+        "Corner Plot",
+        "Fronting 12-Kanal Park",
+        "Underground Electricity",
+        "Immediate Possession"
+      ],
+      "description": "Prime 10 Marla residential plot directly facing Sector A central park. Ideal for modern villa construction.",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "plot-102",
+      "plotNumber": "FJ-402",
+      "blockSlug": "faisal-jewels",
+      "blockName": "Faisal Jewels",
+      "category": "Apartment",
+      "size": "2-Bed Luxury Flat",
+      "dimensions": "1,150 Sq Ft",
+      "price": 13500000,
+      "priceFormatted": "PKR 1.35 Crore",
+      "priceHistoryTrend": "+15.4% high demand",
+      "status": "Available",
+      "facing": "Hill View",
+      "mapCoords": {
+        "x": 15,
+        "y": 22
+      },
+      "features": [
+        "26th Floor Sky View",
+        "Serviced Hotel Suite",
+        "Revolving Restaurant Access",
+        "High Rental Yield"
+      ],
+      "description": "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
+      "image": "/faisal-jewel.jpg"
+    },
+    {
+      "id": "plot-103",
+      "plotNumber": "A-204",
+      "blockSlug": "block-a",
+      "blockName": "Block A",
+      "category": "Residential",
+      "size": "5 Marla",
+      "dimensions": "25 x 50",
+      "price": 5600000,
+      "priceFormatted": "PKR 56 Lacs",
+      "priceHistoryTrend": "+11.2% in last 6 months",
+      "status": "Available",
+      "facing": "Main Boulevard",
+      "mapCoords": {
+        "x": 42,
+        "y": 46
+      },
+      "features": [
+        "Fronting 60ft Boulevard",
+        "Solid Land Ground",
+        "Close to Jamia Mosque"
+      ],
+      "description": "Highly demanded 5 Marla plot situated on 60ft road near Mosque & Commercial Market.",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "plot-104",
+      "plotNumber": "EXE-048",
+      "blockSlug": "executive-block",
+      "blockName": "Executive Block",
+      "category": "Residential",
+      "size": "1 Kanal",
+      "dimensions": "50 x 90",
+      "price": 18500000,
+      "priceFormatted": "PKR 1.85 Crore",
+      "priceHistoryTrend": "+14% high demand",
+      "status": "Available",
+      "facing": "Corner",
+      "mapCoords": {
+        "x": 18,
+        "y": 28
+      },
+      "features": [
+        "Double Side Corner",
+        "225ft Boulevard Proximity",
+        "Executive Club View"
+      ],
+      "description": "Luxurious 1 Kanal Corner Plot near GT Road Entrance Gate.",
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "plot-105",
+      "plotNumber": "FJ-709",
+      "blockSlug": "faisal-jewels",
+      "blockName": "Faisal Jewels",
+      "category": "Apartment",
+      "size": "1-Bed Executive Suite",
+      "dimensions": "650 Sq Ft",
+      "price": 8500000,
+      "priceFormatted": "PKR 85 Lacs",
+      "priceHistoryTrend": "+12.8% pre-launch ROI",
+      "status": "Available",
+      "facing": "Main Boulevard",
+      "mapCoords": {
+        "x": 16,
+        "y": 24
+      },
+      "features": [
+        "Smart Automation Suite",
+        "Furnished Interior Option",
+        "Infinity Pool Access"
+      ],
+      "description": "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
+      "image": "/faisal-jewel.jpg"
+    },
+    {
+      "id": "plot-106",
+      "plotNumber": "EXE-112",
+      "blockSlug": "executive-block",
+      "blockName": "Executive Block",
+      "category": "Commercial",
+      "size": "4 Marla Plaza Plot",
+      "dimensions": "30 x 30",
+      "price": 32000000,
+      "priceFormatted": "PKR 3.2 Crore",
+      "priceHistoryTrend": "+18% commercial yield",
+      "status": "Available",
+      "facing": "Main Boulevard",
+      "mapCoords": {
+        "x": 22,
+        "y": 32
+      },
+      "features": [
+        "Ground + 5 Approval",
+        "225ft Main GT Entrance Road",
+        "Ideal for Bank Plaza"
+      ],
+      "description": "Hot commercial plot on Executive Main Boulevard.",
+      "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "plot-107",
+      "plotNumber": "B-089",
+      "blockSlug": "block-b",
+      "blockName": "Block B",
+      "category": "Residential",
+      "size": "10 Marla",
+      "dimensions": "35 x 70",
+      "price": 8400000,
+      "priceFormatted": "PKR 84 Lacs",
+      "priceHistoryTrend": "+6.8% stable",
+      "status": "Available",
+      "facing": "Hill View",
+      "mapCoords": {
+        "x": 58,
+        "y": 30
+      },
+      "features": [
+        "Margalla Mountain Backdrop",
+        "Quiet Cul-de-Sac Street",
+        "Full Utilities"
+      ],
+      "description": "Scenic 10 Marla hill-view plot in elevated Block B.",
+      "image": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "plot-108",
+      "plotNumber": "PR-014",
+      "blockSlug": "prime-block",
+      "blockName": "Prime Block",
+      "category": "Residential",
+      "size": "1 Kanal Villa Plot",
+      "dimensions": "50 x 90",
+      "price": 24500000,
+      "priceFormatted": "PKR 2.45 Crore",
+      "priceHistoryTrend": "+21% prestige demand",
+      "status": "Available",
+      "facing": "Hill View",
+      "mapCoords": {
+        "x": 74,
+        "y": 22
+      },
+      "features": [
+        "Private Gated Sector",
+        "Exclusive Height Elevation",
+        "Underground Fiber Optics"
+      ],
+      "description": "Ultra-luxury 1 Kanal plot in VIP Prime Block with Margalla panorama.",
+      "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+    }
+  ],
+  "blocksData": [
+    {
+      "id": "executive-block",
+      "slug": "executive-block",
+      "name": "Executive Block",
+      "subtitle": "The Premier Entrance Block Facing N-5 GT Road",
+      "category": "developed",
+      "status": "Possession Ready",
+      "nocStatus": "RDA Approved & Clear",
+      "verificationDate": "August 2026",
+      "description": "Executive Block is the flagship entrance sector of Faisal Hills, situated right at the primary entry gate along GT Road N-5. Featuring wide 225ft boulevard roads, ultra-modern underground utilities, and premium commercial high-rises.",
+      "locationDetails": "Located directly at the Main Entrance Gate on N-5 National Highway, 5 minutes from Taxila Bypass and 12 minutes from CPEC Interchange.",
+      "highlights": [
+        "225 Feet Wide Main Entrance Boulevard",
+        "Immediate Construction & Possession Available",
+        "Underground Gas, Electricity & Fiber Optics",
+        "Direct Proximity to Faisal Hills Commercial District"
+      ],
+      "totalPlots": 2400,
+      "priceRange": {
+        "residential": "PKR 65 Lacs - 1.85 Crore",
+        "commercial": "PKR 2.2 Crore - 8.5 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Grand Entrance Monument",
+          "description": "State-of-the-art guarded entry portal with 24/7 biometric surveillance",
+          "icon": "Shield",
+          "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Executive Club",
+          "description": "Luxury community center with swimming pool, gym, and fine dining",
+          "icon": "Building2",
+          "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Central Park & Jogging Track",
+          "description": "12-Kanal lush green park with dedicated sports courts",
+          "icon": "Trees",
+          "image": "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Underground Power Grid",
+          "description": "Zero overhead wiring with dedicated grid backup",
+          "icon": "Zap",
+          "image": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Is Executive Block RDA approved?",
+          "answer": "Yes, Executive Block is fully approved by RDA with clear title and permission for immediate home construction."
+        },
+        {
+          "question": "Can I get immediate possession for home construction?",
+          "answer": "Yes, 100% of residential and commercial plots in Executive Block are possession-ready."
+        },
+        {
+          "question": "What sizes are available in Executive Block?",
+          "answer": "Executive Block offers 5 Marla, 10 Marla, 1 Kanal residential plots, and 4 & 8 Marla commercial plots."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Underground Electric Grid Commissioned",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80",
+          "progress": 100,
+          "text": "100% underground cable laying completed and connected to the main feeder line."
+        },
+        {
+          "title": "Commercial Boulevard Asphalt Paving",
+          "date": "July 2026",
+          "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+          "progress": 95,
+          "text": "Final carpet asphalt applied on Executive Commercial Boulevard."
+        }
+      ]
+    },
+    {
+      "id": "block-a",
+      "slug": "block-a",
+      "name": "Block A",
+      "subtitle": "The Vibrant Commercial & Residential Heart of Faisal Hills",
+      "category": "developed",
+      "status": "Fully Developed & Populated",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Block A is the most vibrant and populated sector in Faisal Hills. Home to central commercial banks, retail centers, the Grand Jamia Mosque, and lush family parks, Block A provides complete luxury living.",
+      "locationDetails": "Adjoining Executive Block, connected via the 150ft Central Avenue.",
+      "highlights": [
+        "Over 400+ Families Currently Residing",
+        "Grand Jamia Mosque with 3,000 Capacity",
+        "Operational Commercial Banks & Marts",
+        "40ft & 60ft Internal Carpeted Streets"
+      ],
+      "totalPlots": 3100,
+      "priceRange": {
+        "residential": "PKR 55 Lacs - 1.6 Crore",
+        "commercial": "PKR 1.8 Crore - 6.5 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Grand Jamia Mosque",
+          "description": "Islamic architecture landmark hosting daily & Friday congregational prayers",
+          "icon": "Landmark",
+          "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Commercial Hub",
+          "description": "Supermarkets, pharmacies, cafes, and branch offices",
+          "icon": "ShoppingBag",
+          "image": "https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Faisal Hills School Campus",
+          "description": "Modern educational institute with STEM labs & play area",
+          "icon": "GraduationCap",
+          "image": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What is the development status of Block A?",
+          "answer": "Block A is 100% developed with carpeted roads, streetlights, gas, electricity, and hundreds of families residing."
+        },
+        {
+          "question": "Are commercial plots available in Block A?",
+          "answer": "Limited resale commercial plots and rental shop spaces are available."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Grand Mosque Phase II Expansion",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
+          "progress": 90,
+          "text": "Finishing marble work on the outer courtyard."
+        }
+      ]
+    },
+    {
+      "id": "block-b",
+      "slug": "block-b",
+      "name": "Block B",
+      "subtitle": "Serene Residential Sector with Scenic Hill Views",
+      "category": "developed",
+      "status": "Possession Available",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Block B offers a peaceful living environment with elevated topography, providing natural cool breezes and panoramic views of Margalla and Kala Chitta mountains. Perfect for residential villas.",
+      "locationDetails": "Situated on the elevated northern contour of Faisal Hills, accessible via 100ft Sector Road.",
+      "highlights": [
+        "Elevated High-Ground Topography",
+        "Panoramic Margalla & Kala Chitta Mountain Views",
+        "Dedicated Sector Parks & Sports Grounds",
+        "Fast Pace Housing Construction"
+      ],
+      "totalPlots": 2800,
+      "priceRange": {
+        "residential": "PKR 50 Lacs - 1.45 Crore",
+        "commercial": "PKR 1.5 Crore - 4.8 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Hilltop Promenade Park",
+          "description": "Elevated park with sunset viewing deck",
+          "icon": "Trees",
+          "image": "https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Sports Complex",
+          "description": "Futsal ground, tennis courts, and basketball arena",
+          "icon": "Activity",
+          "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Is water supply available in Block B?",
+          "answer": "Yes, dedicated tube-wells and underground water reservoirs ensure 24/7 clean water supply."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Sector Park Landscape & Fencing",
+          "date": "July 2026",
+          "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+          "progress": 85,
+          "text": "Lawn grass and walking track work finished."
+        }
+      ]
+    },
+    {
+      "id": "block-b1-extension",
+      "slug": "block-b1-extension",
+      "name": "Block B1 Extension",
+      "subtitle": "High-Growth Investment & Modern Living Sector",
+      "category": "developed",
+      "status": "Development 90% Complete",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Block B1 Extension provides high value for investors seeking affordable 5 and 10 Marla residential plots with high capital appreciation potential.",
+      "locationDetails": "Directly adjacent to Block B with seamless road connectivity.",
+      "highlights": [
+        "High Annual Capital Appreciation",
+        "Competitive Entry Prices",
+        "Wide Internal Grid Streets (40ft & 50ft)",
+        "Ready for Early Possession"
+      ],
+      "totalPlots": 1600,
+      "priceRange": {
+        "residential": "PKR 42 Lacs - 1.25 Crore",
+        "commercial": "PKR 1.2 Crore - 3.5 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Green Belts",
+          "description": "Lush tree-lined streets for aesthetic pollution-free living",
+          "icon": "Trees",
+          "image": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "When will full possession be handed over for B1 Ext?",
+          "answer": "Possession is currently open in Phase 1 of B1 Extension, with Phase 2 following by late 2026."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Sewerage Pipe Network",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80",
+          "progress": 92,
+          "text": "Main sewerage line connection completed."
+        }
+      ]
+    },
+    {
+      "id": "block-c",
+      "slug": "block-c",
+      "name": "Block C",
+      "subtitle": "Luxury Sector Adjacent to Hills Walk & Central Water Features",
+      "category": "developed",
+      "status": "Possession Ready",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Block C is one of the most sought-after sectors in Faisal Hills due to its proximity to Hills Walk luxury commercial strip, picturesque lake features, and premium 1 Kanal luxury plots.",
+      "locationDetails": "Bordering the central Hills Walk stream and main sector spine.",
+      "highlights": [
+        "Adjacent to Hills Walk Commercial Boulevard",
+        "Premium 1 Kanal & 10 Marla Hillside Plots",
+        "Operational Water Filtration Plant",
+        "Underground Electrification Completed"
+      ],
+      "totalPlots": 2600,
+      "priceRange": {
+        "residential": "PKR 48 Lacs - 1.75 Crore",
+        "commercial": "PKR 1.6 Crore - 5.5 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Water Filtration Plant",
+          "description": "RO water plant providing clean mineral drinking water",
+          "icon": "Droplets",
+          "image": "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Hills Walk Plaza Access",
+          "description": "Direct walkway into high-end cafes and retail shops",
+          "icon": "ShoppingBag",
+          "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Is Block C good for immediate residence?",
+          "answer": "Yes, many houses are already built and under construction in Block C."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Filtration Plant Upgrade",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+          "progress": 100,
+          "text": "High-capacity RO filtration unit active."
+        }
+      ]
+    },
+    {
+      "id": "block-d",
+      "slug": "block-d",
+      "name": "Block D",
+      "subtitle": "Tranquil Residential Sanctuary with Natural Springs",
+      "category": "developed",
+      "status": "Development 85% Complete",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Block D offers a peaceful suburban atmosphere with gentle green topography, spacious parks, and close proximity to educational facilities.",
+      "locationDetails": "Located on the western wing of Faisal Hills society.",
+      "highlights": [
+        "Family-Oriented Suburban Layout",
+        "Multi-purpose Community Park",
+        "Wide 50ft Sector Roads",
+        "Near Proposed Medical Complex"
+      ],
+      "totalPlots": 2100,
+      "priceRange": {
+        "residential": "PKR 40 Lacs - 1.35 Crore",
+        "commercial": "PKR 1.1 Crore - 3.8 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Sector D Community Center",
+          "description": "Event space for family gatherings and celebrations",
+          "icon": "Building",
+          "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What sizes are in Block D?",
+          "answer": "Block D consists primarily of 5 Marla, 10 Marla, and select 1 Kanal residential plots."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Main Street LED Lighting",
+          "date": "July 2026",
+          "image": "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80",
+          "progress": 95,
+          "text": "Energy-efficient LED streetlights installed."
+        }
+      ]
+    },
+    {
+      "id": "prime-block",
+      "slug": "prime-block",
+      "name": "Prime Block",
+      "subtitle": "Ultra-Luxury Gated Enclave Overlooking Margalla Ridge",
+      "category": "developed",
+      "status": "Exclusive Possession Sector",
+      "nocStatus": "RDA Approved",
+      "verificationDate": "August 2026",
+      "description": "Prime Block is the crowning jewel of residential living in Faisal Hills. Tailored for VIP residents, featuring exclusive 225ft access, private security gates, underground infrastructure, and high-elevation views.",
+      "locationDetails": "Situated on the highest crest of Faisal Hills with uninterrupted views of the Margalla Hills range.",
+      "highlights": [
+        "Exclusive Gated Perimeter & Dedicated Guard House",
+        "Highest Elevation Point in Society",
+        "1 Kanal & 2 Kanal Luxury Villa Plots",
+        "Exclusive Golf Putting Green & Country Club Access"
+      ],
+      "totalPlots": 1200,
+      "priceRange": {
+        "residential": "PKR 95 Lacs - 3.2 Crore",
+        "commercial": "PKR 3.5 Crore - 12 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Private Security Patrol",
+          "description": "Dedicated rapid response security unit and thermal cameras",
+          "icon": "ShieldCheck",
+          "image": "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Clubhouse & Infinity Pool",
+          "description": "5-Star standard country club with heated indoor pool",
+          "icon": "Sparkles",
+          "image": "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Heliport Access",
+          "description": "Emergency medical helipad facility",
+          "icon": "Compass",
+          "image": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Why choose Prime Block?",
+          "answer": "Prime Block offers the highest security, best views, largest plot sizes, and maximum capital prestige."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Country Club Structure",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+          "progress": 80,
+          "text": "Roof slab poured for Prime Country Club."
+        }
+      ]
+    },
+    {
+      "id": "gandahara",
+      "slug": "gandahara",
+      "name": "Gandahara Block",
+      "subtitle": "Heritage & Modern Resort Style Living (Upcoming)",
+      "category": "upcoming",
+      "status": "Earthwork & Booking Stage",
+      "nocStatus": "Under Extension Clearance",
+      "verificationDate": "August 2026",
+      "description": "Inspired by Taxila's ancient Gandhara heritage, this upcoming block blends historical elegance with futuristic resort-style amenities and expansive eco-parks.",
+      "locationDetails": "Adjoining Phase 2 extension near Taxila historic bypass.",
+      "highlights": [
+        "Resort Style Eco-Friendly Layout",
+        "Historical Heritage Park & Museum",
+        "Flexible 3-Year Installment Plan",
+        "High Appreciation Pre-Launch Opportunity"
+      ],
+      "totalPlots": 3500,
+      "priceRange": {
+        "residential": "PKR 35 Lacs - 95 Lacs",
+        "commercial": "PKR 90 Lacs - 2.8 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Gandhara Heritage Museum",
+          "description": "Cultural showcase & archaeological art gallery",
+          "icon": "Landmark",
+          "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Botanical Eco-Park",
+          "description": "15-Kanal natural flora garden with cycling trails",
+          "icon": "Trees",
+          "image": "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Is booking open for Gandahara Block?",
+          "answer": "Pre-booking forms and allotment registrations are currently open on easy quarterly installments."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Heavy Earthmoving Ground Work",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80",
+          "progress": 45,
+          "text": "Land leveling & main access road cutting underway."
+        }
+      ]
+    },
+    {
+      "id": "hills-walk",
+      "slug": "hills-walk",
+      "name": "Hills Walk",
+      "subtitle": "The Boulevard of Luxury Retail, Cafes & Fine Dining",
+      "category": "commercial_project",
+      "status": "Under Construction High-Rise Commercial Zone",
+      "nocStatus": "RDA Approved Commercial Complex",
+      "verificationDate": "August 2026",
+      "description": "Hills Walk is Faisal Hills' signature commercial destination. Designed as a European-style open-air pedestrian promenade lined with luxury brands, rooftop restaurants, banks, and corporate towers.",
+      "locationDetails": "Centrally positioned between Block A, Block B, and Block C.",
+      "highlights": [
+        "European Style Pedestrian Promenade",
+        "Rooftop Dining with Margalla Panoramic View",
+        "Multi-story Parking Structure",
+        "High Rental Yield for Investors"
+      ],
+      "totalPlots": 450,
+      "priceRange": {
+        "residential": "N/A (Commercial & Executive Suites)",
+        "commercial": "PKR 2.5 Crore - 15 Crore"
+      },
+      "heroImage": "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1200&q=80",
+      "masterPlanImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+      "amenities": [
+        {
+          "name": "Open-Air Amphitheater",
+          "description": "Community events, live music, and outdoor cinema screen",
+          "icon": "Tv",
+          "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Valet Parking Plaza",
+          "description": "500+ car basement parking with smart guidance",
+          "icon": "Car",
+          "image": "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What is the expected rental yield in Hills Walk?",
+          "answer": "Estimated annual rental returns are projected at 9% - 12% due to high footfall."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Plaza 3 Structure Completed",
+          "date": "August 2026",
+          "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+          "progress": 75,
+          "text": "4th-floor grey structure complete."
+        }
+      ]
+    },
+    {
+      "id": "faisal-jewels",
+      "slug": "faisal-jewels",
+      "name": "Faisal Jewels",
+      "subtitle": "Iconic 27-Story Ultra-Luxury High-Rise & Commercial Skyscraper",
+      "category": "commercial_project",
+      "status": "Rapid Structural Construction Phase",
+      "nocStatus": "RDA Approved High-Rise Tower",
+      "verificationDate": "August 2026",
+      "description": "Faisal Jewel is not just a high-rise — it is a statement of sophistication, innovation, and architectural brilliance. Rising proudly with its 27-storey structure, this iconic development is set to redefine the Islamabad & Taxila skyline. Jointly developed by ZEDEM Properties & CAM Construction at the junction of Margalla Avenue, GT Road & M1 Motorway.",
+      "locationDetails": "Crossroads of Margalla Avenue, N-5 GT Road & M1 Motorway Interchange at Faisal Hills Main Boulevard Entrance.",
+      "highlights": [
+        "27-Storey Iconic Landmark Architecture",
+        "6 Commercial Floors + 18 Residential Floors + 3 Basement Parking Levels",
+        "350 Commercial Shops & 250 Luxury Serviced Apartments",
+        "1,000+ Vehicle Multi-Level Underground Parking Plaza",
+        "ZEDEM Properties x CAM Construction Joint Venture",
+        "Completion Target: Q4 2027 • Starting Price: PKR 580,000"
+      ],
+      "totalPlots": 600,
+      "priceRange": {
+        "residential": "Starting PKR 5.8 Lacs (Installments) • 1,295 Sq. Ft. Suite",
+        "commercial": "PKR 1.8 Crore - 18 Crore (350 Shops)"
+      },
+      "heroImage": "/faisal-jewel.jpg",
+      "masterPlanImage": "/faisal-jewel.jpg",
+      "amenities": [
+        {
+          "name": "Swimming Pool & Fitness Center",
+          "description": "Heated indoor swimming pool, gym, sauna & health club on 22nd floor",
+          "icon": "Waves",
+          "image": "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Fitness Center & Sauna",
+          "description": "State-of-the-art gym, cardio area, & sauna bath facilities",
+          "icon": "Activity",
+          "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Security Surveillance & Biometrics",
+          "description": "24/7 CCTV monitoring, biometric access control & smart security doors",
+          "icon": "ShieldCheck",
+          "image": "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Gaming Room & Entertainment Zone",
+          "description": "Virtual sports, bowling alley, and resident gaming lounge",
+          "icon": "Tv",
+          "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Retail Outlets & Food Court",
+          "description": "350 luxury retail brand shops & multi-cuisine international food court",
+          "icon": "ShoppingBag",
+          "image": "https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "3-Basement Parking Plaza",
+          "description": "1,000+ car automated valet parking with EV fast charging stations",
+          "icon": "Car",
+          "image": "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Rooftop Sky Lounge & Fine Dining",
+          "description": "360-degree glass revolving restaurant & sky deck facing Margalla Hills",
+          "icon": "Utensils",
+          "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=75"
+        },
+        {
+          "name": "Cafés & Business Center",
+          "description": "Artisan coffee shops, executive meeting rooms & high-speed Wi-Fi lounge",
+          "icon": "Sparkles",
+          "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=75"
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Are hotel apartments available on installments?",
+          "answer": "Yes, 3-year quarterly payment plan is available with 25% down payment."
+        },
+        {
+          "question": "What is the completion timeline for Faisal Jewels?",
+          "answer": "Structural work is progressing rapidly, targeted for completion in Q4 2027."
+        },
+        {
+          "question": "Who are the official developers?",
+          "answer": "Faisal Jewels is a joint collaboration between ZEDEM Properties and CAM Construction."
+        }
+      ],
+      "developmentUpdates": [
+        {
+          "title": "Floor 14 Slab Concrete Pouring",
+          "date": "August 2026",
+          "image": "/faisal-jewel.jpg",
+          "progress": 60,
+          "text": "High-strength RCC structure progressing smoothly."
+        }
+      ]
+    }
+  ],
+  "paymentPlansData": [
+    {
+      "id": "plan-1",
+      "blockSlug": "executive-block",
+      "blockName": "Executive Block",
+      "plotSize": "5 Marla",
+      "category": "Residential",
+      "totalPrice": 5800000,
+      "downPayment": 1160000,
+      "monthlyInstallment": 75000,
+      "quarterlyInstallment": 225000,
+      "possessionAmount": 580000,
+      "durationMonths": 36,
+      "verificationDate": "August 2026"
+    },
+    {
+      "id": "plan-2",
+      "blockSlug": "executive-block",
+      "blockName": "Executive Block",
+      "plotSize": "10 Marla",
+      "category": "Residential",
+      "totalPrice": 9800000,
+      "downPayment": 1960000,
+      "monthlyInstallment": 135000,
+      "quarterlyInstallment": 405000,
+      "possessionAmount": 980000,
+      "durationMonths": 36,
+      "verificationDate": "August 2026"
+    },
+    {
+      "id": "plan-3",
+      "blockSlug": "block-a",
+      "blockName": "Block A",
+      "plotSize": "10 Marla",
+      "category": "Residential",
+      "totalPrice": 9500000,
+      "downPayment": 1900000,
+      "monthlyInstallment": 125000,
+      "quarterlyInstallment": 375000,
+      "possessionAmount": 950000,
+      "durationMonths": 36,
+      "verificationDate": "August 2026"
+    },
+    {
+      "id": "plan-4",
+      "blockSlug": "prime-block",
+      "blockName": "Prime Block",
+      "plotSize": "1 Kanal",
+      "category": "Residential",
+      "totalPrice": 22000000,
+      "downPayment": 4400000,
+      "monthlyInstallment": 295000,
+      "quarterlyInstallment": 885000,
+      "possessionAmount": 2200000,
+      "durationMonths": 36,
+      "verificationDate": "August 2026"
+    },
+    {
+      "id": "plan-5",
+      "blockSlug": "gandahara",
+      "blockName": "Gandahara Block",
+      "plotSize": "5 Marla",
+      "category": "Residential",
+      "totalPrice": 3800000,
+      "downPayment": 760000,
+      "monthlyInstallment": 45000,
+      "quarterlyInstallment": 135000,
+      "possessionAmount": 380000,
+      "durationMonths": 36,
+      "verificationDate": "August 2026"
+    },
+    {
+      "id": "plan-fj-res",
+      "blockSlug": "faisal-jewels",
+      "blockName": "Faisal Jewels Tower",
+      "plotSize": "929 - 3,226 Sq.Ft. Apartment",
+      "category": "Residential",
+      "totalPrice": 15820000,
+      "downPayment": 3975000,
+      "monthlyInstallment": 246770,
+      "quarterlyInstallment": 740312,
+      "possessionAmount": 0,
+      "durationMonths": 48,
+      "verificationDate": "August 2026"
+    }
+  ],
+  "initialGalleryData": [
+    {
+      "id": "gal-1",
+      "title": "Main Gate Entrance Monument N-5 GT Road",
+      "category": "Entrance",
+      "imageUrl": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "description": "Grand Entrance Portal with biometric 24/7 guarded security checkposts.",
+      "dateAdded": "August 2026"
+    },
+    {
+      "id": "gal-2",
+      "title": "Faisal Jewels 26-Story Skyscraper Tower",
+      "category": "Towers",
+      "imageUrl": "/faisal-jewel.jpg",
+      "description": "Rapid structural construction phase of the iconic 26-story high-rise.",
+      "dateAdded": "August 2026"
+    },
+    {
+      "id": "gal-3",
+      "title": "Carpeted 225ft Main Commercial Boulevard",
+      "category": "Infrastructure",
+      "imageUrl": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
+      "description": "Wide asphalt carpeted boulevards with underground power grid cables.",
+      "dateAdded": "August 2026"
+    },
+    {
+      "id": "gal-4",
+      "title": "Grand Jamia Mosque Sector A",
+      "category": "Amenities",
+      "imageUrl": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+      "description": "3,000 capacity Islamic architecture landmark with marble courtyards.",
+      "dateAdded": "August 2026"
+    },
+    {
+      "id": "gal-5",
+      "title": "Block B Central Family Park & Promenade",
+      "category": "Amenities",
+      "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "description": "12-Kanal lush green park with walking tracks and Margalla backdrop.",
+      "dateAdded": "August 2026"
+    },
+    {
+      "id": "gal-6",
+      "title": "Hills Walk Open-Air Retail Promenade",
+      "category": "Towers",
+      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+      "description": "European style commercial strip featuring cafes, banks and boutiques.",
+      "dateAdded": "August 2026"
+    }
+  ],
+  "initialLeadsData": [
+    {
+      "id": "lead-1",
+      "name": "Muhammad Rizwan",
+      "phone": "+92 300 9876543",
+      "interest": "Block A (10 Marla Park Facing)",
+      "message": "Looking for immediate possession plot near commercial area.",
+      "submittedAt": "Today, 02:45 PM"
+    },
+    {
+      "id": "lead-2",
+      "name": "Tariq Mahmood",
+      "phone": "+92 321 5551234",
+      "interest": "Faisal Jewels Luxury Flat #FJ-402",
+      "message": "Inquiring about 4-year installment plan & down payment.",
+      "submittedAt": "Yesterday, 06:15 PM"
+    }
+  ],
+  "initialSeoConfig": {
+    "siteName": "Faisal Hills Real Estate Portal",
+    "defaultMetaTitle": "Faisal Hills Real Estate | Official Master Plan, Plots & Prices",
+    "defaultMetaDescription": "Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot map, NOC details, block prices, payment plans for Executive Block, Block A, B, C, D, Prime Block, Gandahara, Hills Walk & Faisal Jewels Tower.",
+    "defaultMetaKeywords": "Faisal Hills, Faisal Hills Taxila, Faisal Hills Rawalpindi, Executive Block Faisal Hills, Block A Faisal Hills, Block B Faisal Hills, Block C Faisal Hills, Prime Block Faisal Hills, Faisal Hills Plot Prices, Faisal Hills Map, Faisal Jewels Tower",
+    "googleSiteVerification": "google-site-verification-code-xyz123",
+    "bingSiteVerification": "bing-verification-code-abc456",
+    "facebookAppId": "9876543210",
+    "twitterHandle": "@FaisalHillsReal",
+    "pages": [
+      {
+        "pageSlug": "home",
+        "pageTitle": "Home Page",
+        "metaTitle": "Faisal Hills Real Estate | Official Master Plan, Plots & Prices",
+        "metaDescription": "Explore RDA approved residential & commercial plot investments with interactive master map, block price rates, and instant online booking in Faisal Hills GT Road Taxila.",
+        "metaKeywords": "Faisal Hills Taxila, Faisal Hills Rawalpindi, Plots for sale in Faisal Hills, RDA approved housing society, Faisal Town Group",
+        "ogTitle": "Faisal Hills Taxila • Official Real Estate Portal",
+        "ogDescription": "Interactive plot inventory, master plan, and verified prices for Faisal Hills Executive, Block A, B, C, D & Prime Block.",
+        "ogImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        "canonicalUrl": "https://faisalhills.com/",
+        "author": "Faisal Town Group Real Estate Team"
+      },
+      {
+        "pageSlug": "payment-plan",
+        "pageTitle": "Payment Schedules Page",
+        "metaTitle": "Faisal Hills Official Payment Plans & 3-Year Installment Schedules 2026",
+        "metaDescription": "Verified 3-year quarterly payment schedules for 5 Marla, 10 Marla, 1 Kanal plots and Faisal Jewels luxury apartments & commercial shops in Faisal Hills Taxila.",
+        "metaKeywords": "Faisal Hills payment plan, Faisal Jewels payment plan 2026, 5 Marla plot installment Faisal Hills, 10 Marla price list",
+        "ogTitle": "Faisal Hills Payment Matrix 2026",
+        "ogDescription": "Interactive installment calculator & official price schedules for residential and commercial plots.",
+        "ogImage": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+        "canonicalUrl": "https://faisalhills.com/payment-plan",
+        "author": "Faisal Town Group Sales Desk"
+      },
+      {
+        "pageSlug": "master-plan",
+        "pageTitle": "Interactive Master Plan Map Page",
+        "metaTitle": "Faisal Hills Interactive Master Plan Map & Plot Location Vector",
+        "metaDescription": "High-resolution vector map of Faisal Hills Rawalpindi. Zoom & search 14,500+ plot coordinates across Sector Executive, Block A, B, C, D & Prime Block.",
+        "metaKeywords": "Faisal Hills master plan map, Faisal Hills layout map PDF, Faisal Hills block sector map, GT Road Taxila map",
+        "ogTitle": "Faisal Hills High-Res Vector Master Map",
+        "ogDescription": "Locate plots, central parks, Jamia Mosque, and commercial boulevards on our interactive master plan map.",
+        "ogImage": "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+        "canonicalUrl": "https://faisalhills.com/master-plan",
+        "author": "Faisal Hills GIS Mapping Division"
+      },
+      {
+        "pageSlug": "faisal-jewels",
+        "pageTitle": "Faisal Jewels Skyscraper Page",
+        "metaTitle": "Faisal Jewels Tower 26-Story Skyscraper | Apartments & Shops Payment Plan",
+        "metaDescription": "Iconic 26-story luxury skyscraper at GT Road Monument Circle. Booking open for 5-star hotel serviced apartments, revolving rooftop restaurant & commercial shops.",
+        "metaKeywords": "Faisal Jewels Tower, Faisal Jewels payment plan, 2-bed flat Faisal Jewels, revolving restaurant Taxila, high rise tower Faisal Hills",
+        "ogTitle": "Faisal Jewels Tower • 26-Story Luxury Skyscraper",
+        "ogDescription": "16 Quarterly Installments (48 Months) for luxury hotel apartments & retail shop spaces.",
+        "ogImage": "/faisal-jewel.jpg",
+        "canonicalUrl": "https://faisalhills.com/blocks/faisal-jewels",
+        "author": "Faisal Jewels Development Team"
+      }
+    ]
+  },
+  "faisalJewelsSpecs": {
+    "floors": 27,
+    "commercialFloors": 6,
+    "residentialFloors": 18,
+    "basementParkingLevels": 3,
+    "parkingCapacity": "1,000+",
+    "commercialShops": 350,
+    "residentialApartments": 250,
+    "totalAreaSqFt": "1,295 Sq. Ft. (1-Bed Suite)",
+    "startingPrice": "PKR 580,000",
+    "completionDate": "Q4 2027",
+    "developer": "ZEDEM PROPERTIES x CAM Construction",
+    "locationJunction": "Margalla Avenue x N-5 GT Road x M1 Motorway Interchange"
+  },
+  "faisalJewelsSurroundings": [
+    {
+      "id": "01",
+      "name": "Margalla Avenue",
+      "distance": "Direct Access (0 Mins)"
+    },
+    {
+      "id": "02",
+      "name": "HITECH University",
+      "distance": "3 Mins Drive"
+    },
+    {
+      "id": "03",
+      "name": "Taxila City",
+      "distance": "5 Mins Drive"
+    },
+    {
+      "id": "04",
+      "name": "Wah Cantt",
+      "distance": "7 Mins Drive"
+    },
+    {
+      "id": "05",
+      "name": "Sector D-12 Islamabad",
+      "distance": "10 Mins Drive"
+    },
+    {
+      "id": "06",
+      "name": "Islamabad Int. Airport",
+      "distance": "15 Mins Drive"
+    },
+    {
+      "id": "07",
+      "name": "Sector F-10 Islamabad",
+      "distance": "18 Mins Drive"
+    },
+    {
+      "id": "08",
+      "name": "Blue Area Islamabad",
+      "distance": "22 Mins Drive"
+    }
+  ],
+  "faisalJewelsApartmentDetails": {
+    "title": "One-Bedroom Luxury Apartment Suite",
+    "totalArea": "1,295 Sq. Ft.",
+    "breakdown": [
+      {
+        "label": "Living / Dining Lounge",
+        "area": "200 sq. ft."
+      },
+      {
+        "label": "Master Bedroom",
+        "area": "150 sq. ft."
+      },
+      {
+        "label": "Modern Kitchen",
+        "area": "100 sq. ft."
+      },
+      {
+        "label": "Attached Bathroom",
+        "area": "50 sq. ft."
+      }
+    ]
+  },
+  "faisalJewelsHotelExperience": {
+    "title": "5-Star Luxury Hotel Experience",
+    "tagline": "No request is too extravagant, no detail too subtle",
+    "features": [
+      "High-Speed Wi-Fi Connectivity",
+      "Centralized Air Conditioning",
+      "Revolving Sky Restaurant",
+      "Rooftop Panoramic Deck & Lounge",
+      "24/7 Business Center & Executive Concierge"
+    ]
+  },
+  "faisalJewelResidentialPlan": {
+    "unitType": "Apartments",
+    "floor": "6th to 19th Floor",
+    "ratePerSqFt": 17000,
+    "ratePerSqFtFormatted": "17,000",
+    "gfaMin": 929,
+    "gfaMax": 3226,
+    "downPaymentMin": 3975000,
+    "downPaymentMax": 13735000,
+    "downPaymentMinFormatted": "3,975,000",
+    "downPaymentMaxFormatted": "13,735,000",
+    "totalPriceMin": 15820000,
+    "totalPriceMax": 139865000,
+    "totalPriceMinFormatted": "15,820,000",
+    "totalPriceMaxFormatted": "139,865,000",
+    "installmentsCount": 16,
+    "durationMonths": 48
+  },
+  "faisalJewelCommercialPlans": [
+    {
+      "unitType": "Shops",
+      "floor": "Lower Ground",
+      "ratePerSqFt": 52000,
+      "ratePerSqFtFormatted": "52,000",
+      "areaMin": 153,
+      "areaMax": 2683,
+      "downPaymentMin": 2040000,
+      "downPaymentMax": 34930000,
+      "downPaymentMinFormatted": "2,040,000",
+      "downPaymentMaxFormatted": "34,930,000",
+      "totalPriceMin": 8005000,
+      "totalPriceMax": 139565000,
+      "totalPriceMinFormatted": "8,005,000",
+      "totalPriceMaxFormatted": "139,565,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    },
+    {
+      "unitType": "Shops",
+      "floor": "Ground Floor",
+      "ratePerSqFt": 57000,
+      "ratePerSqFtFormatted": "57,000",
+      "areaMin": 169,
+      "areaMax": 765,
+      "downPaymentMin": 2460000,
+      "downPaymentMax": 10950000,
+      "downPaymentMinFormatted": "2,460,000",
+      "downPaymentMaxFormatted": "10,950,000",
+      "totalPriceMin": 9685000,
+      "totalPriceMax": 43655000,
+      "totalPriceMinFormatted": "9,685,000",
+      "totalPriceMaxFormatted": "43,655,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    },
+    {
+      "unitType": "Shops",
+      "floor": "1st Floor",
+      "ratePerSqFt": 52000,
+      "ratePerSqFtFormatted": "52,000",
+      "areaMin": 169,
+      "areaMax": 842,
+      "downPaymentMin": 2245000,
+      "downPaymentMax": 10995000,
+      "downPaymentMinFormatted": "2,245,000",
+      "downPaymentMaxFormatted": "10,995,000",
+      "totalPriceMin": 8840000,
+      "totalPriceMax": 43835000,
+      "totalPriceMinFormatted": "8,840,000",
+      "totalPriceMaxFormatted": "43,835,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    },
+    {
+      "unitType": "Shops",
+      "floor": "2nd Floor",
+      "ratePerSqFt": 49000,
+      "ratePerSqFtFormatted": "49,000",
+      "areaMin": 169,
+      "areaMax": 1990,
+      "downPaymentMin": 2120000,
+      "downPaymentMax": 24430000,
+      "downPaymentMinFormatted": "2,120,000",
+      "downPaymentMaxFormatted": "24,430,000",
+      "totalPriceMin": 8330000,
+      "totalPriceMax": 97560000,
+      "totalPriceMinFormatted": "8,330,000",
+      "totalPriceMaxFormatted": "97,560,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    },
+    {
+      "unitType": "Shops",
+      "floor": "3rd Floor",
+      "ratePerSqFt": 49000,
+      "ratePerSqFtFormatted": "49,000",
+      "areaMin": 169,
+      "areaMax": 1279,
+      "downPaymentMin": 2120000,
+      "downPaymentMax": 15720000,
+      "downPaymentMinFormatted": "2,120,000",
+      "downPaymentMaxFormatted": "15,720,000",
+      "totalPriceMin": 8830000,
+      "totalPriceMax": 62720000,
+      "totalPriceMinFormatted": "8,830,000",
+      "totalPriceMaxFormatted": "62,720,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    },
+    {
+      "unitType": "Shops & Food Court",
+      "floor": "4th Floor",
+      "ratePerSqFt": 52000,
+      "ratePerSqFtFormatted": "52,000",
+      "areaMin": 210,
+      "areaMax": 1899,
+      "downPaymentMin": 2780000,
+      "downPaymentMax": 24735000,
+      "downPaymentMinFormatted": "2,780,000",
+      "downPaymentMaxFormatted": "24,735,000",
+      "totalPriceMin": 10970000,
+      "totalPriceMax": 98800000,
+      "totalPriceMinFormatted": "10,970,000",
+      "totalPriceMaxFormatted": "98,800,000",
+      "installmentsCount": 16,
+      "durationMonths": 48
+    }
+  ]
+}
