@@ -395,7 +395,7 @@ export default function HomePage() {
 
       {/* 2. KEY VALUE PROPOSITION HIGHLIGHTS BAR */}
       <ScrollReveal className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 relative z-20">
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+        <div className="py-2 sm:py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60">
 
           {/* Item 1: RDA Approved NOC */}
           <div className="flex items-start gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
@@ -467,14 +467,19 @@ export default function HomePage() {
 
           {/* Left Column: Story & Link */}
           <div className="lg:col-span-7 space-y-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#7b002c]/10 border border-[#7b002c]/20 rounded-full text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>12 Years of Incredible Legacy</span>
+            <div className="space-y-2">
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#7b002c] tracking-tight">
+                Chairman & Founder - Chaudhry Abdul Majeed
+              </h1>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#7b002c]/10 border border-[#7b002c]/20 rounded-full text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>12 Years of Incredible Legacy</span>
+              </div>
             </div>
 
             <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-900 font-light tracking-tight leading-tight">
               A STORY <br />
-              <span className="italic font-serif font-normal text-[#7b002c]">of</span> LEGACY
+              <span className="italic font-serif font-normal text-[#7b002c]"> of </span>  LEGACY
             </h2>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
@@ -492,37 +497,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column: Chairman Executive Leadership Card */}
-          <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-sm rounded-3xl overflow-hidden bg-[#091522] border border-[#7b002c]/30 shadow-2xl group transition-all duration-500 hover:border-[#7b002c]">
-
-              {/* Top Accent Tag */}
-              <div className="absolute top-4 left-4 z-20 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow border border-white/20">
-                CHAIRMAN & FOUNDER
-              </div>
-
-              {/* Portrait Image */}
-              <div className="relative h-[360px] sm:h-[400px] w-full flex items-end justify-center bg-gradient-to-b from-[#091522] via-[#0d1d2d] to-[#091522]">
-                <img
-                  src="/chaudhry-abdul-majeed.png"
-                  alt="Chaudhry Abdul Majeed - Chairman Faisal Town Group"
-                  width={450}
-                  height={500}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#091522] via-transparent to-transparent opacity-80" />
-              </div>
-
-              {/* Bottom Caption */}
-              <div className="p-5 bg-[#091522] text-white border-t border-slate-800/80 text-center">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block">Faisal Town Group</span>
-                <h4 className="font-serif font-bold text-xl text-white mt-0.5">Chaudhry Abdul Majeed</h4>
-                <p className="text-slate-400 text-xs mt-1">Visionary Leader & Founder of Faisal Hills</p>
-              </div>
-
-            </div>
+          {/* Right Column: Chairman Image direct without extra div wrappers */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-end">
+            <img
+              src="/chaudhry-abdul-majeed.png"
+              alt="Chaudhry Abdul Majeed - Chairman Faisal Town Group"
+              className="w-full max-w-[340px] h-auto object-contain"
+            />
           </div>
 
         </div>

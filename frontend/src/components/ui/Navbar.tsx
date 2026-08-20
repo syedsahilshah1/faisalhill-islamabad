@@ -111,24 +111,24 @@ export default function Navbar() {
 
               {/* Mega Dropdown */}
               <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto w-[740px]">
-                <div className="bg-slate-950/95 backdrop-blur-2xl text-white border border-white/15 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-white/10 p-6 space-y-4">
+                <div className="bg-white/95 backdrop-blur-2xl text-slate-900 border border-slate-200/90 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5 p-6 space-y-4">
 
                   {/* Dropdown Header */}
-                  <div className="flex items-center justify-between pb-3.5 border-b border-white/10">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/80">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-xl bg-[#7b002c] text-white flex items-center justify-center shadow-md">
                         <Layers className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-white block">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-900 block">
                           Faisal Hills Blocks & Sectors
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium block">
+                        <span className="text-[10px] text-slate-500 font-medium block">
                           Official Layouts, Plot Inventory & Verified Rates
                         </span>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#7b002c] bg-[#7b002c]/10 border border-[#7b002c]/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
                       RDA Approved
                     </span>
                   </div>
@@ -139,10 +139,10 @@ export default function Navbar() {
                     {/* Column 1: Developed Blocks */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between px-2 mb-2">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                           DEVELOPED BLOCKS
                         </span>
-                        <span className="text-[9px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
                           Possession Ready
                         </span>
                       </div>
@@ -152,21 +152,21 @@ export default function Navbar() {
                           <Link
                             key={block.id}
                             href={`/blocks/${block.slug}`}
-                            className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-white/5 hover:bg-[#7b002c] border border-white/5 hover:border-white/20 transition-all duration-300 hover:translate-x-1"
+                            className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
                           >
-                            <div className="w-8 h-8 rounded-xl bg-[#7b002c]/40 group-hover/item:bg-white text-white group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-sm">
+                            <div className="w-8 h-8 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
                               {block.name.replace('Block ', '').charAt(0)}
                             </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-1">
-                                <span className="text-xs font-bold text-white group-hover/item:text-white transition-colors truncate">
+                                <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
                                   {block.name}
                                 </span>
-                                <span className="text-[9px] text-slate-400 group-hover/item:text-white/80 shrink-0 font-medium">
+                                <span className="text-[9px] text-slate-500 group-hover/item:text-white/80 shrink-0 font-medium">
                                   {block.status || 'Ready'}
                                 </span>
                               </div>
-                              <p className="text-[10px] text-slate-400 group-hover/item:text-white/80 truncate mt-0.5">
+                              <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
                                 {block.subtitle || 'Residential & Commercial Plots'}
                               </p>
                             </div>
@@ -179,10 +179,10 @@ export default function Navbar() {
                     <div className="space-y-1.5 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between px-2 mb-2">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                             PROJECTS & COMMERCIAL
                           </span>
-                          <span className="text-[9px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
+                          <span className="text-[9px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
                             High ROI
                           </span>
                         </div>
@@ -192,21 +192,21 @@ export default function Navbar() {
                             <Link
                               key={block.id}
                               href={`/blocks/${block.slug}`}
-                              className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-white/5 hover:bg-[#7b002c] border border-white/5 hover:border-white/20 transition-all duration-300 hover:translate-x-1"
+                              className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
                             >
-                              <div className="w-8 h-8 rounded-xl bg-amber-500/20 group-hover/item:bg-white text-amber-400 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-sm">
+                              <div className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
                                 <Sparkles className="w-4 h-4" />
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-white group-hover/item:text-white transition-colors truncate">
+                                  <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
                                     {block.name}
                                   </span>
-                                  <span className="text-[9px] bg-amber-400/20 text-amber-300 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0">
+                                  <span className="text-[9px] bg-amber-100 text-amber-800 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0">
                                     {block.category === 'upcoming' ? 'Upcoming' : 'Commercial'}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-slate-400 group-hover/item:text-white/80 truncate mt-0.5">
+                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
                                   {block.subtitle || 'Prime Real Estate Investment'}
                                 </p>
                               </div>
@@ -218,7 +218,7 @@ export default function Navbar() {
                       {/* Interactive Master Plan Banner */}
                       <Link
                         href="/master-plan"
-                        className="group/map mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-[#7b002c] to-[#9e1245] border border-white/20 text-white flex items-center justify-between gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                        className="group/map mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-[#7b002c] to-[#9e1245] border border-[#7b002c]/20 text-white flex items-center justify-between gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02]"
                       >
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
@@ -247,18 +247,18 @@ export default function Navbar() {
           <Link href="/" className="flex items-center shrink-0 group whitespace-nowrap gap-2 sm:gap-3 px-1 xl:px-4">
             {/* Text Part */}
             <div className="flex flex-col leading-none select-none items-end">
-              <span className="text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#7b002c] transition-colors duration-300 drop-shadow-sm" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              <span className={`text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]' : 'text-white'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                 FAISALTOWN
               </span>
-              <span className="text-[9px] sm:text-[10px] xl:text-[12px] font-semibold tracking-[0.3em] sm:tracking-[0.35em] mt-[2px] text-[#7b002c]/90 transition-colors duration-300 drop-shadow-sm" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              <span className={`text-[9px] sm:text-[10px] xl:text-[12px] font-semibold tracking-[0.3em] sm:tracking-[0.35em] mt-[2px] transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]/90' : 'text-white/90'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                 GROUP
               </span>
             </div>
             {/* Vertical Separator */}
-            <div className="w-[1.5px] h-6 sm:h-8 block bg-[#7b002c]/40 transition-colors duration-300"></div>
+            <div className={`w-[1.5px] h-6 sm:h-8 block transition-colors duration-300 ${isScrolled ? 'bg-[#7b002c]/20' : 'bg-white/30'}`}></div>
             {/* FT Monogram */}
             <div className="relative flex items-center justify-center" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              <span className="text-[28px] sm:text-[36px] xl:text-[42px] font-bold leading-none tracking-tight select-none text-[#7b002c] transition-colors duration-300 drop-shadow-sm" style={{ letterSpacing: '-0.05em' }}>
+              <span className={`text-[28px] sm:text-[36px] xl:text-[42px] font-bold leading-none tracking-tight select-none transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]' : 'text-white'}`} style={{ letterSpacing: '-0.05em' }}>
                 F T
               </span>
             </div>
@@ -281,25 +281,25 @@ export default function Navbar() {
                 <ChevronDown className={`w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-200 ${isScrolled ? 'text-slate-500 group-hover:text-[#7b002c]' : 'text-white/80'}`} />
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto w-[320px]">
-                <div className="bg-slate-950/95 backdrop-blur-2xl text-white border border-white/15 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-white/10 p-5 space-y-3">
-                  <div className="flex items-center gap-2.5 pb-2.5 border-b border-white/10">
-                    <Building2 className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-white">
+                <div className="bg-white/95 backdrop-blur-2xl text-slate-900 border border-slate-200/90 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5 p-5 space-y-3">
+                  <div className="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/80">
+                    <Building2 className="w-4 h-4 text-[#7b002c]" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
                       Highrise Projects
                     </span>
                   </div>
                   <Link
                     href="/blocks/faisal-jewel-islamabad"
-                    className="group/item flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-[#7b002c] border border-white/5 hover:border-white/20 transition-all duration-300"
+                    className="group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[#7b002c]/40 group-hover/item:bg-white text-white group-hover/item:text-[#7b002c] flex items-center justify-center shrink-0 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] flex items-center justify-center shrink-0 transition-colors">
                       <Building2 className="w-5 h-5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className="text-xs font-bold text-white block">
+                      <span className="text-xs font-bold text-slate-900 group-hover/item:text-white block">
                         Faisal Jewel Tower
                       </span>
-                      <p className="text-[10px] text-slate-400 group-hover/item:text-white/80 truncate leading-tight mt-0.5">
+                      <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate leading-tight mt-0.5">
                         27-Story Ultra-Luxury High-Rise
                       </p>
                     </div>
