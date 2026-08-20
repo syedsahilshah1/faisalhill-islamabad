@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
-  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon
+  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
@@ -157,7 +157,7 @@ export default function HomePage() {
     <div className="bg-slate-50 min-h-screen text-slate-900 space-y-24 pb-24 font-sans selection:bg-gold-accent selection:text-slate-950">
 
       {/* 1. HERO SECTION - Ultra-Luxury Glassmorphism & HD Image Slider */}
-      <section className="relative bg-[#091522] text-white overflow-hidden pt-24 sm:pt-28 lg:pt-32 pb-14 lg:pb-24 border-b border-slate-800">
+      <section className="relative bg-[#091522] text-white overflow-hidden pt-24 sm:pt-28 lg:pt-32 pb-0">
 
         {/* Dynamic HD Background Image Slider with Smooth Crossfade */}
         {heroBgImages.map((imgUrl, idx) => (
@@ -222,89 +222,106 @@ export default function HomePage() {
               </a>
             </div>
 
+            {/* Direct Hero WhatsApp Action Button */}
+            <div className="pt-2">
+              <a
+                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking%20and%20pricing."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-extrabold uppercase tracking-wider rounded-full shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>Instant WhatsApp Inquiry (+92 304 4811 717)</span>
+              </a>
+            </div>
+
 
           </div>
 
-          {/* Hero Right Side: Embedded Booking Form with Glassmorphism */}
+          {/* Hero Right Side: Embedded Booking Form with Luxury White Glassmorphism */}
           <div className="lg:col-span-4 relative">
-            <div className="bg-slate-900/60 backdrop-blur-xl text-white rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/20 space-y-4 relative overflow-hidden group">
-              <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#7b002c]/30 rounded-full blur-2xl pointer-events-none" />
+            <div className="bg-white/95 backdrop-blur-2xl text-slate-900 rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/80 space-y-4 relative overflow-hidden group ring-1 ring-black/5">
+              <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#7b002c]/10 rounded-full blur-2xl pointer-events-none" />
 
-              <div className="border-b border-white/15 pb-4">
-                <h3 className="font-serif font-bold text-2xl text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-white" />
+              <div className="border-b border-slate-200/80 pb-4">
+                <h3 className="font-serif font-bold text-2xl text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#7b002c]" />
                   <span>Book Your Plot / Flat</span>
                 </h3>
-                <p className="text-xs text-slate-300 mt-1">Get official pricing, payment plan & plot selection guide.</p>
+                <p className="text-xs text-slate-500 mt-1">Get official pricing, payment plan & plot selection guide.</p>
               </div>
 
               {heroFormSubmitted ? (
-                <div className="bg-[#7b002c]/40 backdrop-blur-md border border-white/30 text-white p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-lg">
-                  <CheckCircle2 className="w-10 h-10 text-white mx-auto" />
-                  <h4 className="text-base font-serif text-white">Inquiry Submitted Successfully!</h4>
-                  <p className="font-normal text-slate-200">Our Faisal Hills sales executive will contact you via WhatsApp / Phone shortly.</p>
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-md">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+                  <h4 className="text-base font-serif text-emerald-950">Inquiry Submitted Successfully!</h4>
+                  <p className="font-normal text-emerald-800">Our Faisal Hills sales executive will contact you via WhatsApp / Phone shortly.</p>
                 </div>
               ) : (
                 <form onSubmit={handleHeroFormSubmit} className="space-y-3.5">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Full Name</label>
+                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Full Name</label>
                     <input
                       type="text"
                       required
                       placeholder="Enter Your Name"
                       value={heroFormName}
                       onChange={(e) => setHeroFormName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-white focus:bg-white/15 transition-all"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Phone / WhatsApp</label>
+                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Phone / WhatsApp</label>
                     <input
                       type="tel"
                       required
                       placeholder="Enter WhatsApp / Phone Number"
                       value={heroFormPhone}
                       onChange={(e) => setHeroFormPhone(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-white focus:bg-white/15 transition-all"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Select Project</label>
-                    <select
-                      value={heroFormProject}
-                      onChange={(e) => setHeroFormProject(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-900/90 backdrop-blur-md border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:border-white transition-all"
-                    >
-                      <option value="Faisal Hills Taxila" className="bg-slate-900 text-white">Faisal Hills Taxila (Plots)</option>
-                      <option value="Faisal Jewels Tower" className="bg-slate-900 text-white">Faisal Jewels Tower (Luxury Flats)</option>
-                      <option value="Executive Block" className="bg-slate-900 text-white">Executive Block</option>
-                      <option value="Prime Block" className="bg-slate-900 text-white">Prime Block</option>
-                      <option value="Hills Walk" className="bg-slate-900 text-white">Hills Walk Commercial</option>
-                    </select>
+                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Select Project</label>
+                    <div className="relative">
+                      <select
+                        value={heroFormProject}
+                        onChange={(e) => setHeroFormProject(e.target.value)}
+                        className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all cursor-pointer font-medium appearance-none"
+                      >
+                        <option value="Faisal Hills Taxila" className="bg-white text-slate-900">Faisal Hills  (Plots)</option>
+                        <option value="Faisal Jewels Tower" className="bg-white text-slate-900">Faisal Jewels Tower (Luxury Flats)</option>
+                        <option value="Executive Block" className="bg-white text-slate-900">Executive Block</option>
+                        <option value="Prime Block" className="bg-white text-slate-900">Prime Block</option>
+                        <option value="Hills Walk" className="bg-white text-slate-900">Hills Walk Commercial</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Requirement Details</label>
+                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Requirement Details</label>
                     <textarea
                       rows={2}
                       placeholder="Describe your property requirement (e.g., plot size, budget, preferences)..."
                       value={heroFormMessage}
                       onChange={(e) => setHeroFormMessage(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-white focus:bg-white/15 transition-all resize-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] hover:from-[#9e1245] hover:to-[#7b002c] text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-white/20 btn-shimmer"
+                    className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-[#7b002c]/20 btn-shimmer"
                   >
                     GET QUOTE
                   </button>
 
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 pt-1">
-                    <Lock className="w-3.5 h-3.5 text-white" />
+
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 pt-1">
+                    <Lock className="w-3.5 h-3.5 text-[#7b002c]" />
                     <span>Your information is 100% confidential & secure</span>
                   </div>
                 </form>
@@ -314,70 +331,67 @@ export default function HomePage() {
           </div>
 
         </div>
-      </section>
 
-
-
-
-      {/* Animated Block Ticker Strip */}
-      <div className="bg-slate-950 border-y border-slate-800 py-3 overflow-hidden relative">
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
-        <div className="ticker-track gap-0">
-          {[...Array(2)].map((_, setIdx) => (
-            <div key={setIdx} className="flex items-center gap-0 shrink-0">
-              <a href="/blocks/executive-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Executive Block</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Possession Ready</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/prime-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Prime Block</span>
-                <span className="text-[10px] text-amber-400 font-semibold font-sans ml-1.5">Installments Open</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-a" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block A</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Families Settled</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-b" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block B</span>
-                <span className="text-[10px] text-sky-400 font-semibold font-sans ml-1.5">Margalla Views</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-b1-extension" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">B Extension</span>
-                <span className="text-[10px] text-violet-400 font-semibold font-sans ml-1.5">Affordable Entry</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-c" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block C</span>
-                <span className="text-[10px] text-amber-400 font-semibold font-sans ml-1.5">800+ Commercial Plots</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-d" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block D</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Possession Granted</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/faisal-jewels" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Faisal Jewel Tower</span>
-                <span className="text-[10px] text-rose-400 font-semibold font-sans ml-1.5">22-Storey Skyscraper</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-            </div>
-          ))}
+        {/* Animated Block Ticker Strip in Pure White Luxury Design attached flush inside Hero Section */}
+        <div className="mt-8 sm:mt-12 bg-white border-y border-slate-200/80 py-4 overflow-hidden relative shadow-sm z-20">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div className="ticker-track gap-0">
+            {[...Array(2)].map((_, setIdx) => (
+              <div key={setIdx} className="flex items-center gap-0 shrink-0">
+                <a href="/blocks/executive-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Executive Block</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Possession Ready</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/prime-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Prime Block</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Installments Open</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/block-a" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block A</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Families Settled</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/block-b" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block B</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Margalla Views</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/block-b1-extension" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">B Extension</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Affordable Entry</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/block-c" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block C</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">800+ Commercial Plots</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/block-d" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block D</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Possession Granted</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+                <a href="/blocks/faisal-jewels" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Faisal Jewel Tower</span>
+                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">22-Storey Skyscraper</span>
+                </a>
+                <span className="text-slate-300 text-lg select-none px-2">|</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* 2. KEY VALUE PROPOSITION HIGHLIGHTS BAR */}
       <ScrollReveal className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 relative z-20">

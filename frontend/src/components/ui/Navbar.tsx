@@ -247,18 +247,18 @@ export default function Navbar() {
           <Link href="/" className="flex items-center shrink-0 group whitespace-nowrap gap-2 sm:gap-3 px-1 xl:px-4">
             {/* Text Part */}
             <div className="flex flex-col leading-none select-none items-end">
-              <span className={`text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]' : 'text-white'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              <span className="text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-[#7b002c] transition-colors duration-300 drop-shadow-sm" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                 FAISALTOWN
               </span>
-              <span className={`text-[9px] sm:text-[10px] xl:text-[12px] font-semibold tracking-[0.3em] sm:tracking-[0.35em] mt-[2px] transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]/90' : 'text-white/90'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              <span className="text-[9px] sm:text-[10px] xl:text-[12px] font-semibold tracking-[0.3em] sm:tracking-[0.35em] mt-[2px] text-[#7b002c]/90 transition-colors duration-300 drop-shadow-sm" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                 GROUP
               </span>
             </div>
             {/* Vertical Separator */}
-            <div className={`w-[1.5px] h-6 sm:h-8 block transition-colors duration-300 ${isScrolled ? 'bg-[#7b002c]/20' : 'bg-white/30'}`}></div>
+            <div className="w-[1.5px] h-6 sm:h-8 block bg-[#7b002c]/40 transition-colors duration-300"></div>
             {/* FT Monogram */}
             <div className="relative flex items-center justify-center" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              <span className={`text-[28px] sm:text-[36px] xl:text-[42px] font-bold leading-none tracking-tight select-none transition-colors duration-300 ${isScrolled ? 'text-[#7b002c]' : 'text-white'}`} style={{ letterSpacing: '-0.05em' }}>
+              <span className="text-[28px] sm:text-[36px] xl:text-[42px] font-bold leading-none tracking-tight select-none text-[#7b002c] transition-colors duration-300 drop-shadow-sm" style={{ letterSpacing: '-0.05em' }}>
                 F T
               </span>
             </div>
