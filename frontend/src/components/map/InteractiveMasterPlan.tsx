@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { 
   ZoomIn, ZoomOut, RefreshCw, Search, MapPin, 
-  Eye, MessageSquare, ShieldCheck, Filter, ArrowRight, Star
+  Eye, MessageSquare, ShieldCheck, Filter, ArrowRight, Star, FileText
 } from 'lucide-react';
 import { blocksData, plotInventoryData, PlotItem } from '@/data/faisalHillsData';
 import LeadModal from '../ui/LeadModal';
@@ -240,6 +240,19 @@ export default function InteractiveMasterPlan({
               <RefreshCw className="w-4 h-4 text-white" />
             </button>
           </div>
+
+          {/* PDF Download Button */}
+          <a
+            href="/FAISAL HILLS MASTER PLAN.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="flex items-center gap-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold px-3 py-2 rounded-xl border border-white/30 transition-all shadow cursor-pointer"
+            title="Download Full Resolution PDF Master Plan"
+          >
+            <FileText className="w-3.5 h-3.5 text-white" />
+            <span className="hidden sm:inline">PDF Map</span>
+          </a>
         </div>
 
       </div>
@@ -254,46 +267,12 @@ export default function InteractiveMasterPlan({
             className="relative w-full max-w-[1100px] aspect-[16/9] transition-transform duration-300 ease-out border border-[#7b002c]/30 rounded-2xl bg-gradient-to-br from-slate-950 via-[#180309] to-slate-950 shadow-2xl overflow-hidden"
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            {/* Blueprint Grid Overlay */}
-            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="plan-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e11d48" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#plan-grid)" />
-            </svg>
-
-            {/* Master Map Block Sector Vector Boundaries */}
-            <div className="absolute inset-0 p-6 grid grid-cols-4 grid-rows-3 gap-3 pointer-events-none opacity-80">
-              <div className="col-span-1 row-span-1 border border-rose-500/20 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-white text-[10px]">Executive Block</span>
-              </div>
-              <div className="col-span-1 row-span-1 border border-slate-700/30 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-white text-[10px]">Block A Sector</span>
-              </div>
-              <div className="col-span-1 row-span-1 border border-slate-700/30 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-white text-[10px]">Block B Sector</span>
-              </div>
-              <div className="col-span-1 row-span-1 border border-slate-700/20 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-slate-300 text-[10px]">B1 Extension</span>
-              </div>
-              <div className="col-span-1 row-span-1 border border-slate-700/30 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-white text-[10px]">Block C Sector</span>
-              </div>
-              <div className="col-span-2 row-span-1 border border-rose-500/30 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/30">
-                <span className="font-serif font-bold text-white text-[10px]">Hills Walk Commercial</span>
-              </div>
-              <div className="col-span-1 row-span-1 border border-slate-700/20 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/20">
-                <span className="font-serif font-bold text-slate-300 text-[10px]">Block D</span>
-              </div>
-              <div className="col-span-2 row-span-1 border-2 border-[#7b002c]/50 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/40">
-                <span className="font-serif font-bold text-white text-[11px]">Prime Block (VIP Gated)</span>
-              </div>
-              <div className="col-span-2 row-span-1 border border-dashed border-slate-700 rounded p-1.5 text-xs flex flex-col justify-between bg-slate-950/10">
-                <span className="font-serif font-bold text-slate-400 text-[10px]">Gandahara Sector</span>
-              </div>
-            </div>
+            {/* High-Res Interactive PDF Master Plan Map */}
+            <iframe
+              src="/FAISAL HILLS MASTER PLAN.pdf#toolbar=0&navpanes=0&view=Fit"
+              className="absolute inset-0 w-full h-full opacity-100 rounded-xl border-0"
+              title="Faisal Hills PDF Master Plan"
+            />
 
             {/* View Mode 1: Plot Markers Overlay */}
             {viewMode === 'plots' && filteredPlots.map(plot => (

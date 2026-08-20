@@ -10,8 +10,9 @@ import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
   fetchBlocks, fetchPlots, fetchGallery, fetchSettings, submitLead
 } from '@/data/faisalHillsData';
-import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import LeadModal from '@/components/ui/LeadModal';
+import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function HomePage() {
@@ -20,11 +21,28 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'developed' | 'commercial' | 'upcoming'>('developed');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [isMapDownloadModalOpen, setIsMapDownloadModalOpen] = useState(false);
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryData);
   const [activeGalleryFilter, setActiveGalleryFilter] = useState<'All' | 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('All');
   const [lightboxImage, setLightboxImage] = useState<GalleryItem | null>(null);
+
+  // Faisal Jewels Slideshow state
+  const jewelImages = useMemo(() => [
+    '/faisal-jewel-1.png',
+    '/faisal-jewel-2.png',
+    '/faisal-jewel-3.png',
+    '/faisal-jewel.jpg',
+  ], []);
+  const [activeJewelImageIndex, setActiveJewelImageIndex] = useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveJewelImageIndex((prev) => (prev + 1) % jewelImages.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [jewelImages.length]);
 
   const filteredGallery = useMemo(() => {
     if (activeGalleryFilter === 'All') return galleryItems;
@@ -462,8 +480,8 @@ export default function HomePage() {
 
 
       {/* 2.5 A STORY OF LEGACY */}
-      <section className="bg-white py-14 lg:py-20 border-b border-slate-100 overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <section className="bg-white py-12 lg:py-16 border-b border-slate-100 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 items-center">
 
           {/* Left Column: Story & Link */}
           <div className="lg:col-span-7 space-y-5">
@@ -479,7 +497,7 @@ export default function HomePage() {
 
             <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-900 font-light tracking-tight leading-tight">
               A STORY <br />
-              <span className="italic font-serif font-normal text-[#7b002c]"> of </span>  LEGACY
+              <span className="inline-block italic font-serif font-normal text-[#7b002c] mr-3 sm:mr-4">of</span>{' '}LEGACY
             </h2>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
@@ -498,11 +516,11 @@ export default function HomePage() {
           </div>
 
           {/* Right Column: Chairman Image direct without extra div wrappers */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-end">
+          <div className="lg:col-span-5 flex flex-col items-center lg:items-start justify-end -ml-0 lg:-ml-4">
             <img
               src="/chaudhry-abdul-majeed.png"
               alt="Chaudhry Abdul Majeed - Chairman Faisal Town Group"
-              className="w-full max-w-[340px] h-auto object-contain"
+              className="w-full max-w-[420px] h-auto object-contain"
             />
           </div>
 
@@ -510,153 +528,99 @@ export default function HomePage() {
       </section>
 
 
-      {/* 3. FLAGSHIP SPECIAL FEATURE: FAISAL JEWELS (26-STORY ULTRA-LUXURY HIGH-RISE) */}
-      <ScrollReveal className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-6">
-        <div className="bg-slate-950 text-white rounded-3xl p-8 lg:p-14 border border-[#7b002c]/40 shadow-2xl relative overflow-hidden">
+      {/* 3. FLAGSHIP SPECIAL FEATURE: FAISAL JEWEL */}
+      <section className="bg-white py-14 lg:py-20 border-b border-slate-100 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
 
-          {/* Luxury Ambient Lighting Glows */}
-          <div className="absolute -top-24 -right-24 w-[500px] h-[500px] bg-[#7b002c]/35 rounded-full blur-[140px] pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-[400px] h-[400px] bg-[#4c050d]/50 rounded-full blur-[120px] pointer-events-none" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-
-            {/* Left Image & Badge */}
+            {/* Left Column: Title, Subtitle, Red Accent Bar, Paragraphs & Link */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="relative rounded-2xl overflow-hidden border border-white/20 shadow-2xl img-zoom-container group">
-                <img
-                  src="/faisal-jewel.jpg"
-                  alt="Faisal Jewels 26-Story Skyscraper Tower"
-                  width={500}
-                  height={420}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-[420px] object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
-                <div className="absolute top-4 left-4 bg-[#7b002c] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow border border-white/20">
-                  ICONIC 26-STORY TOWER
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-xs text-slate-300 font-semibold block">Faisal Hills GT Road Monument</span>
-                  <h4 className="font-serif font-bold text-2xl text-white">Faisal Jewels Tower</h4>
-                </div>
+              <div>
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-slate-900 tracking-tight">
+                  Faisal Jewel
+                </h2>
+                <p className="font-serif text-base sm:text-lg text-slate-500 font-light mt-1.5">
+                  27-Story Five-Star Hotel
+                </p>
+                <div className="w-16 h-[2px] bg-[#7b002c] mt-4 mb-6" />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-[#7b002c]/40 backdrop-blur-md p-3.5 rounded-xl border border-white/20 shadow-md">
-                  <span className="text-[10px] text-slate-300 uppercase block font-semibold">Apartment Prices</span>
-                  <strong className="text-white font-serif text-sm">From PKR 85 Lacs</strong>
-                </div>
-                <div className="bg-[#7b002c]/40 backdrop-blur-md p-3.5 rounded-xl border border-white/20 shadow-md">
-                  <span className="text-[10px] text-slate-300 uppercase block font-semibold">Expected Rental ROI</span>
-                  <strong className="text-white font-serif text-sm">10% - 12% Annual</strong>
-                </div>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans">
+                The 27-story Faisal Jewel introduces five-star hotel amenities within Faisal Hills. Recently partnered with Hilton Hotels, this landmark will attract local and international visitors, especially those exploring the religious and cultural heritage of Sikhism, Buddhism, and Islam.
+              </p>
+
+              <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed font-sans">
+                With its iconic design and strategic location, Faisal Jewel acts as a gateway to Northern Pakistan's tourism corridor, elevating Faisal Hills to a destination of global repute.
+              </p>
+
+              <div className="pt-4">
+                <Link
+                  href="/blocks/faisal-jewel-islamabad"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-900 hover:text-[#7b002c] border-b border-slate-900 hover:border-[#7b002c] pb-0.5 transition-all group"
+                >
+                  <span>Explore Faisal Jewel</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
 
-            {/* Right Details & Features */}
-            <div className="lg:col-span-7 space-y-6">
-
-              <div className="space-y-2">
-                <span className="inline-flex items-center gap-2 text-[#7b002c] bg-white/10 border border-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-white">
-                  <Sparkles className="w-4 h-4 text-white" /> Crown Jewel of Commercial Architecture
-                </span>
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-                  Faisal Jewels: 26-Story Ultra-Luxury <span className="text-slate-200 italic font-serif">Hotel Apartments & Mall</span>.
-                </h2>
-                <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                  Faisal Jewels is Islamabad and Rawalpindi's premier high-rise landmark. Situated at the main entry monument circle of GT Road, offering 5-star serviced apartments, luxury shopping malls, infinity sky pools, and revolving rooftop dining.
-                </p>
+            {/* Right Column: Clean Slideshow Image without container wrapper div or dots */}
+            <div className="lg:col-span-7">
+              <div className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px]">
+                {jewelImages.map((imgSrc, idx) => (
+                  <img
+                    key={imgSrc}
+                    src={imgSrc}
+                    alt="Faisal Jewel 27-Story Five-Star Hotel"
+                    className={`w-full h-full object-cover transition-opacity duration-1000 ${
+                      idx === activeJewelImageIndex ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
+                    }`}
+                  />
+                ))}
               </div>
-
-              {/* Highlights Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all">
-                  <Utensils className="w-5 h-5 text-white shrink-0" />
-                  <div>
-                    <strong className="text-white text-xs block font-bold">Revolving Sky Restaurant</strong>
-                    <span className="text-[11px] text-slate-300">360-degree Margalla Hills view</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all">
-                  <Waves className="w-5 h-5 text-white shrink-0" />
-                  <div>
-                    <strong className="text-white text-xs block font-bold">22nd-Floor Infinity Pool</strong>
-                    <span className="text-[11px] text-slate-300">Heated indoor rooftop pool</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all">
-                  <Building2 className="w-5 h-5 text-white shrink-0" />
-                  <div>
-                    <strong className="text-white text-xs block font-bold">5-Star Serviced Suites</strong>
-                    <span className="text-[11px] text-slate-300">1, 2 & 3 bedroom apartments</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all">
-                  <Car className="w-5 h-5 text-white shrink-0" />
-                  <div>
-                    <strong className="text-white text-xs block font-bold">Multi-Level Smart Parking</strong>
-                    <span className="text-[11px] text-slate-300">500+ car basement capacity</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="pt-4 flex flex-wrap items-center gap-4">
-                <button
-                  onClick={() => setIsLeadModalOpen(true)}
-                  className="px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 btn-shimmer border border-white/20"
-                >
-                  <MessageSquare className="w-4 h-4 text-white" />
-                  <span>Book Faisal Jewels Apartment</span>
-                </button>
-
-                <Link
-                  href="/blocks/faisal-jewel-islamabad"
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider rounded-xl border border-white/20 flex items-center gap-2 transition-all duration-300 hover:scale-105"
-                >
-                  <span>View Tower Layouts</span>
-                  <ArrowRight className="w-4 h-4 text-white" />
-                </Link>
-              </div>
-
             </div>
 
           </div>
-
         </div>
-      </ScrollReveal>
+      </section>
 
 
-      {/* 4. INTERACTIVE MASTER PLAN MAP PREVIEW */}
+      {/* 4. OFFICIAL MASTER PLAN MAP */}
       <ScrollReveal className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6 pt-4">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <span className="label-caps text-[#7b002c] font-bold block mb-1">Interactive Map Technology</span>
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Official Society Blueprint</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
-              Live Master Plan Plot Map Viewer
+              Faisal Hills Master Plan Map
             </h2>
             <p className="text-slate-600 text-sm mt-1 max-w-xl">
-              Click any sector or plot node below to inspect dimensions, availability, orientation, and current market demand price.
+              Explore the complete high-resolution master plan map of Faisal Hills. Use the zoom controls to zoom up to 350% and inspect plot details, street numbers, and sector layouts.
             </p>
           </div>
 
-          <Link
-            href="/master-plan"
-            className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3 rounded-xl border border-slate-300 shadow-sm transition-all duration-300 hover:scale-105"
-          >
-            <span>Launch Fullscreen Map</span>
-            <ArrowRight className="w-4 h-4 text-[#7b002c]" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsMapDownloadModalOpen(true)}
+              className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
+            >
+              <FileText className="w-4 h-4 text-white" />
+              <span>Download Master Plan (PDF)</span>
+            </button>
+
+            <Link
+              href="/master-plan"
+              className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3 rounded-xl border border-slate-300 shadow-sm transition-all duration-300 hover:scale-105"
+            >
+              <span>Launch Fullscreen Map</span>
+              <ArrowRight className="w-4 h-4 text-[#7b002c]" />
+            </Link>
+          </div>
         </div>
 
-        {/* Master Plan Map Viewer */}
+        {/* High-Resolution Master Plan Map Viewer */}
         <div className="mt-6">
-          <InteractiveMasterPlan />
+          <MasterPlanViewer />
         </div>
 
       </ScrollReveal>
@@ -1266,8 +1230,9 @@ export default function HomePage() {
       {/* Booking Lead Modal */}
       <LeadModal isOpen={isLeadModalOpen} onClose={() => setIsLeadModalOpen(false)} />
 
+      {/* Map Download Lead Form Modal */}
+      <MapDownloadModal isOpen={isMapDownloadModalOpen} onClose={() => setIsMapDownloadModalOpen(false)} />
+
     </div>
   );
 }
-
-
