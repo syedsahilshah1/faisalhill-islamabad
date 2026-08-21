@@ -11,7 +11,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#4c0215] text-white border-t border-[#7b002c]">
-      
+
       {/* Top Section with FT Monogram and Slogan */}
       <div className="max-w-[1440px] mx-auto px-6 sm:px-10 pt-12 pb-8 text-center space-y-3 border-b border-white/10">
         <div className="font-serif text-5xl sm:text-6xl font-bold tracking-tighter text-white select-none inline-block">
@@ -21,17 +21,7 @@ export default function Footer() {
           FaisalTown Group continues to lead the way in redefining real estate development in Pakistan.
         </p>
 
-        {/* RDA Approved & GT Road Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white text-xs font-semibold">
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
-            CDA & RDA Approved NOC
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white text-xs font-semibold">
-            <MapPin className="w-4 h-4 text-rose-300" />
-            Main N-5 GT Road, Taxila Bypass
-          </span>
-        </div>
+
       </div>
 
       {/* Main 3-Column Footer Grid */}
@@ -44,7 +34,7 @@ export default function Footer() {
           </h4>
 
           <div className="space-y-3.5 text-xs text-white/90 font-sans leading-relaxed">
-            
+
             {/* Phone Numbers */}
             <div className="flex items-start gap-3">
               <Phone className="w-4 h-4 text-white shrink-0 mt-0.5" />
@@ -64,11 +54,6 @@ export default function Footer() {
             <div className="flex items-start gap-3 pt-1">
               <Mail className="w-4 h-4 text-white shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p>
-                  <a href="mailto:Info@faisaltowngroup.com" className="hover:underline text-white font-medium">
-                    Info@faisaltowngroup.com
-                  </a>
-                </p>
                 <p>
                   <a href="mailto:info@faisalhillsislamabadfh.com" className="hover:underline text-white/80 font-medium">
                     info@faisalhillsislamabadfh.com

@@ -18,6 +18,19 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
+  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+
+  React.useEffect(() => {
+    // Preload optimized high-res WebP map in background
+    const img = new Image();
+    img.src = '/images/faisal-hills-master-plan-map-opt.webp';
+    img.onload = () => {
+      setImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
+      setIsHighResLoaded(true);
+    };
+  }, []);
+
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.8, 12.0));
   const handleZoomOut = () => {
     setZoomLevel((prev) => {
@@ -49,6 +62,10 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
   const handleMouseUp = () => setIsDragging(false);
 
   const handleWheel = (e: React.WheelEvent) => {
+    // Don't intercept normal page scroll when map is at 100% zoom unless Ctrl key is pressed or already zoomed in
+    if (zoomLevel === 1 && !e.ctrlKey) {
+      return;
+    }
     e.preventDefault();
     if (e.deltaY < 0) {
       setZoomLevel((prev) => Math.min(prev + 0.6, 12.0));
@@ -87,7 +104,7 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
             </span>
             <span className="hidden lg:inline-flex items-center gap-1.5 text-[11px] text-slate-400 font-medium bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
               <Move className="w-3.5 h-3.5 text-amber-400" />
-              Drag or scroll wheel to pan up to 1200%
+              Drag or hold Ctrl + scroll to zoom up to 1200%
             </span>
           </div>
 
@@ -165,9 +182,11 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
             }}
           >
             <img
-              src="/images/faisal-hills-master-plan-map.jpg"
+              src={imageSrc}
               alt="Faisal Hills High Resolution Master Plan Blueprint Map"
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl pointer-events-none select-none"
+              className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl pointer-events-none select-none transition-opacity duration-500 ${
+                isHighResLoaded ? 'opacity-100' : 'opacity-90 blur-[0.5px]'
+              }`}
               onContextMenu={(e) => e.preventDefault()}
               onDragStart={(e) => e.preventDefault()}
             />

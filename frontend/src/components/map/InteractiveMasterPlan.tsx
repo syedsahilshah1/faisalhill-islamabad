@@ -158,7 +158,19 @@ export default function InteractiveMasterPlan({
 
   const handleMouseUp = () => setIsDragging(false);
 
+  const [mapImageSrc, setMapImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
+
+  React.useEffect(() => {
+    const img = new Image();
+    img.src = '/images/faisal-hills-master-plan-map-opt.webp';
+    img.onload = () => setMapImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
+  }, []);
+
   const handleWheel = (e: React.WheelEvent) => {
+    // Don't intercept normal page scroll when map is at 100% zoom unless Ctrl key is pressed or already zoomed in
+    if (zoomLevel === 1 && !e.ctrlKey) {
+      return;
+    }
     e.preventDefault();
     if (e.deltaY < 0) {
       setZoomLevel((prev) => Math.min(prev + 0.6, 12.0));
@@ -321,7 +333,7 @@ export default function InteractiveMasterPlan({
           >
             {/* High-Res Master Plan Map Image (No Browser PDF Toolbar, Right-Click Disabled) */}
             <img
-              src="/images/faisal-hills-master-plan-map.jpg"
+              src={mapImageSrc}
               alt="Faisal Hills Master Plan Map"
               className="absolute inset-0 w-full h-full object-contain rounded-xl border-0 select-none pointer-events-auto"
               onContextMenu={(e) => e.preventDefault()}

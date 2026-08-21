@@ -15,7 +15,7 @@ export default function ScrollReveal({
   className = '',
   delay = 0,
   direction = 'up',
-  duration = 700
+  duration = 600
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -33,15 +33,14 @@ export default function ScrollReveal({
           if (ref.current) observer.unobserve(ref.current);
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
     );
 
     if (ref.current) {
       observer.observe(ref.current);
     }
 
-    // Safety fallback timer so elements are never permanently hidden if IO doesn't fire
-    const fallbackTimer = setTimeout(() => setIsVisible(true), 3500);
+    const fallbackTimer = setTimeout(() => setIsVisible(true), 2500);
 
     return () => {
       clearTimeout(fallbackTimer);
@@ -52,16 +51,16 @@ export default function ScrollReveal({
   const getHiddenClasses = () => {
     switch (direction) {
       case 'right':
-        return 'opacity-0 translate-x-12 sm:translate-x-20';
+        return 'opacity-0 translate-x-8 sm:translate-x-12';
       case 'left':
-        return 'opacity-0 -translate-x-12 sm:-translate-x-20';
+        return 'opacity-0 -translate-x-8 sm:-translate-x-12';
       case 'pop':
-        return 'opacity-0 scale-90 translate-y-6';
+        return 'opacity-0 scale-95 translate-y-4';
       case 'down':
-        return 'opacity-0 -translate-y-10';
+        return 'opacity-0 -translate-y-8';
       case 'up':
       default:
-        return 'opacity-0 translate-y-12';
+        return 'opacity-0 translate-y-8';
     }
   };
 
@@ -81,7 +80,7 @@ export default function ScrollReveal({
         transitionDelay: `${delay}ms`,
         transitionDuration: `${duration}ms`
       }}
-      className={`transition-all ease-out transform ${
+      className={`transition-[transform,opacity] ease-out transform transform-gpu will-change-[transform,opacity] ${
         isVisible ? getVisibleClasses() : getHiddenClasses()
       } ${className}`}
     >
