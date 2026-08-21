@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { blocksData, plotInventoryData, PlotItem } from '@/data/faisalHillsData';
 import LeadModal from '../ui/LeadModal';
+import MapDownloadModal from '../ui/MapDownloadModal';
 
 interface InteractiveMasterPlanProps {
   initialBlockSlug?: string;
@@ -108,6 +109,11 @@ export default function InteractiveMasterPlan({
   const [activePlot, setActivePlot] = useState<PlotItem | null>(plotInventoryData[0] || null);
   const [activeHotspot, setActiveHotspot] = useState<CommercialHotspot | null>(commercialHotspots[0]);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   // Filter plots based on block filter and plot search query
   const filteredPlots = useMemo(() => {
@@ -125,9 +131,45 @@ export default function InteractiveMasterPlan({
     });
   }, [selectedBlockFilter]);
 
-  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.25, 2.0));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.25, 0.8));
-  const handleResetZoom = () => setZoomLevel(1);
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.8, 12.0));
+  const handleZoomOut = () => setZoomLevel(prev => {
+    const next = Math.max(prev - 0.8, 1.0);
+    if (next === 1.0) setPan({ x: 0, y: 0 });
+    return next;
+  });
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomLevel <= 1) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || zoomLevel <= 1) return;
+    setPan({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    });
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      setZoomLevel((prev) => Math.min(prev + 0.6, 12.0));
+    } else {
+      setZoomLevel((prev) => {
+        const next = Math.max(prev - 0.6, 1.0);
+        if (next === 1.0) setPan({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  };
 
   return (
     <div className={`w-full bg-slate-950 rounded-3xl overflow-hidden border border-[#7b002c]/40 shadow-2xl flex flex-col ${isFullscreen ? 'min-h-[85vh]' : 'min-h-[600px]'}`}>
@@ -241,18 +283,15 @@ export default function InteractiveMasterPlan({
             </button>
           </div>
 
-          {/* PDF Download Button */}
-          <a
-            href="/FAISAL HILLS MASTER PLAN.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            download
+          {/* PDF Download Button (Gated via Lead Modal) */}
+          <button
+            onClick={() => setIsDownloadModalOpen(true)}
             className="flex items-center gap-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold px-3 py-2 rounded-xl border border-white/30 transition-all shadow cursor-pointer"
             title="Download Full Resolution PDF Master Plan"
           >
             <FileText className="w-3.5 h-3.5 text-white" />
             <span className="hidden sm:inline">PDF Map</span>
-          </a>
+          </button>
         </div>
 
       </div>
@@ -261,17 +300,32 @@ export default function InteractiveMasterPlan({
       <div className="flex-grow flex flex-col lg:flex-row h-full">
         
         {/* Left/Main Canvas Area */}
-        <div className="flex-grow relative bg-slate-950 overflow-hidden flex items-center justify-center p-6 min-h-[420px] lg:w-2/3 border-b lg:border-b-0 lg:border-r border-slate-800">
+        <div 
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          className={`flex-grow relative bg-slate-950 overflow-hidden flex items-center justify-center p-6 min-h-[420px] lg:w-2/3 border-b lg:border-b-0 lg:border-r border-slate-800 select-none ${
+            isDragging ? 'cursor-grabbing' : zoomLevel > 1 ? 'cursor-grab' : 'cursor-default'
+          }`}
+        >
           
           <div
-            className="relative w-full max-w-[1100px] aspect-[16/9] transition-transform duration-300 ease-out border border-[#7b002c]/30 rounded-2xl bg-gradient-to-br from-slate-950 via-[#180309] to-slate-950 shadow-2xl overflow-hidden"
-            style={{ transform: `scale(${zoomLevel})` }}
+            className="relative w-full max-w-[1100px] aspect-[16/9] transition-transform duration-150 ease-out border border-[#7b002c]/30 rounded-2xl bg-gradient-to-br from-slate-950 via-[#180309] to-slate-950 shadow-2xl overflow-hidden select-none"
+            style={{ 
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`,
+              transformOrigin: 'center center'
+            }}
+            onContextMenu={(e) => e.preventDefault()}
           >
-            {/* High-Res Interactive PDF Master Plan Map */}
-            <iframe
-              src="/FAISAL HILLS MASTER PLAN.pdf#toolbar=0&navpanes=0&view=Fit"
-              className="absolute inset-0 w-full h-full opacity-100 rounded-xl border-0"
-              title="Faisal Hills PDF Master Plan"
+            {/* High-Res Master Plan Map Image (No Browser PDF Toolbar, Right-Click Disabled) */}
+            <img
+              src="/images/faisal-hills-master-plan-map.jpg"
+              alt="Faisal Hills Master Plan Map"
+              className="absolute inset-0 w-full h-full object-contain rounded-xl border-0 select-none pointer-events-auto"
+              onContextMenu={(e) => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
             />
 
             {/* View Mode 1: Plot Markers Overlay */}
@@ -443,6 +497,12 @@ export default function InteractiveMasterPlan({
             ? activeHotspot.name
             : ''
         }
+      />
+
+      {/* Map Download Lead Modal */}
+      <MapDownloadModal
+        isOpen={isDownloadModalOpen}
+        onClose={() => setIsDownloadModalOpen(false)}
       />
 
     </div>

@@ -1,13 +1,13 @@
-import React from 'react';
-import { Metadata } from 'next';
-import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Interactive Master Plan Map | Faisal Hills Real Estate',
-  description: 'Explore full society master plan vector map for Faisal Hills Rawalpindi. Select blocks, zoom into plots, filter by plot numbers, and view live plot prices.',
-};
+import React, { useState } from 'react';
+import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+import MapDownloadModal from '@/components/ui/MapDownloadModal';
+import { Download } from 'lucide-react';
 
 export default function MasterPlanPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-10 space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -21,22 +21,23 @@ export default function MasterPlanPage() {
           </p>
         </div>
 
-        <a
-          href="/FAISAL HILLS MASTER PLAN.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          download
-          className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 shrink-0"
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer"
         >
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+          <Download className="w-4 h-4 text-white" />
           <span>Download High-Res PDF Map</span>
-        </a>
+        </button>
       </div>
 
       {/* Fullscreen Master Plan Viewer */}
       <InteractiveMasterPlan isFullscreen={true} />
+
+      {/* Lead Gated Map Download Modal */}
+      <MapDownloadModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
