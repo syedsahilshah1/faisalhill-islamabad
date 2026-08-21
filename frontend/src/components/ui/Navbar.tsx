@@ -88,7 +88,7 @@ export default function Navbar() {
         >
 
           {/* LEFT SIDE: First 3 Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 shrink-0 whitespace-nowrap">
+          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 shrink-0 whitespace-nowrap pl-4 xl:pl-6">
 
             {/* About Us */}
             <Link
@@ -272,7 +272,7 @@ export default function Navbar() {
           </Link>
 
           {/* RIGHT SIDE: Remaining Navigation Links & Hotline Pill */}
-          <div className="hidden xl:flex items-center gap-6 2xl:gap-8 shrink-0 whitespace-nowrap">
+          <div className="hidden xl:flex items-center gap-6 2xl:gap-8 shrink-0 whitespace-nowrap pr-4 xl:pr-6">
 
             {/* Highrise Dropdown */}
             <div className="relative group py-6">

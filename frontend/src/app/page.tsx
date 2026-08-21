@@ -133,21 +133,7 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, [heroTitles]);
 
-  // Dynamic HD Background Image Slider for Hero & Sections (Changes every 3.5 seconds with smooth crossfade)
-  const heroBgImages = useMemo(() => [
-    '/faisal-jewel.jpg',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1440&q=70',
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1440&q=70',
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1440&q=70',
-  ], []);
-  const [bgImageIndex, setBgImageIndex] = useState(0);
 
-  React.useEffect(() => {
-    const bgTimer = setInterval(() => {
-      setBgImageIndex((prevIndex) => (prevIndex + 1) % heroBgImages.length);
-    }, 3500);
-    return () => clearInterval(bgTimer);
-  }, [heroBgImages]);
 
   const seoFaqs = [
     {
@@ -190,18 +176,15 @@ export default function HomePage() {
       {/* 1. HERO SECTION - Ultra-Luxury Glassmorphism & HD Image Slider */}
       <section className="relative bg-[#091522] text-white overflow-hidden pt-24 sm:pt-28 lg:pt-32 pb-0">
 
-        {/* Dynamic HD Background Image Slider with Smooth Crossfade */}
-        {heroBgImages.map((imgUrl, idx) => (
-          <div
-            key={imgUrl}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${idx === bgImageIndex ? 'opacity-100 scale-105 transition-transform duration-[4000ms]' : 'opacity-0 scale-100'
-              }`}
-            style={{ backgroundImage: `url('${imgUrl}')` }}
-          />
-        ))}
+        {/* Single HD Background Image for Hero */}
+        <div
+          className="absolute inset-0 bg-cover bg-[center_35%] lg:bg-[center_38%] bg-no-repeat opacity-100 transform transition-all duration-700"
+          style={{ backgroundImage: "url('/images/faisalhillarc.jpg')" }}
+        />
 
-        {/* Subtle Transparent Tint for Readable Text & Crystal Clear HD Background Image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/45 via-slate-950/25 to-slate-950/35" />
+        {/* Subtle Gradient Overlays for Maximum Legibility & Sunset Gold Visual Elegance */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/65 via-slate-950/35 to-slate-950/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#091522]/90 via-transparent to-[#091522]/40" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
@@ -272,7 +255,6 @@ export default function HomePage() {
           {/* Hero Right Side: Embedded Booking Form with Luxury White Glassmorphism */}
           <div className="lg:col-span-4 relative">
             <div className="bg-white/95 backdrop-blur-2xl text-slate-900 rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/80 space-y-4 relative overflow-hidden group ring-1 ring-black/5">
-              <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#7b002c]/10 rounded-full blur-2xl pointer-events-none" />
 
               <div className="border-b border-slate-200/80 pb-4">
                 <h3 className="font-serif font-bold text-2xl text-slate-900 flex items-center gap-2">
@@ -604,9 +586,8 @@ export default function HomePage() {
                     key={imgSrc}
                     src={imgSrc}
                     alt="Faisal Jewel 27-Story Five-Star Hotel"
-                    className={`w-full h-full object-cover transition-opacity duration-1000 ${
-                      idx === activeJewelImageIndex ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
-                    }`}
+                    className={`w-full h-full object-cover transition-opacity duration-1000 ${idx === activeJewelImageIndex ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
+                      }`}
                   />
                 ))}
               </div>
@@ -1496,13 +1477,13 @@ export default function HomePage() {
 
       {/* 9.5 OUR RECENT BLOG POST SECTION */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 space-y-10 border-t border-slate-100">
-        
+
         {/* Top Header Row */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider border-b-2 border-[#7b002c] pb-1">
-              <BookOpen className="w-4 h-4 text-[#7b002c]" />
-              <span>OUR RECENT BLOG POST</span>
+              <ArrowRight className="w-6 h-6 text-[#7b002c]" />
+              <span className='font-bold text-xl'>OUR RECENT BLOG POST</span>
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
               Our Latest <span className="text-[#7b002c]">Article</span> And <span className="text-[#7b002c]">News</span> For You
@@ -1513,6 +1494,7 @@ export default function HomePage() {
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md">
               Stay updated with our latest articles and news covering insights, updates, and developments related to Faisal Hills.
             </p>
+
             <Link
               href="/blogs"
               className="inline-flex items-center gap-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-105 shrink-0 w-fit"

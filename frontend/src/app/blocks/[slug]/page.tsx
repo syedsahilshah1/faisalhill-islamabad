@@ -206,8 +206,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           <div className="lg:col-span-5 flex items-center justify-center">
             <div className="relative w-full max-w-md bg-white p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden group">
               <img
-                src="/images/faisal-jewel-sketch.jpg"
-                alt="Faisal Jewel Sketch"
+                src="/images/faisal-jewel.jpg"
+                alt="Faisal Jewel Skyscraper Tower"
                 className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent pointer-events-none" />
