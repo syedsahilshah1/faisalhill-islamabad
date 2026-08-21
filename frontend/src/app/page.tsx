@@ -4,7 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
-  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon
+  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
+  Trophy, GraduationCap, ShoppingBag, ArrowUpRight
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
@@ -581,6 +582,131 @@ export default function HomePage() {
             </div>
 
           </div>
+        </div>
+      </section>
+
+
+      {/* 3.5 KEY SOCIETY LANDMARKS & INFRASTRUCTURE */}
+      <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+
+          {/* Section Header (Inspired by 2nd Image Layout) */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider">
+                <Building2 className="w-4 h-4 text-[#7b002c]" />
+                <span className="border-b-2 border-[#7b002c] pb-0.5">Modern Infrastructure</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+                Infrastructure Of Faisal Hills
+              </h2>
+            </div>
+
+            <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-start lg:items-end gap-4 max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xl">
+                Faisal Hills features wide streets and boulevards ranging from 40 to 225 feet, ensuring a spacious, organized, and aesthetically planned layout that meets the highest standards of urban design.
+              </p>
+              <button
+                onClick={() => setIsLeadModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-6 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer group"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>Inquire About Society Amenities</span>
+                <ArrowUpRight className="w-4 h-4 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+            </div>
+          </div>
+
+          {/* 8 Portrait Cards Grid matching 2nd Image UI Concept */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+            {[
+              {
+                title: 'Hill Walk',
+                subtitle: 'Vibrant Boulevard Inspired By Istiklal Street,',
+                image: '/images/faisal-hills-aerial.jpg',
+                icon: Compass,
+              },
+              {
+                title: 'Faisal Hills Arc',
+                subtitle: 'Architectural Landmark',
+                image: '/images/faisal-arch.jpg',
+                icon: Landmark,
+              },
+              {
+                title: 'Faisal Jewel',
+                subtitle: '27–Story Five–Star Hotel',
+                image: '/images/faisal-jewel.jpg',
+                icon: Building2,
+              },
+              {
+                title: 'Sports Arena',
+                subtitle: 'Executive Block',
+                image: '/images/faisal-park.jpg',
+                icon: Trophy,
+              },
+              {
+                title: 'Roots International Schools & Colleges Faisal Hills Campus',
+                subtitle: 'Executive Block',
+                image: '/images/faisal-roots-school.jpg',
+                icon: GraduationCap,
+              },
+              {
+                title: 'Miyawaki Forest',
+                subtitle: 'Block C',
+                image: '/images/faisal-forest.jpg',
+                icon: Trees,
+              },
+              {
+                title: 'Faisal Hills Downtown',
+                subtitle: 'Civic Center',
+                image: '/images/faisal-jewel-sketch.jpg',
+                icon: ShoppingBag,
+              },
+              {
+                title: 'Glow Park',
+                subtitle: 'Block A',
+                image: '/images/faisal-park.jpg',
+                icon: Sparkles,
+              },
+            ].map((item, idx) => {
+              const IconComp = item.icon;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4] flex flex-col justify-end p-3.5 sm:p-4 border border-slate-200/80 cursor-pointer bg-slate-900"
+                >
+                  {/* Full Background Image */}
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                  />
+
+                  {/* Dark Contrast Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/5 group-hover:from-black/70 transition-colors duration-500" />
+
+                  {/* Top Right Floating Circle Icon (Website Burgundy Brand Color #7b002c) */}
+                  <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#7b002c] text-white flex items-center justify-center shadow-lg border border-white/20 group-hover:bg-[#9e1245] group-hover:scale-110 transition-all duration-300">
+                      <IconComp className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Bottom White Overlay Card Pill */}
+                  <div className="relative z-10 w-full bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-center shadow-xl border border-white/80 group-hover:bg-white transition-all duration-300 transform group-hover:-translate-y-1">
+                    <h3 className="font-serif font-bold text-[#7b002c] text-sm sm:text-base leading-snug group-hover:text-[#9e1245] transition-colors line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-600 text-[11px] sm:text-xs font-semibold mt-0.5 tracking-tight line-clamp-1">
+                      {item.subtitle}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       </section>
 
