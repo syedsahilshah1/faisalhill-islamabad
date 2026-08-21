@@ -151,24 +151,36 @@ export default function HomePage() {
 
   const seoFaqs = [
     {
-      q: "Is Faisal Hills an RDA Approved Housing Society?",
-      a: "Yes, Faisal Hills Taxila is 100% approved by the Rawalpindi Development Authority (RDA). It possesses clear land titles, verified layout maps, and official NOC clearance for both residential sectors and commercial high-rise projects."
+      q: "1. Is Faisal Hills Islamabad a CDA & RDA approved housing society?",
+      a: "Yes. Faisal Hills Islamabad holds official Capital Development Authority (CDA) approval and Rawalpindi Development Authority (RDA) NOC clearance. It possesses clear land titles, verified layout maps, and official NOC documentation required to legally sell residential and commercial plots. Buyers should always request and verify official NOC documentation before booking — our team provides this proactively to every prospective buyer."
     },
     {
-      q: "What is Faisal Jewels and where is it located?",
-      a: "Faisal Jewels is the flagship 26-story ultra-luxury skyscraper located at the main monument roundabout of Faisal Hills on GT Road Taxila. It features 5-star hotel serviced apartments, luxury retail shopping mall, 22nd-floor infinity pool, and a 360-degree revolving glass sky restaurant."
+      q: "2. Who is the developer of Faisal Hills Islamabad?",
+      a: "Faisal Hills Islamabad is developed by Zedem International under the visionary leadership of Chaudhry Abdul Majeed. Zedem International is one of Pakistan's most respected real estate developers with an outstanding track record including Faisal Town Phase 1, Faisal Town Phase 2, Faisal Residencia, Faisal Heights, and the 27-story Faisal Jewels skyscraper."
     },
     {
-      q: "What plot sizes are available for sale in Faisal Hills?",
-      a: "Faisal Hills offers 5 Marla (25x50), 8 Marla (30x60), 10 Marla (35x70), 14 Marla (40x80), 1 Kanal (50x90), and 2 Kanal luxury villa plots across Executive Block, Block A, B, C, D, B1 Extension, and Prime Block."
+      q: "3. What is the current Faisal Hills Islamabad payment plan for 2026?",
+      a: "Plots in Faisal Hills are available on convenient 3-Year (36-Month) easy installment plans with a 20% to 25% initial booking down payment. Remaining amounts are payable in easy quarterly or monthly installments."
     },
     {
-      q: "What is the payment plan schedule for plots and Faisal Jewels apartments?",
-      a: "Investments in Faisal Hills plots and Faisal Jewels commercial/apartment units are available on flexible 3-Year (36-Month) installment plans with a 20% to 25% booking down payment."
+      q: "4. What plot sizes are available in Faisal Hills Islamabad?",
+      a: "Faisal Hills offers 5 Marla (25x50), 8 Marla (30x60), 10 Marla (35x70), 14 Marla (40x80), 1 Kanal (50x90), and 2 Kanal luxury residential plots, alongside 2 Marla, 4 Marla, and 8 Marla commercial plots across Executive Block, Block A, B, C, D, and Prime Block."
     },
     {
-      q: "How far is Faisal Hills from Islamabad and New Islamabad Airport?",
-      a: "Faisal Hills is situated right on N-5 GT Road, Taxila. It is 5 minutes from Taxila Bypass, 10 minutes from CPEC M-1 Motorway Interchange, 15 minutes from New Islamabad International Airport, and 20 minutes from Islamabad Zero Point."
+      q: "5. Where exactly is Faisal Hills Islamabad located?",
+      a: "The Faisal Hills location is directly on Grand Trunk Road (GT Road, N-5) near Taxila Bypass, nestled against the scenic Margalla Hills. It is approximately 5 minutes from Taxila Bypass, 10 minutes from CPEC M-1 Motorway Interchange, 15 minutes from New Islamabad International Airport, and 25 minutes from Rawalpindi Saddar & Zero Point Islamabad."
+    },
+    {
+      q: "6. How is Faisal Hills different from other Taxila housing societies?",
+      a: "Unlike paper societies, Faisal Hills is an on-ground delivered project. Executive Block, Block A, B, C, and D feature paved 40ft to 225ft boulevards, operational Echo petrol stations, functional Roots Millennium School campus, Grand Jamia Mosque, Miyawaki Forest, and 27-story Faisal Jewels skyscraper."
+    },
+    {
+      q: "7. Can overseas Pakistanis invest in Faisal Hills?",
+      a: "Yes! Overseas Pakistanis (especially in Saudi Arabia - Riyadh, Jeddah, Dammam, UAE, UK, and North America) can easily invest via direct bank transfer to Zedem International. All documentation, allotment letters, and site progress updates can be processed remotely or via authorized representatives."
+    },
+    {
+      q: "8. What is the investment potential of Faisal Hills Islamabad?",
+      a: "Real estate in Pakistan has produced countless success stories, and Faisal Hills is writing some of the most compelling chapters. With GT Road main entry, RDA/CDA NOC clearance, rapid population influx, and upcoming commercial hubs like Faisal Jewels and Hill Walk, Faisal Hills offers 25%+ annual capital growth and high rental yields."
     }
   ];
 
@@ -502,8 +514,27 @@ export default function HomePage() {
             </h2>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
-              FaisalTown Group's journey reflects vision, trust, and a dedication to excellence. Under Chaudhry Abdul Majeed's leadership, it grew by delivering modern, affordable communities with transparency and timely development, continually enriching lives and shaping Pakistan's future through purposeful, people-focused progress.
+              Faisal Hills Islamabad, developed by Zedem International under Chaudhry Abdul Majeed's leadership, is a thoughtfully planned gated community in Taxila along GT Road with Margalla Hills as its backdrop. Combining modern living, strong connectivity, legal RDA/CDA NOC status, and high investment yields, it is built for Pakistan's future.
             </p>
+
+            {/* Developer's Portfolio Badges matching Reference Content */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {[
+                'Faisal Town Phase 1',
+                'Faisal Town Phase 2',
+                'Faisal Hills',
+                'Faisal Residencia',
+                'Faisal Heights',
+                'Faisal Jewels',
+              ].map((projName) => (
+                <span
+                  key={projName}
+                  className="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:border-[#7b002c] hover:text-[#7b002c] transition-colors"
+                >
+                  {projName}
+                </span>
+              ))}
+            </div>
 
             <div className="pt-2">
               <Link
@@ -1271,6 +1302,137 @@ export default function HomePage() {
           </div>
         </div>
 
+      </section>
+
+
+      {/* 8.5 HOW TO BOOK - A SIMPLE 5 STEPS PROCESS */}
+      <section className="bg-slate-50 py-16 lg:py-24 border-y border-slate-200/80 relative overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-12 relative z-10">
+
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-widest bg-[#7b002c]/5 px-3.5 py-1.5 rounded-full border border-[#7b002c]/15">
+              <CheckCircle2 className="w-4 h-4 text-[#7b002c]" />
+              <span>Hassle-Free Allotment</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+              HOW TO BOOK: A Simple 5-Step Process
+            </h2>
+            <p className="text-slate-600 text-sm leading-relaxed max-w-2xl mx-auto">
+              We have designed the Faisal Hills booking process to be straightforward and stress-free. Here is exactly what happens from your first inquiry to holding your allotment letter:
+            </p>
+          </div>
+
+          {/* 5 Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+
+            {/* Step 1 */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">01</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                    <Search className="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                  Enquire & Choose Plot
+                </h3>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Contact our sales team via phone, WhatsApp, or form. Select your preferred plot size, block sector, and budget.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                Step 1: Selection
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">02</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                  Reserve & Submit Docs
+                </h3>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Fill out the booking form and submit 20% down payment (pay order to Zedem International) along with CNIC copy & 2 photos.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                Step 2: Documentation
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">03</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                    <Award className="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                  Receive Allotment Letter
+                </h3>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Within 2–4 weeks, your official allotment letter is issued by Zedem International confirming plot #, block, and value.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                Step 3: Allotment
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">04</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                    <Calculator className="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                  Pay Instalments & Track
+                </h3>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Pay quarterly instalments over 3 years. Receive regular site construction updates and schedule site visits anytime.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                Step 4: Installments
+              </div>
+            </div>
+
+            {/* Step 5 */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">05</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                  Take Possession
+                </h3>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Once development milestones are met, take possession of your plot with all legal paperwork ready for construction!
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                Step 5: Handover
+              </div>
+            </div>
+
+          </div>
+
+        </div>
       </section>
 
 
