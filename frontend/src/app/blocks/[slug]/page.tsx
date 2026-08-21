@@ -116,7 +116,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     <div className="space-y-16 pb-20">
 
       {/* Block Hero Banner */}
-      <section className="relative bg-[#090d16] text-white py-20 px-6 lg:px-12 border-b border-slate-800 overflow-hidden">
+      <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-20 px-6 lg:px-12 border-b border-slate-800 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-100"
           style={{ backgroundImage: `url('${block.heroImage}')` }}
@@ -130,18 +130,20 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             <span>Back to All Blocks</span>
           </Link>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-              {block.status}
-            </span>
-            <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-white" />
-              {block.nocStatus}
-            </span>
-            <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
-              Verified: {block.verificationDate}
-            </span>
-          </div>
+          {block.id !== 'faisal-jewels' && (
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                {block.status}
+              </span>
+              <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-white" />
+                {block.nocStatus}
+              </span>
+              <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
+                Verified: {block.verificationDate}
+              </span>
+            </div>
+          )}
 
           <div className="max-w-3xl space-y-3">
             <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>

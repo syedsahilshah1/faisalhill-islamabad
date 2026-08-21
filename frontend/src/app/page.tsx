@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
-  Trophy, GraduationCap, ShoppingBag, ArrowUpRight
+  Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
@@ -688,12 +688,6 @@ export default function HomePage() {
                 icon: Trees,
               },
               {
-                title: 'Faisal Hills Downtown',
-                subtitle: 'Civic Center',
-                image: '/images/faisal-jewel-sketch.jpg',
-                icon: ShoppingBag,
-              },
-              {
                 title: 'Glow Park',
                 subtitle: 'Block A',
                 image: '/images/faisal-park.jpg',
@@ -702,38 +696,43 @@ export default function HomePage() {
             ].map((item, idx) => {
               const IconComp = item.icon;
               return (
-                <div
+                <ScrollReveal
                   key={idx}
-                  onClick={() => setIsLeadModalOpen(true)}
-                  className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4] flex flex-col justify-end p-3.5 sm:p-4 border border-slate-200/80 cursor-pointer bg-slate-900"
+                  direction={idx % 2 === 0 ? "right" : "pop"}
+                  delay={(idx % 4) * 100}
                 >
-                  {/* Full Background Image */}
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                  />
+                  <div
+                    onClick={() => setIsLeadModalOpen(true)}
+                    className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4] flex flex-col justify-end p-3.5 sm:p-4 border border-slate-200/80 cursor-pointer bg-slate-900 h-full"
+                  >
+                    {/* Full Background Image */}
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                    />
 
-                  {/* Dark Contrast Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/5 group-hover:from-black/70 transition-colors duration-500" />
+                    {/* Dark Contrast Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/5 group-hover:from-black/70 transition-colors duration-500" />
 
-                  {/* Top Right Floating Circle Icon (Website Burgundy Brand Color #7b002c) */}
-                  <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10">
-                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#7b002c] text-white flex items-center justify-center shadow-lg border border-white/20 group-hover:bg-[#9e1245] group-hover:scale-110 transition-all duration-300">
-                      <IconComp className="w-5 h-5 text-white" />
+                    {/* Top Right Floating Circle Icon */}
+                    <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10">
+                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#7b002c] text-white flex items-center justify-center shadow-lg border border-white/20 group-hover:bg-[#9e1245] group-hover:scale-110 transition-all duration-300">
+                        <IconComp className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+
+                    {/* Bottom White Overlay Card Pill */}
+                    <div className="relative z-10 w-full bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-center shadow-xl border border-white/80 group-hover:bg-white transition-all duration-300 transform group-hover:-translate-y-1">
+                      <h3 className="font-serif font-bold text-[#7b002c] text-sm sm:text-base leading-snug group-hover:text-[#9e1245] transition-colors line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-slate-600 text-[11px] sm:text-xs font-semibold mt-0.5 tracking-tight line-clamp-1">
+                        {item.subtitle}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Bottom White Overlay Card Pill */}
-                  <div className="relative z-10 w-full bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-center shadow-xl border border-white/80 group-hover:bg-white transition-all duration-300 transform group-hover:-translate-y-1">
-                    <h3 className="font-serif font-bold text-[#7b002c] text-sm sm:text-base leading-snug group-hover:text-[#9e1245] transition-colors line-clamp-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-slate-600 text-[11px] sm:text-xs font-semibold mt-0.5 tracking-tight line-clamp-1">
-                      {item.subtitle}
-                    </p>
-                  </div>
-                </div>
+                </ScrollReveal>
               );
             })}
           </div>
@@ -934,108 +933,113 @@ export default function HomePage() {
 
 
       {/* 6. LOCATION ACCESSIBILITY & DISTANCE MATRIX SECTION */}
-      <ScrollReveal className="bg-slate-950 text-white py-16 px-6 lg:px-12 border-y border-[#7b002c]/40 relative overflow-hidden">
-        {/* Luxury Background Glow */}
-        <div className="absolute -top-24 -right-24 w-[450px] h-[450px] bg-[#7b002c]/30 rounded-full blur-[140px] pointer-events-none" />
-
+      <section className="bg-slate-50 text-slate-900 py-16 px-6 lg:px-12 border-y border-slate-200/80 relative overflow-hidden">
         <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
 
-          <div className="lg:col-span-5 space-y-4">
-            <span className="label-caps text-white font-bold block">Prime Connectivity</span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight">
-              Strategic Location on <span className="text-slate-200 italic">N-5 GT Road Taxila</span>.
+          <ScrollReveal direction="right" className="lg:col-span-5 space-y-4">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Prime Connectivity</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+              Strategic Location on <span className="text-[#7b002c] italic">N-5 GT Road Taxila</span>.
             </h2>
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed">
               Faisal Hills enjoys an enviable geographic location directly on N-5 GT Road, placing residents within quick driving distance to key educational, medical, and transport hubs of Rawalpindi and Islamabad.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
 
             {/* Location 1 */}
-            <div className="bg-slate-900/90 backdrop-blur-xl p-5 rounded-2xl border border-white/20 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all duration-300 flex items-center justify-between gap-4 shadow-xl group">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                  <MapPin className="w-5 h-5 text-white" />
+            <ScrollReveal direction="left" delay={0}>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
+                      Taxila Museum Circle
+                    </strong>
+                    <span className="text-slate-500 text-xs block mt-1 font-sans">
+                      Historical & Cultural Center
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <strong className="text-white block font-serif font-bold text-base leading-tight">
-                    Taxila Museum Circle
-                  </strong>
-                  <span className="text-slate-300 text-xs block mt-1 font-sans">
-                    Historical & Cultural Center
-                  </span>
-                </div>
+                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
+                  5 Mins Drive
+                </span>
               </div>
-              <span className="bg-[#7b002c] text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-md border border-white/20 shrink-0 whitespace-nowrap">
-                5 Mins Drive
-              </span>
-            </div>
+            </ScrollReveal>
 
             {/* Location 2 */}
-            <div className="bg-slate-900/90 backdrop-blur-xl p-5 rounded-2xl border border-white/20 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all duration-300 flex items-center justify-between gap-4 shadow-xl group">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                  <Compass className="w-5 h-5 text-white" />
+            <ScrollReveal direction="left" delay={100}>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
+                    <Compass className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
+                      CPEC / M-1 Motorway
+                    </strong>
+                    <span className="text-slate-500 text-xs block mt-1 font-sans">
+                      Direct Highway Access
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <strong className="text-white block font-serif font-bold text-base leading-tight">
-                    CPEC / M-1 Motorway
-                  </strong>
-                  <span className="text-slate-300 text-xs block mt-1 font-sans">
-                    Direct Highway Access
-                  </span>
-                </div>
+                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
+                  10 Mins Drive
+                </span>
               </div>
-              <span className="bg-[#7b002c] text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-md border border-white/20 shrink-0 whitespace-nowrap">
-                10 Mins Drive
-              </span>
-            </div>
+            </ScrollReveal>
 
             {/* Location 3 */}
-            <div className="bg-slate-900/90 backdrop-blur-xl p-5 rounded-2xl border border-white/20 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all duration-300 flex items-center justify-between gap-4 shadow-xl group">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                  <Building2 className="w-5 h-5 text-white" />
+            <ScrollReveal direction="left" delay={200}>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
+                      Islamabad Airport
+                    </strong>
+                    <span className="text-slate-500 text-xs block mt-1 font-sans">
+                      International Terminal
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <strong className="text-white block font-serif font-bold text-base leading-tight">
-                    Islamabad Airport
-                  </strong>
-                  <span className="text-slate-300 text-xs block mt-1 font-sans">
-                    International Terminal
-                  </span>
-                </div>
+                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
+                  15 Mins Drive
+                </span>
               </div>
-              <span className="bg-[#7b002c] text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-md border border-white/20 shrink-0 whitespace-nowrap">
-                15 Mins Drive
-              </span>
-            </div>
+            </ScrollReveal>
 
             {/* Location 4 */}
-            <div className="bg-slate-900/90 backdrop-blur-xl p-5 rounded-2xl border border-white/20 hover:border-[#7b002c] hover:bg-[#7b002c]/20 transition-all duration-300 flex items-center justify-between gap-4 shadow-xl group">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                  <TrendingUp className="w-5 h-5 text-white" />
+            <ScrollReveal direction="left" delay={300}>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
+                      Zero Point & Blue Area
+                    </strong>
+                    <span className="text-slate-500 text-xs block mt-1 font-sans">
+                      Capital Business District
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <strong className="text-white block font-serif font-bold text-base leading-tight">
-                    Zero Point & Blue Area
-                  </strong>
-                  <span className="text-slate-300 text-xs block mt-1 font-sans">
-                    Capital Business District
-                  </span>
-                </div>
+                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
+                  20 Mins Drive
+                </span>
               </div>
-              <span className="bg-[#7b002c] text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-md border border-white/20 shrink-0 whitespace-nowrap">
-                20 Mins Drive
-              </span>
-            </div>
+            </ScrollReveal>
 
           </div>
 
         </div>
-      </ScrollReveal>
+      </section>
 
 
       {/* 7. DIRECT FEATURED PLOT LISTINGS SHOWCASE */}
@@ -1326,109 +1330,119 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
 
             {/* Step 1 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">01</span>
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                    <Search className="w-5 h-5" />
+            <ScrollReveal direction="right" delay={0}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">01</span>
+                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                      <Search className="w-5 h-5" />
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    Enquire & Choose Plot
+                  </h3>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Contact our sales team via phone, WhatsApp, or form. Select your preferred plot size, block sector, and budget.
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Enquire & Choose Plot
-                </h3>
-                <p className="text-slate-600 text-xs leading-relaxed">
-                  Contact our sales team via phone, WhatsApp, or form. Select your preferred plot size, block sector, and budget.
-                </p>
+                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                  Step 1: Selection
+                </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                Step 1: Selection
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Step 2 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">02</span>
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                    <FileText className="w-5 h-5" />
+            <ScrollReveal direction="right" delay={100}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">02</span>
+                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                      <FileText className="w-5 h-5" />
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    Reserve & Submit Docs
+                  </h3>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Fill out the booking form and submit 20% down payment (pay order to Zedem International) along with CNIC copy & 2 photos.
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Reserve & Submit Docs
-                </h3>
-                <p className="text-slate-600 text-xs leading-relaxed">
-                  Fill out the booking form and submit 20% down payment (pay order to Zedem International) along with CNIC copy & 2 photos.
-                </p>
+                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                  Step 2: Documentation
+                </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                Step 2: Documentation
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Step 3 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">03</span>
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                    <Award className="w-5 h-5" />
+            <ScrollReveal direction="right" delay={200}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">03</span>
+                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                      <Award className="w-5 h-5" />
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    Receive Allotment Letter
+                  </h3>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Within 2–4 weeks, your official allotment letter is issued by Zedem International confirming plot #, block, and value.
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Receive Allotment Letter
-                </h3>
-                <p className="text-slate-600 text-xs leading-relaxed">
-                  Within 2–4 weeks, your official allotment letter is issued by Zedem International confirming plot #, block, and value.
-                </p>
+                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                  Step 3: Allotment
+                </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                Step 3: Allotment
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Step 4 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">04</span>
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                    <Calculator className="w-5 h-5" />
+            <ScrollReveal direction="right" delay={300}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">04</span>
+                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                      <Calculator className="w-5 h-5" />
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    Pay Instalments & Track
+                  </h3>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Pay quarterly instalments over 3 years. Receive regular site construction updates and schedule site visits anytime.
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Pay Instalments & Track
-                </h3>
-                <p className="text-slate-600 text-xs leading-relaxed">
-                  Pay quarterly instalments over 3 years. Receive regular site construction updates and schedule site visits anytime.
-                </p>
+                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                  Step 4: Installments
+                </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                Step 4: Installments
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Step 5 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">05</span>
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                    <ShieldCheck className="w-5 h-5" />
+            <ScrollReveal direction="right" delay={400}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">05</span>
+                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
                   </div>
+                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    Take Possession
+                  </h3>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Once development milestones are met, take possession of your plot with all legal paperwork ready for construction!
+                  </p>
                 </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Take Possession
-                </h3>
-                <p className="text-slate-600 text-xs leading-relaxed">
-                  Once development milestones are met, take possession of your plot with all legal paperwork ready for construction!
-                </p>
+                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                  Step 5: Handover
+                </div>
               </div>
-              <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                Step 5: Handover
-              </div>
-            </div>
+            </ScrollReveal>
 
           </div>
 
@@ -1475,6 +1489,124 @@ export default function HomePage() {
               </div>
             );
           })}
+        </div>
+
+      </section>
+
+
+      {/* 9.5 OUR RECENT BLOG POST SECTION */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 space-y-10 border-t border-slate-100">
+        
+        {/* Top Header Row */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider border-b-2 border-[#7b002c] pb-1">
+              <BookOpen className="w-4 h-4 text-[#7b002c]" />
+              <span>OUR RECENT BLOG POST</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+              Our Latest <span className="text-[#7b002c]">Article</span> And <span className="text-[#7b002c]">News</span> For You
+            </h2>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:justify-end">
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md">
+              Stay updated with our latest articles and news covering insights, updates, and developments related to Faisal Hills.
+            </p>
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-105 shrink-0 w-fit"
+            >
+              <span>View Blogs</span>
+              <ArrowUpRight className="w-4 h-4 text-white" />
+            </Link>
+          </div>
+        </div>
+
+        {/* 3 Blog Cards Grid matching Reference Screenshot */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          {/* Card 1 */}
+          <ScrollReveal direction="right" delay={0}>
+            <Link
+              href="/blogs/faisal-hills-plots-installments-bank-transfer-guide-saudi-arabia-pakistan"
+              className="group flex flex-col space-y-4 cursor-pointer h-full"
+            >
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
+                <img
+                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"
+                  alt="Faisal Hills Plots On Installments"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  Saudi Arabia Guide
+                </div>
+              </div>
+              <div className="space-y-2 flex-1 flex flex-col justify-between">
+                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                  Faisal Hills Plots On Installments: Complete Bank Transfer Guide From Saudi Arabia To Pakistan
+                </h3>
+                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
+                  For Thousands Of Overseas Pakistanis Working In The Gulf, Owning Land Back Home Is More Accessible Than Ever With Secure Bank Transfer Options...
+                </p>
+              </div>
+            </Link>
+          </ScrollReveal>
+
+          {/* Card 2 */}
+          <ScrollReveal direction="right" delay={120}>
+            <Link
+              href="/blogs/faisal-hills-residential-commercial-plots-sale-buyer-checklist-riyadh-jeddah-dammam"
+              className="group flex flex-col space-y-4 cursor-pointer h-full"
+            >
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
+                <img
+                  src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80"
+                  alt="Faisal Hills Residential Commercial Plots"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  Buyer Checklist
+                </div>
+              </div>
+              <div className="space-y-2 flex-1 flex flex-col justify-between">
+                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                  Faisal Hills Residential Commercial Plots For Sale Buyer Checklist For Riyadh Jeddah Dammam
+                </h3>
+                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
+                  For Thousands Of Pakistanis Working In Riyadh, Jeddah, And Dammam, Owning A Piece Of Land Requires A Structured Verification Process...
+                </p>
+              </div>
+            </Link>
+          </ScrollReveal>
+
+          {/* Card 3 */}
+          <ScrollReveal direction="right" delay={240}>
+            <Link
+              href="/blogs/faisal-hills-noc-verification-guide-saudi-pakistanis-plot-buying"
+              className="group flex flex-col space-y-4 cursor-pointer h-full"
+            >
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
+                <img
+                  src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+                  alt="Faisal Hills NOC Verification Guide"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  NOC Verification
+                </div>
+              </div>
+              <div className="space-y-2 flex-1 flex flex-col justify-between">
+                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                  Faisal Hills NOC Verification Guide For Saudi Pakistanis Plot Buying
+                </h3>
+                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
+                  Buying Property In Pakistan While Living Thousands Of Miles Away In Riyadh, Jeddah, Or Dammam Demands Verifiable Regulatory Clearances...
+                </p>
+              </div>
+            </Link>
+          </ScrollReveal>
+
         </div>
 
       </section>
