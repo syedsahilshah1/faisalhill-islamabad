@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
-  Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen
+  Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
@@ -15,6 +15,8 @@ import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import LeadModal from '@/components/ui/LeadModal';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import CountUpNumber from '@/components/ui/CountUpNumber';
+import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 
 export default function HomePage() {
   const [selectedBlockFilter, setSelectedBlockFilter] = useState('all');
@@ -29,21 +31,7 @@ export default function HomePage() {
   const [activeGalleryFilter, setActiveGalleryFilter] = useState<'All' | 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('All');
   const [lightboxImage, setLightboxImage] = useState<GalleryItem | null>(null);
 
-  // Faisal Jewels Slideshow state
-  const jewelImages = useMemo(() => [
-    '/faisal-jewel-1.png',
-    '/faisal-jewel-2.png',
-    '/faisal-jewel-3.png',
-    '/faisal-jewel.jpg',
-  ], []);
-  const [activeJewelImageIndex, setActiveJewelImageIndex] = useState(0);
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveJewelImageIndex((prev) => (prev + 1) % jewelImages.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [jewelImages.length]);
 
   const filteredGallery = useMemo(() => {
     if (activeGalleryFilter === 'All') return galleryItems;
@@ -178,19 +166,16 @@ export default function HomePage() {
 
         {/* Single HD Background Image for Hero */}
         <div
-          className="absolute inset-0 bg-cover bg-[center_35%] lg:bg-[center_38%] bg-no-repeat opacity-100 transform transition-all duration-700"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-100"
           style={{ backgroundImage: "url('/images/faisalhillarc.jpg')" }}
         />
 
-        {/* Subtle Gradient Overlays for Maximum Legibility & Sunset Gold Visual Elegance */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/65 via-slate-950/35 to-slate-950/45" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#091522]/90 via-transparent to-[#091522]/40" />
+        {/* Subtle Transparent Tint for Readable Text & Crystal Clear HD Background Image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/45 via-slate-950/25 to-slate-950/35" />
+        <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-        <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-
-          {/* Hero Content Left */}
-          <div className="lg:col-span-8 space-y-6">
-
+          {/* Hero Left Content */}
+          <div className="lg:col-span-7 space-y-6">
 
             {/* Dynamic Converting Title matching User Request - Single Inline Row */}
             <h1 className="font-serif font-bold text-2xl sm:text-4xl lg:text-[38px] xl:text-[46px] leading-tight tracking-tight text-white whitespace-normal sm:whitespace-nowrap drop-shadow-lg">
@@ -203,138 +188,138 @@ export default function HomePage() {
               </span>
             </h1>
 
-            {/* Subtitle matching User Request */}
-            <p className="text-white text-base sm:text-lg font-medium max-w-2xl leading-relaxed drop-shadow-md">
-              A well-planned housing society near Islamabad offering residential and commercial plots, strong location access, modern amenities, and long-term investment potential for families and investors.
+            {/* Subtitle with explicit next line breaks */}
+            <p className="text-white text-base sm:text-lg font-medium max-w-xl leading-relaxed drop-shadow-md">
+              A well-planned housing society near Islamabad <br className="hidden sm:inline" />
+              offering residential & commercial plots, modern amenities, <br className="hidden sm:inline" />
+              and long-term investment potential for families & investors.
             </p>
 
-            {/* Project Filter Pills */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            {/* Project Filter Pills - Compact Size so Arc background is clearly visible */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
               <a
                 href="/faisal-hills-blocks"
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
               >
-                <span> Faisal Hills Taxila</span>
+                <span>Faisal Hills Taxila</span>
               </a>
               <a
                 href="/blocks/faisal-jewel-islamabad"
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
               >
-                <span> Faisal Jewels Tower</span>
+                <span>Faisal Jewels Tower</span>
               </a>
               <a
                 href="/blocks/executive-block"
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
               >
                 <span>Executive & Overseas</span>
               </a>
               <a
                 href="/plots"
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-lg flex items-center gap-2"
+                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
               >
                 <span>Verified Plot Rates</span>
               </a>
             </div>
 
-            {/* Direct Hero WhatsApp Action Button */}
-            <div className="pt-2">
+            {/* Direct Hero WhatsApp Action Button - Compact */}
+            <div className="pt-1">
               <a
                 href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking%20and%20pricing."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-extrabold uppercase tracking-wider rounded-full shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white text-[11px] font-extrabold uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
               >
-                <MessageSquare className="w-4 h-4 text-white" />
-                <span>Instant WhatsApp Inquiry (+92 304 4811 717)</span>
+                <MessageSquare className="w-3.5 h-3.5 text-white" />
+                <span>WhatsApp</span>
               </a>
             </div>
 
-
           </div>
 
-          {/* Hero Right Side: Embedded Booking Form with Luxury White Glassmorphism */}
-          <div className="lg:col-span-4 relative">
-            <div className="bg-white/95 backdrop-blur-2xl text-slate-900 rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/80 space-y-4 relative overflow-hidden group ring-1 ring-black/5">
+          {/* Hero Right Form Details - Seamless over Hero Background Image */}
+          <div className="lg:col-span-5 relative w-full">
+            <div className="space-y-4 text-white">
 
-              <div className="border-b border-slate-200/80 pb-4">
-                <h3 className="font-serif font-bold text-2xl text-slate-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-[#7b002c]" />
+              <div className="border-b border-white/20 pb-3">
+                <h3 className="font-serif font-bold text-2xl text-white flex items-center gap-2 drop-shadow-md">
+                  {/* <Sparkles className="w-5 h-5 text-rose-400" /> */}
                   <span>Book Your Plot / Flat</span>
                 </h3>
-                <p className="text-xs text-slate-500 mt-1">Get official pricing, payment plan & plot selection guide.</p>
+                <p className="text-xs text-slate-200 mt-1 font-medium drop-shadow-sm">Get official pricing, payment plan & plot selection guide.</p>
               </div>
 
               {heroFormSubmitted ? (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-md">
-                  <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
-                  <h4 className="text-base font-serif text-emerald-950">Inquiry Submitted Successfully!</h4>
-                  <p className="font-normal text-emerald-800">Our Faisal Hills sales executive will contact you via WhatsApp / Phone shortly.</p>
+                <div className="bg-black/70 backdrop-blur-md border border-emerald-400/60 text-emerald-100 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-2xl">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                  <h4 className="text-base font-serif text-emerald-200">Inquiry Submitted Successfully!</h4>
+                  <p className="font-normal text-emerald-300">Our Faisal Hills sales executive will contact you via WhatsApp / Phone shortly.</p>
                 </div>
               ) : (
                 <form onSubmit={handleHeroFormSubmit} className="space-y-3.5">
                   <div>
-                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Full Name</label>
+                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Full Name</label>
                     <input
                       type="text"
                       required
                       placeholder="Enter Your Name"
                       value={heroFormName}
                       onChange={(e) => setHeroFormName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all"
+                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all shadow-md"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Phone / WhatsApp</label>
+                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Phone / WhatsApp</label>
                     <input
                       type="tel"
                       required
                       placeholder="Enter WhatsApp / Phone Number"
                       value={heroFormPhone}
                       onChange={(e) => setHeroFormPhone(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all"
+                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all shadow-md"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Select Project</label>
+                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Select Project</label>
                     <div className="relative">
                       <select
                         value={heroFormProject}
                         onChange={(e) => setHeroFormProject(e.target.value)}
-                        className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all cursor-pointer font-medium appearance-none"
+                        className="w-full pl-4 pr-12 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all cursor-pointer font-medium appearance-none shadow-md"
                       >
-                        <option value="Faisal Hills Taxila" className="bg-white text-slate-900">Faisal Hills  (Plots)</option>
-                        <option value="Faisal Jewels Tower" className="bg-white text-slate-900">Faisal Jewels Tower (Luxury Flats)</option>
-                        <option value="Executive Block" className="bg-white text-slate-900">Executive Block</option>
-                        <option value="Prime Block" className="bg-white text-slate-900">Prime Block</option>
-                        <option value="Hills Walk" className="bg-white text-slate-900">Hills Walk Commercial</option>
+                        <option value="Faisal Hills Taxila" className="bg-slate-950 text-white">Faisal Hills  (Plots)</option>
+                        <option value="Faisal Jewels Tower" className="bg-slate-950 text-white">Faisal Jewels Tower (Luxury Flats)</option>
+                        <option value="Executive Block" className="bg-slate-950 text-white">Executive Block</option>
+                        <option value="Prime Block" className="bg-slate-950 text-white">Prime Block</option>
+                        <option value="Hills Walk" className="bg-slate-950 text-white">Hills Walk Commercial</option>
                       </select>
-                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <ChevronDown className="w-4 h-4 text-slate-300 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#7b002c] uppercase tracking-wider mb-1">Requirement Details</label>
+                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Requirement Details</label>
                     <textarea
                       rows={2}
                       placeholder="Describe your property requirement (e.g., plot size, budget, preferences)..."
                       value={heroFormMessage}
                       onChange={(e) => setHeroFormMessage(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:bg-white focus:ring-2 focus:ring-[#7b002c]/10 transition-all resize-none"
+                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all resize-none shadow-md"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-[#7b002c]/20 btn-shimmer"
+                    className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-2xl hover:shadow-rose-900/40 transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-white/30 cursor-pointer"
                   >
                     GET QUOTE
                   </button>
 
-
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 pt-1">
-                    <Lock className="w-3.5 h-3.5 text-[#7b002c]" />
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-200 pt-1 drop-shadow-xs">
+                    <Lock className="w-3.5 h-3.5 text-rose-300" />
                     <span>Your information is 100% confidential & secure</span>
                   </div>
                 </form>
@@ -406,65 +391,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. KEY VALUE PROPOSITION HIGHLIGHTS BAR */}
+      {/* 2. KEY VALUE PROPOSITION HIGHLIGHTS BAR (Matching Reference Image 1) */}
       <ScrollReveal className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 relative z-20">
-        <div className="py-2 sm:py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
 
           {/* Item 1: RDA Approved NOC */}
-          <div className="flex items-start gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-sm group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
+            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
+              <ShieldCheck className="w-6 h-6 stroke-[1.8]" />
             </div>
-            <div>
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] group-hover:text-[#9e1245] transition-colors">
+            <div className="space-y-0.5">
+              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
                 RDA Approved NOC
               </h4>
-              <p className="text-slate-600 text-xs mt-1 leading-relaxed font-sans">
+              <p className="text-slate-500 text-xs leading-relaxed font-sans">
                 100% legal housing project verified by Rawalpindi Development Authority.
               </p>
             </div>
           </div>
 
           {/* Item 2: 3-Year Installments */}
-          <div className="flex items-start gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-sm group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <Calculator className="w-6 h-6" />
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
+            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
+              <Calculator className="w-6 h-6 stroke-[1.8]" />
             </div>
-            <div>
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] group-hover:text-[#9e1245] transition-colors">
+            <div className="space-y-0.5">
+              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
                 3-Year Installments
               </h4>
-              <p className="text-slate-600 text-xs mt-1 leading-relaxed font-sans">
+              <p className="text-slate-500 text-xs leading-relaxed font-sans">
                 Easy quarterly & monthly plans with 20% initial booking down payment.
               </p>
             </div>
           </div>
 
           {/* Item 3: Possession Ready */}
-          <div className="flex items-start gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-sm group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <Building2 className="w-6 h-6" />
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
+            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
+              <Building2 className="w-6 h-6 stroke-[1.8]" />
             </div>
-            <div>
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] group-hover:text-[#9e1245] transition-colors">
+            <div className="space-y-0.5">
+              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
                 Possession Ready
               </h4>
-              <p className="text-slate-600 text-xs mt-1 leading-relaxed font-sans">
+              <p className="text-slate-500 text-xs leading-relaxed font-sans">
                 Executive Block & Block A, B, C are fully developed for instant home construction.
               </p>
             </div>
           </div>
 
           {/* Item 4: High Capital Growth */}
-          <div className="flex items-start gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0 border border-slate-700 shadow-sm group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <TrendingUp className="w-6 h-6" />
+          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
+            <div className="w-13 h-13 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0 border border-slate-800 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] transition-all duration-300">
+              <TrendingUp className="w-6 h-6 stroke-[1.8]" />
             </div>
-            <div>
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] group-hover:text-[#9e1245] transition-colors">
+            <div className="space-y-0.5">
+              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
                 High Capital Growth
               </h4>
-              <p className="text-slate-600 text-xs mt-1 leading-relaxed font-sans">
+              <p className="text-slate-500 text-xs leading-relaxed font-sans">
                 Prime location on GT Road ensures consistent 25%+ annual property value appreciation.
               </p>
             </div>
@@ -541,6 +526,100 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* DISCOVER FAISALTOWN STATS COUNTER SECTION (Matching Reference Image 2) */}
+      <section className="bg-white py-16 border-b border-slate-100">
+        <div className="max-w-[1200px] mx-auto px-6 text-center space-y-12">
+
+          {/* Top Centered Section Label with Underline */}
+          <div>
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 border-b-2 border-slate-900 pb-1.5 inline-block">
+              DISCOVER FAISALTOWN
+            </span>
+          </div>
+
+          {/* Stats Grid matching reference screenshot 2 layout */}
+          <div className="space-y-12">
+
+            {/* Top Row: 3 Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center">
+
+              {/* Stat 1: 60k Total Area */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Maximize2 className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={60} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                  MILLION SQM TOTAL AREA
+                </div>
+              </div>
+
+              {/* Stat 2: 8 Total Projects */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Building2 className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={8} suffix="" duration={1800} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                  TOTAL PROJECTS
+                </div>
+              </div>
+
+              {/* Stat 3: 130k Total Residential Units */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Home className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={130} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                  TOTAL RESIDENTIAL UNITS
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom Row: 2 Centered Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto gap-8 items-center justify-center">
+
+              {/* Stat 4: 60k Commercial Units */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Store className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={60} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                  TOTAL COMMERCIAL UNITS
+                </div>
+              </div>
+
+              {/* Stat 5: 1.5M Total Population Capacity */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Users className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2400} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[180px] leading-tight">
+                  TOTAL POPULATION CAPACITY
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
 
       {/* 3. FLAGSHIP SPECIAL FEATURE: FAISAL JEWEL */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-100 overflow-hidden">
@@ -578,18 +657,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Column: Clean Slideshow Image without container wrapper div or dots */}
+            {/* Right Column: Single High-Quality Static HD Image of Faisal Jewel */}
             <div className="lg:col-span-7">
               <div className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px]">
-                {jewelImages.map((imgSrc, idx) => (
-                  <img
-                    key={imgSrc}
-                    src={imgSrc}
-                    alt="Faisal Jewel 27-Story Five-Star Hotel"
-                    className={`w-full h-full object-cover transition-opacity duration-1000 ${idx === activeJewelImageIndex ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
-                      }`}
-                  />
-                ))}
+                <img
+                  src="/images/imgi_175_faisal-jewel.jpg"
+                  alt="Faisal Jewel 27-Story Five-Star Hotel"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
@@ -633,44 +708,50 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
             {[
               {
-                title: 'Hill Walk',
-                subtitle: 'Vibrant Boulevard Inspired By Istiklal Street,',
-                image: '/images/faisal-hills-aerial.jpg',
+                title: 'Hill Walk Boulevard',
+                subtitle: 'Vibrant Commercial Strip Inspired By Istiklal Street',
+                image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
                 icon: Compass,
               },
               {
                 title: 'Faisal Hills Arc',
-                subtitle: 'Architectural Landmark',
-                image: '/images/faisal-arch.jpg',
+                subtitle: 'Architectural Landmark Entrance Monument',
+                image: '/images/faisalhillarc.jpg',
                 icon: Landmark,
               },
               {
-                title: 'Faisal Jewel',
-                subtitle: '27–Story Five–Star Hotel',
+                title: 'Faisal Hills Aerial View',
+                subtitle: 'Gated Master-Planned Community',
+                image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+                icon: MapPin,
+              },
+              {
+                title: 'Faisal Jewel Skyscraper',
+                subtitle: '27-Story Luxury Hotel & Residences',
                 image: '/images/faisal-jewel.jpg',
                 icon: Building2,
               },
               {
-                title: 'Sports Arena',
-                subtitle: 'Executive Block',
-                image: '/images/faisal-park.jpg',
-                icon: Trophy,
+                title: 'Commercial Boulevard',
+                subtitle: 'Prime Retail Hub in Executive Block',
+                image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png',
+                icon: ShoppingBag,
               },
               {
-                title: 'Roots International Schools & Colleges Faisal Hills Campus',
-                subtitle: 'Executive Block',
+                title: 'Roots International School',
+                subtitle: 'Executive Block Faisal Hills Campus',
                 image: '/images/faisal-roots-school.jpg',
                 icon: GraduationCap,
               },
               {
-                title: 'Miyawaki Forest',
-                subtitle: 'Block C',
+                title: 'Miyawaki Urban Forest',
+                subtitle: 'Block C Green Living Reserve',
                 image: '/images/faisal-forest.jpg',
                 icon: Trees,
               },
               {
-                title: 'Glow Park',
-                subtitle: 'Block A',
+                title: 'Glow Park & Sports Arena',
+                subtitle: 'Block A Family Recreation Park',
                 image: '/images/faisal-park.jpg',
                 icon: Sparkles,
               },
@@ -1290,188 +1371,54 @@ export default function HomePage() {
       </section>
 
 
-      {/* 8.5 HOW TO BOOK - A SIMPLE 5 STEPS PROCESS */}
-      <section className="bg-slate-50 py-16 lg:py-24 border-y border-slate-200/80 relative overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-12 relative z-10">
+      {/* 8.5 HOW TO BOOK - STICKY HORIZONTAL SCROLL-DRIVEN SLIDER (Matching User Request) */}
+      <StickyHorizontalBookingSteps />
 
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-widest bg-[#7b002c]/5 px-3.5 py-1.5 rounded-full border border-[#7b002c]/15">
-              <CheckCircle2 className="w-4 h-4 text-[#7b002c]" />
-              <span>Hassle-Free Allotment</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
-              HOW TO BOOK: A Simple 5-Step Process
+
+      {/* 9. SEO FAQS ACCORDION SECTION (Matching Reference Screenshot Design) */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24 border-t border-slate-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+          
+          {/* Left Column: FAQ'S Label & FREQUENTLY ASKED QUESTIONS Headline */}
+          <div className="lg:col-span-4 space-y-3 sticky top-28">
+            <span className="text-xs font-bold text-slate-400 tracking-[0.25em] uppercase block">
+              FAQ&apos;S
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
+              FREQUENTLY <br />
+              ASKED QUESTIONS
             </h2>
-            <p className="text-slate-600 text-sm leading-relaxed max-w-2xl mx-auto">
-              We have designed the Faisal Hills booking process to be straightforward and stress-free. Here is exactly what happens from your first inquiry to holding your allotment letter:
-            </p>
           </div>
 
-          {/* 5 Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {/* Right Column: Sleek Accordion List with Horizontal Dividers */}
+          <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
+            {seoFaqs.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div key={index} className="border-b border-slate-900/80">
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                    className="w-full py-5 text-left font-serif font-bold text-xs sm:text-sm text-[#7b002c] hover:text-[#9e1245] uppercase tracking-wider flex items-center justify-between gap-4 cursor-pointer transition-colors"
+                  >
+                    <span className="pr-4 leading-snug">{faq.q}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
 
-            {/* Step 1 */}
-            <ScrollReveal direction="right" delay={0}>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">01</span>
-                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                      <Search className="w-5 h-5" />
+                  {isOpen && (
+                    <div className="pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans pr-6 animate-fadeIn">
+                      {faq.a}
                     </div>
-                  </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Enquire & Choose Plot
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">
-                    Contact our sales team via phone, WhatsApp, or form. Select your preferred plot size, block sector, and budget.
-                  </p>
+                  )}
                 </div>
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                  Step 1: Selection
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Step 2 */}
-            <ScrollReveal direction="right" delay={100}>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">02</span>
-                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Reserve & Submit Docs
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">
-                    Fill out the booking form and submit 20% down payment (pay order to Zedem International) along with CNIC copy & 2 photos.
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                  Step 2: Documentation
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Step 3 */}
-            <ScrollReveal direction="right" delay={200}>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">03</span>
-                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                      <Award className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Receive Allotment Letter
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">
-                    Within 2–4 weeks, your official allotment letter is issued by Zedem International confirming plot #, block, and value.
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                  Step 3: Allotment
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Step 4 */}
-            <ScrollReveal direction="right" delay={300}>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">04</span>
-                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                      <Calculator className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Pay Instalments & Track
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">
-                    Pay quarterly instalments over 3 years. Receive regular site construction updates and schedule site visits anytime.
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                  Step 4: Installments
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Step 5 */}
-            <ScrollReveal direction="right" delay={400}>
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 space-y-4 group relative flex flex-col justify-between h-full">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-black text-[#7b002c] group-hover:scale-110 transition-transform">05</span>
-                    <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-colors">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Take Possession
-                  </h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">
-                    Once development milestones are met, take possession of your plot with all legal paperwork ready for construction!
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
-                  Step 5: Handover
-                </div>
-              </div>
-            </ScrollReveal>
-
+              );
+            })}
           </div>
 
         </div>
-      </section>
-
-
-      {/* 9. SEO FAQS ACCORDION SECTION */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 pt-4">
-
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="label-caps text-[#7b002c] font-bold block">Frequently Asked Questions</span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
-            Everything You Need To Know About Faisal Hills
-          </h2>
-          <p className="text-slate-600 text-sm">
-            Official answers regarding NOC legality, plot prices, Faisal Jewels booking, and development timelines.
-          </p>
-        </div>
-
-        <div className="max-w-4xl mx-auto space-y-4">
-          {seoFaqs.map((faq, index) => {
-            const isOpen = openFaqIndex === index;
-            return (
-              <div
-                key={index}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all"
-              >
-                <button
-                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="w-full p-6 text-left font-serif font-bold text-base md:text-lg text-[#7b002c] flex items-center justify-between gap-4 hover:text-[#9e1245] transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  <span className={`w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold shrink-0 transition-transform ${isOpen ? 'rotate-180 bg-slate-200 text-[#7b002c]' : ''}`}>
-                    ↓
-                  </span>
-                </button>
-
-                {isOpen && (
-                  <div className="px-6 pb-6 text-xs md:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
       </section>
 
 

@@ -1251,50 +1251,50 @@ export interface GalleryItem {
 export const initialGalleryData: GalleryItem[] = [
   {
     id: "gal-1",
-    title: "Main Gate Entrance Monument N-5 GT Road",
+    title: "Faisal Hills Arc Monument Entrance",
     category: "Entrance",
-    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    description: "Grand Entrance Portal with biometric 24/7 guarded security checkposts.",
+    imageUrl: "/images/faisalhillarc.jpg",
+    description: "Grand Entrance Arc Portal on GT Road with 24/7 guarded security checkposts.",
     dateAdded: "August 2026"
   },
   {
     id: "gal-2",
-    title: "Faisal Jewels 26-Story Skyscraper Tower",
+    title: "Faisal Jewels 27-Story Skyscraper Tower",
     category: "Towers",
-    imageUrl: "/faisal-jewel.jpg",
-    description: "Rapid structural construction phase of the iconic 26-story high-rise.",
+    imageUrl: "/images/imgi_175_faisal-jewel.jpg",
+    description: "Architectural 27-story five-star luxury hotel & high-rise apartment tower.",
     dateAdded: "August 2026"
   },
   {
     id: "gal-3",
-    title: "Carpeted 225ft Main Commercial Boulevard",
+    title: "225ft Executive Commercial Boulevard",
     category: "Infrastructure",
-    imageUrl: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
-    description: "Wide asphalt carpeted boulevards with underground power grid cables.",
+    imageUrl: "/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png",
+    description: "Wide asphalt carpeted boulevards with underground utilities and commercial plazas.",
     dateAdded: "August 2026"
   },
   {
     id: "gal-4",
-    title: "Grand Jamia Mosque Sector A",
-    category: "Amenities",
-    imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
-    description: "3,000 capacity Islamic architecture landmark with marble courtyards.",
+    title: "Active On-Ground Development Site",
+    category: "Infrastructure",
+    imageUrl: "/images/imgi_160_WhatsApp-Image-2025-01-27-at-15.16.19_de49243e-1.jpg",
+    description: "Heavy machinery active road cutting, sewerage laying and plot leveling.",
     dateAdded: "August 2026"
   },
   {
     id: "gal-5",
-    title: "Block B Central Family Park & Promenade",
-    category: "Amenities",
-    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    description: "12-Kanal lush green park with walking tracks and Margalla backdrop.",
+    title: "Hill Walk Commercial Strip Aerial View",
+    category: "Infrastructure",
+    imageUrl: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg",
+    description: "Aerial view of the pedestrian-friendly commercial boulevard near Margalla Hills.",
     dateAdded: "August 2026"
   },
   {
     id: "gal-6",
-    title: "Hills Walk Open-Air Retail Promenade",
-    category: "Towers",
-    imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-    description: "European style commercial strip featuring cafes, banks and boutiques.",
+    title: "Faisal Hills Master-Planned Community Drone View",
+    category: "Entrance",
+    imageUrl: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+    description: "Panoramic overhead drone view of blocks A, B, C, Executive & Prime Block.",
     dateAdded: "August 2026"
   }
 ];
