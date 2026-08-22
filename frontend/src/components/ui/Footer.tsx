@@ -24,11 +24,11 @@ export default function Footer() {
 
       </div>
 
-      {/* Main 3-Column Footer Grid */}
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 py-12 grid grid-cols-1 md:grid-cols-12 gap-10">
+      {/* Main 4-Column Footer Grid */}
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
 
         {/* Column 1 — CONTACT US */}
-        <div className="md:col-span-5 space-y-4">
+        <div className="lg:col-span-4 space-y-4">
           <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
             CONTACT US
           </h4>
@@ -85,7 +85,7 @@ export default function Footer() {
         </div>
 
         {/* Column 2 — QUICK LINKS & SECTORS */}
-        <div className="md:col-span-3 space-y-4">
+        <div className="lg:col-span-3 space-y-4">
           <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
             QUICK LINKS & SECTORS
           </h4>
@@ -154,8 +154,54 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 3 — SUBSCRIBE TO NEWSLETTER & SOCIALS */}
-        <div className="md:col-span-4 space-y-6">
+        {/* Column 3 — UPCOMING PROJECTS & EXPANSIONS */}
+        <div className="lg:col-span-2 space-y-4">
+          <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+            UPCOMING PROJECTS
+          </h4>
+
+          <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
+            <li>
+              <Link href="/blocks/gandahara-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Gandhara Block</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/wah-project" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Wah Cantt Project</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/block-e" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Block E (Executive)</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/block-f" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Block F (Foothills)</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/golf-view-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Golf View Block</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/faisal-jewels" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Faisal Jewel Tower</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 4 — SUBSCRIBE TO NEWSLETTER & SOCIALS */}
+        <div className="lg:col-span-3 space-y-6">
           <div className="space-y-4">
             <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
               SUBSCRIBE TO NEWSLETTER

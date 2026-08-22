@@ -27,6 +27,7 @@ import {
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
+import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 
 const getAmenityIcon = (iconName: string) => {
   switch (iconName) {
@@ -127,10 +128,10 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const otherBlocks = allBlocks.filter((b) => b.slug !== block.slug);
 
   return (
-    <div className="space-y-16 pb-20">
+    <div className="space-y-8 lg:space-y-10 pb-20">
 
       {/* Block Hero Banner */}
-      <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-20 px-6 lg:px-12 overflow-hidden">
+      <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-0 px-0 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-100"
           style={{ backgroundImage: `url('${block.heroImage}')` }}
@@ -138,80 +139,129 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         {/* Subtle Transparent Overlay for Maximum Image Visibility & Readable Text */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-slate-950/30 to-slate-950/40" />
 
-        <div className="relative z-10 max-w-[1440px] mx-auto space-y-6">
-          {block.slug !== 'executive-block' && (
-            <>
-              <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back to All Blocks</span>
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pb-10 sm:pb-14">
+          
+          {/* Left Column: Title, Details, Quick Price & CTAs */}
+          <div className="lg:col-span-7 space-y-6">
+            {block.slug !== 'executive-block' && (
+              <>
+                <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Back to All Blocks</span>
+                </Link>
+
+                {block.id !== 'faisal-jewels' && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                      {block.status}
+                    </span>
+                    <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-white" />
+                      {block.nocStatus}
+                    </span>
+                    <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
+                      Verified: {block.verificationDate}
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="space-y-3">
+              <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>
+              <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
+                {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
+              </h1>
+              <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+                {block.description}
+              </p>
+            </div>
+
+            {/* Quick Price Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+              <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
+                <span className="text-[10px] text-slate-400 uppercase block font-semibold">Residential Price Range</span>
+                <span className="font-serif font-bold text-2xl text-white">{block.priceRange.residential}</span>
+              </div>
+              <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
+                <span className="text-[10px] text-slate-400 uppercase block font-semibold">Commercial Price Range</span>
+                <span className="font-serif font-bold text-2xl text-white">{block.priceRange.commercial}</span>
+              </div>
+            </div>
+
+            {/* Quick Action CTAs */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <a
+                href="tel:+923313339997"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+              >
+                <PhoneCall className="w-4 h-4 text-white" />
+                <span>Call Sales Desk</span>
+              </a>
+              <a
+                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>Chat on WhatsApp</span>
+              </a>
+              <Link
+                href="/faisal-hills-payment-plan"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full border border-white/20 transition-all hover:scale-105"
+              >
+                <FileText className="w-4 h-4 text-white" />
+                <span>Payment Plan</span>
               </Link>
-
-              {block.id !== 'faisal-jewels' && (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                    {block.status}
-                  </span>
-                  <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-white" />
-                    {block.nocStatus}
-                  </span>
-                  <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
-                    Verified: {block.verificationDate}
-                  </span>
-                </div>
-              )}
-            </>
-          )}
-
-          <div className="max-w-3xl space-y-3">
-            <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>
-            <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
-              {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
-            </h1>
-            <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
-              {block.description}
-            </p>
-          </div>
-
-          {/* Quick Price Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl pt-4">
-            <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
-              <span className="text-[10px] text-slate-400 uppercase block font-semibold">Residential Price Range</span>
-              <span className="font-serif font-bold text-2xl text-white">{block.priceRange.residential}</span>
-            </div>
-            <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
-              <span className="text-[10px] text-slate-400 uppercase block font-semibold">Commercial Price Range</span>
-              <span className="font-serif font-bold text-2xl text-white">{block.priceRange.commercial}</span>
             </div>
           </div>
 
-          {/* Quick Action CTAs */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <a
-              href="tel:+923313339997"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
-            >
-              <PhoneCall className="w-4 h-4 text-white" />
-              <span>Call Sales Desk</span>
-            </a>
-            <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
-            >
-              <MessageSquare className="w-4 h-4 text-white" />
-              <span>Chat on WhatsApp</span>
-            </a>
-            <Link
-              href="/faisal-hills-payment-plan"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full border border-white/20 transition-all hover:scale-105"
-            >
-              <FileText className="w-4 h-4 text-white" />
-              <span>Payment Plan</span>
-            </Link>
+          {/* Right Column: Hero Quick Inquiry Form */}
+          <div className="lg:col-span-5 w-full">
+            <BlockHeroInquiryForm blockName={block.name} blockSlug={block.slug} />
           </div>
 
+        </div>
+
+        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base */}
+        <div className="relative z-10 w-full overflow-hidden py-3.5 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
+          <div className="ticker-track flex items-center gap-8 whitespace-nowrap text-xs sm:text-sm font-bold tracking-wider uppercase">
+            {[1, 2].map((repeat) => (
+              <div key={repeat} className="flex items-center gap-8">
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-300 shrink-0 animate-pulse" />
+                  <span>{block.name} — Civic & Commercial Hub on Main GT Road (N-5)</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+                <span className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <span>100% RDA Approved NOC & Sanctioned Scheme</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+                <span className="flex items-center gap-2">
+                  <Landmark className="w-4 h-4 text-amber-300 shrink-0" />
+                  <span>Home to 27-Storey Faisal Jewel & Roots International School</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+                <span className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-rose-200 shrink-0" />
+                  <span>Ready for Construction with Immediate On-Ground Possession</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+                <span className="flex items-center gap-2">
+                  <Navigation className="w-4 h-4 text-amber-300 shrink-0" />
+                  <span>225ft - 250ft Grand Entrance Main Boulevard</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+                <span className="flex items-center gap-2">
+                  <PhoneCall className="w-4 h-4 text-white shrink-0" />
+                  <span>VIP Official Booking Desk: +92 304 4811 717</span>
+                </span>
+                <span className="text-amber-300 font-extrabold">•</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

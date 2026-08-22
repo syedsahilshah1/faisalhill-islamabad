@@ -761,13 +761,15 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plots.slice(0, 4).map((plot, idx) => (
             <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 100}>
-              <Link
-                href={`/plots/${plot.id}`}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline h-full"
+              <div
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 h-full"
               >
                 <div>
-                  {/* Image Banner Container */}
-                  <div className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container">
+                  {/* Image Banner Container -> Redirects to /plots */}
+                  <Link
+                    href="/plots"
+                    className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container block cursor-pointer"
+                  >
                     <img
                       src={plot.image}
                       alt={plot.plotNumber}
@@ -791,7 +793,7 @@ export default function HomePage() {
                       <span className="label-caps text-[9px] text-slate-300 block">{plot.blockName}</span>
                       <h4 className="font-serif font-bold text-xl group-hover:text-slate-200 transition-colors">#{plot.plotNumber}</h4>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="p-5 space-y-3">
                     <div className="space-y-1.5 text-xs text-slate-600">
@@ -817,12 +819,15 @@ export default function HomePage() {
                     <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
                   </div>
 
-                  <span className="px-3.5 py-2 bg-[#7b002c] group-hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 group-hover:scale-105 shadow flex items-center gap-1">
+                  <Link
+                    href={`/plots/${plot.id}`}
+                    className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1 cursor-pointer"
+                  >
                     <span>View Details</span>
                     <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
+                  </Link>
                 </div>
-              </Link>
+              </div>
             </ScrollReveal>
           ))}
         </div>
