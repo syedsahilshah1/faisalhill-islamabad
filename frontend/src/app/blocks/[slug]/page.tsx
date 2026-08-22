@@ -28,6 +28,7 @@ import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
+import CountUpNumber from '@/components/ui/CountUpNumber';
 
 const getAmenityIcon = (iconName: string) => {
   switch (iconName) {
@@ -172,20 +173,45 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
                 {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
               </h1>
-              <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
-                {block.description}
-              </p>
+              {block.description && (
+                <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
+                  {block.description}
+                </p>
+              )}
             </div>
 
-            {/* Quick Price Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
-              <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
-                <span className="text-[10px] text-slate-400 uppercase block font-semibold">Residential Price Range</span>
-                <span className="font-serif font-bold text-2xl text-white">{block.priceRange.residential}</span>
+            {/* Counting Detail Stats (Animated Key Metrics) */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl pt-1">
+              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Approval</span>
+                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
+                  <CountUpNumber end={100} suffix="%" duration={1500} />
+                </div>
+                <span className="text-[10px] text-slate-300 block font-medium">100% RDA Approved</span>
               </div>
-              <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow-lg">
-                <span className="text-[10px] text-slate-400 uppercase block font-semibold">Commercial Price Range</span>
-                <span className="font-serif font-bold text-2xl text-white">{block.priceRange.commercial}</span>
+
+              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Boulevard</span>
+                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
+                  <CountUpNumber end={225} suffix="ft+" duration={1800} />
+                </div>
+                <span className="text-[10px] text-slate-300 block font-medium">Main Entrance Axis</span>
+              </div>
+
+              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Landmark</span>
+                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
+                  <CountUpNumber end={27} suffix=" Flr" duration={1600} />
+                </div>
+                <span className="text-[10px] text-slate-300 block font-medium">Faisal Jewel Tower</span>
+              </div>
+
+              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Direct Access</span>
+                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
+                  <CountUpNumber end={2} suffix=" Min" duration={1200} />
+                </div>
+                <span className="text-[10px] text-slate-300 block font-medium">Main GT Road (N-5)</span>
               </div>
             </div>
 
@@ -358,7 +384,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                     What Is Faisal Hills Prime Block?
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Faisal Hills Prime Block is a dedicated sector within the larger Faisal Hills housing project, developed by Zedem International under the Faisal Town Group — one of Pakistan's most recognized real estate names behind landmark projects like Faisal Town Phase 1, <Link href="/faisal-jewels" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel</Link>, and Multi Gardens B-17.
+                    Faisal Hills Prime Block is a dedicated sector within the larger Faisal Hills housing project, developed by Zedem International under the Faisal Town Group — one of Pakistan's most recognized real estate names behind landmark projects like Faisal Town Phase 1, <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel</Link>, and Multi Gardens B-17.
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed font-sans">
                     The Prime Block is designed to a higher standard than regular sectors, featuring wider roads, better plot positioning, and enhanced facilities. It caters to buyers who want premium value without moving too far from the amenities of Rawalpindi and Islamabad.
@@ -1650,7 +1676,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Block Comparison</span>
               <h3 className="font-serif text-xl font-bold text-white">Compare Block C vs Other Sectors</h3>
               <p className="text-xs text-slate-400 leading-relaxed max-w-3xl font-sans">
-                Review the layout plan of <Link href="/blocks/block-b" className="text-amber-400 hover:underline">Block B</Link> for Grand Boulevard proximity, or check <Link href="/blocks/block-d" className="text-amber-400 hover:underline">Block D</Link> for newer development phases. For related mixed-use developments, view details of <Link href="/blocks/executive-block" className="text-amber-400 hover:underline">Executive Block</Link> or details of <Link href="/faisal-jewels" className="text-amber-400 hover:underline">Faisal Jewels</Link>.
+                Review the layout plan of <Link href="/blocks/block-b" className="text-amber-400 hover:underline">Block B</Link> for Grand Boulevard proximity, or check <Link href="/blocks/block-d" className="text-amber-400 hover:underline">Block D</Link> for newer development phases. For related mixed-use developments, view details of <Link href="/blocks/executive-block" className="text-amber-400 hover:underline">Executive Block</Link> or details of <Link href="/blocks/faisal-jewel-islamabad" className="text-amber-400 hover:underline">Faisal Jewels</Link>.
               </p>
             </div>
 

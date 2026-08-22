@@ -244,10 +244,10 @@ export default function FaisalHillsCommercialPage() {
 
               <span className="text-slate-700 text-lg select-none">|</span>
 
-              <a href="/blocks/faisal-jewels" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
+              <a href="/blocks/faisal-jewel-islamabad" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
                 <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-white whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Faisal Jewel Tower</span>
-                <span className="text-[10px] text-rose-400 font-semibold font-sans">22-Storey Skyscraper</span>
+                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Faisal Jewel Tower</span>
+                <span className="text-[10px] text-rose-400 font-semibold font-sans ml-1.5">27-Storey Skyscraper</span>
               </a>
 
               <span className="text-slate-700 text-lg select-none">|</span>

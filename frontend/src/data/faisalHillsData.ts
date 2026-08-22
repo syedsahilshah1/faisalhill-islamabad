@@ -318,12 +318,14 @@ export const blocksData: BlockInfo[] = [
     id: "executive-block",
     slug: "executive-block",
     name: "Executive Block",
-    subtitle: "The Premier Entrance Block Facing N-5 GT Road",
+    subtitle: "",
+    // subtitle: "The Premier Entrance Block Facing N-5 GT Road",
     category: "developed",
     status: "Possession Ready",
     nocStatus: "RDA Approved & Clear",
     verificationDate: "August 2026",
-    description: "Faisal Hills Executive Block is the primary commercial and civic hub of the society, positioned directly at the main entrance along GT Road (N-5). Home to key landmarks like Faisal Jewel, Roots International School, and Faisal Mansion, it offers a premier address with 225ft wide main entrance boulevard, underground utilities, and quick access to Rawalpindi and Taxila bypass.",
+    //added later
+    description: "",
     locationDetails: "Located directly at the Main Entrance Gate on N-5 National Highway, 5 minutes from Taxila Bypass and 12 minutes from CPEC Interchange.",
     highlights: [
       "Main GT Road Entrance & 225ft Boulevard Roadways",

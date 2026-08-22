@@ -192,7 +192,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/faisal-jewels" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+              <Link href="/blocks/faisal-jewel-islamabad" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
                 <span>Faisal Jewel Tower</span>
               </Link>

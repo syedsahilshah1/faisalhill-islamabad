@@ -79,17 +79,17 @@ export default function Navbar() {
             : '-translate-y-28 opacity-0 pointer-events-none'
         }`}
       >
-        {/* Inner Floating Navbar Wrapper - Expands to edge-to-edge transparent at top on Home hero, becomes rounded white pill when scrolled or on inner pages */}
+        {/* Inner Floating Navbar Wrapper */}
         <div
-          className={`max-w-[1440px] mx-auto transition-all duration-500 flex items-center justify-between gap-4 ${
+          className={`max-w-[1440px] mx-auto transition-all duration-500 flex items-center justify-between gap-2 sm:gap-4 ${
             isSolidNav
-              ? 'bg-white/95 backdrop-blur-xl rounded-full shadow-2xl border border-slate-200/90 text-slate-900 px-5 sm:px-8 h-14 sm:h-16 lg:h-18 ring-1 ring-black/5'
-              : 'bg-transparent text-white px-4 sm:px-6 lg:px-10 h-16 sm:h-20 lg:h-24'
+              ? 'bg-white/95 backdrop-blur-xl rounded-full shadow-2xl border border-slate-200/90 text-slate-900 px-6 sm:px-8 lg:px-10 h-14 sm:h-16 lg:h-18 ring-1 ring-black/5'
+              : 'bg-transparent text-white px-6 sm:px-8 lg:px-10 h-16 sm:h-20 lg:h-24'
           }`}
         >
 
-          {/* LEFT SIDE: First 3 Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 shrink-0 whitespace-nowrap pl-4 xl:pl-6">
+          {/* LEFT SIDE: Navigation Links (About Us, Master Plan, Faisal Hills Blocks) */}
+          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 shrink-0 whitespace-nowrap">
 
             {/* About Us */}
             <Link
@@ -101,6 +101,18 @@ export default function Navbar() {
               }`}
             >
               <span>About Us</span>
+            </Link>
+
+            {/* Master Plan Map */}
+            <Link
+              href="/master-plan"
+              className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${
+                pathname === '/master-plan'
+                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
+              }`}
+            >
+              <span>Master Plan</span>
             </Link>
 
             {/* Faisal Hills Blocks Dropdown */}
@@ -183,66 +195,63 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    {/* Column 2: Projects & Commercial */}
-                    <div className="space-y-1.5 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between px-2 mb-2">
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            PROJECTS & COMMERCIAL
-                          </span>
-                          <span className="text-[9px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
-                            High ROI
-                          </span>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          {blocksData.filter(b => b.category !== 'developed').map((block) => (
-                            <Link
-                              key={block.id}
-                              href={`/blocks/${block.slug}`}
-                              className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
-                            >
-                              <div className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
-                                <Sparkles className="w-4 h-4" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
-                                    {block.name}
-                                  </span>
-                                  <span className="text-[9px] bg-amber-100 text-amber-800 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0">
-                                    {block.category === 'upcoming' ? 'Upcoming' : 'Commercial'}
-                                  </span>
-                                </div>
-                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
-                                  {block.subtitle || 'Prime Real Estate Investment'}
-                                </p>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+                    {/* Column 2: Upcoming & Commercial */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between px-2 mb-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          UPCOMING & COMMERCIAL
+                        </span>
+                        <span className="text-[9px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
+                          High Investment
+                        </span>
                       </div>
 
-                      {/* Interactive Master Plan Banner */}
-                      <Link
-                        href="/master-plan"
-                        className="group/map mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-[#7b002c] to-[#9e1245] border border-[#7b002c]/20 text-white flex items-center justify-between gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-                            <Layers className="w-4 h-4 text-white" />
-                          </div>
-                          <div>
-                            <span className="text-xs font-bold block leading-tight">Interactive Master Plan</span>
-                            <span className="text-[10px] text-white/80 block">Explore Block Map & Plot Inventory</span>
-                          </div>
-                        </div>
-                        <div className="w-7 h-7 rounded-full bg-white text-[#7b002c] flex items-center justify-center shrink-0 group-hover/map:translate-x-1 transition-transform">
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </div>
-                      </Link>
-
+                      <div className="space-y-1 max-h-[290px] overflow-y-auto pr-1">
+                        {blocksData.filter(b => b.category !== 'developed').map((block) => (
+                          <Link
+                            key={block.id}
+                            href={`/blocks/${block.slug}`}
+                            className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
+                          >
+                            <div className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                              <Sparkles className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
+                                  {block.name}
+                                </span>
+                                <span className="text-[9px] bg-amber-100 text-amber-800 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0">
+                                  {block.category === 'upcoming' ? 'Upcoming' : 'Commercial'}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
+                                {block.subtitle || 'Prime Real Estate Investment'}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
+
+                    {/* Interactive Master Plan Banner */}
+                    <Link
+                      href="/master-plan"
+                      className="group/map mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-[#7b002c] to-[#9e1245] border border-[#7b002c]/20 text-white flex items-center justify-between gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+                          <Layers className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold block leading-tight">Interactive Master Plan</span>
+                          <span className="text-[10px] text-white/80 block">Explore Block Map & Plot Inventory</span>
+                        </div>
+                      </div>
+                      <div className="w-7 h-7 rounded-full bg-white text-[#7b002c] flex items-center justify-center shrink-0 group-hover/map:translate-x-1 transition-transform">
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </Link>
 
                   </div>
 
@@ -251,8 +260,8 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* CENTER LOGO: FAISALTOWN GROUP | FT */}
-          <Link href="/" className="flex items-center shrink-0 group whitespace-nowrap gap-2 sm:gap-3 px-1 xl:px-4">
+          {/* CENTER LOGO: FAISALTOWN GROUP | FT (Perfect Center Anchor) */}
+          <Link href="/" className="flex items-center group shrink-0 whitespace-nowrap gap-2 sm:gap-3 px-2 lg:px-4">
             {/* Text Part */}
             <div className="flex flex-col leading-none select-none items-end">
               <span className={`text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] transition-colors duration-300 ${isSolidNav ? 'text-[#7b002c]' : 'text-white'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
@@ -272,8 +281,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* RIGHT SIDE: Remaining Navigation Links & Hotline Pill */}
-          <div className="hidden xl:flex items-center gap-6 2xl:gap-8 shrink-0 whitespace-nowrap pr-4 xl:pr-6">
+          {/* RIGHT SIDE: Navigation Links & Hotline Pill */}
+          <div className="hidden xl:flex items-center gap-5 2xl:gap-6 shrink-0 whitespace-nowrap">
 
             {/* Highrise Dropdown */}
             <div className="relative group py-6">
@@ -343,7 +352,7 @@ export default function Navbar() {
             {/* Action Button - Phone Hotline Pill */}
             <a
               href="tel:+923044811717"
-              className={`inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ${
+              className={`inline-flex items-center gap-2 px-5 2xl:px-6 py-2.5 text-xs font-bold rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ${
                 isSolidNav
                   ? 'bg-[#7b002c] hover:bg-[#9e1245] text-white'
                   : 'bg-[#7b002c] hover:bg-[#9e1245] text-white border border-white/10'
