@@ -11,7 +11,8 @@ import {
   ChevronDown,
   Sparkles,
   ArrowRight,
-  Layers
+  Layers,
+  MessageSquare
 } from 'lucide-react';
 import { blocksData } from '@/data/faisalHillsData';
 import LeadModal from './LeadModal';
@@ -373,115 +374,177 @@ export default function Navbar() {
           </button>
 
         </div>
-
-        {/* Mobile Slide-Down Drawer */}
-        {mobileMenuOpen && (
-          <div className="xl:hidden fixed inset-0 top-20 sm:top-24 bg-slate-900/80 backdrop-blur-md z-[999] flex flex-col justify-start">
-            <div className="bg-white text-slate-900 border-b-4 border-[#7b002c] p-6 space-y-5 shadow-2xl max-h-[80vh] overflow-y-auto rounded-b-3xl">
-
-              <div className="space-y-1">
-
-                <Link
-                  href="/about-us"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-base font-semibold py-3 px-4 rounded-xl text-slate-800 hover:bg-slate-50 hover:text-[#7b002c]"
-                >
-                  <span>About Us</span>
-                  <span className="text-xs text-slate-400">→</span>
-                </Link>
-
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setMobileBlocksOpen(!mobileBlocksOpen)}
-                    className="w-full flex items-center justify-between text-base font-semibold py-3 px-4 rounded-xl text-slate-800 hover:bg-slate-50 hover:text-[#7b002c]"
-                  >
-                    <span>Faisal Hills Blocks</span>
-                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileBlocksOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {mobileBlocksOpen && (
-                    <div className="pl-3 py-2 space-y-1 bg-slate-50 rounded-xl my-1 border border-slate-100">
-                      <Link
-                        href="/faisal-hills-blocks"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block py-2 px-3 text-xs font-bold text-[#7b002c] hover:underline border-b border-slate-200/60 mb-1"
-                      >
-                        Explore All Blocks Overview →
-                      </Link>
-                      {blocksData.map((block) => (
-                        <Link
-                          key={block.id}
-                          href={`/blocks/${block.slug}`}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-lg hover:bg-white transition-colors"
-                        >
-                          <span>{block.name}</span>
-                          <span className="text-[10px] text-slate-400">{block.status}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setMobileHighriseOpen(!mobileHighriseOpen)}
-                    className="w-full flex items-center justify-between text-base font-semibold py-3 px-4 rounded-xl text-slate-800 hover:bg-slate-50 hover:text-[#7b002c]"
-                  >
-                    <span>Highrise</span>
-                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileHighriseOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {mobileHighriseOpen && (
-                    <div className="pl-3 py-2 space-y-1 bg-slate-50 rounded-xl my-1 border border-slate-100">
-                      <Link
-                        href="/blocks/faisal-jewel-islamabad"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-lg hover:bg-white transition-colors"
-                      >
-                        <span>Faisal Jewel Tower</span>
-                        <span className="text-[10px] text-slate-400">27-Story High-Rise</span>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                <Link
-                  href="/faisal-hills-commercial"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-base font-semibold py-3 px-4 rounded-xl text-slate-800 hover:bg-slate-50 hover:text-[#7b002c]"
-                >
-                  <span>Faisal Hills Commercial</span>
-                  <span className="text-xs text-slate-400">→</span>
-                </Link>
-
-                <Link
-                  href="/faisal-hills-payment-plan"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-base font-semibold py-3 px-4 rounded-xl text-slate-800 hover:bg-slate-50 hover:text-[#7b002c]"
-                >
-                  <span>Payment Plans</span>
-                  <span className="text-xs text-slate-400">→</span>
-                </Link>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 space-y-3">
-                <a
-                  href="tel:+923044811717"
-                  className="w-full text-center py-3.5 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-full shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
-                >
-                  <Phone className="w-3.5 h-3.5 text-white" />
-                  <span>Call Hotline: +92 304 4811 717</span>
-                </a>
-              </div>
-
-            </div>
-            <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
-          </div>
-        )}
       </header>
+
+      {/* Mobile Full-Screen Slide Drawer - Mounted at root to avoid parent CSS transform clipping */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex flex-col justify-start animate-fadeIn">
+          <div className="bg-white text-slate-900 shadow-2xl flex flex-col max-h-[92vh] rounded-b-3xl overflow-hidden border-b-4 border-[#7b002c]">
+            
+            {/* Drawer Top Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+                <div className="flex flex-col leading-none items-end">
+                  <span className="text-sm font-bold tracking-[0.2em] text-[#7b002c]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+                    FAISALTOWN
+                  </span>
+                  <span className="text-[9px] font-semibold tracking-[0.3em] text-[#7b002c]/90 mt-[1px]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+                    GROUP
+                  </span>
+                </div>
+                <div className="w-[1.5px] h-6 bg-[#7b002c]/20" />
+                <span className="text-2xl font-bold leading-none text-[#7b002c]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", letterSpacing: '-0.05em' }}>
+                  F T
+                </span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-[#7b002c] flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close navigation menu"
+              >
+                <X className="w-5 h-5 text-[#7b002c]" />
+              </button>
+            </div>
+
+            {/* Scrollable Nav Links */}
+            <div className="p-6 space-y-2 overflow-y-auto max-h-[calc(92vh-150px)]">
+
+              <Link
+                href="/about-us"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>About Us</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+
+              {/* Blocks Collapsible */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setMobileBlocksOpen(!mobileBlocksOpen)}
+                  className="w-full flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+                >
+                  <span>Faisal Hills Blocks</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${mobileBlocksOpen ? 'rotate-180 text-[#7b002c]' : ''}`} />
+                </button>
+
+                {mobileBlocksOpen && (
+                  <div className="pl-3 py-2 space-y-1 bg-slate-50 rounded-2xl my-1 border border-slate-200/80">
+                    <Link
+                      href="/faisal-hills-blocks"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-2 px-3 text-xs font-bold text-[#7b002c] hover:underline border-b border-slate-200 mb-1"
+                    >
+                      Explore All Blocks Overview →
+                    </Link>
+                    {blocksData.map((block) => (
+                      <Link
+                        key={block.id}
+                        href={`/blocks/${block.slug}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors"
+                      >
+                        <span>{block.name}</span>
+                        <span className="text-[10px] text-slate-400 font-semibold">{block.status}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Highrise Collapsible */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setMobileHighriseOpen(!mobileHighriseOpen)}
+                  className="w-full flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+                >
+                  <span>Highrise Projects</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${mobileHighriseOpen ? 'rotate-180 text-[#7b002c]' : ''}`} />
+                </button>
+
+                {mobileHighriseOpen && (
+                  <div className="pl-3 py-2 space-y-1 bg-slate-50 rounded-2xl my-1 border border-slate-200/80">
+                    <Link
+                      href="/blocks/faisal-jewel-islamabad"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors"
+                    >
+                      <span className="font-bold text-[#7b002c]">Faisal Jewel Tower</span>
+                      <span className="text-[10px] text-slate-500">27-Story High-Rise</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/faisal-hills-commercial"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>Faisal Hills Commercial</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+
+              <Link
+                href="/faisal-hills-payment-plan"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>Payment Plans 2026</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+
+              <Link
+                href="/master-plan"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>Master Plan Blueprint</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+
+              <Link
+                href="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>Contact Sales Desk</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+            </div>
+
+            {/* Drawer Bottom Actions */}
+            <div className="p-6 bg-slate-50 border-t border-slate-200 grid grid-cols-2 gap-3">
+              <a
+                href="tel:+923313339997"
+                className="py-3 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Call Now</span>
+              </a>
+
+              <a
+                href="https://wa.me/923044811717"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-3 text-xs font-bold text-white bg-[#25D366] hover:bg-[#20ba5a] rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
+
+          </div>
+          
+          {/* Backdrop click to close */}
+          <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
+        </div>
+      )}
+
       <LeadModal isOpen={isLeadModalOpen} onClose={() => setIsLeadModalOpen(false)} />
     </>
   );

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
-  Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users
+  Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users, Star, Quote, HeartHandshake, BadgeCheck, Phone
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
@@ -19,8 +19,6 @@ import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 
 export default function HomePage() {
-  const [selectedBlockFilter, setSelectedBlockFilter] = useState('all');
-  const [selectedSizeFilter, setSelectedSizeFilter] = useState('all');
   const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -31,8 +29,6 @@ export default function HomePage() {
   const [activeGalleryFilter, setActiveGalleryFilter] = useState<'All' | 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('All');
   const [lightboxImage, setLightboxImage] = useState<GalleryItem | null>(null);
 
-
-
   const filteredGallery = useMemo(() => {
     if (activeGalleryFilter === 'All') return galleryItems;
     return galleryItems.filter(item => item && item.category === activeGalleryFilter);
@@ -41,68 +37,54 @@ export default function HomePage() {
   // Dynamic API state loading
   const [blocks, setBlocks] = useState(blocksData);
   const [plots, setPlots] = useState(plotInventoryData);
-  const [societyStatsData, setSocietyStatsData] = useState(societyStats);
-  const [verifiedDate, setVerifiedDate] = useState(societyStats.lastVerifiedDate);
 
   React.useEffect(() => {
-    // 1. Initial API loads
     fetchBlocks().then(data => setBlocks(data)).catch(console.error);
     fetchPlots().then(data => setPlots(data)).catch(console.error);
     fetchGallery().then(data => setGalleryItems(data)).catch(console.error);
-    fetchSettings().then(data => {
-      if (data.society_stats) setSocietyStatsData(data.society_stats);
-      if (data.last_verified_date) setVerifiedDate(data.last_verified_date);
-    }).catch(console.error);
 
-    // 2. Fallback listeners for compatibility
     const syncGallery = () => {
       fetchGallery().then(data => setGalleryItems(data)).catch(console.error);
     };
-    const syncSettings = () => {
-      fetchSettings().then(data => {
-        if (data.last_verified_date) setVerifiedDate(data.last_verified_date);
-      }).catch(console.error);
-    };
-
     window.addEventListener('faisal_gallery_updated', syncGallery);
-    window.addEventListener('faisal_verified_date_updated', syncSettings);
     window.addEventListener('faisal_plots_updated', () => {
       fetchPlots().then(data => setPlots(data)).catch(console.error);
     });
 
     return () => {
       window.removeEventListener('faisal_gallery_updated', syncGallery);
-      window.removeEventListener('faisal_verified_date_updated', syncSettings);
     };
   }, []);
 
-  // Hero Booking Form State from user directive
-  const [heroFormName, setHeroFormName] = useState('');
-  const [heroFormPhone, setHeroFormPhone] = useState('');
-  const [heroFormProject, setHeroFormProject] = useState('Faisal Hills Taxila');
-  const [heroFormMessage, setHeroFormMessage] = useState('');
-  const [heroFormSubmitted, setHeroFormSubmitted] = useState(false);
+  // Lead Form State
+  const [leadName, setLeadName] = useState('');
+  const [leadEmail, setLeadEmail] = useState('');
+  const [leadLocation, setLeadLocation] = useState('');
+  const [leadPreferredPlot, setLeadPreferredPlot] = useState('5 Marla');
+  const [leadQuery, setLeadQuery] = useState('');
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const handleHeroFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitLead({
-      name: heroFormName || 'Website Visitor',
-      phone: heroFormPhone || 'N/A',
-      interest: heroFormProject,
-      message: heroFormMessage
+      name: leadName || 'Website Visitor',
+      phone: leadEmail || 'N/A',
+      interest: `${leadPreferredPlot} (${leadLocation || 'Taxila/Islamabad'})`,
+      message: leadQuery
     }).then(() => {
-      setHeroFormSubmitted(true);
-      setTimeout(() => setHeroFormSubmitted(false), 5000);
-      setHeroFormName('');
-      setHeroFormPhone('');
-      setHeroFormMessage('');
+      setFormSubmitted(true);
+      setTimeout(() => setFormSubmitted(false), 5000);
+      setLeadName('');
+      setLeadEmail('');
+      setLeadLocation('');
+      setLeadQuery('');
     }).catch(err => {
       console.error(err);
-      setHeroFormSubmitted(true);
+      setFormSubmitted(true);
     });
   };
 
-  // Filter blocks by category (Memoized for peak speed)
+  // Filter blocks by category
   const developedBlocks = useMemo(() => blocks.filter(b => b.category === 'developed'), [blocks]);
   const risingProjects = useMemo(() => blocks.filter(b => b.category === 'commercial_project'), [blocks]);
   const upcomingBlocks = useMemo(() => blocks.filter(b => b.category === 'upcoming'), [blocks]);
@@ -114,26 +96,11 @@ export default function HomePage() {
     return blocks;
   }, [activeTab, blocks, developedBlocks, risingProjects, upcomingBlocks]);
 
-  // Faisal Jewels Special Item
-  const faisalJewelsData = useMemo(() => blocks.find(b => b.id === 'faisal-jewels'), [blocks]);
-
-  // Rotator effect for hero title: "Faisal Town Group | Jewels" <-> "Faisal Town Group | Faisal Hills"
-  const heroTitles = useMemo(() => ['Jewels', 'Faisal Hills'], []);
-  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % heroTitles.length);
-    }, 2500);
-    return () => clearInterval(timer);
-  }, [heroTitles]);
-
-
-
+  // Section 15 FAQs with Schema & Detailed Answers
   const seoFaqs = [
     {
-      q: "1. Is Faisal Hills Islamabad a CDA & RDA approved housing society?",
-      a: "Yes. Faisal Hills Islamabad holds official Capital Development Authority (CDA) approval and Rawalpindi Development Authority (RDA) NOC clearance. It possesses clear land titles, verified layout maps, and official NOC documentation required to legally sell residential and commercial plots. Buyers should always request and verify official NOC documentation before booking — our team provides this proactively to every prospective buyer."
+      q: "1. Is Faisal Hills Islamabad a CDA-approved housing society?",
+      a: "Yes. Faisal Hills Islamabad holds the relevant CDA (Capital Development Authority) approval and all associated NOC documentation required to legally sell residential and commercial plots in the defined service area. The society also operates under RDA (Rawalpindi Development Authority) purview for applicable jurisdictional matters. Buyers should always request and verify the official NOC documentation before booking — our team provides this proactively to every prospective buyer."
     },
     {
       q: "2. Who is the developer of Faisal Hills Islamabad?",
@@ -149,7 +116,7 @@ export default function HomePage() {
     },
     {
       q: "5. Where exactly is Faisal Hills Islamabad located?",
-      a: "The Faisal Hills location is directly on Grand Trunk Road (GT Road, N-5) near Taxila Bypass, nestled against the scenic Margalla Hills. It is approximately 5 minutes from Taxila Bypass, 10 minutes from CPEC M-1 Motorway Interchange, 15 minutes from New Islamabad International Airport, and 25 minutes from Rawalpindi Saddar & Zero Point Islamabad."
+      a: "The Faisal Hills Islamabad location is on the Grand Trunk Road (GT Road) near Taxila, approximately 30 minutes from Zero Point Islamabad and 25 minutes from Rawalpindi Saddar. The society is well-connected via GT Road, the Islamabad Expressway, and the M-1 Motorway interchange. A detailed Faisal Hills Islamabad map is available on our Location page."
     },
     {
       q: "6. How is Faisal Hills different from other Taxila housing societies?",
@@ -166,9 +133,11 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-900 space-y-24 pb-24 font-sans selection:bg-gold-accent selection:text-slate-950">
+    <div className="bg-slate-50 min-h-screen text-slate-900 pb-24 font-sans selection:bg-[#7b002c] selection:text-white">
 
-      {/* 1. HERO SECTION - Ultra-Luxury Glassmorphism & HD Image Slider */}
+      {/* ========================================================= */}
+      {/* SECTION 1 — HERO (Strictly single H1 on entire page)      */}
+      {/* ========================================================= */}
       <section className="relative bg-[#091522] text-white overflow-hidden pt-24 sm:pt-28 lg:pt-32 pb-0">
 
         {/* Single HD Background Image for Hero */}
@@ -177,677 +146,438 @@ export default function HomePage() {
           style={{ backgroundImage: "url('/images/faisalhillarc.jpg')" }}
         />
 
-        {/* Subtle Transparent Tint for Readable Text & Crystal Clear HD Background Image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/45 via-slate-950/25 to-slate-950/35" />
+        {/* Contrast Tint for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/45 to-slate-950/60" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
           {/* Hero Left Content */}
           <div className="lg:col-span-7 space-y-6">
 
-            {/* Dynamic Converting Title matching User Request - Single Inline Row */}
-            <h1 className="font-serif font-bold text-2xl sm:text-4xl lg:text-[38px] xl:text-[46px] leading-tight tracking-tight text-white whitespace-normal sm:whitespace-nowrap drop-shadow-lg">
-              Faisal Town Group |{' '}
-              <span
-                key={currentTitleIndex}
-                className="inline-block text-white font-serif italic transition-all duration-700 animate-fadeIn drop-shadow-lg"
-              >
-                {heroTitles[currentTitleIndex]}
-              </span>
-            </h1>
+            {/* ONLY ONE H1 ON THE ENTIRE PAGE */}
+            <ScrollReveal direction="up" delay={50}>
+              <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight text-white drop-shadow-xl">
+                Faisal Hills Islamabad
+              </h1>
+            </ScrollReveal>
 
-            {/* Subtitle with explicit next line breaks */}
-            <p className="text-white text-base sm:text-lg font-medium max-w-xl leading-relaxed drop-shadow-md">
-              A well-planned housing society near Islamabad <br className="hidden sm:inline" />
-              offering residential & commercial plots, modern amenities, <br className="hidden sm:inline" />
-              and long-term investment potential for families & investors.
-            </p>
+            {/* Exact Spec Paragraph */}
+            <ScrollReveal direction="up" delay={150}>
+              <p className="text-slate-100 text-base sm:text-lg font-normal max-w-xl leading-relaxed drop-shadow-md">
+                A premium CDA-approved housing society on GT Road, offering residential and commercial plots with flexible payment plans and outstanding investment returns. Your future begins here.
+              </p>
+            </ScrollReveal>
 
-            {/* Project Filter Pills - Compact Size so Arc background is clearly visible */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <a
-                href="/faisal-hills-blocks"
-                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
-              >
-                <span>Faisal Hills Taxila</span>
-              </a>
-              <a
-                href="/blocks/faisal-jewel-islamabad"
-                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
-              >
-                <span>Faisal Jewels Tower</span>
-              </a>
-              <a
-                href="/blocks/executive-block"
-                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
-              >
-                <span>Executive & Overseas</span>
-              </a>
-              <a
-                href="/plots"
-                className="px-3.5 py-1.5 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-[11px] font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
-              >
-                <span>Verified Plot Rates</span>
-              </a>
-            </div>
+            {/* Block Tabs (Buttons/Links - Not Headings) */}
+            <ScrollReveal direction="up" delay={250}>
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {[
+                  { name: 'Prime Block', href: '/blocks/prime-block' },
+                  { name: 'Executive Block', href: '/blocks/executive-block' },
+                  { name: 'Faisal Jewels', href: '/blocks/faisal-jewel-islamabad' },
+                  { name: 'Block A', href: '/blocks/block-a' },
+                ].map((tab) => (
+                  <Link
+                    key={tab.name}
+                    href={tab.href}
+                    className="px-4 py-2 bg-[#7b002c]/90 hover:bg-[#9e1245] backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20 transition-all hover:scale-105 shadow-md flex items-center gap-1.5"
+                  >
+                    <span>{tab.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </ScrollReveal>
 
-            {/* Direct Hero WhatsApp Action Button - Compact */}
-            <div className="pt-1">
-              <a
-                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking%20and%20pricing."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white text-[11px] font-extrabold uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-white" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
+            {/* CTA Buttons: Call Now · Chat Now · Get a Property Now */}
+            <ScrollReveal direction="up" delay={350}>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="tel:+923313339997"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20 cursor-pointer"
+                >
+                  <Phone className="w-4 h-4 text-white" />
+                  <span>Call Now</span>
+                </a>
+
+                <a
+                  href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking%20and%20pricing."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+                >
+                  <MessageSquare className="w-4 h-4 text-white" />
+                  <span>Chat Now</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-[#7b002c] text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Building2 className="w-4 h-4 text-[#7b002c]" />
+                  <span>Get a Property Now</span>
+                </button>
+              </div>
+            </ScrollReveal>
 
           </div>
 
-          {/* Hero Right Form Details - Seamless over Hero Background Image */}
-          <div className="lg:col-span-5 relative w-full">
+          {/* Hero Right Lead Form Details - Seamless without background */}
+          <ScrollReveal direction="left" delay={200} duration={800} className="lg:col-span-5 relative w-full">
             <div className="space-y-4 text-white">
 
               <div className="border-b border-white/20 pb-3">
-                <h3 className="font-serif font-bold text-2xl text-white flex items-center gap-2 drop-shadow-md">
-                  {/* <Sparkles className="w-5 h-5 text-rose-400" /> */}
-                  <span>Book Your Plot / Flat</span>
-                </h3>
-                <p className="text-xs text-slate-200 mt-1 font-medium drop-shadow-sm">Get official pricing, payment plan & plot selection guide.</p>
+                <span className="text-xs font-bold text-rose-300 uppercase tracking-wider block">Official Inquiries</span>
+                <span className="font-serif font-bold text-2xl text-white block mt-0.5 drop-shadow-md">
+                  Book Your Plot / Flat
+                </span>
+                <p className="text-xs text-slate-200 mt-1 font-medium drop-shadow-xs">Get official pricing, payment plan & plot selection guide.</p>
               </div>
 
-              {heroFormSubmitted ? (
-                <div className="bg-black/70 backdrop-blur-md border border-emerald-400/60 text-emerald-100 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-2xl">
+              {formSubmitted ? (
+                <div className="bg-emerald-950/80 border border-emerald-400 text-emerald-100 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-2xl">
                   <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
                   <h4 className="text-base font-serif text-emerald-200">Inquiry Submitted Successfully!</h4>
-                  <p className="font-normal text-emerald-300">Our Faisal Hills sales executive will contact you via WhatsApp / Phone shortly.</p>
+                  <p className="font-normal text-emerald-300">Our Faisal Hills sales executive will contact you shortly.</p>
                 </div>
               ) : (
-                <form onSubmit={handleHeroFormSubmit} className="space-y-3.5">
+                <form onSubmit={handleHeroFormSubmit} className="space-y-3">
                   <div>
-                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Full Name</label>
+                    <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Name</label>
                     <input
                       type="text"
                       required
-                      placeholder="Enter Your Name"
-                      value={heroFormName}
-                      onChange={(e) => setHeroFormName(e.target.value)}
-                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all shadow-md"
+                      placeholder="Your Full Name"
+                      value={leadName}
+                      onChange={(e) => setLeadName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-black/60 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-all shadow-inner"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Phone / WhatsApp</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="Enter WhatsApp / Phone Number"
-                      value={heroFormPhone}
-                      onChange={(e) => setHeroFormPhone(e.target.value)}
-                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all shadow-md"
-                    />
-                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Email / Phone</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Email or WhatsApp"
+                        value={leadEmail}
+                        onChange={(e) => setLeadEmail(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-black/60 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-all shadow-inner"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Select Project</label>
-                    <div className="relative">
-                      <select
-                        value={heroFormProject}
-                        onChange={(e) => setHeroFormProject(e.target.value)}
-                        className="w-full pl-4 pr-12 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all cursor-pointer font-medium appearance-none shadow-md"
-                      >
-                        <option value="Faisal Hills Taxila" className="bg-slate-950 text-white">Faisal Hills  (Plots)</option>
-                        <option value="Faisal Jewels Tower" className="bg-slate-950 text-white">Faisal Jewels Tower (Luxury Flats)</option>
-                        <option value="Executive Block" className="bg-slate-950 text-white">Executive Block</option>
-                        <option value="Prime Block" className="bg-slate-950 text-white">Prime Block</option>
-                        <option value="Hills Walk" className="bg-slate-950 text-white">Hills Walk Commercial</option>
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-slate-300 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Location / City</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Islamabad, Riyadh, UAE"
+                        value={leadLocation}
+                        onChange={(e) => setLeadLocation(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-black/60 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-all shadow-inner"
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-rose-300 uppercase tracking-wider mb-1 drop-shadow-xs">Requirement Details</label>
+                    <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Preferred Plot</label>
+                    <select
+                      value={leadPreferredPlot}
+                      onChange={(e) => setLeadPreferredPlot(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-white/30 rounded-xl text-xs text-white focus:outline-none focus:border-rose-400 transition-all shadow-inner cursor-pointer"
+                    >
+                      <option value="5 Marla Residential">5 Marla Residential Plot</option>
+                      <option value="8 Marla Residential">8 Marla Residential Plot</option>
+                      <option value="10 Marla Residential">10 Marla Residential Plot</option>
+                      <option value="1 Kanal Residential">1 Kanal Luxury Plot</option>
+                      <option value="Commercial Plot (2/4/8 Marla)">Commercial Boulevard Plot</option>
+                      <option value="Faisal Jewels Luxury Apartment">Faisal Jewels Apartment</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Any Query</label>
                     <textarea
                       rows={2}
-                      placeholder="Describe your property requirement (e.g., plot size, budget, preferences)..."
-                      value={heroFormMessage}
-                      onChange={(e) => setHeroFormMessage(e.target.value)}
-                      className="w-full px-4 py-3 bg-black/60 backdrop-blur-md border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-rose-400 focus:bg-black/80 focus:ring-2 focus:ring-rose-500/30 transition-all resize-none shadow-md"
+                      placeholder="Any specific requirement or question..."
+                      value={leadQuery}
+                      onChange={(e) => setLeadQuery(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-black/60 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-all resize-none shadow-inner"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-2xl hover:shadow-rose-900/40 transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-white/30 cursor-pointer"
+                    className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-white/20 cursor-pointer"
                   >
-                    GET QUOTE
+                    Submit Booking Inquiry
                   </button>
-
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-200 pt-1 drop-shadow-xs">
-                    <Lock className="w-3.5 h-3.5 text-rose-300" />
-                    <span>Your information is 100% confidential & secure</span>
-                  </div>
                 </form>
               )}
 
             </div>
-          </div>
+          </ScrollReveal>
 
         </div>
 
-        {/* Hero Section Counting Bar (Matching Reference Image) */}
-        <div className="mt-8 sm:mt-12 bg-white border-t border-slate-200/80 py-6 sm:py-8 shadow-sm relative z-20">
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-center text-center">
-            {/* Stat 1: 150k Sq Meter Total Area */}
-            <div className="flex flex-col items-center justify-center space-y-1 group">
-              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                <CountUpNumber end={150} suffix="k" duration={2000} />
+        {/* ========================================================= */}
+        {/* SECTION 2 — STATS BAR (No heading, 5 counter cards)       */}
+        {/* ========================================================= */}
+        <div className="mt-6 sm:mt-8 bg-white border-t border-slate-200/80 py-4 sm:py-5 shadow-xs relative z-20">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 items-center text-center">
+            
+            {/* Stat 1: 5k+ Plots */}
+            <ScrollReveal direction="up" delay={50}>
+              <div className="flex flex-col items-center justify-center space-y-0.5 group">
+                <div className="font-sans text-3xl sm:text-4xl font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber end={5} suffix="k+" duration={1800} />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide uppercase">
+                  Plots
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
-                Sq Meter Total Area
-              </p>
-            </div>
+            </ScrollReveal>
 
-            {/* Stat 2: 8+ Total Projects */}
-            <div className="flex flex-col items-center justify-center space-y-1 group">
-              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                <CountUpNumber end={8} suffix="+" duration={1800} />
+            {/* Stat 2: 4 Phases */}
+            <ScrollReveal direction="up" delay={150}>
+              <div className="flex flex-col items-center justify-center space-y-0.5 group">
+                <div className="font-sans text-3xl sm:text-4xl font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber end={4} suffix="" duration={1600} />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide uppercase">
+                  Phases
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
-                Total Projects
-              </p>
-            </div>
+            </ScrollReveal>
 
-            {/* Stat 3: 30+ Years Of Excellence */}
-            <div className="flex flex-col items-center justify-center space-y-1 group">
-              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                <CountUpNumber end={30} suffix="+" duration={2000} />
+            {/* Stat 3: 12+ Years */}
+            <ScrollReveal direction="up" delay={250}>
+              <div className="flex flex-col items-center justify-center space-y-0.5 group">
+                <div className="font-sans text-3xl sm:text-4xl font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber end={12} suffix="+" duration={1800} />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide uppercase">
+                  Years
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
-                Years Of Excellence
-              </p>
-            </div>
+            </ScrollReveal>
 
-            {/* Stat 4: 1.5M Total Population Capacity */}
-            <div className="flex flex-col items-center justify-center space-y-1 group">
-              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2200} />
+            {/* Stat 4: 100% Legal */}
+            <ScrollReveal direction="up" delay={350}>
+              <div className="flex flex-col items-center justify-center space-y-0.5 group">
+                <div className="font-sans text-3xl sm:text-4xl font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber end={100} suffix="%" duration={2000} />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide uppercase">
+                  Legal
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
-                Total Population Capacity
-              </p>
-            </div>
+            </ScrollReveal>
+
+            {/* Stat 5: 30+ Amenities */}
+            <ScrollReveal direction="up" delay={450}>
+              <div className="flex flex-col items-center justify-center space-y-0.5 group col-span-2 md:col-span-1">
+                <div className="font-sans text-3xl sm:text-4xl font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber end={30} suffix="+" duration={1800} />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-slate-700 tracking-wide uppercase">
+                  Amenities
+                </span>
+              </div>
+            </ScrollReveal>
+
           </div>
         </div>
       </section>
 
-
-      {/* 2.5 A STORY OF LEGACY */}
-      <section className="bg-white py-12 lg:py-16 border-b border-slate-100 overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 items-center">
-
-          {/* Left Column: Story & Link */}
-          <div className="lg:col-span-7 space-y-5">
-            <div className="space-y-2">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#7b002c] tracking-tight">
-                Chairman & Founder - Chaudhry Abdul Majeed
-              </h1>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#7b002c]/10 border border-[#7b002c]/20 rounded-full text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Building2 className="w-3.5 h-3.5" />
-                <span>12 Years of Incredible Legacy</span>
-              </div>
+      {/* Slogan Moving Marquee Ribbon - Single Line Slogan without borders */}
+      <div className="bg-white py-2 overflow-hidden select-none">
+        <div className="ticker-track gap-12 items-center text-xs sm:text-sm font-serif font-bold tracking-[0.25em] text-[#7b002c] uppercase whitespace-nowrap">
+          {[...Array(8)].map((_, idx) => (
+            <div key={idx} className="flex items-center gap-12 shrink-0">
+              <span className="font-serif">Building Tomorrow Together</span>
+              <span className="text-slate-300 font-sans">•</span>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-slate-900 font-light tracking-tight leading-tight">
-              A STORY <br />
-              <span className="inline-block italic font-serif font-normal text-[#7b002c] mr-3 sm:mr-4">of</span>{' '}LEGACY
-            </h2>
+      {/* ========================================================= */}
+      {/* SECTION 3 — ABOUT                                         */}
+      {/* ========================================================= */}
+      <section className="bg-white pt-8 pb-12 lg:pt-10 lg:pb-16 border-b border-slate-100 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
 
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
-              Faisal Hills Islamabad, developed by Zedem International under Chaudhry Abdul Majeed's leadership, is a thoughtfully planned gated community in Taxila along GT Road with Margalla Hills as its backdrop. Combining modern living, strong connectivity, legal RDA/CDA NOC status, and high investment yields, it is built for Pakistan's future.
-            </p>
+          {/* Left Column: Chairman & Founder Header + Eyebrow + H2 + Exact Spec Paragraph */}
+          <div className="lg:col-span-7 space-y-4 sm:space-y-5">
+            <ScrollReveal direction="up" delay={50}>
+              <div className="space-y-1 mb-2">
+                <span className="label-caps text-[#7b002c] font-bold block">About Faisal Hills</span>
+                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight">
+                  Chairman & Founder — Chaudhry Abdul Majeed
+                </h1>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+                Introducing Faisal Hills Islamabad — A Community Built for Pakistan's Future
+              </h2>
+            </ScrollReveal>
 
-            {/* Developer's Portfolio Badges matching Reference Content */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {[
-                'Faisal Town Phase 1',
-                'Faisal Town Phase 2',
-                'Faisal Hills',
-                'Faisal Residencia',
-                'Faisal Heights',
-                'Faisal Jewels',
-              ].map((projName) => (
-                <span
-                  key={projName}
-                  className="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:border-[#7b002c] hover:text-[#7b002c] transition-colors"
+            <ScrollReveal direction="up" delay={150}>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
+                Faisal Hills Islamabad, developed by Zedem International, is a thoughtfully planned gated community located in Taxila along the historic GT Road. With the scenic Margalla Hills as its backdrop, it offers easy access to Islamabad and Rawalpindi. Combining modern living, strong connectivity, legal development, and attractive investment potential, Faisal Hills is an ideal choice for both homebuyers and investors.
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={250}>
+              <div className="pt-2">
+                <Link
+                  href="/about-us"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-1 transition-all group"
                 >
-                  {projName}
-                </span>
+                  <span>Discover More About Zedem International</span>
+                  <span className="group-hover:translate-x-1 transition-transform font-bold">→</span>
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right Column: Image with exact ALT text */}
+          <div className="lg:col-span-5 flex flex-col items-center lg:items-end justify-end">
+            <ScrollReveal direction="left" delay={200} duration={800}>
+              <img
+                src="/chaudhry-abdul-majeed.png"
+                alt="Faisal Hills Islamabad growth lifestyle and property potential"
+                className="w-full max-w-[400px] h-auto object-contain"
+              />
+            </ScrollReveal>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 4 — OUR PROJECTS (Static Clean Alignment)         */}
+      {/* ========================================================= */}
+      <section className="bg-slate-50 py-10 sm:py-12 border-b border-slate-200">
+        <div className="max-w-[1440px] mx-auto px-6 text-center space-y-6">
+
+          <ScrollReveal direction="up" delay={50}>
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Portfolio & Track Record</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight">
+              Our Projects by Zedem International
+            </h2>
+          </ScrollReveal>
+
+          {/* Static Clean Grid of Projects without moving animation */}
+          <ScrollReveal direction="up" delay={150}>
+            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 pt-1 max-w-5xl mx-auto">
+              {[
+                { name: 'Faisal Town Phase 1', href: '/about-us' },
+                { name: 'Faisal Town Phase 2', href: '/about-us' },
+                { name: 'Faisal Hills', href: '/faisal-hills-blocks' },
+                { name: 'Faisal Residencia', href: '/about-us' },
+                { name: 'Faisal Heights', href: '/about-us' },
+                { name: 'Faisal Jewels', href: '/blocks/faisal-jewel-islamabad' },
+              ].map((proj, idx) => (
+                <Link
+                  key={idx}
+                  href={proj.href}
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c] rounded-full px-4 sm:px-5 py-2 sm:py-2.5 shadow-xs hover:shadow-md transition-all flex items-center gap-2 group cursor-pointer hover:scale-105"
+                >
+                  <Building2 className="w-4 h-4 text-[#7b002c]" />
+                  <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#7b002c] transition-colors whitespace-nowrap">
+                    {proj.name}
+                  </span>
+                </Link>
               ))}
             </div>
+          </ScrollReveal>
 
-            <div className="pt-2">
-              <Link
-                href="/about-us"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-1 transition-all group"
-              >
-                <span>Discover More</span>
-                <span className="group-hover:translate-x-1 transition-transform font-bold">→</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column: Chairman Image direct without extra div wrappers */}
-          <div className="lg:col-span-5 flex flex-col items-center lg:items-start justify-end -ml-0 lg:-ml-4">
-            <img
-              src="/chaudhry-abdul-majeed.png"
-              alt="Chaudhry Abdul Majeed - Chairman Faisal Town Group"
-              className="w-full max-w-[420px] h-auto object-contain"
-            />
-          </div>
-
-        </div>
-
-        {/* Project Pill Ticker Bar right below Chairman Details (Exclusively Faisal Hills Blocks & Projects) */}
-        <div className="mt-8 pt-6 border-t border-slate-100 bg-slate-50/70 py-4 overflow-hidden relative shadow-inner">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-slate-50/90 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-slate-50/90 to-transparent z-10 pointer-events-none" />
-          <div className="ticker-track gap-5">
-            {[...Array(2)].map((_, setIdx) => (
-              <div key={setIdx} className="flex items-center gap-5 shrink-0">
-
-                {/* 1. Faisal Jewel */}
-                <a
-                  href="/blocks/faisal-jewel-islamabad"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Building2 className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Faisal Jewel
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Book Appartment
-                    </div>
-                  </div>
-                </a>
-
-                {/* 2. Hills Walk Commercial */}
-                <a
-                  href="/faisal-hills-commercial"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Store className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Hills Walk
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Book Now
-                    </div>
-                  </div>
-                </a>
-
-                {/* 3. Executive Block */}
-                <a
-                  href="/blocks/executive-block"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Executive Block
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Possession Ready
-                    </div>
-                  </div>
-                </a>
-
-                {/* 4. Prime Block */}
-                <a
-                  href="/blocks/prime-block"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <TrendingUp className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Prime Block
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Installments Open
-                    </div>
-                  </div>
-                </a>
-
-                {/* 5. Block A */}
-                <a
-                  href="/blocks/block-a"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Home className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Block A
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Families Settled
-                    </div>
-                  </div>
-                </a>
-
-                {/* 6. Block B */}
-                <a
-                  href="/blocks/block-b"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Trees className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Block B
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Margalla Views
-                    </div>
-                  </div>
-                </a>
-
-                {/* 7. Block B Extension */}
-                <a
-                  href="/blocks/block-b1-extension"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      B Extension
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Affordable Entry
-                    </div>
-                  </div>
-                </a>
-
-                {/* 8. Block C */}
-                <a
-                  href="/blocks/block-c"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <ShoppingBag className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Block C
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      800+ Commercials
-                    </div>
-                  </div>
-                </a>
-
-                {/* 9. Block D */}
-                <a
-                  href="/blocks/block-d"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <CheckCircle2 className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Block D
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Possession Granted
-                    </div>
-                  </div>
-                </a>
-
-                {/* 10. Faisal Hills Arc */}
-                <a
-                  href="/faisal-hills-blocks"
-                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                    <Landmark className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
-                      Faisal Hills Arc
-                    </div>
-                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
-                      Main GT Road Entry
-                    </div>
-                  </div>
-                </a>
-
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
-
-
-
-      {/* 3. FLAGSHIP SPECIAL FEATURE: FAISAL JEWEL */}
+      {/* ========================================================= */}
+      {/* SECTION 4.5 — FLAGSHIP SPECIAL FEATURE: FAISAL JEWEL      */}
+      {/* ========================================================= */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-100 overflow-hidden">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
 
-            {/* Left Column: Single High-Quality Static HD Image of Faisal Jewel */}
+            {/* Left Column: Image */}
             <div className="lg:col-span-7 order-2 lg:order-1">
-              <Link
-                href="/blocks/faisal-jewel-islamabad"
-                className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px] block group cursor-pointer overflow-hidden rounded-2xl shadow-md"
-              >
-                <img
-                  src="/images/imgi_175_faisal-jewel.jpg"
-                  alt="Faisal Jewel 27-Story Five-Star Hotel"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-              </Link>
-            </div>
-
-            {/* Right Column: Title, Subtitle, Red Accent Bar, Paragraphs & Link */}
-            <div className="lg:col-span-5 space-y-4 order-1 lg:order-2">
-              <div>
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-slate-900 tracking-tight">
-                  Faisal Jewel
-                </h2>
-                <p className="font-serif text-base sm:text-lg text-slate-500 font-light mt-1.5">
-                  27-Story Five-Star Hotel
-                </p>
-                <div className="w-16 h-[2px] bg-[#7b002c] mt-4 mb-6" />
-              </div>
-
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans">
-                The 27-story Faisal Jewel introduces five-star hotel amenities within Faisal Hills. Recently partnered with Hilton Hotels, this landmark will attract local and international visitors, especially those exploring the religious and cultural heritage of Sikhism, Buddhism, and Islam.
-              </p>
-
-              <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed font-sans">
-                With its iconic design and strategic location, Faisal Jewel acts as a gateway to Northern Pakistan's tourism corridor, elevating Faisal Hills to a destination of global repute.
-              </p>
-
-              <div className="pt-4">
+              <ScrollReveal direction="right" delay={100} duration={800}>
                 <Link
                   href="/blocks/faisal-jewel-islamabad"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-900 hover:text-[#7b002c] border-b border-slate-900 hover:border-[#7b002c] pb-0.5 transition-all group"
+                  className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px] block group cursor-pointer overflow-hidden rounded-2xl shadow-md"
                 >
-                  <span>Explore Faisal Jewel</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <img
+                    src="/images/imgi_175_faisal-jewel.jpg"
+                    alt="Faisal Jewel 27-Story Five-Star Hotel"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
                 </Link>
-              </div>
+              </ScrollReveal>
             </div>
 
-          </div>
-        </div>
-      </section>
+            {/* Right Column: Text & CTA */}
+            <div className="lg:col-span-5 space-y-4 order-1 lg:order-2">
+              <ScrollReveal direction="up" delay={50}>
+                <div>
+                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-slate-900 tracking-tight">
+                    Faisal Jewel
+                  </h2>
+                  <p className="font-serif text-base sm:text-lg text-slate-500 font-light mt-1.5">
+                    27-Story Five-Star Hotel
+                  </p>
+                  <div className="w-16 h-[2px] bg-[#7b002c] mt-4 mb-6" />
+                </div>
+              </ScrollReveal>
 
+              <ScrollReveal direction="up" delay={150}>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans">
+                  The 27-story Faisal Jewel introduces five-star hotel amenities within Faisal Hills. Recently partnered with Hilton Hotels, this landmark will attract local and international visitors, especially those exploring the religious and cultural heritage of Sikhism, Buddhism, and Islam.
+                </p>
+              </ScrollReveal>
 
-      {/* 3.5 KEY SOCIETY LANDMARKS & INFRASTRUCTURE */}
-      <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+              <ScrollReveal direction="up" delay={250}>
+                <p className="text-slate-500 text-xs sm:text-sm italic leading-relaxed font-sans">
+                  With its iconic design and strategic location, Faisal Jewel acts as a gateway to Northern Pakistan's tourism corridor, elevating Faisal Hills to a destination of global repute.
+                </p>
+              </ScrollReveal>
 
-          {/* Section Header (Inspired by 2nd Image Layout) */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider">
-                <Building2 className="w-4 h-4 text-[#7b002c]" />
-                <span className="border-b-2 border-[#7b002c] pb-0.5">Modern Infrastructure</span>
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
-                Infrastructure Of Faisal Hills
-              </h2>
-            </div>
-
-            <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-start lg:items-end gap-4 max-w-2xl">
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xl">
-                Faisal Hills features wide streets and boulevards ranging from 40 to 225 feet, ensuring a spacious, organized, and aesthetically planned layout that meets the highest standards of urban design.
-              </p>
-              <button
-                onClick={() => setIsLeadModalOpen(true)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-6 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer group"
-              >
-                <MessageSquare className="w-4 h-4 text-white" />
-                <span>Inquire About Society Amenities</span>
-                <ArrowUpRight className="w-4 h-4 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </button>
-            </div>
-          </div>
-
-          {/* 8 Portrait Cards Grid matching 2nd Image UI Concept */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
-            {[
-              {
-                title: 'Hill Walk Boulevard',
-                subtitle: 'Vibrant Commercial Strip Inspired By Istiklal Street',
-                image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
-                icon: Compass,
-              },
-              {
-                title: 'Faisal Hills Arc',
-                subtitle: 'Architectural Landmark Entrance Monument',
-                image: '/images/faisalhillarc.jpg',
-                icon: Landmark,
-              },
-              {
-                title: 'Faisal Hills Aerial View',
-                subtitle: 'Gated Master-Planned Community',
-                image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-                icon: MapPin,
-              },
-              {
-                title: 'Faisal Jewel Skyscraper',
-                subtitle: '27-Story Luxury Hotel & Residences',
-                image: '/images/faisal-jewel.jpg',
-                icon: Building2,
-              },
-              {
-                title: 'Commercial Boulevard',
-                subtitle: 'Prime Retail Hub in Executive Block',
-                image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png',
-                icon: ShoppingBag,
-              },
-              {
-                title: 'Roots International School',
-                subtitle: 'Executive Block Faisal Hills Campus',
-                image: '/images/faisal-roots-school.jpg',
-                icon: GraduationCap,
-              },
-              {
-                title: 'Miyawaki Urban Forest',
-                subtitle: 'Block C Green Living Reserve',
-                image: '/images/faisal-forest.jpg',
-                icon: Trees,
-              },
-              {
-                title: 'Glow Park & Sports Arena',
-                subtitle: 'Block A Family Recreation Park',
-                image: '/images/faisal-park.jpg',
-                icon: Sparkles,
-              },
-            ].map((item, idx) => {
-              const IconComp = item.icon;
-              return (
-                <ScrollReveal
-                  key={idx}
-                  direction={idx % 2 === 0 ? "right" : "pop"}
-                  delay={(idx % 4) * 100}
-                >
-                  <div
-                    onClick={() => setIsLeadModalOpen(true)}
-                    className="group relative rounded-2xl md:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4] flex flex-col justify-end p-3.5 sm:p-4 border border-slate-200/80 cursor-pointer bg-slate-900 h-full"
+              <ScrollReveal direction="up" delay={350}>
+                <div className="pt-4">
+                  <Link
+                    href="/blocks/faisal-jewel-islamabad"
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-900 hover:text-[#7b002c] border-b border-slate-900 hover:border-[#7b002c] pb-0.5 transition-all group"
                   >
-                    {/* Full Background Image */}
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                    />
+                    <span>Explore Faisal Jewel</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </ScrollReveal>
+            </div>
 
-                    {/* Dark Contrast Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/5 group-hover:from-black/70 transition-colors duration-500" />
-
-                    {/* Top Right Floating Circle Icon */}
-                    <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-10">
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#7b002c] text-white flex items-center justify-center shadow-lg border border-white/20 group-hover:bg-[#9e1245] group-hover:scale-110 transition-all duration-300">
-                        <IconComp className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-
-                    {/* Bottom White Overlay Card Pill */}
-                    <div className="relative z-10 w-full bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-3.5 text-center shadow-xl border border-white/80 group-hover:bg-white transition-all duration-300 transform group-hover:-translate-y-1">
-                      <h3 className="font-serif font-bold text-[#7b002c] text-sm sm:text-base leading-snug group-hover:text-[#9e1245] transition-colors line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-slate-600 text-[11px] sm:text-xs font-semibold mt-0.5 tracking-tight line-clamp-1">
-                        {item.subtitle}
-                      </p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              );
-            })}
           </div>
-
         </div>
       </section>
 
-
-      {/* 4. OFFICIAL MASTER PLAN MAP */}
-      <ScrollReveal className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6 pt-4">
-
+      {/* ========================================================= */}
+      {/* SECTION 5 — OFFICIAL MASTER PLAN MAP BLUEPRINT            */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6 py-12 lg:py-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
+          <ScrollReveal direction="up" delay={50}>
             <span className="label-caps text-[#7b002c] font-bold block mb-1">Official Society Blueprint</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
               Faisal Hills Master Plan Map
             </h2>
             <p className="text-slate-600 text-sm mt-1 max-w-xl">
-              Explore the complete high-resolution master plan map of Faisal Hills. Use the zoom controls to zoom up to 350% and inspect plot details, street numbers, and sector layouts.
+              Inspect plot dimensions, street layouts, and sector avenues with deep zoom controls up to 1200%.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <ScrollReveal direction="up" delay={150} className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsMapDownloadModalOpen(true)}
               className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
@@ -863,270 +593,177 @@ export default function HomePage() {
               <span>Launch Fullscreen Map</span>
               <ArrowRight className="w-4 h-4 text-[#7b002c]" />
             </Link>
-          </div>
+          </ScrollReveal>
         </div>
 
-        {/* High-Resolution Master Plan Map Viewer */}
         <div className="mt-6">
           <MasterPlanViewer />
         </div>
+      </section>
 
-      </ScrollReveal>
+      {/* ========================================================= */}
+      {/* SECTION 6 — BLOCKS & SECTORS EXPLORER (TABBED & GRID)     */}
+      {/* ========================================================= */}
+      <section id="blocks-section" className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 py-12 lg:py-16">
 
-
-      {/* 5. BLOCKS & SECTORS EXPLORER (TABBED & GRID) */}
-      <section id="blocks-section" className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 pt-6">
-
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
-          <div>
-            <span className="label-caps text-[#7b002c] font-bold block mb-1">Explore All Sectors</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
+        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+          <ScrollReveal direction="up" delay={50} className="space-y-1">
+            <span className="label-caps text-[#7b002c] font-bold block">Explore All Sectors</span>
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c]">
               Faisal Hills Blocks & Commercial Projects
             </h2>
-          </div>
+          </ScrollReveal>
 
-          {/* Tabs - Single Inline Row */}
-          <div className="flex items-center flex-nowrap overflow-x-auto whitespace-nowrap bg-slate-200/80 p-1.5 rounded-xl gap-1 max-w-full">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'all' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+          {/* Tabs - Compact Single Inline Row */}
+          <ScrollReveal direction="up" delay={150}>
+            <div className="inline-flex items-center flex-nowrap bg-slate-200/80 p-1 rounded-xl gap-1 whitespace-nowrap">
+              <button
+                onClick={() => setActiveTab('all')}
+                className={`px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                  activeTab === 'all' ? 'bg-[#7b002c] text-white shadow-xs' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
-            >
-              All Projects & Blocks ({blocks.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('developed')}
-              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'developed' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              >
+                All Projects ({blocks.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('developed')}
+                className={`px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                  activeTab === 'developed' ? 'bg-[#7b002c] text-white shadow-xs' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
-            >
-              Developed Blocks ({developedBlocks.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('rising')}
-              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'rising' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              >
+                Developed ({developedBlocks.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('rising')}
+                className={`px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                  activeTab === 'rising' ? 'bg-[#7b002c] text-white shadow-xs' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
-            >
-              Rising Projects ({risingProjects.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('upcoming')}
-              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'upcoming' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              >
+                Rising ({risingProjects.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('upcoming')}
+                className={`px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                  activeTab === 'upcoming' ? 'bg-[#7b002c] text-white shadow-xs' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
-            >
-              Upcoming ({upcomingBlocks.length})
-            </button>
-          </div>
+              >
+                Upcoming ({upcomingBlocks.length})
+              </button>
+            </div>
+          </ScrollReveal>
         </div>
 
         {/* Sectors & Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedBlocks.map((block) => (
-            <Link
-              key={block.id}
-              href={`/blocks/${block.slug}`}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
-            >
-              <div>
-                {/* Image Banner */}
-                <div className="relative h-52 w-full overflow-hidden bg-slate-900 img-zoom-container">
-                  <img
-                    src={block.heroImage}
-                    alt={block.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+          {displayedBlocks.map((block, idx) => (
+            <ScrollReveal key={block.id} direction="up" delay={(idx % 3) * 100}>
+              <Link
+                href={`/blocks/${block.slug}`}
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline h-full"
+              >
+                <div>
+                  {/* Image Banner */}
+                  <div className="relative h-52 w-full overflow-hidden bg-slate-900 img-zoom-container">
+                    <img
+                      src={block.heroImage}
+                      alt={block.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
-                  <div className="absolute top-4 left-4 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md border border-white/20">
-                    {block.status}
+                    <div className="absolute top-4 left-4 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md border border-white/20">
+                      {block.status}
+                    </div>
+
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <span className="label-caps text-[9px] text-slate-300 block">{block.subtitle}</span>
+                      <h4 className="font-serif font-bold text-2xl group-hover:text-[#7b002c] transition-colors">{block.name}</h4>
+                    </div>
                   </div>
 
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="label-caps text-[9px] text-slate-300 block">{block.subtitle}</span>
-                    <h4 className="font-serif font-bold text-2xl group-hover:text-[#7b002c] transition-colors">{block.name}</h4>
+                  {/* Body Content */}
+                  <div className="p-6 space-y-4">
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {block.description}
+                    </p>
+
+                    <div className="space-y-2 bg-slate-50 p-4 rounded-xl text-xs border border-slate-200/80 group-hover:bg-slate-100/50 group-hover:border-slate-300 transition-colors">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 font-medium">
+                          {block.category === 'commercial_project' ? 'Apartments / Units:' : 'Residential Plot Rates:'}
+                        </span>
+                        <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.residential}</strong>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 font-medium">Commercial Rates:</span>
+                        <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.commercial}</strong>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Body Content */}
-                <div className="p-6 space-y-4">
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                    {block.description}
-                  </p>
-
-                  <div className="space-y-2 bg-slate-50 p-4 rounded-xl text-xs border border-slate-200/80 group-hover:bg-slate-100/50 group-hover:border-slate-300 transition-colors">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 font-medium">
-                        {block.category === 'commercial_project' ? 'Apartments / Units:' : 'Residential Plot Rates:'}
-                      </span>
-                      <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.residential}</strong>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 font-medium">Commercial Rates:</span>
-                      <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.commercial}</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-100">
-                <span className="text-[10px] text-slate-400 font-semibold">
-                  Verified: {block.verificationDate}
-                </span>
-
-                <span
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] group-hover:text-[#9e1245] transition-colors"
-                >
-                  <span>
-                    {block.category === 'commercial_project' ? 'View Project Details' : 'Explore Block Layout'}
+                {/* Footer */}
+                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-semibold">
+                    Verified: {block.verificationDate}
                   </span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
 
-            </Link>
+                  <span
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] group-hover:text-[#9e1245] transition-colors"
+                  >
+                    <span>
+                      {block.category === 'commercial_project' ? 'View Project Details' : 'Explore Block Layout'}
+                    </span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
+      {/* ========================================================= */}
+      {/* SECTION 7 — PLOT OFFERINGS & FEATURED READY FOR SALE      */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 py-4">
 
-      {/* 6. LOCATION ACCESSIBILITY & DISTANCE MATRIX SECTION */}
-      <section className="bg-slate-50 text-slate-900 py-16 px-6 lg:px-12 border-y border-slate-200/80 relative overflow-hidden">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
-
-          <ScrollReveal direction="right" className="lg:col-span-5 space-y-4">
-            <span className="label-caps text-[#7b002c] font-bold block mb-1">Prime Connectivity</span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
-              Strategic Location on <span className="text-[#7b002c] italic">N-5 GT Road Taxila</span>.
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
+          <ScrollReveal direction="up" delay={50} className="space-y-2 max-w-2xl">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Plot Offerings</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
+              Explore Our Plot Categories in Faisal Hills Islamabad
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Faisal Hills enjoys an enviable geographic location directly on N-5 GT Road, placing residents within quick driving distance to key educational, medical, and transport hubs of Rawalpindi and Islamabad.
+              Whether you are planning to build a family home, develop a commercial enterprise, or secure a long-term investment, Faisal Hills Islamabad has a plot designed for your specific goal.
             </p>
           </ScrollReveal>
 
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
-
-            {/* Location 1 */}
-            <ScrollReveal direction="left" delay={0}>
-              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
-                      Taxila Museum Circle
-                    </strong>
-                    <span className="text-slate-500 text-xs block mt-1 font-sans">
-                      Historical & Cultural Center
-                    </span>
-                  </div>
-                </div>
-                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
-                  5 Mins Drive
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Location 2 */}
-            <ScrollReveal direction="left" delay={100}>
-              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
-                      CPEC / M-1 Motorway
-                    </strong>
-                    <span className="text-slate-500 text-xs block mt-1 font-sans">
-                      Direct Highway Access
-                    </span>
-                  </div>
-                </div>
-                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
-                  10 Mins Drive
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Location 3 */}
-            <ScrollReveal direction="left" delay={200}>
-              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
-                    <Building2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
-                      Islamabad Airport
-                    </strong>
-                    <span className="text-slate-500 text-xs block mt-1 font-sans">
-                      International Terminal
-                    </span>
-                  </div>
-                </div>
-                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
-                  15 Mins Drive
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Location 4 */}
-            <ScrollReveal direction="left" delay={300}>
-              <div className="bg-white p-5 rounded-2xl border border-slate-200/90 hover:border-[#7b002c] shadow-sm hover:shadow-xl transition-all duration-300 flex items-center justify-between gap-4 group h-full">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20 group-hover:bg-[#7b002c] group-hover:text-white transition-all">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <strong className="text-slate-900 block font-serif font-bold text-base leading-tight group-hover:text-[#7b002c] transition-colors">
-                      Zero Point & Blue Area
-                    </strong>
-                    <span className="text-slate-500 text-xs block mt-1 font-sans">
-                      Capital Business District
-                    </span>
-                  </div>
-                </div>
-                <span className="bg-[#7b002c] text-white font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md shrink-0 whitespace-nowrap">
-                  20 Mins Drive
-                </span>
-              </div>
-            </ScrollReveal>
-
-          </div>
-
-        </div>
-      </section>
-
-
-      {/* 7. DIRECT FEATURED PLOT LISTINGS SHOWCASE */}
-      <section className="bg-white py-20 px-6 lg:px-12 border-b border-slate-200">
-        <div className="max-w-[1440px] mx-auto space-y-10">
-
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span className="label-caps text-[#7b002c] font-bold block mb-1">Direct Market Inventory</span>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
-                Featured Plots Ready For Sale
-              </h2>
-              <p className="text-slate-600 text-sm mt-1">Direct owner & dealer verified plots in Executive Block, Block A, B & C.</p>
-            </div>
-
+          <ScrollReveal direction="up" delay={150}>
             <Link
               href="/plots"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold shadow-md transition-all hover:scale-105 shrink-0"
             >
               <span>Explore All {plots.length}+ Listings</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
-          </div>
+          </ScrollReveal>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plots.slice(0, 4).map((plot) => (
+        <ScrollReveal direction="up" delay={100}>
+          <h3 className="font-serif text-2xl font-bold text-slate-900 border-l-4 border-[#7b002c] pl-3">
+            Residential Plots — Build Your Dream Home
+          </h3>
+        </ScrollReveal>
+
+        {/* 4 Plot Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {plots.slice(0, 4).map((plot, idx) => (
+            <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 100}>
               <Link
-                key={plot.id}
                 href={`/plots/${plot.id}`}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline h-full"
               >
                 <div>
                   {/* Image Banner Container */}
@@ -1186,16 +823,548 @@ export default function HomePage() {
                   </span>
                 </div>
               </Link>
-            ))}
+            </ScrollReveal>
+          ))}
+        </div>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 8 — WHY CHOOSE US (6 Pillars)                     */}
+      {/* ========================================================= */}
+      <section className="bg-white py-16 px-6 lg:px-12 border-y border-slate-200">
+        <div className="max-w-[1440px] mx-auto space-y-10">
+
+          <div className="max-w-3xl space-y-3">
+            <ScrollReveal direction="up" delay={50}>
+              <span className="label-caps text-[#7b002c] font-bold block mb-1">Why Choose Us?</span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c]">
+                Why Thousands of Investors Choose Faisal Hills
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={150}>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                With dozens of housing societies competing for attention across the Islamabad–Rawalpindi belt, choosing where to invest your life savings requires more than a brochure. Here is why discerning buyers consistently choose Faisal Hills Islamabad over every alternative:
+              </p>
+            </ScrollReveal>
           </div>
+
+          {/* 6 H3 Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: 'Verified Legal Standing',
+                desc: 'Faisal Hills holds its CDA approval and all relevant NOC documentation in order — a non-negotiable for any serious investor. In an era of unverified schemes, this single fact separates Faisal Hills from the crowd. Every plot sold here comes with a clear title and documented legal standing.',
+                icon: ShieldCheck
+              },
+              {
+                title: 'A Developer You Can Trust',
+                desc: 'Zedem International has been active in Pakistan\'s real estate sector for over a decade. Their track record includes delivering projects on schedule, maintaining transparent communication with buyers, and upholding commitments made at the time of booking. In a market where developer reputation is everything, Zedem\'s credibility speaks for itself.',
+                icon: Award
+              },
+              {
+                title: 'Unbeatable Location Advantage',
+                desc: 'Positioned directly on GT Road, Faisal Hills enjoys connectivity that most societies can only aspire to. The Islamabad Expressway, M-1 Motorway interchange, and Taxila city centre are all within easy reach, making daily commuting effortless and the society\'s long-term appreciation all but guaranteed.',
+                icon: Compass
+              },
+              {
+                title: 'Flexible Payment Plans',
+                desc: 'Not everyone can afford a lump-sum property purchase — and Faisal Hills understands that. The society offers structured instalment plans that spread your investment over manageable timelines, allowing salaried professionals, business owners, and overseas Pakistanis to enter the market without financial strain.',
+                icon: Calculator
+              },
+              {
+                title: 'Master-Planned Infrastructure',
+                desc: 'Wide carpeted roads, underground utilities, a dedicated parks and green spaces network, a commercial hub, educational institutions, and healthcare facilities — Faisal Hills is designed with the complete lifestyle in mind, not just the property boundary.',
+                icon: Landmark
+              },
+              {
+                title: 'Proven Investment Returns',
+                desc: 'Property prices in Faisal Hills have appreciated significantly since the society\'s launch. Early investors have already seen substantial capital gains, and analysts continue to project upward momentum as infrastructure development accelerates and more facilities come online in 2026 and beyond.',
+                icon: TrendingUp
+              },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <ScrollReveal key={idx} direction="up" delay={idx * 80}>
+                  <div className="bg-slate-50 p-7 rounded-2xl border border-slate-200 hover:border-[#7b002c] shadow-sm hover:shadow-lg transition-all space-y-4 h-full flex flex-col justify-start">
+                    <div className="w-12 h-12 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center border border-[#7b002c]/20">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-serif font-bold text-xl text-slate-900">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                      {item.desc}
+                    </p>
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+
         </div>
       </section>
 
-      {/* 7. ON-SITE DEVELOPMENT & PROJECT PHOTO GALLERY */}
+      {/* ========================================================= */}
+      {/* SECTION 9 — LOCATION & CONNECTIVITY                       */}
+      {/* ========================================================= */}
+      <section className="bg-slate-50 text-slate-900 py-16 px-6 lg:px-12 border-b border-slate-200 relative overflow-hidden">
+        <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+          <ScrollReveal direction="right" className="lg:col-span-6 space-y-4">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Location & Connectivity</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+              Faisal Hills Islamabad — A Location That Sets It Apart
+            </h2>
+            <div className="space-y-3 text-slate-600 text-xs sm:text-sm leading-relaxed">
+              <p>
+                The Faisal Hills Islamabad location is one of its defining advantages. Situated on the Grand Trunk Road (GT Road) near Taxila, the society sits at a natural crossroads between Pakistan's federal capital and the historic industrial city of Taxila — combining the prestige of an Islamabad address with the affordability of a Taxila postcode.
+              </p>
+              <p>
+                The GT Road has been a commercial and commuter artery for centuries, and today it connects Faisal Hills to virtually every major destination in the twin cities within 30–45 minutes.
+              </p>
+              <p>
+                The Islamabad Expressway expansion and ongoing GT Road dualization projects are actively reducing commute times and increasing the connectivity of Faisal Hills Islamabad to the wider region. Infrastructure development at this scale directly drives property values upward — making now an ideal time to enter the market before appreciation accelerates further.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                href="/master-plan"
+                className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-1 transition-all"
+              >
+                <span>Explore Complete Location Map & Sector Boundaries</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </ScrollReveal>
+
+          {/* Location Distance Matrix Cards */}
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            {[
+              { title: 'Taxila Museum Circle', subtitle: 'Historical & Cultural Center', time: '5 Mins Drive', icon: Landmark },
+              { title: 'CPEC / M-1 Motorway', subtitle: 'Direct Highway Access', time: '10 Mins Drive', icon: Compass },
+              { title: 'Islamabad Airport', subtitle: 'International Terminal', time: '15 Mins Drive', icon: Building2 },
+              { title: 'Zero Point & Blue Area', subtitle: 'Capital Business District', time: '20 Mins Drive', icon: TrendingUp },
+            ].map((loc, idx) => {
+              const Icon = loc.icon;
+              return (
+                <ScrollReveal key={idx} direction="left" delay={idx * 100}>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4 h-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center shrink-0 border border-[#7b002c]/20">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <strong className="text-slate-900 block font-serif font-bold text-sm leading-tight">
+                          {loc.title}
+                        </strong>
+                        <span className="text-slate-500 text-[11px] block mt-0.5">
+                          {loc.subtitle}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="bg-[#7b002c] text-white font-bold px-3 py-1 rounded-full text-[11px] shadow-sm shrink-0 whitespace-nowrap">
+                      {loc.time}
+                    </span>
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 10 — PAYMENT PLAN 2026                            */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <ScrollReveal direction="up" delay={50} className="max-w-2xl space-y-2">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Payment Plan 2026</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
+              Flexible Payments, Transparent Pricing
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              One of the most frequently asked questions we receive is about the Faisal Hills Islamabad payment plan — and for good reason. Property investment is a significant financial commitment, and knowing exactly what you owe, when you owe it, and what you get in return is fundamental to making a confident decision.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={150}>
+            <Link href="/payment-plan" className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3 rounded-xl border border-slate-300 shadow-sm transition">
+              <Calculator className="w-4 h-4 text-[#7b002c]" />
+              <span>Open Custom Calculator</span>
+            </Link>
+          </ScrollReveal>
+        </div>
+
+        {/* 4 H3 Pillars: How the Payment Plan Works */}
+        <div className="space-y-4">
+          <strong className="text-xs font-bold uppercase tracking-wider text-slate-800 block">
+            How the Payment Plan Works
+          </strong>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { title: 'Booking Amount', desc: 'A percentage of total plot value is paid at the time of booking to secure your specific plot and block.' },
+              { title: 'Down Payment', desc: 'A further tranche paid within 30–60 days of booking to confirm the allocation.' },
+              { title: 'Easy Instalments', desc: 'The remaining balance is spread across quarterly or bi-annual instalments over a period of 2–4 years, depending on the selected plan.' },
+              { title: 'No Frills', desc: 'All applicable fees (development charges, transfer fees) are disclosed upfront at the time of booking.' },
+            ].map((pill, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 80}>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 h-full">
+                  <h3 className="font-serif font-bold text-base text-[#7b002c]">
+                    {pill.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {pill.desc}
+                  </p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+
+        {/* Schedule Table */}
+        <ScrollReveal direction="up" delay={200}>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-bold">
+                  <tr>
+                    <th className="p-4">Block Sector</th>
+                    <th className="p-4">Plot Size</th>
+                    <th className="p-4">Total Price</th>
+                    <th className="p-4">20% Booking Down Payment</th>
+                    <th className="p-4">Monthly Installment</th>
+                    <th className="p-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800">
+                  {paymentPlansData.map((plan) => (
+                    <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-4 font-bold text-[#7b002c] font-serif text-sm">{plan.blockName}</td>
+                      <td className="p-4 font-semibold">{plan.plotSize}</td>
+                      <td className="p-4 font-bold text-slate-900">PKR {(plan.totalPrice / 100000).toFixed(1)} Lacs</td>
+                      <td className="p-4 text-[#7b002c] font-bold">PKR {(plan.downPayment / 100000).toFixed(2)} Lacs</td>
+                      <td className="p-4 font-semibold text-slate-700">PKR {plan.monthlyInstallment.toLocaleString()} / mo</td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => setIsLeadModalOpen(true)}
+                          className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg transition-all cursor-pointer"
+                        >
+                          Book Schedule
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </ScrollReveal>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 11 — HOW TO BOOK (A Simple 5-Step Booking Process)*/}
+      {/* ========================================================= */}
+      <StickyHorizontalBookingSteps />
+
+      {/* ========================================================= */}
+      {/* SECTION 12 — INVESTMENT BENEFITS                          */}
+      {/* ========================================================= */}
+      <section className="bg-white py-16 px-6 lg:px-12 border-y border-slate-200">
+        <div className="max-w-[1440px] mx-auto space-y-10">
+
+          <div className="max-w-3xl space-y-3">
+            <ScrollReveal direction="up" delay={50}>
+              <span className="label-caps text-[#7b002c] font-bold block mb-1">Investment Benefits</span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c]">
+                Why Faisal Hills Is One of Pakistan's Smartest Property Investments
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={150}>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                A great housing society is more than land and roads. It is the infrastructure around your property that determines your daily quality of life. Faisal Hills Islamabad has been master-planned to deliver a comprehensive lifestyle ecosystem — everything you need, within the community you call home.
+              </p>
+            </ScrollReveal>
+          </div>
+
+          {/* 6 H3 Investment Benefit Items */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: 'Capital Appreciation',
+                desc: 'Plots in Faisal Hills have appreciated significantly since the society launched. Early investors who purchased at launch-phase prices have seen returns well above the national inflation average — a testament to the power of investing in legally sound, developer-backed projects with genuine infrastructure delivery.'
+              },
+              {
+                title: 'High ROI Property in Pakistan',
+                desc: 'The combination of GT Road accessibility, proximity to Islamabad\'s economic core, CDA approval, and active construction makes Faisal Hills Islamabad one of the highest ROI property propositions currently available in the Pakistan real estate market. As the society matures, rental yields from commercial plots in particular are expected to be compelling.'
+              },
+              {
+                title: 'Smart Investment Opportunity 2026',
+                desc: 'With Pakistan\'s growing urban population placing pressure on housing supply in and around Islamabad, demand for Taxila housing societies — particularly those with legal standing and quality infrastructure — is accelerating. Faisal Hills is perfectly positioned to benefit from this demographic and economic tailwind. 2026 is being widely described as an inflection point for smart investment in Islamabad\'s suburbs.'
+              },
+              {
+                title: 'Gated Community Lifestyle',
+                desc: 'Beyond the numbers, Faisal Hills offers something that pure investment metrics cannot fully capture: a quality of life. Gated community infrastructure means security, clean streets, green spaces, and a community of like-minded residents — an environment that is increasingly difficult to find at this price point anywhere in the twin cities.'
+              },
+              {
+                title: 'Accessible from Islamabad Expressway',
+                desc: 'For daily commuters, the Islamabad Expressway accessibility of Faisal Hills is a game-changer. Residents can reach key employment, education, and commercial hubs in Islamabad without the frustration of inner-city traffic — a genuine lifestyle upgrade that directly supports long-term demand for plots here.'
+              },
+              {
+                title: 'Strategic Location with Exceptional Growth Potential',
+                desc: 'Faisal Hills stands out as one of Pakistan\'s smartest property investment destinations due to its prime location, modern infrastructure, and long-term growth prospects. Situated near Islamabad and major transportation routes, the project offers convenient connectivity while maintaining a peaceful residential environment.'
+              },
+            ].map((benefit, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 80}>
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c] shadow-xs space-y-3 h-full">
+                  <div className="flex items-center gap-2 text-[#7b002c]">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <h3 className="font-serif font-bold text-lg text-slate-900">
+                      {benefit.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                    {benefit.desc}
+                  </p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 13 — AMENITIES & LIFESTYLE                        */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+
+        <div className="max-w-3xl space-y-3">
+          <ScrollReveal direction="up" delay={50}>
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Amenities & Lifestyle</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c]">
+              Amenities Designed for Modern Living
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={150}>
+            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              A great housing society is more than land and roads. It is the infrastructure around your property that determines your daily quality of life. Faisal Hills Islamabad has been master-planned to deliver a comprehensive lifestyle ecosystem — everything you need, within the community you call home.
+            </p>
+          </ScrollReveal>
+        </div>
+
+        {/* 6 H3 Amenity Categories */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              title: 'Connectivity & Infrastructure',
+              bullets: ['Wide carpeted boulevards and road network', 'Underground electricity, gas, and water supply', 'State-of-the-art boundary wall and main gate']
+            },
+            {
+              title: 'Community & Recreation',
+              bullets: ['Central park and community gardens', 'Dedicated jogging and cycling tracks', 'Community centre and function hall']
+            },
+            {
+              title: 'Education & Healthcare',
+              bullets: ['Site reserved for school and college campus', 'Planned healthcare facility and pharmacy zone', 'Close proximity to Taxila\'s existing medical infrastructure']
+            },
+            {
+              title: 'Commercial & Retail',
+              bullets: ['Commercial hub along main boulevard', 'Retail strip and marketplace for daily needs', 'Dedicated food street concept under planning']
+            },
+            {
+              title: 'Security & Management',
+              bullets: ['24/7 gated community security', 'CCTV surveillance on main arteries', 'Trained security personnel at all entry points', 'Professional society management company']
+            },
+            {
+              title: 'Premium Amenities',
+              bullets: ['Wide carpeted boulevards and modern road infrastructure', 'Underground electricity, gas, and water supply', 'Central park, jogging tracks, and recreational spaces']
+            },
+          ].map((cat, idx) => (
+            <ScrollReveal key={idx} direction="up" delay={idx * 80}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-4 h-full">
+                <h3 className="font-serif font-bold text-lg text-[#7b002c] border-b border-slate-100 pb-2">
+                  {cat.title}
+                </h3>
+                <ul className="space-y-2 text-xs text-slate-600 font-sans">
+                  {cat.bullets.map((b, bIdx) => (
+                    <li key={bIdx} className="flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] mt-1.5 shrink-0" />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 14 — TESTIMONIALS                                 */}
+      {/* ========================================================= */}
+      <section className="bg-slate-50 py-16 px-6 lg:px-12 border-y border-slate-200">
+        <div className="max-w-[1440px] mx-auto space-y-10">
+
+          <div className="max-w-3xl space-y-3">
+            <ScrollReveal direction="up" delay={50}>
+              <span className="label-caps text-[#7b002c] font-bold block mb-1">Testimonials</span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c]">
+                What Our Investors Say About Faisal Hills
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={150}>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                A great housing society is more than land and roads. It is the infrastructure around your property that determines your daily quality of life. Faisal Hills Islamabad has been master-planned to deliver a comprehensive lifestyle ecosystem — everything you need, within the community you call home.
+              </p>
+            </ScrollReveal>
+          </div>
+
+          {/* 3 Review Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "I have invested in three housing societies in the Islamabad belt, and Faisal Hills stands out for one simple reason: they do exactly what they promise. The payment schedule was followed precisely, the development is visible and progressing, and my plot has already appreciated well above what I paid. For anyone serious about Islamabad real estate investment, this is the society I recommend.",
+                name: "Muhammad Imran",
+                tagline: "Overseas Pakistani (UAE) | 10 Marla Residential Plot"
+              },
+              {
+                quote: "As a first-time property buyer, I was nervous about making the right choice. The Faisal Hills team spent over an hour with me explaining the booking details, the NOC status, and every charge that would apply. There were no surprises. The process was smooth, the documents arrived on time, and I now own a verified, legal plot near Islamabad at a price I can actually afford on a monthly instalment plan.",
+                name: "Sana Raza",
+                tagline: "Islamabad | 5 Marla Residential Plot"
+              },
+              {
+                quote: "I was looking specifically for commercial plot investment in the Islamabad suburbs — somewhere with GT Road access and a growing residential base that would create organic demand. Faisal Hills ticks every box. The commercial zones are well-placed, the residential sectors are filling up, and I am confident the rental yield on my commercial plot will be excellent once the area fully develops.",
+                name: "Tariq Mahmood",
+                tagline: "Rawalpindi | 4 Marla Commercial Plot"
+              },
+            ].map((review, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 100}>
+                <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all space-y-4 flex flex-col justify-between h-full">
+                  <div className="space-y-3">
+                    <Quote className="w-8 h-8 text-[#7b002c]/30" />
+                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic font-serif">
+                      "{review.quote}"
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-100 pt-3">
+                    <cite className="not-italic block font-bold text-slate-900 text-sm">
+                      {review.name}
+                    </cite>
+                    <span className="text-[11px] text-slate-500 block font-medium mt-0.5">
+                      {review.tagline}
+                    </span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 15 — INFRASTRUCTURE & LANDMARKS                   */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <ScrollReveal direction="up" delay={50} className="space-y-2 max-w-2xl">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Modern Infrastructure</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c]">
+              Infrastructure of Faisal Hills
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              Faisal Hills features wide streets and boulevards ranging from 40 to 225 feet, ensuring a spacious, organized, and aesthetically planned layout that meets the highest standards of urban design.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={150}>
+            <a
+              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20know%20more%20about%20Faisal%20Hills%20Infrastructure%20and%20Landmarks."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105"
+            >
+              <MessageSquare className="w-4 h-4 text-white" />
+              <span>Chat On WhatsApp</span>
+            </a>
+          </ScrollReveal>
+        </div>
+
+        {/* 8 H3 Landmark Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+          {[
+            {
+              title: 'Hill Walk — A vibrant boulevard inspired by Istiklal Street',
+              image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+            },
+            {
+              title: 'Faisal Hills Arc — Architectural Landmark',
+              image: '/images/faisalhillarc.jpg',
+            },
+            {
+              title: 'Faisal Jewel — 27-Storey Five-Star Hotel',
+              image: '/images/faisal-jewel.jpg',
+            },
+            {
+              title: 'Sports Arena — Executive Block',
+              image: '/images/faisal-park.jpg',
+            },
+            {
+              title: 'Roots International Schools & Colleges, Faisal Hills Campus — Executive Block',
+              image: '/images/faisal-roots-school.jpg',
+            },
+            {
+              title: 'Miyawaki Forest — Block C',
+              image: '/images/faisal-forest.jpg',
+            },
+            {
+              title: 'Faisal Hills Downtown — Civic Center',
+              image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png',
+            },
+            {
+              title: 'Glow Park — Block A',
+              image: '/images/faisal-park.jpg',
+            },
+          ].map((item, idx) => (
+            <ScrollReveal key={idx} direction="pop" delay={(idx % 4) * 80}>
+              <div className="group relative rounded-2xl overflow-hidden shadow-md aspect-[4/5] flex flex-col justify-end p-4 border border-slate-200 bg-slate-900 h-full">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                <div className="relative z-10 w-full bg-white/95 backdrop-blur-md rounded-xl p-3 text-center shadow-md">
+                  <h3 className="font-serif font-bold text-[#7b002c] text-xs sm:text-sm leading-snug line-clamp-2">
+                    {item.title}
+                  </h3>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 15.5 — ON-SITE CONSTRUCTION & PHOTO GALLERY       */}
+      {/* ========================================================= */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 py-6" id="gallery-section">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
+          <ScrollReveal direction="up" delay={50} className="space-y-2">
             <span className="label-caps text-[#7b002c] font-bold block uppercase tracking-widest text-xs flex items-center gap-1.5">
               <Camera className="w-4 h-4 text-[#7b002c]" />
               <span>Verified Site Photos</span>
@@ -1206,10 +1375,10 @@ export default function HomePage() {
             <p className="text-slate-600 text-sm max-w-xl">
               Real-time photography of Faisal Hills entrance portals, wide boulevards, Grand Jamia Mosque, and Faisal Jewels skyscraper construction.
             </p>
-          </div>
+          </ScrollReveal>
 
           {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-2">
+          <ScrollReveal direction="up" delay={150} className="flex flex-wrap gap-2">
             {['All', 'Infrastructure', 'Towers', 'Amenities', 'Entrance'].map((cat) => (
               <button
                 key={cat}
@@ -1223,47 +1392,48 @@ export default function HomePage() {
                 {cat}
               </button>
             ))}
-          </div>
+          </ScrollReveal>
         </div>
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGallery.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setLightboxImage(item)}
-              className="group relative bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 cursor-pointer h-72"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+          {filteredGallery.map((item, idx) => (
+            <ScrollReveal key={item.id} direction="pop" delay={(idx % 3) * 100}>
+              <div
+                onClick={() => setLightboxImage(item)}
+                className="group relative bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 cursor-pointer h-72"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
 
-              <div className="absolute top-3 left-3">
-                <span className="bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20">
-                  {item.category}
-                </span>
-              </div>
+                <div className="absolute top-3 left-3">
+                  <span className="bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20">
+                    {item.category}
+                  </span>
+                </div>
 
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center shadow">
-                  <Maximize2 className="w-4 h-4" />
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center shadow">
+                    <Maximize2 className="w-4 h-4" />
+                  </div>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
+                  <h4 className="font-serif font-bold text-base group-hover:text-amber-300 transition-colors line-clamp-1">
+                    {item.title}
+                  </h4>
+                  {item.description && (
+                    <p className="text-xs text-slate-300 line-clamp-2 leading-snug">
+                      {item.description}
+                    </p>
+                  )}
                 </div>
               </div>
-
-              <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
-                <h4 className="font-serif font-bold text-base group-hover:text-amber-300 transition-colors line-clamp-1">
-                  {item.title}
-                </h4>
-                {item.description && (
-                  <p className="text-xs text-slate-300 line-clamp-2 leading-snug">
-                    {item.description}
-                  </p>
-                )}
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
@@ -1310,118 +1480,69 @@ export default function HomePage() {
 
       </section>
 
-
-      {/* 8. EASY PAYMENT SCHEDULE MATRIX */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <span className="label-caps text-[#7b002c] font-bold block mb-1">Financial Investment</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#7b002c]">
-              36-Month Easy Installment Schedule
-            </h2>
-            <p className="text-slate-600 text-sm mt-1">Book your plot with just 20% down payment and pay over 3 easy years.</p>
-          </div>
-
-          <Link href="/payment-plan" className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3 rounded-xl border border-slate-300 shadow-sm transition">
-            <Calculator className="w-4 h-4 text-[#7b002c]" />
-            <span>Open Custom Calculator</span>
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-bold">
-                <tr>
-                  <th className="p-4">Block Sector</th>
-                  <th className="p-4">Plot Size</th>
-                  <th className="p-4">Total Price</th>
-                  <th className="p-4">20% Booking Down Payment</th>
-                  <th className="p-4">Monthly Installment</th>
-                  <th className="p-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800">
-                {paymentPlansData.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-bold text-[#7b002c] font-serif text-sm">{plan.blockName}</td>
-                    <td className="p-4 font-semibold">{plan.plotSize}</td>
-                    <td className="p-4 font-bold text-slate-900">PKR {(plan.totalPrice / 100000).toFixed(1)} Lacs</td>
-                    <td className="p-4 text-[#7b002c] font-bold">PKR {(plan.downPayment / 100000).toFixed(2)} Lacs</td>
-                    <td className="p-4 font-semibold text-slate-700">PKR {plan.monthlyInstallment.toLocaleString()} / mo</td>
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => setIsLeadModalOpen(true)}
-                        className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg transition-all"
-                      >
-                        Book Schedule
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </section>
-
-      {/* 8.4 DISCOVER FAISALTOWN STATS COUNTER SECTION (Matching Reference Image) */}
+      {/* ========================================================= */}
+      {/* SECTION 15.7 — DISCOVER FAISALTOWN (5-Counter Stats)      */}
+      {/* ========================================================= */}
       <section className="bg-white py-16 lg:py-20 border-y border-slate-100">
         <div className="max-w-[1200px] mx-auto px-6 text-center space-y-12">
 
           {/* Top Centered Section Label with Underline */}
-          <div>
+          <ScrollReveal direction="up" delay={50}>
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 border-b-2 border-slate-900 pb-1.5 inline-block">
               DISCOVER FAISALTOWN
             </span>
-          </div>
+          </ScrollReveal>
 
-          {/* Stats Grid matching reference layout */}
+          {/* Stats Grid */}
           <div className="space-y-12">
 
             {/* Top Row: 3 Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center">
 
               {/* Stat 1: 60k Total Area */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Maximize2 className="w-7 h-7 stroke-[1.5]" />
+              <ScrollReveal direction="up" delay={150}>
+                <div className="flex flex-col items-center text-center space-y-2 group">
+                  <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                    <Maximize2 className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                    <CountUpNumber end={60} suffix="k" duration={2200} />
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                    MILLION SQM TOTAL AREA
+                  </div>
                 </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={60} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
-                  MILLION SQM TOTAL AREA
-                </div>
-              </div>
+              </ScrollReveal>
 
               {/* Stat 2: 8 Total Projects */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Building2 className="w-7 h-7 stroke-[1.5]" />
+              <ScrollReveal direction="up" delay={250}>
+                <div className="flex flex-col items-center text-center space-y-2 group">
+                  <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                    <Building2 className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                    <CountUpNumber end={8} suffix="" duration={1800} />
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                    TOTAL PROJECTS
+                  </div>
                 </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={8} suffix="" duration={1800} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
-                  TOTAL PROJECTS
-                </div>
-              </div>
+              </ScrollReveal>
 
               {/* Stat 3: 130k Total Residential Units */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Home className="w-7 h-7 stroke-[1.5]" />
+              <ScrollReveal direction="up" delay={350}>
+                <div className="flex flex-col items-center text-center space-y-2 group">
+                  <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                    <Home className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                    <CountUpNumber end={130} suffix="k" duration={2200} />
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                    TOTAL RESIDENTIAL UNITS
+                  </div>
                 </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={130} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
-                  TOTAL RESIDENTIAL UNITS
-                </div>
-              </div>
+              </ScrollReveal>
 
             </div>
 
@@ -1429,30 +1550,34 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto gap-8 items-center justify-center">
 
               {/* Stat 4: 60k Commercial Units */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Store className="w-7 h-7 stroke-[1.5]" />
+              <ScrollReveal direction="up" delay={450}>
+                <div className="flex flex-col items-center text-center space-y-2 group">
+                  <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                    <Store className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                    <CountUpNumber end={60} suffix="k" duration={2200} />
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                    TOTAL COMMERCIAL UNITS
+                  </div>
                 </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={60} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
-                  TOTAL COMMERCIAL UNITS
-                </div>
-              </div>
+              </ScrollReveal>
 
               {/* Stat 5: 1.5M Total Population Capacity */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Users className="w-7 h-7 stroke-[1.5]" />
+              <ScrollReveal direction="up" delay={550}>
+                <div className="flex flex-col items-center text-center space-y-2 group">
+                  <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                    <Users className="w-7 h-7 stroke-[1.5]" />
+                  </div>
+                  <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                    <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2400} />
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[180px] leading-tight">
+                    TOTAL POPULATION CAPACITY
+                  </div>
                 </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2400} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[180px] leading-tight">
-                  TOTAL POPULATION CAPACITY
-                </div>
-              </div>
+              </ScrollReveal>
 
             </div>
 
@@ -1461,48 +1586,125 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8.5 HOW TO BOOK - STICKY HORIZONTAL SCROLL-DRIVEN SLIDER (Matching User Request) */}
-      <StickyHorizontalBookingSteps />
+      {/* ========================================================= */}
+      {/* SECTION 16 — BLOG                                         */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10 border-t border-slate-200 pt-16">
 
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <ScrollReveal direction="up" delay={50} className="space-y-2 max-w-2xl">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Our Recent Blog Posts</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+              Our Latest Articles and News for You
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              Stay updated with our latest articles and news covering insights, updates, and developments related to Faisal Hills.
+            </p>
+          </ScrollReveal>
 
-      {/* 9. SEO FAQS ACCORDION SECTION (Matching Reference Screenshot Design) */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24 border-t border-slate-100">
+          <ScrollReveal direction="up" delay={150}>
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-md transition-all hover:scale-105 shrink-0"
+            >
+              <span>View Blogs</span>
+              <ArrowUpRight className="w-4 h-4 text-white" />
+            </Link>
+          </ScrollReveal>
+        </div>
+
+        {/* 3 H3 Blog Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              title: "Faisal Hills Plots on Installments: Complete Bank Transfer Guide from Saudi Arabia to Pakistan",
+              desc: "For thousands of overseas Pakistanis working in the Gulf, owning land back home is more accessible than ever with secure bank transfer options...",
+              tag: "Saudi Arabia Guide",
+              img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
+              href: "/blogs/faisal-hills-plots-installments-bank-transfer-guide-saudi-arabia-pakistan"
+            },
+            {
+              title: "Faisal Hills Residential & Commercial Plots for Sale — Buyer Checklist for Riyadh, Jeddah & Dammam",
+              desc: "For thousands of Pakistanis working in Riyadh, Jeddah, and Dammam, owning a piece of land requires a structured verification process...",
+              tag: "Buyer Checklist",
+              img: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80",
+              href: "/blogs/faisal-hills-residential-commercial-plots-sale-buyer-checklist-riyadh-jeddah-dammam"
+            },
+            {
+              title: "Faisal Hills NOC Verification Guide for Saudi Pakistanis Plot Buying",
+              desc: "Buying property in Pakistan while living thousands of miles away in Riyadh, Jeddah, or Dammam demands verifiable regulatory clearances...",
+              tag: "NOC Verification",
+              img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+              href: "/blogs/faisal-hills-noc-verification-guide-saudi-pakistanis-plot-buying"
+            },
+          ].map((blog, idx) => (
+            <ScrollReveal key={idx} direction="right" delay={idx * 120}>
+              <Link href={blog.href} className="group flex flex-col space-y-4 cursor-pointer h-full">
+                <div className="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/10] bg-slate-100">
+                  <img
+                    src={blog.img}
+                    alt={blog.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                    {blog.tag}
+                  </div>
+                </div>
+                <div className="space-y-2 flex-1 flex flex-col justify-between">
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                    {blog.title}
+                  </h3>
+                  <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
+                    {blog.desc}
+                  </p>
+                </div>
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 17 — FAQS                                         */}
+      {/* ========================================================= */}
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
 
-          {/* Left Column: FAQ'S Label & FREQUENTLY ASKED QUESTIONS Headline */}
-          <div className="lg:col-span-4 space-y-3 sticky top-28">
-            <span className="text-xs font-bold text-slate-400 tracking-[0.25em] uppercase block">
-              FAQ&apos;S
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
-              FREQUENTLY <br />
-              ASKED QUESTIONS
-            </h2>
+          <div className="lg:col-span-4 space-y-3 relative lg:sticky lg:top-28">
+            <ScrollReveal direction="right" delay={50}>
+              <span className="label-caps text-[#7b002c] font-bold block mb-1">FAQ's</span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
+                Frequently Asked Questions (FAQs)
+              </h2>
+            </ScrollReveal>
           </div>
 
-          {/* Right Column: Sleek Accordion List with Horizontal Dividers */}
           <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
             {seoFaqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
-                <div key={index} className="border-b border-slate-900/80">
-                  <button
-                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="w-full py-5 text-left font-serif font-bold text-xs sm:text-sm text-[#7b002c] hover:text-[#9e1245] uppercase tracking-wider flex items-center justify-between gap-4 cursor-pointer transition-colors"
-                  >
-                    <span className="pr-4 leading-snug">{faq.q}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
-                        }`}
-                    />
-                  </button>
+                <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
+                  <div className="border-b border-slate-900/80">
+                    <button
+                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                      className="w-full py-5 text-left flex items-center justify-between gap-4 cursor-pointer transition-colors"
+                    >
+                      <h3 className="font-serif font-bold text-xs sm:text-sm text-[#7b002c] hover:text-[#9e1245] uppercase tracking-wider pr-4 leading-snug">
+                        {faq.q}
+                      </h3>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
 
-                  {isOpen && (
-                    <div className="pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans pr-6 animate-fadeIn">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
+                    {isOpen && (
+                      <div className="pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans pr-6 animate-fadeIn">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
               );
             })}
           </div>
@@ -1510,159 +1712,53 @@ export default function HomePage() {
         </div>
       </section>
 
-
-      {/* 9.5 OUR RECENT BLOG POST SECTION */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 space-y-10 border-t border-slate-100">
-
-        {/* Top Header Row */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider border-b-2 border-[#7b002c] pb-1">
-              <ArrowRight className="w-6 h-6 text-[#7b002c]" />
-              <span className='font-bold text-xl'>OUR RECENT BLOG POST</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
-              Our Latest <span className="text-[#7b002c]">Article</span> And <span className="text-[#7b002c]">News</span> For You
-            </h2>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:justify-end">
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md">
-              Stay updated with our latest articles and news covering insights, updates, and developments related to Faisal Hills.
-            </p>
-
-            <Link
-              href="/blogs"
-              className="inline-flex items-center gap-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-105 shrink-0 w-fit"
-            >
-              <span>View Blogs</span>
-              <ArrowUpRight className="w-4 h-4 text-white" />
-            </Link>
-          </div>
-        </div>
-
-        {/* 3 Blog Cards Grid matching Reference Screenshot */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-          {/* Card 1 */}
-          <ScrollReveal direction="right" delay={0}>
-            <Link
-              href="/blogs/faisal-hills-plots-installments-bank-transfer-guide-saudi-arabia-pakistan"
-              className="group flex flex-col space-y-4 cursor-pointer h-full"
-            >
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
-                <img
-                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"
-                  alt="Faisal Hills Plots On Installments"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  Saudi Arabia Guide
-                </div>
-              </div>
-              <div className="space-y-2 flex-1 flex flex-col justify-between">
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
-                  Faisal Hills Plots On Installments: Complete Bank Transfer Guide From Saudi Arabia To Pakistan
-                </h3>
-                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
-                  For Thousands Of Overseas Pakistanis Working In The Gulf, Owning Land Back Home Is More Accessible Than Ever With Secure Bank Transfer Options...
-                </p>
-              </div>
-            </Link>
-          </ScrollReveal>
-
-          {/* Card 2 */}
-          <ScrollReveal direction="right" delay={120}>
-            <Link
-              href="/blogs/faisal-hills-residential-commercial-plots-sale-buyer-checklist-riyadh-jeddah-dammam"
-              className="group flex flex-col space-y-4 cursor-pointer h-full"
-            >
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
-                <img
-                  src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80"
-                  alt="Faisal Hills Residential Commercial Plots"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  Buyer Checklist
-                </div>
-              </div>
-              <div className="space-y-2 flex-1 flex flex-col justify-between">
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
-                  Faisal Hills Residential Commercial Plots For Sale Buyer Checklist For Riyadh Jeddah Dammam
-                </h3>
-                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
-                  For Thousands Of Pakistanis Working In Riyadh, Jeddah, And Dammam, Owning A Piece Of Land Requires A Structured Verification Process...
-                </p>
-              </div>
-            </Link>
-          </ScrollReveal>
-
-          {/* Card 3 */}
-          <ScrollReveal direction="right" delay={240}>
-            <Link
-              href="/blogs/faisal-hills-noc-verification-guide-saudi-pakistanis-plot-buying"
-              className="group flex flex-col space-y-4 cursor-pointer h-full"
-            >
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm aspect-[16/10] bg-slate-100">
-                <img
-                  src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
-                  alt="Faisal Hills NOC Verification Guide"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  NOC Verification
-                </div>
-              </div>
-              <div className="space-y-2 flex-1 flex flex-col justify-between">
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
-                  Faisal Hills NOC Verification Guide For Saudi Pakistanis Plot Buying
-                </h3>
-                <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
-                  Buying Property In Pakistan While Living Thousands Of Miles Away In Riyadh, Jeddah, Or Dammam Demands Verifiable Regulatory Clearances...
-                </p>
-              </div>
-            </Link>
-          </ScrollReveal>
-
-        </div>
-
-      </section>
-
-
-      {/* 10. WARM CTA BANNER */}
+      {/* ========================================================= */}
+      {/* SECTION 18 — FINAL CTA                                    */}
+      {/* ========================================================= */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-6" id="contact-section">
-        <div className="rounded-3xl bg-slate-100 text-[#7b002c] p-10 lg:p-14 border border-slate-200 shadow-lg flex flex-col items-center justify-center text-center space-y-6">
+        <ScrollReveal direction="pop" delay={100}>
+          <div className="rounded-3xl bg-slate-100 text-[#7b002c] p-10 lg:p-14 border border-slate-200 shadow-lg flex flex-col items-center justify-center text-center space-y-6">
 
-          <div className="space-y-3 max-w-2xl">
-            <span className="label-caps text-[#7b002c] font-bold block tracking-widest text-xs">Official Contact Desk</span>
-            <h2 className="font-serif font-bold text-3xl sm:text-4xl text-[#7b002c]">
-              Get In Touch With Our Sales Experts
-            </h2>
-            <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-              Visit our site office or contact our sales team to select your desired plot, check plot availability, or inquire about payment plans.
-            </p>
+            <div className="space-y-3 max-w-2xl">
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl text-[#7b002c]">
+                Ready to Secure Your Plot in Faisal Hills?
+              </h2>
+              <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+                Connect directly with our authorized sales desk to choose your desired sector, inspect plot availability, or schedule a physical on-site visit.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a
+                href="tel:+923313339997"
+                className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <Phone className="w-4 h-4 text-white" />
+                <span>Call Now</span>
+              </a>
+
+              <a
+                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20ready%20to%20secure%20my%20plot%20in%20Faisal%20Hills."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>WhatsApp</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setIsLeadModalOpen(true)}
+                className="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <MapPin className="w-4 h-4 text-white" />
+                <span>Book a Site Visit</span>
+              </button>
+            </div>
+
           </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-            <button
-              onClick={() => setIsLeadModalOpen(true)}
-              className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 btn-shimmer active:scale-95"
-            >
-              <MessageSquare className="w-4 h-4 text-white" />
-              <span>GET IN TOUCH</span>
-            </button>
-
-            <a
-              href="tel:+923313339997"
-              className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              <PhoneCall className="w-4 h-4 text-white" />
-              <span>CALL 0331 333 9997</span>
-            </a>
-          </div>
-
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Booking Lead Modal */}

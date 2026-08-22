@@ -33,6 +33,17 @@ body {
   text-transform: uppercase;
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 /* Glassmorphism utilities - Ultra-clean White Glass */
 .glass-panel {
   background: rgba(255, 255, 255, 0.88);

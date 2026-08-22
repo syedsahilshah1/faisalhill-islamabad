@@ -9,7 +9,7 @@ interface ScrollRevealProps {
   direction?: 'up' | 'down' | 'left' | 'right' | 'pop';
   duration?: number;
 }
-
+  
 export default function ScrollReveal({
   children,
   className = '',
