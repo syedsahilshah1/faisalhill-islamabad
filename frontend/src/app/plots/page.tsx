@@ -58,7 +58,7 @@ export default function PlotSearchPage() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-10 space-y-8">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-16 space-y-8">
       
       {/* Title Header */}
       <div className="space-y-2">
@@ -188,7 +188,11 @@ export default function PlotSearchPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredPlots.map((plot) => (
-                <div key={plot.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300">
+                <Link
+                  key={plot.id}
+                  href={`/plots/${plot.id}`}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
+                >
                   <div>
                     {/* Image Banner */}
                     <div className="relative h-48 w-full overflow-hidden bg-slate-900 img-zoom-container">
@@ -239,17 +243,12 @@ export default function PlotSearchPage() {
                       <span className="font-serif font-bold text-xl text-[#7b002c]">{plot.priceFormatted}</span>
                     </div>
 
-                    <button
-                      onClick={() => {
-                        setActivePlotForModal(plot);
-                        setIsLeadModalOpen(true);
-                      }}
-                      className="px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 btn-shimmer shadow"
-                    >
-                      Inquire / Book
-                    </button>
+                    <span className="px-4 py-2.5 bg-[#7b002c] group-hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 group-hover:scale-105 shadow flex items-center gap-1.5">
+                      <span>View Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

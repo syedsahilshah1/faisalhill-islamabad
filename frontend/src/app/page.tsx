@@ -21,7 +21,7 @@ import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookin
 export default function HomePage() {
   const [selectedBlockFilter, setSelectedBlockFilter] = useState('all');
   const [selectedSizeFilter, setSelectedSizeFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState<'developed' | 'commercial' | 'upcoming'>('developed');
+  const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isMapDownloadModalOpen, setIsMapDownloadModalOpen] = useState(false);
@@ -104,8 +104,15 @@ export default function HomePage() {
 
   // Filter blocks by category (Memoized for peak speed)
   const developedBlocks = useMemo(() => blocks.filter(b => b.category === 'developed'), [blocks]);
+  const risingProjects = useMemo(() => blocks.filter(b => b.category === 'commercial_project'), [blocks]);
   const upcomingBlocks = useMemo(() => blocks.filter(b => b.category === 'upcoming'), [blocks]);
-  const commercialProjects = useMemo(() => blocks.filter(b => b.category === 'commercial_project'), [blocks]);
+
+  const displayedBlocks = useMemo(() => {
+    if (activeTab === 'developed') return developedBlocks;
+    if (activeTab === 'rising') return risingProjects;
+    if (activeTab === 'upcoming') return upcomingBlocks;
+    return blocks;
+  }, [activeTab, blocks, developedBlocks, risingProjects, upcomingBlocks]);
 
   // Faisal Jewels Special Item
   const faisalJewelsData = useMemo(() => blocks.find(b => b.id === 'faisal-jewels'), [blocks]);
@@ -648,13 +655,16 @@ export default function HomePage() {
 
             {/* Left Column: Single High-Quality Static HD Image of Faisal Jewel */}
             <div className="lg:col-span-7 order-2 lg:order-1">
-              <div className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px]">
+              <Link
+                href="/blocks/faisal-jewel-islamabad"
+                className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px] block group cursor-pointer overflow-hidden rounded-2xl shadow-md"
+              >
                 <img
                   src="/images/imgi_175_faisal-jewel.jpg"
                   alt="Faisal Jewel 27-Story Five-Star Hotel"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-              </div>
+              </Link>
             </div>
 
             {/* Right Column: Title, Subtitle, Red Accent Bar, Paragraphs & Link */}
@@ -875,25 +885,32 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {/* Tabs */}
-          <div className="flex items-center bg-slate-200/80 p-1.5 rounded-xl gap-1">
+          {/* Tabs - Single Inline Row */}
+          <div className="flex items-center flex-nowrap overflow-x-auto whitespace-nowrap bg-slate-200/80 p-1.5 rounded-xl gap-1 max-w-full">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'all' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+                }`}
+            >
+              All Projects & Blocks ({blocks.length})
+            </button>
             <button
               onClick={() => setActiveTab('developed')}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'developed' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'developed' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
             >
               Developed Blocks ({developedBlocks.length})
             </button>
             <button
-              onClick={() => setActiveTab('commercial')}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'commercial' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              onClick={() => setActiveTab('rising')}
+              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'rising' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
             >
-              Commercial Projects ({commercialProjects.length})
+              Rising Projects ({risingProjects.length})
             </button>
             <button
               onClick={() => setActiveTab('upcoming')}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'upcoming' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
+              className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 whitespace-nowrap ${activeTab === 'upcoming' ? 'bg-[#7b002c] text-white shadow-sm' : 'text-slate-700 hover:text-[#7b002c]'
                 }`}
             >
               Upcoming ({upcomingBlocks.length})
@@ -901,116 +918,74 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Tab 1: Developed Blocks */}
-        {activeTab === 'developed' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {developedBlocks.map((block) => (
-              <div
-                key={block.id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300"
-              >
-                <div>
-                  {/* Image Banner */}
-                  <div className="relative h-52 w-full overflow-hidden bg-slate-900 img-zoom-container">
-                    <img
-                      src={block.heroImage}
-                      alt={block.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+        {/* Sectors & Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {displayedBlocks.map((block) => (
+            <Link
+              key={block.id}
+              href={`/blocks/${block.slug}`}
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
+            >
+              <div>
+                {/* Image Banner */}
+                <div className="relative h-52 w-full overflow-hidden bg-slate-900 img-zoom-container">
+                  <img
+                    src={block.heroImage}
+                    alt={block.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
-                    <div className="absolute top-4 left-4 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md border border-white/20">
-                      {block.status}
-                    </div>
-
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <span className="label-caps text-[9px] text-slate-300 block">{block.subtitle}</span>
-                      <h4 className="font-serif font-bold text-2xl group-hover:text-[#7b002c] transition-colors">{block.name}</h4>
-                    </div>
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-6 space-y-4">
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                      {block.description}
-                    </p>
-
-                    <div className="space-y-2 bg-slate-50 p-4 rounded-xl text-xs border border-slate-200/80 group-hover:bg-slate-100/50 group-hover:border-slate-300 transition-colors">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-500 font-medium">Residential Plot Rates:</span>
-                        <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.residential}</strong>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-500 font-medium">Commercial Rates:</span>
-                        <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.commercial}</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-semibold">
-                    Verified: {block.verificationDate}
-                  </span>
-
-                  <Link
-                    href={`/blocks/${block.slug}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] group-hover:text-[#9e1245] transition-colors"
-                  >
-                    <span>Explore Block Layout</span>
-                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tab 2: Commercial Projects */}
-        {activeTab === 'commercial' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {commercialProjects.map((project) => (
-              <div key={project.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-hover flex flex-col sm:flex-row gap-6 items-center">
-                <img src={project.heroImage} alt={project.name} className="w-full sm:w-44 h-36 object-cover rounded-xl shrink-0" />
-                <div className="space-y-3 flex-1">
-                  <span className="bg-slate-100 text-[#7b002c] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-slate-200">
-                    {project.status}
-                  </span>
-                  <h4 className="font-serif text-2xl font-bold text-[#7b002c]">{project.name}</h4>
-                  <p className="text-xs text-slate-600 line-clamp-2">{project.description}</p>
-                  <Link href={`/blocks/${project.slug}`} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors">
-                    <span>View Specifications</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tab 3: Upcoming Sectors */}
-        {activeTab === 'upcoming' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {upcomingBlocks.map((block) => (
-              <div key={block.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-hover flex flex-col sm:flex-row gap-6 items-center">
-                <img src={block.heroImage} alt={block.name} className="w-full sm:w-44 h-36 object-cover rounded-xl shrink-0" />
-                <div className="space-y-3 flex-1">
-                  <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  <div className="absolute top-4 left-4 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md border border-white/20">
                     {block.status}
-                  </span>
-                  <h4 className="font-serif text-2xl font-bold text-[#7b002c]">{block.name}</h4>
-                  <p className="text-xs text-slate-600 line-clamp-2">{block.description}</p>
-                  <Link href={`/blocks/${block.slug}`} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors">
-                    <span>View Pre-Booking Rates</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <span className="label-caps text-[9px] text-slate-300 block">{block.subtitle}</span>
+                    <h4 className="font-serif font-bold text-2xl group-hover:text-[#7b002c] transition-colors">{block.name}</h4>
+                  </div>
+                </div>
+
+                {/* Body Content */}
+                <div className="p-6 space-y-4">
+                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                    {block.description}
+                  </p>
+
+                  <div className="space-y-2 bg-slate-50 p-4 rounded-xl text-xs border border-slate-200/80 group-hover:bg-slate-100/50 group-hover:border-slate-300 transition-colors">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500 font-medium">
+                        {block.category === 'commercial_project' ? 'Apartments / Units:' : 'Residential Plot Rates:'}
+                      </span>
+                      <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.residential}</strong>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500 font-medium">Commercial Rates:</span>
+                      <strong className="text-[#7b002c] font-serif text-sm">{block.priceRange.commercial}</strong>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Footer */}
+              <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-slate-100">
+                <span className="text-[10px] text-slate-400 font-semibold">
+                  Verified: {block.verificationDate}
+                </span>
+
+                <span
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] group-hover:text-[#9e1245] transition-colors"
+                >
+                  <span>
+                    {block.category === 'commercial_project' ? 'View Project Details' : 'Explore Block Layout'}
+                  </span>
+                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+
+            </Link>
+          ))}
+        </div>
       </section>
 
 
@@ -1148,7 +1123,11 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {plots.slice(0, 4).map((plot) => (
-              <div key={plot.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300">
+              <Link
+                key={plot.id}
+                href={`/plots/${plot.id}`}
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
+              >
                 <div>
                   {/* Image Banner Container */}
                   <div className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container">
@@ -1201,14 +1180,12 @@ export default function HomePage() {
                     <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
                   </div>
 
-                  <button
-                    onClick={() => setIsLeadModalOpen(true)}
-                    className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 btn-shimmer active:scale-95 shadow"
-                  >
-                    Inquire
-                  </button>
+                  <span className="px-3.5 py-2 bg-[#7b002c] group-hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 group-hover:scale-105 shadow flex items-center gap-1">
+                    <span>View Details</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
