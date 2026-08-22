@@ -336,8 +336,8 @@ export const blocksData: BlockInfo[] = [
       residential: "PKR 65 Lacs - 1.85 Crore",
       commercial: "PKR 2.2 Crore - 8.5 Crore"
     },
-    heroImage: "/images/faisal-hills-aerial.jpg",
-    masterPlanImage: "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
+    heroImage: "/images/faisalhillexecutive.webp",
+    masterPlanImage: "/images/faisalexecutivemap.png",
     amenities: [
       { name: "Grand Entrance Monument", description: "State-of-the-art guarded entry portal with 24/7 biometric surveillance", icon: "Shield", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75" },
       { name: "Executive Club", description: "Luxury community center with swimming pool, gym, and fine dining", icon: "Building2", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=75" },

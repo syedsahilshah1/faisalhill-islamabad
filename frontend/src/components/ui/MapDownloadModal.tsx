@@ -78,12 +78,12 @@ export default function MapDownloadModal({
 
   return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto transition-opacity duration-300">
-      
+
       {/* Click Backdrop */}
       <div className="fixed inset-0 bg-slate-950/80 -z-10" onClick={onClose} />
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative transform transition-all duration-300 scale-100 my-auto z-10 animate-fade-up">
-        
+
         {/* Header */}
         <div className="bg-[#7b002c] text-white p-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
@@ -116,9 +116,17 @@ export default function MapDownloadModal({
                 <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               </div>
               <h4 className="font-serif text-xl font-bold text-slate-900">Download Started!</h4>
-              <p className="text-sm text-slate-600 max-w-xs mx-auto">
-                Thank you, <strong>{name}</strong>. Your high-resolution PDF map download has begun. Our team has received your inquiry.
+              <p className="text-xs text-slate-600 max-w-xs mx-auto">
+                Thank you, <strong>{name}</strong>. Your high-resolution PDF map download has begun. You can also explore the complete interactive map viewer.
               </p>
+              <div className="pt-2">
+                <a
+                  href="/master-plan"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all"
+                >
+                  <span>Open Complete Interactive Map</span>
+                </a>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">

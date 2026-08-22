@@ -58,7 +58,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const isSolidNav = isScrolled || pathname !== '/';
+  const isSolidNav = isScrolled;
 
   // Hide main website navbar on Admin / Dashboard routes
   if (pathname?.startsWith('/ubaid') || pathname?.startsWith('/admin')) {
@@ -96,8 +96,8 @@ export default function Navbar() {
               href="/about-us"
               className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${
                 pathname === '/about-us'
-                  ? 'text-[#7b002c] border-b-2 border-[#7b002c]'
-                  : isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white hover:text-white/80'
+                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
               }`}
             >
               <span>About Us</span>
@@ -109,8 +109,8 @@ export default function Navbar() {
                 href="/faisal-hills-blocks"
                 className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap ${
                   pathname.startsWith('/blocks') || pathname === '/faisal-hills-blocks'
-                    ? 'text-[#7b002c] border-b-2 border-[#7b002c]'
-                    : isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white hover:text-white/80'
+                    ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                    : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                 }`}
               >
                 <span>Faisal Hills Blocks</span>
@@ -281,8 +281,8 @@ export default function Navbar() {
                 type="button"
                 className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap ${
                   pathname === '/blocks/faisal-jewel-islamabad'
-                    ? 'text-[#7b002c] border-b-2 border-[#7b002c]'
-                    : isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white hover:text-white/80'
+                    ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                    : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                 }`}
               >
                 <span>Highrise</span>
@@ -321,8 +321,8 @@ export default function Navbar() {
               href="/faisal-hills-commercial"
               className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${
                 pathname === '/faisal-hills-commercial'
-                  ? 'text-[#7b002c] border-b-2 border-[#7b002c]'
-                  : isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white hover:text-white/80'
+                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
               }`}
             >
               <span>Faisal Hills Commercial</span>
@@ -333,8 +333,8 @@ export default function Navbar() {
               href="/faisal-hills-payment-plan"
               className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${
                 pathname === '/faisal-hills-payment-plan'
-                  ? 'text-[#7b002c] border-b-2 border-[#7b002c]'
-                  : isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white hover:text-white/80'
+                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
               }`}
             >
               <span>Payment Plans</span>

@@ -7,7 +7,7 @@ import {
   Droplets, ShoppingBag, ArrowLeft, ArrowRight, MessageSquare, Calendar, HelpCircle,
   Zap, Sparkles, Compass, Tv, Car, Utensils, Waves, GraduationCap, Building,
   Wifi, Wind, Navigation, Hotel, LayoutGrid, Check,
-  PhoneCall
+  PhoneCall, FileText
 } from 'lucide-react';
 import {
   blocksData,
@@ -26,6 +26,7 @@ import {
 } from '@/data/faisalHillsData';
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
+import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
 
 const getAmenityIcon = (iconName: string) => {
   switch (iconName) {
@@ -96,6 +97,19 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
   const block = await fetchBlock(params.slug);
   if (!block) return { title: 'Block Not Found' };
 
+  if (params.slug === 'executive-block') {
+    return {
+      title: 'Faisal Hills Executive Block – Plots, Prices & Map',
+      description: 'Faisal Hills Executive Block: RDA-approved plots on Main GT Road. Check location, prices, payment plan, NOC, facilities & investment details.',
+      keywords: ['Faisal Hills Executive Block', 'Executive Block Faisal Hills plots', 'Faisal Hills Executive Block price', 'Faisal Hills Executive Block map', 'Faisal Hills RDA NOC', 'Faisal Jewel Executive Block'],
+      openGraph: {
+        title: 'Faisal Hills Executive Block – Plots, Prices & Map',
+        description: 'Faisal Hills Executive Block: RDA-approved plots on Main GT Road. Check location, prices, payment plan, NOC, facilities & investment details.',
+        images: [{ url: '/images/faisalhillexecutive.webp' }]
+      }
+    };
+  }
+
   return {
     title: `${block.name} Faisal Hills | Plot Prices, Map, NOC & Payment Plan`,
     description: `${block.name} Faisal Hills Rawalpindi. ${block.subtitle}. Explore 5 Marla, 10 Marla, 1 Kanal plot prices, NOC status, master plan, and 3-year payment plans. Verified: ${block.verificationDate}.`,
@@ -116,7 +130,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     <div className="space-y-16 pb-20">
 
       {/* Block Hero Banner */}
-      <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-20 px-6 lg:px-12 border-b border-slate-800 overflow-hidden">
+      <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-20 px-6 lg:px-12 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-100"
           style={{ backgroundImage: `url('${block.heroImage}')` }}
@@ -125,24 +139,28 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-slate-950/30 to-slate-950/40" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto space-y-6">
-          <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to All Blocks</span>
-          </Link>
+          {block.slug !== 'executive-block' && (
+            <>
+              <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to All Blocks</span>
+              </Link>
 
-          {block.id !== 'faisal-jewels' && (
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                {block.status}
-              </span>
-              <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-white" />
-                {block.nocStatus}
-              </span>
-              <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
-                Verified: {block.verificationDate}
-              </span>
-            </div>
+              {block.id !== 'faisal-jewels' && (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="bg-[#7b002c] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                    {block.status}
+                  </span>
+                  <span className="bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-white" />
+                    {block.nocStatus}
+                  </span>
+                  <span className="bg-slate-900 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-800">
+                    Verified: {block.verificationDate}
+                  </span>
+                </div>
+              )}
+            </>
           )}
 
           <div className="max-w-3xl space-y-3">
@@ -167,430 +185,104 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             </div>
           </div>
 
+          {/* Quick Action CTAs */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <a
+              href="tel:+923313339997"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+            >
+              <PhoneCall className="w-4 h-4 text-white" />
+              <span>Call Sales Desk</span>
+            </a>
+            <a
+              href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+            >
+              <MessageSquare className="w-4 h-4 text-white" />
+              <span>Chat on WhatsApp</span>
+            </a>
+            <Link
+              href="/faisal-hills-payment-plan"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full border border-white/20 transition-all hover:scale-105"
+            >
+              <FileText className="w-4 h-4 text-white" />
+              <span>Payment Plan</span>
+            </Link>
+          </div>
+
         </div>
       </section>
 
-      {/* Location & Key Highlights */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
-
-        <div className="lg:col-span-7 space-y-6">
-          <div className="space-y-2">
-            <span className="label-caps text-[#7b002c] font-bold block">Sophisticated mixed-use tower</span>
-            <h2 className="font-serif text-3xl font-bold text-slate-900">
-              {block.id === 'faisal-jewels' ? 'About Faisal Jewel — A Story of Sophistication' : 'Location & Strategic Advantage'}
-            </h2>
-          </div>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            {block.id === 'faisal-jewels' ? (
-              <>
-                Faisal Jewel is a landmark 27-story mixed-use skyscraper offering luxury apartments and commercial shops in Faisal Hills Islamabad. Situated at the main entrance overlooking the Margalla Hills, it features premium amenities, a 4-star hotel, and outstanding connectivity to GT Road and the M-1 Motorway. Designed for high capital growth and rental yields, it serves as a premier residential, shopping, and business destination.
-              </>
-            ) : block.locationDetails}
-          </p>
-
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="font-serif font-bold text-lg text-[#7b002c]">Key Sector Highlights</h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-800">
-              {block.highlights.map((item, idx) => (
-                <li key={idx} className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200/80">
-                  <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+      {/* Executive Block Redesigned Luxury Content (Exclusive layout) */}
+      {block.slug === 'executive-block' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <ExecutiveBlockContent />
         </div>
+      )}
 
-        {/* Right side building sketch / illustration / master layout */}
-        {block.id === 'faisal-jewels' ? (
-          <div className="lg:col-span-5 flex items-center justify-center">
-            <div className="relative w-full max-w-md bg-white p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden group">
-              <img
-                src="/images/faisal-jewel.jpg"
-                alt="Faisal Jewel Skyscraper Tower"
-                className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent pointer-events-none" />
-            </div>
-          </div>
-        ) : (
-          <div className="lg:col-span-5 flex flex-col justify-center space-y-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
-            <h3 className="font-serif font-bold text-lg text-[#7b002c]">Block Master Layout</h3>
-            <p className="text-xs text-slate-650 leading-relaxed">
-              Below is the planned master map for {block.name}. View commercial pockets, residential zones, green belts, and major access roads.
-            </p>
-             <div className="relative overflow-hidden rounded-xl border border-slate-150 aspect-[4/3] bg-slate-100 flex items-center justify-center">
-              <img
-                src={block.masterPlanImage || block.heroImage}
-                alt={`${block.name} Master Plan`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        )}
+      {/* For all other blocks */}
+      {block.slug !== 'executive-block' && (
+        <>
+          {/* Location & Key Highlights */}
+          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-        {/* Executive Block SEO Content Expansion */}
-        {block.slug === 'executive-block' && (
-          <div className="lg:col-span-12 space-y-12 pt-8 border-t border-slate-200">
-            
-            {/* SEO Content Introduction */}
-            <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-4 font-sans">
-              <p className="font-semibold text-base text-slate-950">
-                If you’ve been comparing housing options along Islamabad’s main GT Road, chances are Faisal Hills Executive Block has come up more than once. It sits right at the entrance of Faisal Hills, on the main G.T. Road (N-5), and acts as the civic and commercial center for the entire society — which is part of why it gets so much attention from both families and investors.
-              </p>
-              <p>
-                This guide walks through everything a serious buyer usually wants to know about Faisal Hills Executive Block Islamabad: where it is, what’s already built, what plots are available, current pricing, the NOC status, and whether it makes sense as an investment. We’ve organised it so you can jump to whichever section matters most to you.
-              </p>
-            </div>
-
-            {/* Grid for Overview & Developers */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              {/* Overview */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    Overview of Faisal Hills Executive Block
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Faisal Hills Executive Block is the primary commercial and civic hub of Faisal Hills, positioned at the society’s main entrance on G.T. Road. It’s home to some of the project’s most talked-about developments — <Link href="/faisal-jewels" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel</Link>, Faisal Mansion, and the Roots International School Campus all sit within this block.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    What sets the Executive Block apart from the more purely residential sectors of Faisal Hills is its dual identity. On one hand, it’s a modern residential community with houses, parks and mosques going up across multiple sectors. On the other, its status as the civic and commercial center means shops, offices, a school and a hotel-and-apartment tower are all part of the same masterplan — giving it both lifestyle appeal and genuine commercial investment opportunity.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  For end-users, this layout means daily errands, schooling and worship are all within a short drive.
-                </p>
-              </div>
-
-              {/* Owners & Developers */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    Owners and Developers
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Faisal Hills, including the Executive Block, is developed by Faisal Town Group (under the leadership of Chaudhry Abdul Majeed, a name that’s well known across Islamabad and Rawalpindi’s real estate market). The group has been active for well over a decade, with a portfolio that includes Faisal Town, Faisal Margalla City, Faisal Residencia, Faisal Heights and Sea Square alongside Faisal Hills itself.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    That track record matters more than it might seem. A developer with several completed and ongoing projects has a reputation to protect, which generally translates into a stronger incentive to follow through on roads, utilities and landmark buildings rather than leaving them half-finished. The pace of work visible inside the Executive Block — particularly on Faisal Jewel and Roots International School — is consistent with that pattern.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  You can learn more about their history on our <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">About Us</Link> page.
-                </p>
-              </div>
-
-            </div>
-
-            {/* NOC Section */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-              <div className="lg:col-span-4 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-red-50 text-[#7b002c] flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-widest block">RDA Approved</span>
-                  <h3 className="font-serif font-bold text-xl text-slate-900">Regulatory & NOC Status</h3>
-                </div>
-              </div>
-              <div className="lg:col-span-8 space-y-3 text-xs text-slate-600 leading-relaxed font-sans">
-                <p>
-                  One of the first things serious buyers check is the No Objection Certificate, and the Faisal Hills Executive Block NOC has been approved by the Rawalpindi Development Authority (RDA). Even though Faisal Hills sits close to the Islamabad border and is often marketed alongside Islamabad-based societies, it technically falls under RDA’s jurisdiction — so its legal status is benchmarked against RDA’s housing regulations rather than the CDA’s.
-                </p>
-                <p>
-                  In practical terms, this means the layout plan, land use and basic infrastructure requirements for Faisal Hills as an RDA approved housing society have been reviewed and cleared by the relevant authority. For a buyer, that reduces (though never fully eliminates) the risk of disputes over whether the land was legally available for housing in the first place.
-                </p>
-              </div>
-            </div>
-
-            {/* Location & Accessibility Section */}
-            <div className="space-y-6">
+            <div className="lg:col-span-7 space-y-6">
               <div className="space-y-2">
-                <span className="label-caps text-[#7b002c] font-bold block">Prime Location</span>
-                <h3 className="font-serif text-2xl font-bold text-slate-900">
-                  Faisal Hills Executive Block Location and Map
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans max-w-4xl">
-                  The Faisal Hills Executive Block location is one of its strongest selling points. Positioned directly off the main G.T. Road (N-5) near the society’s grand entrance, the block has the kind of road frontage that few housing schemes along this corridor can match. If you pull up the Faisal Hills Executive Block map, you’ll notice it sits right beside Faisal Hills Block A and just a short drive from Taxila and Multi Gardens B-17 — placing it firmly in what locals refer to as Zone 2, Islamabad.
-                </p>
+                <span className="label-caps text-[#7b002c] font-bold block">Sophisticated mixed-use tower</span>
+                <h2 className="font-serif text-3xl font-bold text-slate-900">
+                  {block.id === 'faisal-jewels' ? 'About Faisal Jewel — A Story of Sophistication' : 'Location & Strategic Advantage'}
+                </h2>
               </div>
-
-              {/* Drive Times Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-lg">
-                <div className="lg:col-span-4 space-y-4 flex flex-col justify-center">
-                  <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Travel Times</span>
-                  <h4 className="font-serif text-xl font-bold text-white">Accessibility & Proximity</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                    For families relocating from Rawalpindi or Islamabad, the GT Road frontage means the block is easy to find and reach. Here is a guide to nearby travel times:
-                  </p>
-                </div>
-                
-                <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Taxila Bypass</span>
-                    <span className="font-bold text-amber-400">2-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Multi Gardens B-17</span>
-                    <span className="font-bold text-amber-400">5-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">HITEC University, Taxila</span>
-                    <span className="font-bold text-amber-400">9-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Taxila Cantonment / Museum</span>
-                    <span className="font-bold text-amber-400">10-12 min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Sangjani Toll Plaza (M-1)</span>
-                    <span className="font-bold text-amber-400">20-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Central Islamabad / Airport</span>
-                    <span className="font-bold text-amber-400">25-35 min drive</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Nearby Landmarks list */}
-              <div className="bg-[#ffe9e6]/50 p-6 rounded-2xl border border-[#7b002c]/10 text-xs text-slate-800 space-y-2">
-                <strong className="text-[#7b002c] block mb-1">Nearby Landmarks:</strong>
-                <p className="font-sans leading-relaxed">
-                  Taxila Bypass, HITEC University, Multi Gardens B-17, Sangjani, Tarnol, Faisal Town Phase 1, Margalla Avenue, and Taxila City.
-                </p>
-              </div>
-            </div>
-
-            {/* Master Plan & Plots */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Master Plan */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Master Plan Architecture
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The master plan for the Executive Block was designed with one goal in mind: residents shouldn’t have to leave the block for their everyday needs. It’s a genuinely master planned development — residential sectors sit alongside dedicated commercial zones, with Faisal Jewel, the Roots International School Campus and other mixed-use projects woven directly into the layout.
-                </p>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The plan sets aside space for a wide main boulevard (reported at around 250 feet across at its widest point), along with mosques, a cricket ground and parks distributed across the block. Compared with some of the older, purely residential sectors of Faisal Hills, the Executive Block was clearly planned with higher-density commercial use in mind.
-                </p>
-              </div>
-
-              {/* Plots for Sale */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Plots for Sale In Executive Block
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  Whether you’re after a place to build a home or a commercial unit to rent out, Faisal Hills Executive Block plots for sale come in a fairly wide range of sizes.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <strong className="text-[#7b002c] text-xs block mb-1 font-serif">Residential Plots</strong>
-                    <span className="text-[10px] text-slate-600 block leading-relaxed font-sans">
-                      Sizes include:<br />
-                      • 5 Marla (25×50)<br />
-                      • 8 Marla (30×60)<br />
-                      • 10 Marla (35×70)<br />
-                      • 14 Marla (40×80)<br />
-                      • 1 Kanal (50×90)
-                    </span>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <strong className="text-[#7b002c] text-xs block mb-1 font-serif">Commercial Plots</strong>
-                    <span className="text-[10px] text-slate-600 block leading-relaxed font-sans">
-                      Sizes include:<br />
-                      • 30×25, 30×30<br />
-                      • 40×40, 45×50<br />
-                      • 50×50, 65×50<br />
-                      *Positioned close to the main boulevard and <Link href="/faisal-hills-commercial" className="text-[#7b002c] font-bold hover:underline">commercial plots</Link> areas.
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Facilities & Amenities */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                Facilities & Modern Conveniences
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                Faisal Hills Executive Block facilities cover most of what a modern residential community needs day to day:
+              <p className="text-slate-600 text-sm leading-relaxed">
+                {block.id === 'faisal-jewels' ? (
+                  <>
+                    Faisal Jewel is a landmark 27-story mixed-use skyscraper offering luxury apartments and commercial shops in Faisal Hills Islamabad. Situated at the main entrance overlooking the Margalla Hills, it features premium amenities, a 4-star hotel, and outstanding connectivity to GT Road and the M-1 Motorway. Designed for high capital growth and rental yields, it serves as a premier residential, shopping, and business destination.
+                  </>
+                ) : block.locationDetails}
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs text-slate-750 font-sans pt-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Roots International School</strong> — operational campus</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Faisal Jewel Skyscraper</strong> — apartments, retail & hotel</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Fatima Tuz Zahra Jamia Masjid</strong> & 2 sector mosques</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>2 Community Parks</strong> and play spaces</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Dedicated Cricket Ground</strong> & Sports Arena</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Underground Grid</strong> & utilities infrastructure</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Payment Plan & Price Guide (Resale Table) */}
-            <div className="space-y-4 pt-2">
-              <div className="space-y-1">
-                <span className="label-caps text-[#7b002c] font-bold block">Resale Guide</span>
-                <h3 className="font-serif text-2xl font-bold text-slate-900">
-                  Payment Plan & Resale Price Matrix
-                </h3>
-                <p className="text-xs text-slate-600 font-sans">
-                  Resale prices inside the Executive Block depend on category, sector position, and development proximity to the main avenue. Check the current <Link href="/payment-plan" className="text-[#7b002c] font-bold hover:underline">Faisal Hills Executive Block payment plan</Link> guide:
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                    <tr>
-                      <th className="p-4">Plot Size</th>
-                      <th className="p-4">Approx. Resale Price Range</th>
-                      <th className="p-4">Best Suited For</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">5 Marla (25x50)</td>
-                      <td className="p-4 font-bold">PKR 65 Lac - 90 Lac</td>
-                      <td className="p-4 text-slate-600 font-medium">First-time buyers, small families</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">8 Marla (30x60)</td>
-                      <td className="p-4 font-bold">PKR 1.05 Cr - 1.2 Cr</td>
-                      <td className="p-4 text-slate-600 font-medium">Growing families wanting extra space</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">10 Marla (35x70)</td>
-                      <td className="p-4 font-bold">PKR 1.20 Cr - 1.50 Cr</td>
-                      <td className="p-4 text-slate-600 font-medium">Larger families, near parks and schools</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">14 Marla (40x80)</td>
-                      <td className="p-4 font-bold">PKR 1.45 Cr - 1.85 Cr</td>
-                      <td className="p-4 text-slate-605 font-medium">Premium residential plots</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">1 Kanal (50x90)</td>
-                      <td className="p-4 font-bold">PKR 1.80 Cr - 2.90 Cr</td>
-                      <td className="p-4 text-slate-605 font-medium">Luxury living, long term capital appreciation</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[10px] text-slate-500 italic font-sans">
-                * Resale ranges fluctuate depending on development status and current real estate cycles.
-              </p>
-            </div>
-
-            {/* Development Status & Key Projects */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-              
-              {/* Dev Status */}
-              <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Development Status
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The Faisal Hills Executive Block development status is **“actively under construction, with a lot already in place.”** The main boulevard, internal roads and streets are functional. Sewerage, street lighting and underground electricity work have largely been completed across the developed sectors.
-                </p>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  On the landmark front, the Roots International School Campus is operational and already teaching students. Construction on the Faisal Jewel project has been progressing steadily, with the structure reportedly nearing completion. Home construction is also visibly underway across multiple sectors, which is generally reassuring.
-                </p>
-              </div>
-
-              {/* Key Projects */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Key Projects In Block
-                </h3>
-                <ul className="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed font-sans">
-                  <li><strong>Faisal Jewel</strong> — 27-storey mixed-use skyscraper.</li>
-                  <li><strong>Faisal Mansion</strong> — Mid-rise office block housing the sales & facilitation office.</li>
-                  <li><strong>Roots International School</strong> — Fully functional premium school campus.</li>
-                  <li><strong>Sports Arena</strong> — Dedicated sports ground for cricket and community events.</li>
+              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <h3 className="font-serif font-bold text-lg text-[#7b002c]">Key Sector Highlights</h3>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-800">
+                  {block.highlights.map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200/80">
+                      <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
-
             </div>
 
-            {/* Why Invest & Booking Process */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Why Invest */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-[#7b002c] border-b border-slate-100 pb-2">
-                  Why Invest in Faisal Hills Executive Block?
-                </h3>
-                <ul className="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed font-sans">
-                  <li>Strategic location with direct GT Road access and proximity to Islamabad.</li>
-                  <li>RDA approved housing society status, adding legal security.</li>
-                  <li>Flagship civic and commercial center layout supporting residential value.</li>
-                  <li>Visible on-ground development progress with active villa construction.</li>
-                  <li>Family-friendly community with operational schools and parks.</li>
-                </ul>
-              </div>
-
-              {/* Booking Process */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Booking Process & Required Documents
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  Booking a plot is straightforward. To get started, <Link href="/contact" className="text-[#7b002c] font-bold hover:underline">get in touch with our team</Link> with the following documents:
-                </p>
-                <div className="text-xs text-slate-700 leading-relaxed font-sans space-y-1">
-                  <div>• 2 photocopies of your CNIC (or NICOP if overseas)</div>
-                  <div>• 2 recent passport-size photographs</div>
-                  <div>• 1 copy of your next of kin's CNIC</div>
-                  <div>• Your booking amount or down payment check</div>
+            {/* Right side building sketch / illustration / master layout */}
+            {block.id === 'faisal-jewels' ? (
+              <div className="lg:col-span-5 flex items-center justify-center">
+                <div className="relative w-full max-w-md bg-white p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden group">
+                  <img
+                    src="/images/faisal-jewel.jpg"
+                    alt="Faisal Jewel Skyscraper Tower"
+                    className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent pointer-events-none" />
                 </div>
               </div>
-
-            </div>
-
-            {/* Compare blocks callout */}
-            <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-xl space-y-4">
-              <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Compare Blocks</span>
-              <h3 className="font-serif text-xl font-bold text-white">Compare Other Blocks In Faisal Hills</h3>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-3xl font-sans">
-                Want to check prices in other blocks? Compare the Executive Block with our guides for: <Link href="/blocks/prime-block" className="text-amber-400 hover:underline">Prime Block</Link>, <Link href="/blocks/block-a" className="text-amber-400 hover:underline">Block A</Link>, <Link href="/blocks/block-b" className="text-amber-400 hover:underline">Block B</Link>, <Link href="/blocks/block-c" className="text-amber-400 hover:underline">Block C</Link>, <Link href="/blocks/block-d" className="text-amber-400 hover:underline">Block D</Link>, or the <Link href="/blocks/gandahara" className="text-amber-400 hover:underline">Gandahara Block</Link>.
-              </p>
-            </div>
-
-            {/* Final Thoughts */}
-            <div className="bg-[#ffe9e6]/20 p-8 rounded-2xl border border-[#7b002c]/10 text-xs text-slate-605 leading-relaxed font-sans space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#7b002c] uppercase tracking-wider">Final Thoughts</h4>
-              <p>
-                Pulling all of this together, Faisal Hills Executive Block works because it doesn’t ask buyers to choose between location, lifestyle and investment potential — it tries to offer all three. Its GT Road frontage and RDA approval cover the practical and legal basics. Its mix of residential and commercial plots, parks, mosques, a school and a cricket ground cover the day-to-day living side. And its ongoing development, anchored by the Faisal Jewel project and Roots International School, gives it momentum that’s visible on the ground.
-              </p>
-            </div>
-
-          </div>
-        )}
+            ) : (
+              <div className="lg:col-span-5 flex flex-col justify-center space-y-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+                <h3 className="font-serif font-bold text-lg text-[#7b002c]">Block Master Layout</h3>
+                <p className="text-xs text-slate-650 leading-relaxed">
+                  Below is the planned master map for {block.name}. View commercial pockets, residential zones, green belts, and major access roads.
+                </p>
+                 <div className="relative overflow-hidden rounded-xl border border-slate-150 aspect-[4/3] bg-slate-100 flex items-center justify-center">
+                  <img
+                    src={block.masterPlanImage || block.heroImage}
+                    alt={`${block.name} Master Plan`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
 
         {/* Prime Block SEO Content Expansion */}
         {block.slug === 'prime-block' && (
@@ -2879,8 +2571,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </>
       )}
 
-      {/* Development Progress Section */}
-      {block.developmentUpdates.length > 0 && (
+      {/* Development Progress Section (For non-executive blocks) */}
+      {block.slug !== 'executive-block' && block.developmentUpdates.length > 0 && (
         <section className="bg-slate-100 py-12 px-6 lg:px-12 border-y border-slate-200">
           <div className="max-w-[1440px] mx-auto space-y-8">
             <div className="space-y-1">
@@ -3039,8 +2731,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </section>
       )}
 
-      {/* FAQs Section */}
-      {block.faqs.length > 0 && (
+      {/* FAQs Section (For non-executive blocks) */}
+      {block.slug !== 'executive-block' && block.faqs.length > 0 && (
         <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
           <div className="space-y-1">
             <span className="label-caps text-[#7b002c] font-bold block">Knowledge Base</span>
@@ -3087,8 +2779,10 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               </a>
             </div>
           </div>
-        </section>
-      )}
+          </section>
+        )}
+      </>
+    )}
 
     </div>
   );
