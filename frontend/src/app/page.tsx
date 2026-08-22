@@ -172,6 +172,7 @@ export default function HomePage() {
 
         {/* Subtle Transparent Tint for Readable Text & Crystal Clear HD Background Image */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/45 via-slate-950/25 to-slate-950/35" />
+
         <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
           {/* Hero Left Content */}
@@ -330,133 +331,51 @@ export default function HomePage() {
 
         </div>
 
-        {/* Animated Block Ticker Strip in Pure White Luxury Design attached flush inside Hero Section */}
-        <div className="mt-8 sm:mt-12 bg-white border-y border-slate-200/80 py-4 overflow-hidden relative shadow-sm z-20">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-          <div className="ticker-track gap-0">
-            {[...Array(2)].map((_, setIdx) => (
-              <div key={setIdx} className="flex items-center gap-0 shrink-0">
-                <a href="/blocks/executive-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Executive Block</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Possession Ready</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/prime-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Prime Block</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Installments Open</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/block-a" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block A</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Families Settled</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/block-b" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block B</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Margalla Views</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/block-b1-extension" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">B Extension</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Affordable Entry</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/block-c" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block C</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">800+ Commercial Plots</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/block-d" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Block D</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">Possession Granted</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
-                <a href="/blocks/faisal-jewels" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                  <span className="w-2 h-2 rounded-full bg-slate-900 shrink-0 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans group-hover:text-slate-600 transition-colors">Faisal Jewel Tower</span>
-                  <span className="text-[10px] text-white font-medium font-sans ml-1.5 bg-slate-900 px-2.5 py-0.5 rounded-full shadow-sm">22-Storey Skyscraper</span>
-                </a>
-                <span className="text-slate-300 text-lg select-none px-2">|</span>
+        {/* Hero Section Counting Bar (Matching Reference Image) */}
+        <div className="mt-8 sm:mt-12 bg-white border-t border-slate-200/80 py-6 sm:py-8 shadow-sm relative z-20">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-center text-center">
+            {/* Stat 1: 150k Sq Meter Total Area */}
+            <div className="flex flex-col items-center justify-center space-y-1 group">
+              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                <CountUpNumber end={150} suffix="k" duration={2000} />
               </div>
-            ))}
+              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
+                Sq Meter Total Area
+              </p>
+            </div>
+
+            {/* Stat 2: 8+ Total Projects */}
+            <div className="flex flex-col items-center justify-center space-y-1 group">
+              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                <CountUpNumber end={8} suffix="+" duration={1800} />
+              </div>
+              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
+                Total Projects
+              </p>
+            </div>
+
+            {/* Stat 3: 30+ Years Of Excellence */}
+            <div className="flex flex-col items-center justify-center space-y-1 group">
+              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                <CountUpNumber end={30} suffix="+" duration={2000} />
+              </div>
+              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
+                Years Of Excellence
+              </p>
+            </div>
+
+            {/* Stat 4: 1.5M Total Population Capacity */}
+            <div className="flex flex-col items-center justify-center space-y-1 group">
+              <div className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2200} />
+              </div>
+              <p className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight font-sans">
+                Total Population Capacity
+              </p>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* 2. KEY VALUE PROPOSITION HIGHLIGHTS BAR (Matching Reference Image 1) */}
-      <ScrollReveal className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 relative z-20">
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
-
-          {/* Item 1: RDA Approved NOC */}
-          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <ShieldCheck className="w-6 h-6 stroke-[1.8]" />
-            </div>
-            <div className="space-y-0.5">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
-                RDA Approved NOC
-              </h4>
-              <p className="text-slate-500 text-xs leading-relaxed font-sans">
-                100% legal housing project verified by Rawalpindi Development Authority.
-              </p>
-            </div>
-          </div>
-
-          {/* Item 2: 3-Year Installments */}
-          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <Calculator className="w-6 h-6 stroke-[1.8]" />
-            </div>
-            <div className="space-y-0.5">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
-                3-Year Installments
-              </h4>
-              <p className="text-slate-500 text-xs leading-relaxed font-sans">
-                Easy quarterly & monthly plans with 20% initial booking down payment.
-              </p>
-            </div>
-          </div>
-
-          {/* Item 3: Possession Ready */}
-          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-13 h-13 rounded-2xl bg-slate-100/90 text-[#7b002c] flex items-center justify-center shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] group-hover:text-white transition-all duration-300">
-              <Building2 className="w-6 h-6 stroke-[1.8]" />
-            </div>
-            <div className="space-y-0.5">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
-                Possession Ready
-              </h4>
-              <p className="text-slate-500 text-xs leading-relaxed font-sans">
-                Executive Block & Block A, B, C are fully developed for instant home construction.
-              </p>
-            </div>
-          </div>
-
-          {/* Item 4: High Capital Growth */}
-          <div className="flex items-center gap-4 pt-4 sm:pt-0 sm:px-4 group cursor-pointer">
-            <div className="w-13 h-13 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0 border border-slate-800 shadow-xs group-hover:scale-110 group-hover:bg-[#7b002c] transition-all duration-300">
-              <TrendingUp className="w-6 h-6 stroke-[1.8]" />
-            </div>
-            <div className="space-y-0.5">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-[#7b002c] leading-snug">
-                High Capital Growth
-              </h4>
-              <p className="text-slate-500 text-xs leading-relaxed font-sans">
-                Prime location on GT Road ensures consistent 25%+ annual property value appreciation.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </ScrollReveal>
 
 
       {/* 2.5 A STORY OF LEGACY */}
@@ -524,101 +443,202 @@ export default function HomePage() {
           </div>
 
         </div>
-      </section>
 
-      {/* DISCOVER FAISALTOWN STATS COUNTER SECTION (Matching Reference Image 2) */}
-      <section className="bg-white py-16 border-b border-slate-100">
-        <div className="max-w-[1200px] mx-auto px-6 text-center space-y-12">
+        {/* Project Pill Ticker Bar right below Chairman Details (Exclusively Faisal Hills Blocks & Projects) */}
+        <div className="mt-8 pt-6 border-t border-slate-100 bg-slate-50/70 py-4 overflow-hidden relative shadow-inner">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-slate-50/90 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-slate-50/90 to-transparent z-10 pointer-events-none" />
+          <div className="ticker-track gap-5">
+            {[...Array(2)].map((_, setIdx) => (
+              <div key={setIdx} className="flex items-center gap-5 shrink-0">
 
-          {/* Top Centered Section Label with Underline */}
-          <div>
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 border-b-2 border-slate-900 pb-1.5 inline-block">
-              DISCOVER FAISALTOWN
-            </span>
+                {/* 1. Faisal Jewel */}
+                <a
+                  href="/blocks/faisal-jewel-islamabad"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Faisal Jewel
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Book Appartment
+                    </div>
+                  </div>
+                </a>
+
+                {/* 2. Hills Walk Commercial */}
+                <a
+                  href="/faisal-hills-commercial"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Store className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Hills Walk
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Book Now
+                    </div>
+                  </div>
+                </a>
+
+                {/* 3. Executive Block */}
+                <a
+                  href="/blocks/executive-block"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Executive Block
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Possession Ready
+                    </div>
+                  </div>
+                </a>
+
+                {/* 4. Prime Block */}
+                <a
+                  href="/blocks/prime-block"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Prime Block
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Installments Open
+                    </div>
+                  </div>
+                </a>
+
+                {/* 5. Block A */}
+                <a
+                  href="/blocks/block-a"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Home className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Block A
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Families Settled
+                    </div>
+                  </div>
+                </a>
+
+                {/* 6. Block B */}
+                <a
+                  href="/blocks/block-b"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Trees className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Block B
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Margalla Views
+                    </div>
+                  </div>
+                </a>
+
+                {/* 7. Block B Extension */}
+                <a
+                  href="/blocks/block-b1-extension"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      B Extension
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Affordable Entry
+                    </div>
+                  </div>
+                </a>
+
+                {/* 8. Block C */}
+                <a
+                  href="/blocks/block-c"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <ShoppingBag className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Block C
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      800+ Commercials
+                    </div>
+                  </div>
+                </a>
+
+                {/* 9. Block D */}
+                <a
+                  href="/blocks/block-d"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Block D
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Possession Granted
+                    </div>
+                  </div>
+                </a>
+
+                {/* 10. Faisal Hills Arc */}
+                <a
+                  href="/faisal-hills-blocks"
+                  className="bg-white border border-slate-200/90 hover:border-[#7b002c]/50 rounded-full px-5 py-2 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3.5 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#7b002c] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                    <Landmark className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs sm:text-[13px] font-bold text-[#7b002c] tracking-tight leading-tight group-hover:text-[#9e1245] transition-colors">
+                      Faisal Hills Arc
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 leading-tight">
+                      Main GT Road Entry
+                    </div>
+                  </div>
+                </a>
+
+              </div>
+            ))}
           </div>
-
-          {/* Stats Grid matching reference screenshot 2 layout */}
-          <div className="space-y-12">
-
-            {/* Top Row: 3 Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center">
-
-              {/* Stat 1: 60k Total Area */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Maximize2 className="w-7 h-7 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={60} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
-                  MILLION SQM TOTAL AREA
-                </div>
-              </div>
-
-              {/* Stat 2: 8 Total Projects */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Building2 className="w-7 h-7 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={8} suffix="" duration={1800} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
-                  TOTAL PROJECTS
-                </div>
-              </div>
-
-              {/* Stat 3: 130k Total Residential Units */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Home className="w-7 h-7 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={130} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
-                  TOTAL RESIDENTIAL UNITS
-                </div>
-              </div>
-
-            </div>
-
-            {/* Bottom Row: 2 Centered Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto gap-8 items-center justify-center">
-
-              {/* Stat 4: 60k Commercial Units */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Store className="w-7 h-7 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={60} suffix="k" duration={2200} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
-                  TOTAL COMMERCIAL UNITS
-                </div>
-              </div>
-
-              {/* Stat 5: 1.5M Total Population Capacity */}
-              <div className="flex flex-col items-center text-center space-y-2 group">
-                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
-                  <Users className="w-7 h-7 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
-                  <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2400} />
-                </div>
-                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[180px] leading-tight">
-                  TOTAL POPULATION CAPACITY
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
         </div>
       </section>
+
+
 
 
       {/* 3. FLAGSHIP SPECIAL FEATURE: FAISAL JEWEL */}
@@ -626,8 +646,19 @@ export default function HomePage() {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
 
-            {/* Left Column: Title, Subtitle, Red Accent Bar, Paragraphs & Link */}
-            <div className="lg:col-span-5 space-y-4">
+            {/* Left Column: Single High-Quality Static HD Image of Faisal Jewel */}
+            <div className="lg:col-span-7 order-2 lg:order-1">
+              <div className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px]">
+                <img
+                  src="/images/imgi_175_faisal-jewel.jpg"
+                  alt="Faisal Jewel 27-Story Five-Star Hotel"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Title, Subtitle, Red Accent Bar, Paragraphs & Link */}
+            <div className="lg:col-span-5 space-y-4 order-1 lg:order-2">
               <div>
                 <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-slate-900 tracking-tight">
                   Faisal Jewel
@@ -654,17 +685,6 @@ export default function HomePage() {
                   <span>Explore Faisal Jewel</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-              </div>
-            </div>
-
-            {/* Right Column: Single High-Quality Static HD Image of Faisal Jewel */}
-            <div className="lg:col-span-7">
-              <div className="relative w-full h-[340px] sm:h-[420px] lg:h-[480px]">
-                <img
-                  src="/images/imgi_175_faisal-jewel.jpg"
-                  alt="Faisal Jewel 27-Story Five-Star Hotel"
-                  className="w-full h-full object-cover"
-                />
               </div>
             </div>
 
@@ -1370,6 +1390,99 @@ export default function HomePage() {
 
       </section>
 
+      {/* 8.4 DISCOVER FAISALTOWN STATS COUNTER SECTION (Matching Reference Image) */}
+      <section className="bg-white py-16 lg:py-20 border-y border-slate-100">
+        <div className="max-w-[1200px] mx-auto px-6 text-center space-y-12">
+
+          {/* Top Centered Section Label with Underline */}
+          <div>
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 border-b-2 border-slate-900 pb-1.5 inline-block">
+              DISCOVER FAISALTOWN
+            </span>
+          </div>
+
+          {/* Stats Grid matching reference layout */}
+          <div className="space-y-12">
+
+            {/* Top Row: 3 Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center justify-center">
+
+              {/* Stat 1: 60k Total Area */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Maximize2 className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={60} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                  MILLION SQM TOTAL AREA
+                </div>
+              </div>
+
+              {/* Stat 2: 8 Total Projects */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Building2 className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={8} suffix="" duration={1800} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[140px] leading-tight">
+                  TOTAL PROJECTS
+                </div>
+              </div>
+
+              {/* Stat 3: 130k Total Residential Units */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Home className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={130} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                  TOTAL RESIDENTIAL UNITS
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom Row: 2 Centered Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto gap-8 items-center justify-center">
+
+              {/* Stat 4: 60k Commercial Units */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Store className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={60} suffix="k" duration={2200} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[160px] leading-tight">
+                  TOTAL COMMERCIAL UNITS
+                </div>
+              </div>
+
+              {/* Stat 5: 1.5M Total Population Capacity */}
+              <div className="flex flex-col items-center text-center space-y-2 group">
+                <div className="w-10 h-10 text-[#7b002c] flex items-center justify-center">
+                  <Users className="w-7 h-7 stroke-[1.5]" />
+                </div>
+                <div className="font-sans text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight">
+                  <CountUpNumber end={1.5} suffix="M" decimals={1} duration={2400} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase max-w-[180px] leading-tight">
+                  TOTAL POPULATION CAPACITY
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
 
       {/* 8.5 HOW TO BOOK - STICKY HORIZONTAL SCROLL-DRIVEN SLIDER (Matching User Request) */}
       <StickyHorizontalBookingSteps />
@@ -1378,7 +1491,7 @@ export default function HomePage() {
       {/* 9. SEO FAQS ACCORDION SECTION (Matching Reference Screenshot Design) */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24 border-t border-slate-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          
+
           {/* Left Column: FAQ'S Label & FREQUENTLY ASKED QUESTIONS Headline */}
           <div className="lg:col-span-4 space-y-3 sticky top-28">
             <span className="text-xs font-bold text-slate-400 tracking-[0.25em] uppercase block">
@@ -1402,9 +1515,8 @@ export default function HomePage() {
                   >
                     <span className="pr-4 leading-snug">{faq.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
 

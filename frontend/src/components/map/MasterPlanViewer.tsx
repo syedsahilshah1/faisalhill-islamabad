@@ -148,15 +148,6 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
               </button>
             </div>
 
-            {/* Lead Modal Download Trigger */}
-            <button
-              onClick={handleDownloadTrigger}
-              className="inline-flex items-center gap-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold px-4 py-2 rounded-xl border border-white/20 shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
-            >
-              <Download className="w-4 h-4 text-white" />
-              <span>Download PDF Map</span>
-            </button>
-
           </div>
         </div>
 
