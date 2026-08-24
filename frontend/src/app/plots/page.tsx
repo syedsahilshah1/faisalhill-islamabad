@@ -78,35 +78,87 @@ function PlotSearchContent() {
     <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-16 space-y-10">
 
       {/* ========================================================= */}
-      {/* 1. TITLE HEADER                                           */}
+      {/* 1. TITLE HEADER & SIZE FILTER CONTROLS                    */}
       {/* ========================================================= */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
-        <div className="space-y-2 max-w-2xl">
-          <span className="label-caps text-[#7b002c] font-bold block mb-1">Live Inventory Explorer</span>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight">
-            Search Faisal Hills Plot & Flat Inventory
-          </h1>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Explore and filter residential plots, commercial investments, and luxury apartments across all blocks of Faisal Hills Islamabad.
-          </p>
+      <div className="space-y-6 border-b border-slate-200 pb-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2 max-w-2xl">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1">Live Inventory Explorer</span>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight">
+              Search Faisal Hills Plot & Flat Inventory
+            </h1>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Explore and filter residential plots, commercial investments, and luxury apartments across all blocks of Faisal Hills Islamabad.
+            </p>
+          </div>
+
+          {/* Quick Size Filter Pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            {['all', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal'].map((size) => (
+              <button
+                key={size}
+                onClick={() => setSelectedSize(size)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
+                  selectedSize.toLowerCase() === size.toLowerCase()
+                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                {size === 'all' ? 'All Sizes' : size}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Quick Size Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          {['all', '5 Marla', '8 Marla', '10 Marla', '1 Kanal'].map((size) => (
+        {/* Dynamic Type Switcher (Only appears when a specific size is selected) */}
+        {selectedSize !== 'all' && (
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-1 animate-fadeIn">
+            <div className="flex items-center gap-2 bg-rose-50/80 px-4 py-2 rounded-2xl border border-rose-200/80">
+              <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider">
+                Filter {selectedSize} by:
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    selectedCategory === 'all'
+                      ? 'bg-[#7b002c] text-white shadow-xs'
+                      : 'bg-white text-slate-700 hover:bg-rose-100/70 border border-slate-200'
+                  }`}
+                >
+                  All {selectedSize}
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('Residential')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    selectedCategory === 'Residential'
+                      ? 'bg-[#7b002c] text-white shadow-xs'
+                      : 'bg-white text-slate-700 hover:bg-rose-100/70 border border-slate-200'
+                  }`}
+                >
+                  Residential
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('Commercial')}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    selectedCategory === 'Commercial'
+                      ? 'bg-[#7b002c] text-white shadow-xs'
+                      : 'bg-white text-slate-700 hover:bg-rose-100/70 border border-slate-200'
+                  }`}
+                >
+                  Commercial
+                </button>
+              </div>
+            </div>
+
             <button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                selectedSize.toLowerCase() === size.toLowerCase()
-                  ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
-                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-              }`}
+              onClick={() => { setSelectedSize('all'); setSelectedCategory('all'); }}
+              className="text-xs font-semibold text-slate-500 hover:text-[#7b002c] transition"
             >
-              {size === 'all' ? 'All Sizes' : size}
+              Clear Size Filter ✕
             </button>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ========================================================= */}

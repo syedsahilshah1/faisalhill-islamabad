@@ -322,6 +322,101 @@ export const plotInventoryData: PlotItem[] = [
     features: ["Ground + 4 Story Approval", "High Foot Traffic Area", "Near Sector Entrance", "Rental Income Potential"],
     description: "Prime 4 Marla commercial plot in Block B on the sector's main internal road. Perfect for a shop plaza, clinic, or business outlet.",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+  },
+  // 13. 5 Marla - Executive Block
+  {
+    id: "plot-113",
+    plotNumber: "EXE-105",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 6800000,
+    priceFormatted: "PKR 68 Lacs",
+    priceHistoryTrend: "+11.5% high demand",
+    status: "Available",
+    facing: "Park Facing",
+    mapCoords: { x: 24, y: 34 },
+    features: ["Facing Central Park", "Solid Ground", "Near Roots International Campus"],
+    description: "Affordable 5 Marla residential plot in Executive Block directly facing the family park.",
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
+  },
+  // 14. 10 Marla - Executive Block
+  {
+    id: "plot-114",
+    plotNumber: "EXE-214",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 13500000,
+    priceFormatted: "PKR 1.35 Crore",
+    priceHistoryTrend: "+15.2% high capital growth",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 26, y: 36 },
+    features: ["Direct 225ft Boulevard Access", "Underground Electricity", "Immediate Construction"],
+    description: "Prime 10 Marla villa plot on Executive Sector main boulevard with high capital appreciation.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+  },
+  // 15. 14 Marla - Executive Block
+  {
+    id: "plot-115",
+    plotNumber: "EXE-308",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "14 Marla",
+    dimensions: "40 x 80",
+    price: 16500000,
+    priceFormatted: "PKR 1.65 Crore",
+    priceHistoryTrend: "+12.8% capital growth",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 28, y: 38 },
+    features: ["Corner Boulevard Unit", "Wide 40ft Frontage", "Executive Club Proximity"],
+    description: "Exclusive 14 Marla executive plot with dual frontage in prestigious Executive Block.",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+  },
+  // 16. 5.8 Marla Commercial - Executive Block
+  {
+    id: "plot-116",
+    plotNumber: "EXE-019",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Commercial",
+    size: "5.8 Marla Plaza Plot",
+    dimensions: "40 x 40",
+    price: 48000000,
+    priceFormatted: "PKR 4.8 Crore",
+    priceHistoryTrend: "+22% high ROI",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 21, y: 29 },
+    features: ["Multi-Storey Plaza NOC", "Near Faisal Jewel Entrance", "High Footfall Hub"],
+    description: "High-yield 5.8 Marla commercial plot on Executive Main Civic Boulevard.",
+    image: "https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80"
+  },
+  // 17. 1 Kanal Executive Villa Plot - Executive Block
+  {
+    id: "plot-117",
+    plotNumber: "EXE-420",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "1 Kanal",
+    dimensions: "50 x 90",
+    price: 21000000,
+    priceFormatted: "PKR 2.10 Crore",
+    priceHistoryTrend: "+16.8% high capital growth",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 30, y: 40 },
+    features: ["Margalla Foothill Vista", "50ft Frontage", "Gated Security Enclave"],
+    description: "Flagship 1 Kanal residential villa plot with panoramic Margalla hill views.",
+    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
   }
 ];
 
@@ -395,10 +490,10 @@ export const blocksData: BlockInfo[] = [
     heroImage: "/images/faisalhillexecutive.webp",
     masterPlanImage: "/images/faisalexecutivemap.png",
     amenities: [
-      { name: "Grand Entrance Monument", description: "State-of-the-art guarded entry portal with 24/7 biometric surveillance", icon: "Shield", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75" },
-      { name: "Executive Club", description: "Luxury community center with swimming pool, gym, and fine dining", icon: "Building2", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=75" },
-      { name: "Central Park & Jogging Track", description: "12-Kanal lush green park with dedicated sports courts", icon: "Trees", image: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=600&q=75" },
-      { name: "Underground Power Grid", description: "Zero overhead wiring with dedicated grid backup", icon: "Zap", image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=75" }
+      { name: "Grand Entrance Monument", description: "State-of-the-art guarded entry portal with 24/7 biometric surveillance", icon: "Shield", image: "/images/faisalhillarc.jpg" },
+      { name: "Roots International School", description: "Operational campus providing world-class international curriculum on-ground", icon: "GraduationCap", image: "/images/faisal-roots-school.jpg" },
+      { name: "Central Park & Family Enclave", description: "12-Kanal lush green park with dedicated sports courts and tracks", icon: "Trees", image: "/images/faisal-park.jpg" },
+      { name: "Jamia Masjid Fatima Tuz Zahra", description: "Grand architectural mosque for daily and Friday congregational prayers", icon: "Building", image: "/images/imgi_46_Mosques.webp" }
     ],
     faqs: [
       { question: "Is Faisal Hills Executive Block in Islamabad or Rawalpindi?", answer: "Faisal Hills sits on the main GT Road, just a few minutes from B-17 Islamabad, but it technically falls under the jurisdiction of the Rawalpindi Development Authority (RDA)." },
@@ -410,8 +505,8 @@ export const blocksData: BlockInfo[] = [
       { question: "Where can I find the Faisal Hills Executive Block map?", answer: "You can request the latest master plan and zoning map directly from our team — we can also point out which sectors are closest to GT Road and which are quieter residential pockets." }
     ],
     developmentUpdates: [
-      { title: "Underground Electric Grid Commissioned", date: "August 2026", image: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80", progress: 100, text: "100% underground cable laying completed and connected to the main feeder line." },
-      { title: "Commercial Boulevard Asphalt Paving", date: "July 2026", image: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80", progress: 95, text: "Final carpet asphalt applied on Executive Commercial Boulevard." }
+      { title: "Underground Electric Grid & Sector Utilities", date: "August 2026", image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg", progress: 100, text: "100% underground cable laying completed and connected to the main feeder line." },
+      { title: "225ft Main Boulevard & Commercial Asphalt", date: "July 2026", image: "/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg", progress: 95, text: "Final carpet asphalt applied on Executive Commercial Boulevard." }
     ]
   },
   {

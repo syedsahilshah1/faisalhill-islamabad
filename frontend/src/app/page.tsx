@@ -472,12 +472,29 @@ export default function HomePage() {
           </div>
 
         </div>
-           {/* Slogan Moving Marquee Ribbon - Single Line Slogan */}
+      {/* Slogan Moving Marquee Ribbon */}
       <div className="bg-white pt-6 pb-2 mt-8 border-t border-slate-100 overflow-hidden select-none">
-        <div className="ticker-track gap-12 items-center text-xs sm:text-sm font-serif font-bold tracking-[0.25em] text-[#7b002c] uppercase whitespace-nowrap">
-          {[...Array(8)].map((_, idx) => (
+        <div className="ticker-track gap-12 items-center text-xs sm:text-sm font-serif font-bold tracking-[0.2em] text-[#7b002c] uppercase whitespace-nowrap">
+          {[
+            'FAISAL HILLS ISLAMABAD',
+            '100% RDA APPROVED SOCIETY',
+            'LUXURY LIVING AT MARGALLA FOOTHILLS',
+            '225FT MAIN BOULEVARD ACCESS',
+            'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+            'A PROJECT BY ZEDEM INTERNATIONAL',
+            'HIGH-ROI SECURE PROPERTY INVESTMENT',
+            'IMMEDIATE POSSESSION & CONSTRUCTION READY',
+            'FAISAL HILLS ISLAMABAD',
+            '100% RDA APPROVED SOCIETY',
+            'LUXURY LIVING AT MARGALLA FOOTHILLS',
+            '225FT MAIN BOULEVARD ACCESS',
+            'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+            'A PROJECT BY ZEDEM INTERNATIONAL',
+            'HIGH-ROI SECURE PROPERTY INVESTMENT',
+            'IMMEDIATE POSSESSION & CONSTRUCTION READY'
+          ].map((text, idx) => (
             <div key={idx} className="flex items-center gap-12 shrink-0">
-              <span className="font-serif">Building Tomorrow Together</span>
+              <span className="font-serif tracking-[0.2em]">{text}</span>
               <span className="text-slate-300 font-sans">•</span>
             </div>
           ))}

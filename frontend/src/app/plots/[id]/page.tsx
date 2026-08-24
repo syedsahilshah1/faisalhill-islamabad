@@ -106,21 +106,21 @@ export default function PlotDetailPage() {
 
           {/* Quick Actions */}
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-            >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
-              <span>{copiedLink ? 'Link Copied!' : 'Share Plot'}</span>
-            </button>
-
             <Link
               href="/plots"
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#7b002c] hover:underline"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold shadow transition-all hover:scale-105 cursor-pointer"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>All Plots</span>
+              <ArrowLeft className="w-4 h-4" />
+              <span>View All Plots</span>
             </Link>
+
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+              <span>{copiedLink ? 'Link Copied!' : 'Share'}</span>
+            </button>
           </div>
 
         </div>
@@ -133,6 +133,13 @@ export default function PlotDetailPage() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
+              <Link
+                href="/plots"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] hover:underline bg-rose-50 px-3 py-1 rounded-full border border-rose-200/80 transition mr-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>View All Plots</span>
+              </Link>
               <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#7b002c] text-white shadow-xs">
                 {currentPlot.category}
               </span>

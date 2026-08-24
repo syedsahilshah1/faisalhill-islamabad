@@ -227,11 +227,28 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
         {/* Moving Slogan Marquee Ticker attached directly to Hero Section base */}
         <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
-          <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.25em] uppercase text-white">
-            {[...Array(12)].map((_, idx) => (
+          <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
+            {[
+              'FAISAL HILLS ISLAMABAD',
+              '100% RDA APPROVED SOCIETY',
+              'LUXURY LIVING AT MARGALLA FOOTHILLS',
+              '225FT MAIN BOULEVARD ACCESS',
+              'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+              'A PROJECT BY ZEDEM INTERNATIONAL',
+              'HIGH-ROI SECURE PROPERTY INVESTMENT',
+              'IMMEDIATE POSSESSION & CONSTRUCTION READY',
+              'FAISAL HILLS ISLAMABAD',
+              '100% RDA APPROVED SOCIETY',
+              'LUXURY LIVING AT MARGALLA FOOTHILLS',
+              '225FT MAIN BOULEVARD ACCESS',
+              'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+              'A PROJECT BY ZEDEM INTERNATIONAL',
+              'HIGH-ROI SECURE PROPERTY INVESTMENT',
+              'IMMEDIATE POSSESSION & CONSTRUCTION READY'
+            ].map((text, idx) => (
               <div key={idx} className="flex items-center gap-12 shrink-0">
-                <span className="font-serif tracking-[0.25em]">Building Tomorrow Together</span>
-                <span className="text-amber-300/80 font-sans text-xs">•</span>
+                <span className="font-serif tracking-[0.2em] text-white/95">{text}</span>
+                <span className="text-amber-300 font-sans text-xs">•</span>
               </div>
             ))}
           </div>
