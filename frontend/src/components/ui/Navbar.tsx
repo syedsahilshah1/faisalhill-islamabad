@@ -24,12 +24,23 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileBlocksOpen, setMobileBlocksOpen] = useState(false);
   const [mobileHighriseOpen, setMobileHighriseOpen] = useState(false);
+  const [blocksDropdownOpen, setBlocksDropdownOpen] = useState(false);
+  const [highriseDropdownOpen, setHighriseDropdownOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
   // Scroll visibility & scroll position state
   const [isVisible, setIsVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Auto-close dropdowns when route changes
+  useEffect(() => {
+    setBlocksDropdownOpen(false);
+    setHighriseDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setMobileBlocksOpen(false);
+    setMobileHighriseOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -114,20 +125,25 @@ export default function Navbar() {
             </Link>
 
             {/* Faisal Hills Blocks Dropdown */}
-            <div className="relative group py-6">
+            <div
+              className="relative py-6"
+              onMouseEnter={() => setBlocksDropdownOpen(true)}
+              onMouseLeave={() => setBlocksDropdownOpen(false)}
+            >
               <Link
                 href="/faisal-hills-blocks"
+                onClick={() => setBlocksDropdownOpen(false)}
                 className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap ${pathname.startsWith('/blocks') || pathname === '/faisal-hills-blocks'
                   ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
                 <span>Faisal Hills Blocks</span>
-                <ChevronDown className={`w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-200 ${isSolidNav ? 'text-slate-500 group-hover:text-[#7b002c]' : 'text-white/80'}`} />
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${blocksDropdownOpen ? 'rotate-180 text-[#7b002c]' : isSolidNav ? 'text-slate-500' : 'text-white/80'}`} />
               </Link>
 
               {/* Mega Dropdown */}
-              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto w-[740px]">
+              <div className={`absolute left-0 top-full pt-2 transition-all duration-300 z-50 w-[740px] ${blocksDropdownOpen ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'}`}>
                 <div className="bg-white/95 backdrop-blur-2xl text-slate-900 border border-slate-200/90 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5 p-6 space-y-4">
 
                   {/* Dropdown Header */}
@@ -166,6 +182,7 @@ export default function Navbar() {
                           <Link
                             key={block.id}
                             href={`/blocks/${block.slug}`}
+                            onClick={() => setBlocksDropdownOpen(false)}
                             className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
                           >
                             <div className="w-8 h-8 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
@@ -205,6 +222,7 @@ export default function Navbar() {
                           <Link
                             key={block.id}
                             href={`/blocks/${block.slug}`}
+                            onClick={() => setBlocksDropdownOpen(false)}
                             className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
                           >
                             <div className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
@@ -231,6 +249,7 @@ export default function Navbar() {
                     {/* Interactive Master Plan Banner */}
                     <Link
                       href="/master-plan"
+                      onClick={() => setBlocksDropdownOpen(false)}
                       className="group/map mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-[#7b002c] to-[#9e1245] border border-[#7b002c]/20 text-white flex items-center justify-between gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02]"
                     >
                       <div className="flex items-center gap-2.5">
@@ -279,18 +298,23 @@ export default function Navbar() {
           <div className="hidden xl:flex items-center gap-5 2xl:gap-6 shrink-0 whitespace-nowrap">
 
             {/* Highrise Dropdown */}
-            <div className="relative group py-6">
+            <div
+              className="relative py-6"
+              onMouseEnter={() => setHighriseDropdownOpen(true)}
+              onMouseLeave={() => setHighriseDropdownOpen(false)}
+            >
               <button
                 type="button"
+                onClick={() => setHighriseDropdownOpen(!highriseDropdownOpen)}
                 className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap ${pathname === '/blocks/faisal-jewel-islamabad'
                   ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
                 <span>Highrise</span>
-                <ChevronDown className={`w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-200 ${isSolidNav ? 'text-slate-500 group-hover:text-[#7b002c]' : 'text-white/80'}`} />
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${highriseDropdownOpen ? 'rotate-180 text-[#7b002c]' : isSolidNav ? 'text-slate-500' : 'text-white/80'}`} />
               </button>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto w-[320px]">
+              <div className={`absolute left-1/2 -translate-x-1/2 top-full pt-2 transition-all duration-300 z-50 w-[320px] ${highriseDropdownOpen ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'}`}>
                 <div className="bg-white/95 backdrop-blur-2xl text-slate-900 border border-slate-200/90 rounded-3xl shadow-2xl overflow-hidden ring-1 ring-black/5 p-5 space-y-3">
                   <div className="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/80">
                     <Building2 className="w-4 h-4 text-[#7b002c]" />
@@ -300,6 +324,7 @@ export default function Navbar() {
                   </div>
                   <Link
                     href="/blocks/faisal-jewel-islamabad"
+                    onClick={() => setHighriseDropdownOpen(false)}
                     className="group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300"
                   >
                     <div className="w-9 h-9 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] flex items-center justify-center shrink-0 transition-colors">

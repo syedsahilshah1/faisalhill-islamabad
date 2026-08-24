@@ -1,7 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import {
+  PlotItem,
+  plotInventoryData,
+  fetchPlots
+} from '@/data/faisalHillsData';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -228,7 +233,7 @@ const primeFaqs = [
   }
 ];
 
-const primeSellingPlots = [
+const defaultPrimeSellingPlots = [
   {
     id: 'prime-plot-5m-1',
     plotNumber: 'PR-108',
@@ -359,6 +364,64 @@ export default function PrimeBlockContent() {
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'infrastructure' | 'nature' | 'amenities'>('all');
   const [selectedGalleryImage, setSelectedGalleryImage] = useState<typeof primeGalleryItems[0] | null>(null);
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
+
+  // Dynamic live plot inventory sync from Laravel Backend Dashboard / LocalStorage / API
+  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+
+  useEffect(() => {
+    fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+
+    const handleSync = () => {
+      fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+    };
+    window.addEventListener('faisal_plots_updated', handleSync);
+    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+  }, []);
+
+  const defaultPrimePlotImages = [
+    '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    '/images/faisal-hills-aerial.jpg',
+    '/images/faisalhillarc.jpg',
+    '/images/faisal-park.jpg',
+    '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+    '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    '/images/faisal-jewel.jpg',
+    '/images/faisal-roots-school.jpg'
+  ];
+
+  const primePlots = useMemo(() => {
+    // 1. Get all plots matching prime-block from live API / store
+    const liveBlockPlots = allPlots.filter(
+      p => p.blockSlug === 'prime-block' || p.blockName?.toLowerCase().includes('prime') || p.plotNumber?.toUpperCase().startsWith('PR-')
+    );
+
+    // 2. Map and normalize live plots so they fit the card layout
+    const liveMapped = liveBlockPlots.map((plot, idx) => ({
+      id: plot.id,
+      plotNumber: plot.plotNumber || `PR-${idx + 100}`,
+      blockName: plot.blockName || 'Prime Block',
+      category: plot.category || 'Residential',
+      size: plot.size,
+      dimensions: plot.dimensions || '25 × 50',
+      facing: plot.facing || 'Park Facing',
+      priceFormatted: plot.priceFormatted || (plot.price ? `PKR ${(plot.price / 100000).toFixed(1)} Lacs` : 'Call for Price'),
+      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : '20% Down Payment'),
+      status: plot.status || 'Ready to Book',
+      badge: (plot as any).badge || (plot.facing?.toLowerCase().includes('park') ? 'Park Facing' : '4-Year Plan'),
+      image: plot.image || defaultPrimePlotImages[idx % defaultPrimePlotImages.length],
+      features: plot.features && plot.features.length > 0 ? plot.features : ['Near 225ft Boulevard', 'Underground Utilities', 'Immediate Verification']
+    }));
+
+    // 3. Combine with default fallback plots if not already present
+    const combined: any[] = [...liveMapped];
+    defaultPrimeSellingPlots.forEach(defPlot => {
+      if (!combined.some(c => c.id === defPlot.id || c.plotNumber.toUpperCase() === defPlot.plotNumber.toUpperCase())) {
+        combined.push(defPlot);
+      }
+    });
+
+    return combined;
+  }, [allPlots]);
 
   // Lead Form state
   const [leadName, setLeadName] = useState('');
@@ -1086,7 +1149,7 @@ export default function PrimeBlockContent() {
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                All Plots ({primeSellingPlots.length})
+                All Plots ({primePlots.length})
               </button>
               <button
                 type="button"
@@ -1116,7 +1179,7 @@ export default function PrimeBlockContent() {
 
         {/* Plot Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {primeSellingPlots
+          {primePlots
             .filter(plot => plotCategoryFilter === 'all' || plot.category.toLowerCase() === plotCategoryFilter)
             .map((plot, idx) => (
               <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
@@ -1177,7 +1240,7 @@ export default function PrimeBlockContent() {
 
                       {/* Feature Pills */}
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {plot.features.map((feat, fIdx) => (
+                        {plot.features.map((feat: string, fIdx: number) => (
                           <span
                             key={fIdx}
                             className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"

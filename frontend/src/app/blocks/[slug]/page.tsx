@@ -28,6 +28,7 @@ import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
 import PrimeBlockContent from '@/components/blocks/PrimeBlockContent';
+import BlockAContent from '@/components/blocks/BlockAContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -126,6 +127,19 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
     };
   }
 
+  if (params.slug === 'block-a') {
+    return {
+      title: 'Faisal Hills Block A – Possession Plots, Prices, Jamia Mosque & Map',
+      description: 'Faisal Hills Block A: 100% on-ground possession plots, Grand Jamia Mosque, fully populated family villas, and direct GT Road access. Check plot prices & map.',
+      keywords: ['Faisal Hills Block A', 'Block A Faisal Hills plots', 'Faisal Hills Block A price', 'Faisal Hills Block A possession', 'Faisal Hills Block A map', 'Grand Jamia Mosque Faisal Hills'],
+      openGraph: {
+        title: 'Faisal Hills Block A – Possession Plots, Prices, Jamia Mosque & Map',
+        description: 'Faisal Hills Block A: 100% on-ground possession plots, Grand Jamia Mosque, fully populated family villas, and direct GT Road access.',
+        images: [{ url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' }]
+      }
+    };
+  }
+
   return {
     title: `${block.name} Faisal Hills | Plot Prices, Map, NOC & Payment Plan`,
     description: `${block.name} Faisal Hills Rawalpindi. ${block.subtitle}. Explore 5 Marla, 10 Marla, 1 Kanal plot prices, NOC status, master plan, and 3-year payment plans. Verified: ${block.verificationDate}.`,
@@ -147,14 +161,18 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.slug === 'executive-block'
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    : block.slug === 'block-a'
+    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.heroImage;
 
-  const heroSubtitle = block.slug === 'prime-block'
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a')
     ? null
     : block.subtitle;
 
   const heroDesc = block.slug === 'prime-block'
     ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
+    : block.slug === 'block-a'
+    ? 'The most developed & fully populated residential sector in Faisal Hills featuring the Grand Jamia Mosque, ready family villas, 12-Kanal central park, and 100% on-ground immediate construction possession.'
     : block.description;
 
   return (
@@ -173,7 +191,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -284,8 +302,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Block A Dedicated Luxury Content (Most Developed & Populated Sector) */}
+      {block.slug === 'block-a' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <BlockAContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
