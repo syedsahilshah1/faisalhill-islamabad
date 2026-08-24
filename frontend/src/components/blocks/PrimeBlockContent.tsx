@@ -420,7 +420,7 @@ export default function PrimeBlockContent() {
       }
     });
 
-    return combined;
+    return combined.slice(0, 8);
   }, [allPlots]);
 
   // Lead Form state
@@ -1185,8 +1185,11 @@ export default function PrimeBlockContent() {
               <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
                 <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
-                    {/* Plot Image Container */}
-                    <div className="relative h-44 w-full overflow-hidden bg-slate-950 block">
+                    {/* Plot Image Container -> Links to /plots filtered */}
+                    <Link
+                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
+                      className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                    >
                       <img
                         src={plot.image}
                         alt={plot.plotNumber}
@@ -1194,18 +1197,19 @@ export default function PrimeBlockContent() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
-                      {/* Top Badges */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full shadow bg-[#7b002c] text-white border border-white/20">
-                          {plot.category}
-                        </span>
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-slate-200 border border-white/15">
-                          {plot.badge}
-                        </span>
-                      </div>
-
-                      <div className="absolute top-3 right-3">
-                        <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow border border-emerald-400/30">
+                      {/* Top Badges Row (Prevents Any Overlap) */}
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
+                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
+                            {plot.category}
+                          </span>
+                          {plot.badge && (
+                            <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-200 border border-white/15 truncate max-w-[95px]">
+                              {plot.badge}
+                            </span>
+                          )}
+                        </div>
+                        <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
                           {plot.status}
                         </span>
                       </div>
@@ -1215,14 +1219,17 @@ export default function PrimeBlockContent() {
                         <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
                         <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
                       </div>
-                    </div>
+                    </Link>
 
-                    {/* Specs Details */}
-                    <div className="p-5 space-y-3.5">
+                    {/* Specs Details -> Links to /plots filtered */}
+                    <Link
+                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
+                      className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                    >
                       <div className="space-y-2 text-xs text-slate-600">
                         <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
                           <span className="text-slate-500 font-medium">Plot Size:</span>
-                          <span className="text-slate-900 font-bold">{plot.size}</span>
+                          <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
                         </div>
                         <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
                           <span className="text-slate-500 font-medium">Dimensions:</span>
@@ -1240,7 +1247,7 @@ export default function PrimeBlockContent() {
 
                       {/* Feature Pills */}
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {plot.features.map((feat: string, fIdx: number) => (
+                        {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat: string, fIdx: number) => (
                           <span
                             key={fIdx}
                             className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
@@ -1249,25 +1256,35 @@ export default function PrimeBlockContent() {
                           </span>
                         ))}
                       </div>
-                    </div>
+                    </Link>
                   </div>
 
-                  {/* Price & CTA Footer */}
-                  <div className="p-5 pt-0 flex items-center justify-between border-t border-slate-100 mt-2">
-                    <div>
-                      <span className="text-[10px] text-slate-400 uppercase block font-semibold">Total Price</span>
-                      <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
+                  {/* Price & Action Buttons Footer */}
+                  <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Price</span>
+                      <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
                     </div>
 
-                    <a
-                      href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in buying Prime Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share file details.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1 cursor-pointer"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      <span>Book Now</span>
-                    </a>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href={`/plots/${plot.id}`}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
+                      >
+                        <span>Details</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </Link>
+
+                      <a
+                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in buying Prime Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share file details.`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>Book</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>
