@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
-  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
+  Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, ChevronUp, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
   Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users, Star, Quote, HeartHandshake, BadgeCheck, Phone
 } from 'lucide-react';
 import {
@@ -23,6 +23,7 @@ export default function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isMapDownloadModalOpen, setIsMapDownloadModalOpen] = useState(false);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryData);
@@ -390,17 +391,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Slogan Moving Marquee Ribbon - Single Line Slogan without borders */}
-      <div className="bg-white py-2 overflow-hidden select-none">
-        <div className="ticker-track gap-12 items-center text-xs sm:text-sm font-serif font-bold tracking-[0.25em] text-[#7b002c] uppercase whitespace-nowrap">
-          {[...Array(8)].map((_, idx) => (
-            <div key={idx} className="flex items-center gap-12 shrink-0">
-              <span className="font-serif">Building Tomorrow Together</span>
-              <span className="text-slate-300 font-sans">•</span>
-            </div>
-          ))}
-        </div>
-      </div>
+   
 
       {/* ========================================================= */}
       {/* SECTION 3 — ABOUT                                         */}
@@ -423,9 +414,37 @@ export default function HomePage() {
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={150}>
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans max-w-xl">
-                Faisal Hills Islamabad, developed by Zedem International, is a thoughtfully planned gated community located in Taxila along the historic GT Road. With the scenic Margalla Hills as its backdrop, it offers easy access to Islamabad and Rawalpindi. Combining modern living, strong connectivity, legal development, and attractive investment potential, Faisal Hills is an ideal choice for both homebuyers and investors.
-              </p>
+              <div className="space-y-2 font-sans max-w-xl text-slate-600 text-sm sm:text-base leading-relaxed">
+                <p>
+                  Faisal Hills Islamabad, developed by Zedem International, is a thoughtfully planned gated community located in Taxila along the historic GT Road.
+                  {!isAboutExpanded && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAboutExpanded(true)}
+                      className="ml-2 font-bold text-[#7b002c] hover:text-[#9e1245] hover:underline cursor-pointer inline-flex items-center gap-0.5"
+                    >
+                      <span>See More</span>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </p>
+
+                {isAboutExpanded && (
+                  <div className="space-y-2 animate-fadeIn">
+                    <p>
+                      With the scenic Margalla Hills as its backdrop, it offers easy access to Islamabad and Rawalpindi. Combining modern living, strong connectivity, legal development, and attractive investment potential, Faisal Hills is an ideal choice for both homebuyers and investors.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setIsAboutExpanded(false)}
+                      className="font-bold text-[#7b002c] hover:text-[#9e1245] hover:underline cursor-pointer inline-flex items-center gap-0.5 text-xs"
+                    >
+                      <span>See Less</span>
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={250}>
@@ -453,6 +472,17 @@ export default function HomePage() {
           </div>
 
         </div>
+           {/* Slogan Moving Marquee Ribbon - Single Line Slogan */}
+      <div className="bg-white pt-6 pb-2 mt-8 border-t border-slate-100 overflow-hidden select-none">
+        <div className="ticker-track gap-12 items-center text-xs sm:text-sm font-serif font-bold tracking-[0.25em] text-[#7b002c] uppercase whitespace-nowrap">
+          {[...Array(8)].map((_, idx) => (
+            <div key={idx} className="flex items-center gap-12 shrink-0">
+              <span className="font-serif">Building Tomorrow Together</span>
+              <span className="text-slate-300 font-sans">•</span>
+            </div>
+          ))}
+        </div>
+      </div>
       </section>
 
       {/* ========================================================= */}
@@ -727,7 +757,7 @@ export default function HomePage() {
       {/* ========================================================= */}
       {/* SECTION 7 — PLOT OFFERINGS & FEATURED READY FOR SALE      */}
       {/* ========================================================= */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 py-4">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 py-16 sm:py-20">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
           <ScrollReveal direction="up" delay={50} className="space-y-2 max-w-2xl">
@@ -757,17 +787,17 @@ export default function HomePage() {
           </h3>
         </ScrollReveal>
 
-        {/* 4 Plot Cards */}
+        {/* 8 Plot Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plots.slice(0, 4).map((plot, idx) => (
+          {plots.slice(0, 8).map((plot, idx) => (
             <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 100}>
               <div
                 className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 h-full"
               >
                 <div>
-                  {/* Image Banner Container -> Redirects to /plots */}
+                  {/* Image Banner Container -> Redirects to /plots with pre-filtered size */}
                   <Link
-                    href="/plots"
+                    href={`/plots?size=${encodeURIComponent(plot.size)}`}
                     className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container block cursor-pointer"
                   >
                     <img
@@ -797,9 +827,14 @@ export default function HomePage() {
 
                   <div className="p-5 space-y-3">
                     <div className="space-y-1.5 text-xs text-slate-600">
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span className="text-slate-500">Property Type:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.size}</strong>
+                        <Link
+                          href={`/plots?size=${encodeURIComponent(plot.size)}`}
+                          className="text-slate-900 font-bold hover:text-[#7b002c] hover:underline"
+                        >
+                          {plot.size}
+                        </Link>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-500">Dimensions:</span>
@@ -985,7 +1020,7 @@ export default function HomePage() {
       {/* ========================================================= */}
       {/* SECTION 10 — PAYMENT PLAN 2026                            */}
       {/* ========================================================= */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 sm:py-20 space-y-8">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <ScrollReveal direction="up" delay={50} className="max-w-2xl space-y-2">
@@ -1149,7 +1184,7 @@ export default function HomePage() {
       {/* ========================================================= */}
       {/* SECTION 13 — AMENITIES & LIFESTYLE                        */}
       {/* ========================================================= */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 sm:py-20 space-y-10">
 
         <div className="max-w-3xl space-y-3">
           <ScrollReveal direction="up" delay={50}>

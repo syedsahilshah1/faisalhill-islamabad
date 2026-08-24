@@ -27,6 +27,7 @@ import {
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
+import PrimeBlockContent from '@/components/blocks/PrimeBlockContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -112,6 +113,19 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
     };
   }
 
+  if (params.slug === 'prime-block') {
+    return {
+      title: 'Faisal Hills Prime Block – Official Prices, 4-Year Payment Plan & Map',
+      description: 'Faisal Hills Prime Block: Official fixed launch rates on 48-month easy installment plan. 100% RDA approved with GT Road & Margalla views. Check plot prices, NOC & master plan.',
+      keywords: ['Faisal Hills Prime Block', 'Prime Block Faisal Hills plots', 'Faisal Hills Prime Block payment plan', 'Prime Block installment schedule', 'Faisal Hills RDA NOC', 'Prime Block map'],
+      openGraph: {
+        title: 'Faisal Hills Prime Block – Official Prices, 4-Year Payment Plan & Map',
+        description: 'Faisal Hills Prime Block: Official fixed launch rates on 48-month easy installment plan. 100% RDA approved with GT Road & Margalla views.',
+        images: [{ url: '/images/faisal-hills-aerial.jpg' }]
+      }
+    };
+  }
+
   return {
     title: `${block.name} Faisal Hills | Plot Prices, Map, NOC & Payment Plan`,
     description: `${block.name} Faisal Hills Rawalpindi. ${block.subtitle}. Explore 5 Marla, 10 Marla, 1 Kanal plot prices, NOC status, master plan, and 3-year payment plans. Verified: ${block.verificationDate}.`,
@@ -144,7 +158,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -169,7 +183,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             )}
 
             <div className="space-y-3">
-              <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>
+              {block.subtitle && (
+                <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>
+              )}
               <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
                 {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
               </h1>
@@ -180,40 +196,6 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               )}
             </div>
 
-            {/* Counting Detail Stats (Animated Key Metrics) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl pt-1">
-              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
-                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Approval</span>
-                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  <CountUpNumber end={100} suffix="%" duration={1500} />
-                </div>
-                <span className="text-[10px] text-slate-300 block font-medium">100% RDA Approved</span>
-              </div>
-
-              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
-                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Boulevard</span>
-                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  <CountUpNumber end={225} suffix="ft+" duration={1800} />
-                </div>
-                <span className="text-[10px] text-slate-300 block font-medium">Main Entrance Axis</span>
-              </div>
-
-              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
-                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Landmark</span>
-                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  <CountUpNumber end={27} suffix=" Flr" duration={1600} />
-                </div>
-                <span className="text-[10px] text-slate-300 block font-medium">Faisal Jewel Tower</span>
-              </div>
-
-              <div className="bg-slate-950/60 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-white/10 shadow-lg group hover:border-[#7b002c]/50 transition-colors">
-                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">Direct Access</span>
-                <div className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  <CountUpNumber end={2} suffix=" Min" duration={1200} />
-                </div>
-                <span className="text-[10px] text-slate-300 block font-medium">Main GT Road (N-5)</span>
-              </div>
-            </div>
 
             {/* Quick Action CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -233,13 +215,6 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                 <MessageSquare className="w-4 h-4 text-white" />
                 <span>Chat on WhatsApp</span>
               </a>
-              <Link
-                href="/faisal-hills-payment-plan"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full border border-white/20 transition-all hover:scale-105"
-              >
-                <FileText className="w-4 h-4 text-white" />
-                <span>Payment Plan</span>
-              </Link>
             </div>
           </div>
 
@@ -251,40 +226,12 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
 
         {/* Moving Slogan Marquee Ticker attached directly to Hero Section base */}
-        <div className="relative z-10 w-full overflow-hidden py-3.5 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
-          <div className="ticker-track flex items-center gap-8 whitespace-nowrap text-xs sm:text-sm font-bold tracking-wider uppercase">
-            {[1, 2].map((repeat) => (
-              <div key={repeat} className="flex items-center gap-8">
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-300 shrink-0 animate-pulse" />
-                  <span>{block.name} — Civic & Commercial Hub on Main GT Road (N-5)</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
-                <span className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
-                  <span>100% RDA Approved NOC & Sanctioned Scheme</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
-                <span className="flex items-center gap-2">
-                  <Landmark className="w-4 h-4 text-amber-300 shrink-0" />
-                  <span>Home to 27-Storey Faisal Jewel & Roots International School</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
-                <span className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-rose-200 shrink-0" />
-                  <span>Ready for Construction with Immediate On-Ground Possession</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
-                <span className="flex items-center gap-2">
-                  <Navigation className="w-4 h-4 text-amber-300 shrink-0" />
-                  <span>225ft - 250ft Grand Entrance Main Boulevard</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
-                <span className="flex items-center gap-2">
-                  <PhoneCall className="w-4 h-4 text-white shrink-0" />
-                  <span>VIP Official Booking Desk: +92 304 4811 717</span>
-                </span>
-                <span className="text-amber-300 font-extrabold">•</span>
+        <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
+          <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.25em] uppercase text-white">
+            {[...Array(12)].map((_, idx) => (
+              <div key={idx} className="flex items-center gap-12 shrink-0">
+                <span className="font-serif tracking-[0.25em]">Building Tomorrow Together</span>
+                <span className="text-amber-300/80 font-sans text-xs">•</span>
               </div>
             ))}
           </div>
@@ -298,8 +245,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Prime Block Dedicated Ultra-Luxury Content (Top Priority Block) */}
+      {block.slug === 'prime-block' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <PrimeBlockContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -359,308 +313,6 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                 </div>
               </div>
             )}
-
-        {/* Prime Block SEO Content Expansion */}
-        {block.slug === 'prime-block' && (
-          <div className="lg:col-span-12 space-y-12 pt-8 border-t border-slate-200">
-            
-            {/* SEO Content Introduction */}
-            <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-4 font-sans">
-              <p className="font-semibold text-base text-slate-955">
-                If you've been searching for a premium residential or commercial plot near Islamabad, Faisal Hills Prime Block deserves to be at the top of your list. Nestled along the Main GT Road, this thoughtfully planned community combines a prime location, modern infrastructure, and flexible payment options — making it one of the most talked-about investment destinations in the twin cities right now.
-              </p>
-              <p>
-                Whether you're looking to build your dream home, diversify your real estate portfolio, or simply secure a plot before prices climb further, the Prime Block offers something genuinely compelling. Here's everything you need to know.
-              </p>
-            </div>
-
-            {/* Grid for Overview & Legal NOC Status */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              {/* What Is Prime Block */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    What Is Faisal Hills Prime Block?
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Faisal Hills Prime Block is a dedicated sector within the larger Faisal Hills housing project, developed by Zedem International under the Faisal Town Group — one of Pakistan's most recognized real estate names behind landmark projects like Faisal Town Phase 1, <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel</Link>, and Multi Gardens B-17.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    The Prime Block is designed to a higher standard than regular sectors, featuring wider roads, better plot positioning, and enhanced facilities. It caters to buyers who want premium value without moving too far from the amenities of Rawalpindi and Islamabad.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  Developed by Zedem International & Faisal Town Group pedigree.
-                </p>
-              </div>
-
-              {/* NOC & Legal Status */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    Regulatory & NOC Status
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    One of the most common questions buyers ask — and rightly so — is about the NOC status. Faisal Hills holds approval from the Rawalpindi Development Authority (RDA), which is the relevant regulatory body for housing societies in this area.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    The RDA-approved status gives buyers a critical layer of legal protection. It means the development plan has been vetted, the land-use is sanctioned, and your investment is backed by official authorization. Always verify the latest NOC status directly with RDA or through our <Link href="/contact" className="text-[#7b002c] font-bold hover:underline">authorized team</Link> before purchasing.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  Read more about legal updates on our <Link href="/plots" className="text-[#7b002c] font-bold hover:underline">NOC & Approvals</Link> section.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Location & Accessibility Section */}
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <span className="label-caps text-[#7b002c] font-bold block">Prime Location</span>
-                <h3 className="font-serif text-2xl font-bold text-slate-900">
-                  Faisal Hills Prime Block Location
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans max-w-4xl">
-                  Location is where this project truly shines. Faisal Hills Prime Block sits right on the Main GT Road, giving it easy access to Taxila, Rawalpindi, and the broader Islamabad Capital Territory. For families commuting to Islamabad daily or investors looking for high-footfall commercial locations, this connectivity is a significant advantage over projects deeper inside residential zones.
-                </p>
-              </div>
-
-              {/* Drive Times Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-lg">
-                <div className="lg:col-span-4 space-y-4 flex flex-col justify-center">
-                  <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Accessibility</span>
-                  <h4 className="font-serif text-xl font-bold text-white">Accessibility from Key Areas</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                    You get a peaceful, green neighbourhood without sacrificing connectivity to work, education, and healthcare in the twin cities:
-                  </p>
-                </div>
-                
-                <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">HITEC University Taxila</span>
-                    <span className="font-bold text-amber-400">5-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Taxila Interchange (M-1)</span>
-                    <span className="font-bold text-amber-400">10-min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Tarnol Morr</span>
-                    <span className="font-bold text-amber-400">5-10 min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Rawalpindi City Centre</span>
-                    <span className="font-bold text-amber-400">25-30 min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Islamabad Blue Area</span>
-                    <span className="font-bold text-amber-400">35-45 min drive</span>
-                  </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Peshawar via M-1 Motorway</span>
-                    <span className="font-bold text-amber-400">1.5 hours drive</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Highlights & Features */}
-              <div className="bg-[#ffe9e6]/50 p-6 rounded-2xl border border-[#7b002c]/10 text-xs text-slate-800 space-y-2">
-                <strong className="text-[#7b002c] block mb-1">Key Location Highlights:</strong>
-                <p className="font-sans leading-relaxed">
-                  Direct access via Main GT Road, close proximity to Srinagar Highway and Margalla Avenue, M-1 Motorway interchange access, and scenic vistas of the Margalla Hills.
-                </p>
-              </div>
-            </div>
-
-            {/* Master Plan & Plots */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Master Plan */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Master Plan & Layout
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The master plan for the Prime Block follows a structured, grid-based layout that maximizes both livability and commercial potential. The planning approach reflects international standards of urban development — compact enough to feel like a community, yet spacious enough to breathe.
-                </p>
-                <div className="text-xs text-slate-700 leading-relaxed font-sans space-y-1 pt-1">
-                  <div>• Clearly demarcated residential and commercial zones</div>
-                  <div>• Wide main boulevards with green belts running down the centre</div>
-                  <div>• Dedicated plots for mosques, schools, and healthcare facilities</div>
-                  <div>• Community parks and open spaces distributed throughout the sector</div>
-                  <div>• Underground utilities to keep streetscapes clean and modern</div>
-                  <div>• Separate entrances and exit points to manage traffic flow efficiently</div>
-                </div>
-              </div>
-
-              {/* Plots for Sale */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Plots for Sale In Prime Block
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  Whether you’re after residential living or commercial opportunities, Faisal Hills Prime Block offers standard sizes built along wide carpeted roads with proper drainage and street lighting:
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <strong className="text-[#7b002c] text-xs block mb-1 font-serif">Residential Plots</strong>
-                    <span className="text-[10px] text-slate-600 block leading-relaxed font-sans">
-                      Sizes include:<br />
-                      • 5 Marla — compact, modern homes<br />
-                      • 10 Marla — most popular for family homes<br />
-                      • 1 Kanal — premium plots for larger homes
-                    </span>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <strong className="text-[#7b002c] text-xs block mb-1 font-serif">Commercial Plots</strong>
-                    <span className="text-[10px] text-slate-600 block leading-relaxed font-sans">
-                      Perfect for:<br />
-                      • Retail shops and plazas<br />
-                      • Office spaces for professionals<br />
-                      • Hospitality and food businesses<br />
-                      *Positioned close to the main boulevard and <Link href="/faisal-hills-commercial" className="text-[#7b002c] font-bold hover:underline">commercial plots</Link> areas.
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Facilities & Amenities */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                Facilities & Modern Amenities
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                The Prime Block is built around the idea that residents shouldn't have to leave the community for their daily needs:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs text-slate-755 font-sans pt-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Wide carpeted roads</strong> with markings</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Underground electricity</strong> network</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Water filtration plant</strong> for clean supply</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Landscaped parks</strong> and green belts</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Mosques & Islamic centres</strong> within walking distance</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">✔</span>
-                  <span><strong>Gated community</strong> with 24/7 security surveillance</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Plan & Price Guide (Resale Table) */}
-            <div className="space-y-4 pt-2">
-              <div className="space-y-1">
-                <span className="label-caps text-[#7b002c] font-bold block">Investment Guide</span>
-                <h3 className="font-serif text-2xl font-bold text-slate-900">
-                  Prime Block Payment Plan
-                </h3>
-                <p className="text-xs text-slate-600 font-sans">
-                  The payment structure is designed to be accessible without compromising on development quality. Installment plans are typically spread over 36 monthly payments:
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                    <tr>
-                      <th className="p-4">Plot Size</th>
-                      <th className="p-4">Total Price</th>
-                      <th className="p-4">Booking (Down Payment)</th>
-                      <th className="p-4">Installment Term</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">5 Marla</td>
-                      <td className="p-4 font-bold">On Request</td>
-                      <td className="p-4 font-semibold text-slate-900">20%</td>
-                      <td className="p-4 text-slate-600 font-medium">36 Monthly Installments</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">10 Marla</td>
-                      <td className="p-4 font-bold">On Request</td>
-                      <td className="p-4 font-semibold text-slate-900">20%</td>
-                      <td className="p-4 text-slate-600 font-medium">36 Monthly Installments</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">1 Kanal</td>
-                      <td className="p-4 font-bold">On Request</td>
-                      <td className="p-4 font-semibold text-slate-900">20%</td>
-                      <td className="p-4 text-slate-600 font-medium">36 Monthly Installments</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[10px] text-slate-500 italic font-sans">
-                * Note: Prices are subject to change based on plot number, location within the block, and market conditions. Contact the official sales office or an authorized dealer for current and confirmed pricing.
-              </p>
-            </div>
-
-            {/* Why Invest & Developer Info */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Why Invest */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-[#7b002c] border-b border-slate-100 pb-2">
-                  Why Invest in Faisal Hills Prime Block?
-                </h3>
-                <ul className="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed font-sans">
-                  <li>Developer track record — Zedem International and Faisal Town Group pedigree.</li>
-                  <li>RDA approval provides critical legal backing and protection.</li>
-                  <li>GT Road location commands high demand from both end-users and investors.</li>
-                  <li>On-ground development progress with functional roads and utilities.</li>
-                  <li>Scenic Margalla Hills views from premium points within the society.</li>
-                </ul>
-              </div>
-
-              {/* Investment Value */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Price & Investment Value
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  Pricing in the Prime Block reflects its premium positioning within Faisal Hills. What drives value here is GT Road frontage, limited plot availability, and infrastructure completion ahead of competing projects. For overseas Pakistanis, it offers a relatively low-risk, high-potential investment in the current Pakistan real estate environment.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Compare blocks callout */}
-            <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-xl space-y-4">
-              <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Compare Blocks</span>
-              <h3 className="font-serif text-xl font-bold text-white">Compare Other Blocks In Faisal Hills</h3>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-3xl font-sans">
-                Want to check details of other blocks? Compare the Prime Block with our guides for: <Link href="/blocks/executive-block" className="text-amber-400 hover:underline">Executive Block</Link>, <Link href="/blocks/block-a" className="text-amber-400 hover:underline">Block A</Link>, <Link href="/blocks/block-b" className="text-amber-400 hover:underline">Block B</Link>, <Link href="/blocks/block-c" className="text-amber-400 hover:underline">Block C</Link>, <Link href="/blocks/block-d" className="text-amber-400 hover:underline">Block D</Link>, or the <Link href="/blocks/gandahara" className="text-amber-400 hover:underline">Gandahara Block</Link>.
-              </p>
-            </div>
-
-            {/* Final Thoughts */}
-            <div className="bg-[#ffe9e6]/20 p-8 rounded-2xl border border-[#7b002c]/10 text-xs text-slate-600 leading-relaxed font-sans space-y-3">
-              <h4 className="font-serif font-bold text-sm text-[#7b002c] uppercase tracking-wider">Final Thoughts</h4>
-              <p>
-                Faisal Hills Prime Block brings together the right ingredients for a sound property investment near Islamabad — a credible developer, regulatory approval, strategic location on Main GT Road, and a payment plan that doesn't demand everything upfront. Whether you're buying to build, buying to hold, or buying to sell — the Prime Block is worth a closer look. In a market where good projects fill up quickly, early movers tend to get the better deal.
-              </p>
-            </div>
-
-          </div>
-        )}
 
         {/* Block A SEO Content Expansion */}
         {block.slug === 'block-a' && (

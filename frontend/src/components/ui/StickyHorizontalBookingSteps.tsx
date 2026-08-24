@@ -133,7 +133,7 @@ export default function StickyHorizontalBookingSteps() {
       {/* DESKTOP VIEW (Rich Pinned Sticky Horizontal Scroll)       */}
       {/* ========================================================= */}
       <section ref={targetRef} className="hidden md:block relative h-[240vh] bg-slate-50 border-y border-slate-200/80">
-        <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center py-10 px-4 sm:px-8 lg:px-12 space-y-8 lg:space-y-10">
+        <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-hidden flex flex-col justify-center py-8 px-4 sm:px-8 lg:px-12 space-y-6 lg:space-y-8 z-10">
           
           {/* Pinned Section Header */}
           <div className="text-center max-w-3xl mx-auto space-y-3 shrink-0">

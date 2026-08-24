@@ -95,44 +95,9 @@ export const societyStats: SocietyStats = {
 };
 
 export const plotInventoryData: PlotItem[] = [
+  // 1. 5 Marla - Block A
   {
     id: "plot-101",
-    plotNumber: "A-125",
-    blockSlug: "block-a",
-    blockName: "Block A",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 9800000,
-    priceFormatted: "PKR 98 Lacs",
-    priceHistoryTrend: "+8.5% in last 3 months",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 38, y: 42 },
-    features: ["Corner Plot", "Fronting 12-Kanal Park", "Underground Electricity", "Immediate Possession"],
-    description: "Prime 10 Marla residential plot directly facing Sector A central park. Ideal for modern villa construction.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-102",
-    plotNumber: "FJ-402",
-    blockSlug: "faisal-jewel-islamabad",
-    blockName: "Faisal Jewel",
-    category: "Apartment",
-    size: "2-Bed Luxury Flat",
-    dimensions: "1,150 Sq Ft",
-    price: 13500000,
-    priceFormatted: "PKR 1.35 Crore",
-    priceHistoryTrend: "+15.4% high demand",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 15, y: 22 },
-    features: ["26th Floor Sky View", "Serviced Hotel Suite", "Revolving Restaurant Access", "High Rental Yield"],
-    description: "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
-    image: "/faisal-jewel.jpg"
-  },
-  {
-    id: "plot-103",
     plotNumber: "A-204",
     blockSlug: "block-a",
     blockName: "Block A",
@@ -149,98 +114,9 @@ export const plotInventoryData: PlotItem[] = [
     description: "Highly demanded 5 Marla plot situated on 60ft road near Mosque & Commercial Market.",
     image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
   },
+  // 2. 5 Marla - Block B
   {
-    id: "plot-104",
-    plotNumber: "EXE-048",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 18500000,
-    priceFormatted: "PKR 1.85 Crore",
-    priceHistoryTrend: "+14% high demand",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 18, y: 28 },
-    features: ["Double Side Corner", "225ft Boulevard Proximity", "Executive Club View"],
-    description: "Luxurious 1 Kanal Corner Plot near GT Road Entrance Gate.",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-105",
-    plotNumber: "FJ-709",
-    blockSlug: "faisal-jewel-islamabad",
-    blockName: "Faisal Jewel",
-    category: "Apartment",
-    size: "1-Bed Executive Suite",
-    dimensions: "650 Sq Ft",
-    price: 8500000,
-    priceFormatted: "PKR 85 Lacs",
-    priceHistoryTrend: "+12.8% pre-launch ROI",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 16, y: 24 },
-    features: ["Smart Automation Suite", "Furnished Interior Option", "Infinity Pool Access"],
-    description: "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
-    image: "/faisal-jewel.jpg"
-  },
-  {
-    id: "plot-106",
-    plotNumber: "EXE-112",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Commercial",
-    size: "4 Marla Plaza Plot",
-    dimensions: "30 x 30",
-    price: 32000000,
-    priceFormatted: "PKR 3.2 Crore",
-    priceHistoryTrend: "+18% commercial yield",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 22, y: 32 },
-    features: ["Ground + 5 Approval", "225ft Main GT Entrance Road", "Ideal for Bank Plaza"],
-    description: "Hot commercial plot on Executive Main Boulevard.",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-107",
-    plotNumber: "B-089",
-    blockSlug: "block-b",
-    blockName: "Block B",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 8400000,
-    priceFormatted: "PKR 84 Lacs",
-    priceHistoryTrend: "+6.8% stable",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 58, y: 30 },
-    features: ["Margalla Mountain Backdrop", "Quiet Cul-de-Sac Street", "Full Utilities"],
-    description: "Scenic 10 Marla hill-view plot in elevated Block B.",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-108",
-    plotNumber: "PR-014",
-    blockSlug: "prime-block",
-    blockName: "Prime Block",
-    category: "Residential",
-    size: "1 Kanal Villa Plot",
-    dimensions: "50 x 90",
-    price: 24500000,
-    priceFormatted: "PKR 2.45 Crore",
-    priceHistoryTrend: "+21% prestige demand",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 74, y: 22 },
-    features: ["Private Gated Sector", "Exclusive Height Elevation", "Underground Fiber Optics"],
-    description: "Ultra-luxury 1 Kanal plot in VIP Prime Block with Margalla panorama.",
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-109",
+    id: "plot-102",
     plotNumber: "B-145",
     blockSlug: "block-b",
     blockName: "Block B",
@@ -257,26 +133,28 @@ export const plotInventoryData: PlotItem[] = [
     description: "Affordable 5 Marla residential plot in Block B directly facing the neighborhood park. Ideal for a modern compact home.",
     image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
   },
+  // 3. 8 Marla - Executive Block
   {
-    id: "plot-110",
-    plotNumber: "B-211",
-    blockSlug: "block-b",
-    blockName: "Block B",
+    id: "plot-103",
+    plotNumber: "EXE-082",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
     category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 16500000,
-    priceFormatted: "PKR 1.65 Crore",
-    priceHistoryTrend: "+12.3% capital appreciation",
+    size: "8 Marla",
+    dimensions: "30 x 60",
+    price: 7800000,
+    priceFormatted: "PKR 78 Lacs",
+    priceHistoryTrend: "+13.5% capital growth",
     status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 62, y: 28 },
-    features: ["Double Corner", "Panoramic Kala Chitta Hill Views", "Wide 80ft Street", "Immediate Possession"],
-    description: "Premium double-corner 1 Kanal plot in Block B. Elevated position with sweeping mountain views — perfect for a luxury villa.",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+    facing: "Main Boulevard",
+    mapCoords: { x: 20, y: 30 },
+    features: ["Main Entrance Boulevard", "Close to Executive Club", "Underground Electricity"],
+    description: "Prestigious 8 Marla plot on Main Boulevard in Executive Block. Ideal for an upscale family home.",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
   },
+  // 4. 8 Marla - Block B
   {
-    id: "plot-111",
+    id: "plot-104",
     plotNumber: "B-078",
     blockSlug: "block-b",
     blockName: "Block B",
@@ -286,13 +164,147 @@ export const plotInventoryData: PlotItem[] = [
     price: 6900000,
     priceFormatted: "PKR 69 Lacs",
     priceHistoryTrend: "+9.1% stable growth",
-    status: "Reserved",
+    status: "Available",
     facing: "Main Boulevard",
     mapCoords: { x: 56, y: 38 },
     features: ["Main Boulevard Frontage", "Full Utility Connection", "Near Community Mosque"],
     description: "Well-positioned 8 Marla plot on Block B's main internal boulevard. Excellent connectivity to the society entrance gate.",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
   },
+  // 5. 10 Marla - Block A
+  {
+    id: "plot-105",
+    plotNumber: "A-125",
+    blockSlug: "block-a",
+    blockName: "Block A",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 9800000,
+    priceFormatted: "PKR 98 Lacs",
+    priceHistoryTrend: "+8.5% in last 3 months",
+    status: "Available",
+    facing: "Park Facing",
+    mapCoords: { x: 38, y: 42 },
+    features: ["Corner Plot", "Fronting 12-Kanal Park", "Underground Electricity", "Immediate Possession"],
+    description: "Prime 10 Marla residential plot directly facing Sector A central park. Ideal for modern villa construction.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+  },
+  // 6. 10 Marla - Block B
+  {
+    id: "plot-106",
+    plotNumber: "B-089",
+    blockSlug: "block-b",
+    blockName: "Block B",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 8400000,
+    priceFormatted: "PKR 84 Lacs",
+    priceHistoryTrend: "+6.8% stable",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 58, y: 30 },
+    features: ["Margalla Mountain Backdrop", "Quiet Cul-de-Sac Street", "Full Utilities"],
+    description: "Scenic 10 Marla hill-view plot in elevated Block B.",
+    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
+  },
+  // 7. 1 Kanal - Executive Block
+  {
+    id: "plot-107",
+    plotNumber: "EXE-048",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "1 Kanal",
+    dimensions: "50 x 90",
+    price: 18500000,
+    priceFormatted: "PKR 1.85 Crore",
+    priceHistoryTrend: "+14% high demand",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 18, y: 28 },
+    features: ["Double Side Corner", "225ft Boulevard Proximity", "Executive Club View"],
+    description: "Luxurious 1 Kanal Corner Plot near GT Road Entrance Gate.",
+    image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80"
+  },
+  // 8. 1 Kanal - Prime Block
+  {
+    id: "plot-108",
+    plotNumber: "PR-014",
+    blockSlug: "prime-block",
+    blockName: "Prime Block",
+    category: "Residential",
+    size: "1 Kanal",
+    dimensions: "50 x 90",
+    price: 24500000,
+    priceFormatted: "PKR 2.45 Crore",
+    priceHistoryTrend: "+21% prestige demand",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 74, y: 22 },
+    features: ["Private Gated Sector", "Exclusive Height Elevation", "Underground Fiber Optics"],
+    description: "Ultra-luxury 1 Kanal plot in VIP Prime Block with Margalla panorama.",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+  },
+  // 9. Luxury Apartment - Faisal Jewel
+  {
+    id: "plot-109",
+    plotNumber: "FJ-402",
+    blockSlug: "faisal-jewel-islamabad",
+    blockName: "Faisal Jewel",
+    category: "Apartment",
+    size: "2-Bed Luxury Flat",
+    dimensions: "1,150 Sq Ft",
+    price: 13500000,
+    priceFormatted: "PKR 1.35 Crore",
+    priceHistoryTrend: "+15.4% high demand",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 15, y: 22 },
+    features: ["26th Floor Sky View", "Serviced Hotel Suite", "Revolving Restaurant Access", "High Rental Yield"],
+    description: "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
+    image: "/faisal-jewel.jpg"
+  },
+  // 10. Executive Suite - Faisal Jewel
+  {
+    id: "plot-110",
+    plotNumber: "FJ-709",
+    blockSlug: "faisal-jewel-islamabad",
+    blockName: "Faisal Jewel",
+    category: "Apartment",
+    size: "1-Bed Executive Suite",
+    dimensions: "650 Sq Ft",
+    price: 8500000,
+    priceFormatted: "PKR 85 Lacs",
+    priceHistoryTrend: "+12.8% pre-launch ROI",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 16, y: 24 },
+    features: ["Smart Automation Suite", "Furnished Interior Option", "Infinity Pool Access"],
+    description: "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
+    image: "/faisal-jewel.jpg"
+  },
+  // 11. Commercial Plaza - Executive Block
+  {
+    id: "plot-111",
+    plotNumber: "EXE-112",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Commercial",
+    size: "4 Marla Plaza Plot",
+    dimensions: "30 x 30",
+    price: 32000000,
+    priceFormatted: "PKR 3.2 Crore",
+    priceHistoryTrend: "+18% commercial yield",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 22, y: 32 },
+    features: ["Ground + 5 Approval", "225ft Main GT Entrance Road", "Ideal for Bank Plaza"],
+    description: "Hot commercial plot on Executive Main Boulevard.",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+  },
+  // 12. Commercial Plot - Block B
   {
     id: "plot-112",
     plotNumber: "B-302",
@@ -314,6 +326,48 @@ export const plotInventoryData: PlotItem[] = [
 ];
 
 export const blocksData: BlockInfo[] = [
+  {
+    id: "prime-block",
+    slug: "prime-block",
+    name: "Prime Block",
+    subtitle: "",
+    category: "developed",
+    status: "Exclusive Possession Sector",
+    nocStatus: "RDA Approved",
+    verificationDate: "August 2026",
+    description: "Faisal Hills Prime Block is a premium VIP residential enclave positioned on the highest crest of the society.",
+    locationDetails: "Situated on the highest crest of Faisal Hills with uninterrupted views of the Margalla Hills range.",
+    highlights: [
+      "VIP Enclave with Gated Entry & Biometrics",
+      "Highest Elevation Crest with Panoramic Margalla Ridge Views",
+      "1 Kanal & 2 Kanal Premium Villa Plots",
+      "Exclusive Country Club & Golf Putting Green Access"
+    ],
+    totalPlots: 1200,
+    priceRange: {
+      residential: "PKR 95 Lacs - 3.2 Crore",
+      commercial: "PKR 3.5 Crore - 12 Crore"
+    },
+    heroImage: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+    masterPlanImage: "/images/faisal-hills-master-plan-map-opt.webp",
+    amenities: [
+      { name: "Private Security Patrol", description: "Dedicated rapid response security unit and thermal cameras", icon: "ShieldCheck", image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=75" },
+      { name: "Clubhouse & Infinity Pool", description: "5-Star standard country club with heated indoor pool", icon: "Sparkles", image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75" },
+      { name: "Heliport Access", description: "Emergency medical helipad facility", icon: "Compass", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=75" }
+    ],
+    faqs: [
+      { question: "Is Faisal Hills Prime Block RDA approved?", answer: "Yes. Faisal Hills holds approval from the Rawalpindi Development Authority (RDA). Always confirm the current NOC status directly with RDA or through an authorized property consultant before purchasing." },
+      { question: "Who is the developer of Faisal Hills Prime Block?", answer: "The project is developed by Zedem International, operating under the Faisal Town Group — the same group behind Faisal Town Phase 1, Faisal Jewel, and Multi Gardens B-17." },
+      { question: "What plot sizes are available in Faisal Hills Prime Block?", answer: "Residential plots are available in 5 Marla, 10 Marla, and 1 Kanal sizes. Commercial plots are also available along main arteries within the sector." },
+      { question: "What is the payment plan for Faisal Hills Prime Block?", answer: "The payment plan typically requires a 20% down payment at booking, with the remaining balance spread over 36 monthly installments. Exact pricing and plan details should be confirmed with the official sales office." },
+      { question: "How far is Faisal Hills Prime Block from Islamabad?", answer: "The society is located on Main GT Road, making it approximately 35–45 minutes from central Islamabad, depending on traffic and the route taken." },
+      { question: "Is Faisal Hills Prime Block a good investment?", answer: "For buyers seeking a legally approved, developer-backed project near Islamabad with flexible payment terms and visible on-ground development, the Prime Block represents a strong investment opportunity. Like all real estate, outcomes depend on market conditions and timing." },
+      { question: "Can overseas Pakistanis buy plots in Faisal Hills Prime Block?", answer: "Yes. Overseas Pakistanis can purchase plots in Faisal Hills Prime Block. The installment plan structure is particularly convenient for NRPs managing finances from abroad." }
+    ],
+    developmentUpdates: [
+      { title: "Country Club Structure", date: "August 2026", image: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80", progress: 80, text: "Roof slab poured for Prime Country Club." }
+    ]
+  },
   {
     id: "executive-block",
     slug: "executive-block",
@@ -576,83 +630,6 @@ export const blocksData: BlockInfo[] = [
     ],
     developmentUpdates: [
       { title: "Main Street LED Lighting", date: "July 2026", image: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80", progress: 95, text: "Energy-efficient LED streetlights installed." }
-    ]
-  },
-  {
-    id: "prime-block",
-    slug: "prime-block",
-    name: "Prime Block",
-    subtitle: "Ultra-Luxury Gated Enclave Overlooking Margalla Ridge",
-    category: "developed",
-    status: "Exclusive Possession Sector",
-    nocStatus: "RDA Approved",
-    verificationDate: "August 2026",
-    description: "Faisal Hills Prime Block is a premium VIP residential enclave positioned on the highest crest of the society. Overlooking the scenic Margalla Hills range, it features private gated perimeter, 225ft boulevard access, golf putting green, and high-elevation luxury villa plots.",
-    locationDetails: "Situated on the highest crest of Faisal Hills with uninterrupted views of the Margalla Hills range.",
-    highlights: [
-      "VIP Enclave with Gated Entry & Biometrics",
-      "Highest Elevation Crest with Panoramic Margalla Ridge Views",
-      "1 Kanal & 2 Kanal Premium Villa Plots",
-      "Exclusive Country Club & Golf Putting Green Access"
-    ],
-    totalPlots: 1200,
-    priceRange: {
-      residential: "PKR 95 Lacs - 3.2 Crore",
-      commercial: "PKR 3.5 Crore - 12 Crore"
-    },
-    heroImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    masterPlanImage: "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
-    amenities: [
-      { name: "Private Security Patrol", description: "Dedicated rapid response security unit and thermal cameras", icon: "ShieldCheck", image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=75" },
-      { name: "Clubhouse & Infinity Pool", description: "5-Star standard country club with heated indoor pool", icon: "Sparkles", image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75" },
-      { name: "Heliport Access", description: "Emergency medical helipad facility", icon: "Compass", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=75" }
-    ],
-    faqs: [
-      { question: "Is Faisal Hills Prime Block RDA approved?", answer: "Yes. Faisal Hills holds approval from the Rawalpindi Development Authority (RDA). Always confirm the current NOC status directly with RDA or through an authorized property consultant before purchasing." },
-      { question: "Who is the developer of Faisal Hills Prime Block?", answer: "The project is developed by Zedem International, operating under the Faisal Town Group — the same group behind Faisal Town Phase 1, Faisal Jewel, and Multi Gardens B-17." },
-      { question: "What plot sizes are available in Faisal Hills Prime Block?", answer: "Residential plots are available in 5 Marla, 10 Marla, and 1 Kanal sizes. Commercial plots are also available along main arteries within the sector." },
-      { question: "What is the payment plan for Faisal Hills Prime Block?", answer: "The payment plan typically requires a 20% down payment at booking, with the remaining balance spread over 36 monthly installments. Exact pricing and plan details should be confirmed with the official sales office." },
-      { question: "How far is Faisal Hills Prime Block from Islamabad?", answer: "The society is located on Main GT Road, making it approximately 35–45 minutes from central Islamabad, depending on traffic and the route taken." },
-      { question: "Is Faisal Hills Prime Block a good investment?", answer: "For buyers seeking a legally approved, developer-backed project near Islamabad with flexible payment terms and visible on-ground development, the Prime Block represents a strong investment opportunity. Like all real estate, outcomes depend on market conditions and timing." },
-      { question: "Can overseas Pakistanis buy plots in Faisal Hills Prime Block?", answer: "Yes. Overseas Pakistanis can purchase plots in Faisal Hills Prime Block. The installment plan structure is particularly convenient for NRPs managing finances from abroad." }
-    ],
-    developmentUpdates: [
-      { title: "Country Club Structure", date: "August 2026", image: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80", progress: 80, text: "Roof slab poured for Prime Country Club." }
-    ]
-  },
-  {
-    id: "gandahara",
-    slug: "gandahara",
-    name: "Gandahara Block",
-    subtitle: "Heritage & Modern Resort Style Living (Upcoming)",
-    category: "upcoming",
-    status: "Earthwork & Booking Stage",
-    nocStatus: "Under Extension Clearance",
-    verificationDate: "August 2026",
-    description: "Inspired by Taxila's ancient Gandhara heritage, this upcoming block blends historical elegance with futuristic resort-style amenities and expansive eco-parks.",
-    locationDetails: "Adjoining Phase 2 extension near Taxila historic bypass.",
-    highlights: [
-      "Resort Style Eco-Friendly Layout",
-      "Historical Heritage Park & Museum",
-      "Flexible 3-Year Installment Plan",
-      "High Appreciation Pre-Launch Opportunity"
-    ],
-    totalPlots: 3500,
-    priceRange: {
-      residential: "PKR 35 Lacs - 95 Lacs",
-      commercial: "PKR 90 Lacs - 2.8 Crore"
-    },
-    heroImage: "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=1200&q=80",
-    masterPlanImage: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
-    amenities: [
-      { name: "Gandhara Heritage Museum", description: "Cultural showcase & archaeological art gallery", icon: "Landmark", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=75" },
-      { name: "Botanical Eco-Park", description: "15-Kanal natural flora garden with cycling trails", icon: "Trees", image: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=600&q=75" }
-    ],
-    faqs: [
-      { question: "Is booking open for Gandahara Block?", answer: "Pre-booking forms and allotment registrations are currently open on easy quarterly installments." }
-    ],
-    developmentUpdates: [
-      { title: "Heavy Earthmoving Ground Work", date: "August 2026", image: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80", progress: 45, text: "Land leveling & main access road cutting underway." }
     ]
   },
   {

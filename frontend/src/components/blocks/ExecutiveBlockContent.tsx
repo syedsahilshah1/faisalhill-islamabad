@@ -44,6 +44,7 @@ import {
   X
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 
 interface PlotPriceRow {
@@ -395,31 +396,28 @@ export default function ExecutiveBlockContent() {
           <div className="flex flex-wrap gap-2 shrink-0">
             <button
               onClick={() => setGalleryFilter('all')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                galleryFilter === 'all'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'all'
                   ? 'bg-[#7b002c] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+                }`}
             >
               All Views ({galleryItems.length})
             </button>
             <button
               onClick={() => setGalleryFilter('jewel')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                galleryFilter === 'jewel'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'jewel'
                   ? 'bg-[#7b002c] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+                }`}
             >
               Faisal Jewel (3)
             </button>
             <button
               onClick={() => setGalleryFilter('infrastructure')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                galleryFilter === 'infrastructure'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'infrastructure'
                   ? 'bg-[#7b002c] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
+                }`}
             >
               Infrastructure & Parks (3)
             </button>
@@ -468,65 +466,11 @@ export default function ExecutiveBlockContent() {
       {/* 5. INTERACTIVE PLOT SIZE & DYNAMIC SERIES EXPLORER        */}
       {/* ========================================================= */}
       <section id="pricing-matrix" className="scroll-mt-28">
-        <DynamicPlotSeriesExplorer blockSlug="executive-block" blockName="Executive Block" />
+        <ScrollReveal direction="up" delay={80}>
+          <DynamicPlotSeriesExplorer blockSlug="executive-block" blockName="Executive Block" />
+        </ScrollReveal>
       </section>
 
-      {/* ========================================================= */}
-      {/* 6. OWNERS AND DEVELOPERS WITH CHAIRMAN PORTRAIT           */}
-      {/* ========================================================= */}
-      <section id="developer" className="scroll-mt-28 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <Award className="w-3.5 h-3.5" />
-            <span>Developer Pedigree</span>
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-            Faisal Hills Executive Block Owners and Developers
-          </h2>
-        </div>
-
-        {/* Developer Spotlight Card with Chaudhry Abdul Majeed image */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200/80">
-          <div className="md:col-span-4 flex flex-col items-center text-center space-y-3">
-            <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-4 border-[#7b002c]/20 shadow-xl bg-white">
-              <img
-                src="/chaudhry-abdul-majeed.png"
-                alt="Chaudhry Abdul Majeed - Chairman Faisal Town Group"
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-            <div>
-              <strong className="font-serif font-bold text-base sm:text-lg text-slate-900 block">
-                Chaudhry Abdul Majeed
-              </strong>
-              <span className="text-xs font-semibold text-[#7b002c] block">
-                Chairman, Faisal Town Group & Zedem
-              </span>
-            </div>
-          </div>
-
-          <div className="md:col-span-8 space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans border-t md:border-t-0 md:border-l border-slate-200 pt-4 md:pt-0 md:pl-6">
-            <p>
-              Faisal Hills, including the Executive Block, is developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group</Link> under the leadership of Chaudhry Abdul Majeed, a name that’s well known across Islamabad and Rawalpindi’s real estate market. The group has been active for well over a decade, with a portfolio that includes Faisal Town, Faisal Margalla City, Faisal Residencia, Faisal Heights and Sea Square alongside Faisal Hills itself.
-            </p>
-            <p>
-              That track record matters more than it might seem. A developer with several completed and ongoing projects has a reputation to protect, which generally translates into a stronger incentive to follow through on roads, utilities and landmark buildings rather than leaving them half-finished. The pace of work visible inside the Executive Block — particularly on <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel</Link> and Roots International School — is consistent with that pattern.
-            </p>
-          </div>
-        </div>
-
-        <div className="pt-2 space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Faisal Town Group Proven Portfolio</span>
-          <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">Faisal Town Phase 1</span>
-            <span className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">Faisal Margalla City</span>
-            <span className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">Faisal Residencia</span>
-            <span className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">Faisal Heights</span>
-            <span className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">Sea Square B-17</span>
-            <span className="px-3 py-1 bg-rose-50 border border-rose-200 rounded-lg text-xs font-bold text-[#7b002c]">Faisal Hills Islamabad</span>
-          </div>
-        </div>
-      </section>
 
       {/* ========================================================= */}
       {/* 8. LOCATION & MAP + GOOGLE MAP EMBED (2-COLUMN LAYOUT)   */}
@@ -1194,7 +1138,7 @@ export default function ExecutiveBlockContent() {
           <p className="text-slate-700 text-sm">
             Transferring a plot is fairly straightforward. You’ll generally need:
           </p>
-        </div>  
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
@@ -1280,7 +1224,7 @@ export default function ExecutiveBlockContent() {
       {/* ========================================================= */}
       {/* 18. FREQUENTLY ASKED QUESTIONS                            */}
       {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+      <section className="space-y-6 pt-2">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
             <HelpCircle className="w-3.5 h-3.5" />
@@ -1294,26 +1238,54 @@ export default function ExecutiveBlockContent() {
           </p>
         </div>
 
-        <div className="space-y-3 divide-y divide-slate-100">
+        <div className="space-y-3">
           {seoFaqs.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
-              <div key={idx} className="pt-3 first:pt-0">
+              <div
+                key={idx}
+                className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
+                  isOpen
+                    ? 'border-[#7b002c] shadow-md ring-1 ring-[#7b002c]/20'
+                    : 'border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full py-3 flex items-center justify-between text-left gap-4 group cursor-pointer"
+                  className="w-full p-5 sm:p-6 flex items-center justify-between text-left gap-4 group cursor-pointer"
                 >
-                  <span className="font-serif font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    {faq.q}
-                  </span>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isOpen ? 'bg-[#7b002c] text-white' : 'bg-slate-100 text-slate-500'}`}>
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span
+                      className={`w-7 h-7 rounded-xl font-mono text-xs font-bold flex items-center justify-center shrink-0 transition-colors ${
+                        isOpen
+                          ? 'bg-[#7b002c] text-white'
+                          : 'bg-slate-100 text-slate-500 group-hover:bg-rose-50 group-hover:text-[#7b002c]'
+                      }`}
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span
+                      className={`font-serif font-bold text-sm sm:text-base transition-colors ${
+                        isOpen ? 'text-[#7b002c]' : 'text-slate-900 group-hover:text-[#7b002c]'
+                      }`}
+                    >
+                      {faq.q}
+                    </span>
+                  </div>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                      isOpen
+                        ? 'bg-[#7b002c] text-white rotate-180 shadow-xs'
+                        : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                    }`}
+                  >
+                    <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="pb-3 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans animate-fade-in">
+                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-0 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans border-t border-slate-100 mt-0 animate-fade-in pl-14 sm:pl-16">
                     {faq.a}
                   </div>
                 )}
@@ -1346,18 +1318,18 @@ export default function ExecutiveBlockContent() {
       <section className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-2xl space-y-2 relative z-10">
+        <div className="max-w-2xl mx-auto text-center space-y-2 relative z-10">
           <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block">Executive Assistance</span>
           <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white">
             Schedule an On-Site Executive Block Tour
           </h3>
-          <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed">
+          <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
             Leave your contact details to receive verified plot listings, current resale rates, and official allotment files directly on WhatsApp.
           </p>
         </div>
 
         {submitted ? (
-          <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 text-center space-y-3 animate-fade-in relative z-10">
+          <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 text-center space-y-3 animate-fade-in relative z-10">
             <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto">
               <Check className="w-6 h-6" />
             </div>
@@ -1367,26 +1339,26 @@ export default function ExecutiveBlockContent() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleInquirySubmit} className="space-y-4 max-w-2xl relative z-10">
+          <form onSubmit={handleInquirySubmit} className="space-y-4 max-w-2xl mx-auto relative z-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
+              <div className="space-y-1 text-left">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Full Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Tariq Mehmood"
+                  placeholder="e.g. Syed Sahil Shah"
                   value={leadName}
                   onChange={(e) => setLeadName(e.target.value)}
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all"
                 />
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 text-left">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">WhatsApp / Phone Number *</label>
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. +92 300 1234567"
+                  placeholder="e.g. +92 341 0472229"
                   value={leadPhone}
                   onChange={(e) => setLeadPhone(e.target.value)}
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all"
@@ -1395,7 +1367,7 @@ export default function ExecutiveBlockContent() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
+              <div className="space-y-1 text-left">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Interested Plot Size</label>
                 <select
                   value={leadPlot}
@@ -1412,7 +1384,7 @@ export default function ExecutiveBlockContent() {
                 </select>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 text-left">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Specific Requirements</label>
                 <input
                   type="text"

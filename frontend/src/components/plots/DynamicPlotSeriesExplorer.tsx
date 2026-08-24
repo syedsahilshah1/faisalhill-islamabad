@@ -93,18 +93,18 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   }, [selectedSize]);
 
   return (
-    <div className="bg-slate-900 text-white p-7 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-6">
+    <div className="bg-white text-slate-900 p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
       {/* Header with Title & Category Switcher */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800/80 pb-5">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Interactive Dynamic Pricing Engine</span>
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
             {blockName} Plot Price & Series Explorer
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl font-sans">
+          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl font-sans">
             {isFixedPriceBlock
               ? `Explore official uniform launch rates and flexible installment schedules for ${blockName}.`
               : `Select plot size and dynamic series range below to inspect live market valuations, sector allotments, and available inventory across ${blockName}:`}
@@ -112,13 +112,13 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
         </div>
 
         {/* Tab Switcher */}
-        <div className="inline-flex p-1.5 bg-slate-950 rounded-2xl border border-slate-800 shrink-0">
+        <div className="inline-flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200 shrink-0">
           <button
             onClick={() => setActiveCategory('residential')}
             className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
               activeCategory === 'residential'
                 ? 'bg-[#7b002c] text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Home className="w-3.5 h-3.5" />
@@ -129,7 +129,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
             className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
               activeCategory === 'commercial'
                 ? 'bg-[#7b002c] text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
@@ -153,8 +153,8 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   onClick={() => setSelectedSize(size)}
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                     selectedSize === size
-                      ? 'bg-white text-[#7b002c] border-white shadow-lg scale-105'
-                      : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
+                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   <Home className="w-3.5 h-3.5" />
@@ -169,47 +169,47 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
             const fixedData = blockConfig.fixedPrices?.[selectedSize];
             if (!fixedData) return null;
             return (
-              <div className="bg-slate-950/90 p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+              <div className="bg-slate-50/80 p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
                   <div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold uppercase tracking-wider inline-block mb-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold uppercase tracking-wider inline-block mb-1.5 border border-emerald-200">
                       Uniform Official Launch Price
                     </span>
-                    <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white">
+                    <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
                       {selectedSize} Plot ({fixedData.dimensions})
                     </h3>
                   </div>
                   <div className="text-left sm:text-right">
-                    <span className="text-slate-400 text-xs block font-sans">Official Fixed Price</span>
-                    <strong className="text-emerald-400 font-serif font-bold text-2xl sm:text-3xl">
+                    <span className="text-slate-500 text-xs block font-sans">Official Fixed Price</span>
+                    <strong className="text-emerald-700 font-serif font-bold text-2xl sm:text-3xl">
                       {fixedData.formattedPrice}
                     </strong>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block">Payment Schedule</span>
-                    <strong className="text-slate-200 text-sm block font-serif">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1 shadow-xs">
+                    <span className="text-slate-500 block">Payment Schedule</span>
+                    <strong className="text-slate-900 text-sm block font-serif">
                       {fixedData.installmentMonths} Months Easy Installments
                     </strong>
                   </div>
-                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block">Quarterly Installment</span>
-                    <strong className="text-amber-400 text-sm block font-serif">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1 shadow-xs">
+                    <span className="text-slate-500 block">Quarterly Installment</span>
+                    <strong className="text-[#7b002c] text-sm block font-serif">
                       {fixedData.quarterlyInstallment}
                     </strong>
                   </div>
-                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block">NOC & Legal Status</span>
-                    <strong className="text-emerald-400 text-sm block font-serif">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1 shadow-xs">
+                    <span className="text-slate-500 block">NOC & Legal Status</span>
+                    <strong className="text-emerald-700 text-sm block font-serif">
                       100% RDA Approved & Sanctioned
                     </strong>
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Prime Block offers guaranteed fixed launch rates without series fluctuations or hidden premiums.
                   </p>
                   <a
@@ -235,7 +235,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
         <div className="space-y-6">
           {/* 1. Size Filter Switcher */}
           <div className="space-y-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               1. Select Plot Size
             </span>
             <div className="flex flex-wrap gap-2.5">
@@ -245,8 +245,8 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   onClick={() => setSelectedSize(size)}
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                     selectedSize === size
-                      ? 'bg-white text-[#7b002c] border-white shadow-lg scale-105'
-                      : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
+                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   <Home className="w-3.5 h-3.5" />
@@ -259,7 +259,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
           {/* 2. Dynamic Series Mini-Cards / Chips */}
           <div className="space-y-2.5 pt-2">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                 2. Select Plot Number Series Range
               </span>
               <span className="text-[11px] text-slate-400 italic">
@@ -274,10 +274,10 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   <button
                     key={grp.seriesKey}
                     onClick={() => setSelectedSeriesIndex(idx)}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 shadow-xs ${
                       isSelected
-                        ? 'bg-gradient-to-br from-[#7b002c] to-[#9e1245] text-white border-rose-400/50 shadow-lg scale-[1.02]'
-                        : 'bg-slate-950/70 text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-950'
+                        ? 'bg-gradient-to-br from-[#7b002c] to-[#9e1245] text-white border-[#7b002c] shadow-lg scale-[1.02]'
+                        : 'bg-slate-50/90 text-slate-800 border-slate-200 hover:border-[#7b002c]/50 hover:bg-rose-50/30'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -289,7 +289,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                           className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                             isSelected
                               ? 'bg-white/20 text-white'
-                              : 'bg-emerald-500/20 text-emerald-300'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                           }`}
                         >
                           {grp.availablePlots} Avail
@@ -300,14 +300,14 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     <div className="space-y-0.5">
                       <strong
                         className={`text-xs sm:text-sm font-serif font-bold block ${
-                          isSelected ? 'text-amber-300' : 'text-amber-400'
+                          isSelected ? 'text-amber-300' : 'text-[#7b002c]'
                         }`}
                       >
                         {grp.formattedRange}
                       </strong>
                       <span
                         className={`text-[10px] block truncate ${
-                          isSelected ? 'text-rose-100' : 'text-slate-400'
+                          isSelected ? 'text-rose-100' : 'text-slate-500'
                         }`}
                       >
                         {grp.tag || `Sector ${grp.label}`}
@@ -321,27 +321,27 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
 
           {/* 3. Selected Series Comprehensive Detail Container */}
           {activeSeries && (
-            <div className="bg-slate-950/90 p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+            <div className="bg-slate-50/80 p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
+                    <span className="text-[#7b002c] text-xs font-bold uppercase tracking-wider block">
                       {selectedSize} Residential
                     </span>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-rose-400 text-xs font-bold uppercase tracking-wider">
+                    <span className="text-slate-300">•</span>
+                    <span className="text-rose-600 text-xs font-bold uppercase tracking-wider">
                       Series {activeSeries.label}
                     </span>
                   </div>
-                  <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white">
+                  <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
                     Series {activeSeries.label} ({activeSeries.tag})
                   </h3>
                 </div>
                 <div className="text-left sm:text-right">
-                  <span className="text-slate-400 text-xs block font-sans">
+                  <span className="text-slate-500 text-xs block font-sans">
                     Dynamic Resale Valuation
                   </span>
-                  <strong className="text-amber-400 font-serif font-bold text-2xl sm:text-3xl">
+                  <strong className="text-[#7b002c] font-serif font-bold text-2xl sm:text-3xl">
                     {activeSeries.formattedRange}
                   </strong>
                 </div>
@@ -351,7 +351,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
               {activeSeries.plots.length > 0 ? (
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                       Verified Plots in Series {activeSeries.label}
                     </span>
                     <span className="text-[11px] text-slate-500">
@@ -363,24 +363,24 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     {activeSeries.plots.map((plot) => (
                       <div
                         key={plot.id}
-                        className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 hover:border-[#7b002c]/50 transition-all flex flex-col justify-between gap-3 group"
+                        className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-[#7b002c] shadow-xs group hover:shadow-md transition-all flex flex-col justify-between gap-3"
                       >
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-serif font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+                            <span className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
                               Plot #{plot.plotNumber}
                             </span>
                             <span
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                                 plot.locationType === 'Corner + Park'
-                                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                  ? 'bg-rose-100 text-rose-800 border border-rose-200'
                                   : plot.locationType === 'Park Facing'
-                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                   : plot.locationType === 'Corner'
-                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
                                   : plot.locationType === 'Main Boulevard'
-                                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                                  : 'bg-slate-800 text-slate-300'
+                                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                  : 'bg-slate-100 text-slate-700'
                               }`}
                             >
                               {plot.locationType}
@@ -388,8 +388,8 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                           </div>
 
                           <div className="flex items-center justify-between text-xs pt-1">
-                            <span className="text-slate-400 font-mono">{plot.dimensions}</span>
-                            <strong className="text-amber-400 font-serif font-bold text-sm">
+                            <span className="text-slate-500 font-mono">{plot.dimensions}</span>
+                            <strong className="text-[#7b002c] font-serif font-bold text-sm">
                               {formatPKR(plot.price)}
                             </strong>
                           </div>
@@ -399,7 +399,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                           href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Plot%20%23${plot.plotNumber}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full py-2 bg-slate-800 hover:bg-[#7b002c] text-slate-200 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="w-full py-2 bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
                           <span>Inquire Plot #{plot.plotNumber}</span>
@@ -409,14 +409,14 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-slate-900/60 rounded-2xl border border-slate-800/80 text-xs text-slate-400 text-center">
+                <div className="p-4 bg-white rounded-2xl border border-slate-200 text-xs text-slate-500 text-center shadow-xs">
                   Plots in this series are currently on request. Contact our sales desk for offline files and direct owner allocations.
                 </div>
               )}
 
               {/* Bottom Inquire CTA */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-800/80">
-                <p className="text-xs text-slate-400">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-200">
+                <p className="text-xs text-slate-500">
                   Individual plot prices reflect exact road width, facing (Corner/Park), and immediate possession status.
                 </p>
                 <a
@@ -446,8 +446,8 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                 onClick={() => setSelectedComPlotIndex(idx)}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                   selectedComPlotIndex === idx
-                    ? 'bg-white text-[#7b002c] border-white shadow-lg scale-105'
-                    : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
+                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
@@ -459,41 +459,41 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
           {(() => {
             const selectedComPlot = COMMERCIAL_PLOTS[selectedComPlotIndex];
             return (
-              <div className="bg-slate-950/80 p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+              <div className="bg-slate-50/80 p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
                   <div>
-                    <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
+                    <span className="text-[#7b002c] text-xs font-bold uppercase tracking-wider block">
                       Commercial Plaza Plot
                     </span>
-                    <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white">
+                    <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
                       {selectedComPlot.dimension} ({selectedComPlot.size})
                     </h3>
                   </div>
                   <div className="text-left sm:text-right">
-                    <span className="text-slate-400 text-xs block">Current Valuation</span>
-                    <strong className="text-amber-400 font-serif font-bold text-xl sm:text-2xl">
+                    <span className="text-slate-500 text-xs block">Current Valuation</span>
+                    <strong className="text-[#7b002c] font-serif font-bold text-xl sm:text-2xl">
                       {selectedComPlot.price}
                     </strong>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block">Prime Frontage</span>
-                    <strong className="text-slate-200 text-sm block font-serif">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1 shadow-xs">
+                    <span className="text-slate-500 block">Prime Frontage</span>
+                    <strong className="text-slate-900 text-sm block font-serif">
                       {selectedComPlot.frontage}
                     </strong>
                   </div>
-                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-slate-400 block">Commercial Suitability</span>
-                    <strong className="text-slate-200 text-sm block font-serif">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1 shadow-xs">
+                    <span className="text-slate-500 block">Commercial Suitability</span>
+                    <strong className="text-slate-900 text-sm block font-serif">
                       {selectedComPlot.suitability}
                     </strong>
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Direct commercial inventory near Faisal Jewel skyscraper and Roots International School.
                   </p>
                   <a

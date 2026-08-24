@@ -100,7 +100,7 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
             <input
               type="text"
               required
-              placeholder="e.g. Tariq Mehmood"
+              placeholder="e.g. Syed Sahil Shah"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3.5 py-2.5 bg-black/40 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-amber-400 focus:bg-black/60 transition-all"
@@ -114,7 +114,7 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
             <input
               type="tel"
               required
-              placeholder="e.g. 0300 1234567"
+              placeholder="e.g. 0341 0472229"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="w-full px-3.5 py-2.5 bg-black/40 border border-white/30 rounded-xl text-xs text-white placeholder:text-slate-300 focus:outline-none focus:border-amber-400 focus:bg-black/60 transition-all"
