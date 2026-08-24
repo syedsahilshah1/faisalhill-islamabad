@@ -15,7 +15,7 @@ export default function ScrollReveal({
   className = '',
   delay = 0,
   direction = 'up',
-  duration = 600
+  duration = 650
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -33,17 +33,14 @@ export default function ScrollReveal({
           if (ref.current) observer.unobserve(ref.current);
         }
       },
-      { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
 
     if (ref.current) {
       observer.observe(ref.current);
     }
 
-    const fallbackTimer = setTimeout(() => setIsVisible(true), 2500);
-
     return () => {
-      clearTimeout(fallbackTimer);
       if (ref.current) observer.unobserve(ref.current);
     };
   }, []);
@@ -51,16 +48,16 @@ export default function ScrollReveal({
   const getHiddenClasses = () => {
     switch (direction) {
       case 'right':
-        return 'opacity-0 translate-x-8 sm:translate-x-12';
+        return 'opacity-0 translate-x-12';
       case 'left':
-        return 'opacity-0 -translate-x-8 sm:-translate-x-12';
+        return 'opacity-0 -translate-x-12';
       case 'pop':
-        return 'opacity-0 scale-95 translate-y-4';
+        return 'opacity-0 scale-90 translate-y-6';
       case 'down':
-        return 'opacity-0 -translate-y-8';
+        return 'opacity-0 -translate-y-10';
       case 'up':
       default:
-        return 'opacity-0 translate-y-8';
+        return 'opacity-0 translate-y-10';
     }
   };
 
@@ -78,9 +75,10 @@ export default function ScrollReveal({
       ref={ref}
       style={{
         transitionDelay: `${delay}ms`,
-        transitionDuration: `${duration}ms`
+        transitionDuration: `${duration}ms`,
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
       }}
-      className={`transition-[transform,opacity] ease-out transform transform-gpu will-change-[transform,opacity] ${
+      className={`transition-all transform transform-gpu will-change-[transform,opacity] ${
         isVisible ? getVisibleClasses() : getHiddenClasses()
       } ${className}`}
     >

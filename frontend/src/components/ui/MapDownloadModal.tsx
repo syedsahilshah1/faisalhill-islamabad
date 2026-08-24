@@ -8,12 +8,16 @@ interface MapDownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
   mapPdfUrl?: string;
+  blockName?: string;
+  mapImageUrl?: string;
 }
 
 export default function MapDownloadModal({
   isOpen,
   onClose,
   mapPdfUrl = '/FAISAL HILLS MASTER PLAN.pdf',
+  blockName,
+  mapImageUrl,
 }: MapDownloadModalProps) {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');

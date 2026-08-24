@@ -142,6 +142,21 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const allBlocks = await fetchBlocks();
   const otherBlocks = allBlocks.filter((b) => b.slug !== block.slug);
 
+  // Authentic Hero images and descriptions for custom blocks
+  const heroBg = block.slug === 'prime-block'
+    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    : block.slug === 'executive-block'
+    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    : block.heroImage;
+
+  const heroSubtitle = block.slug === 'prime-block'
+    ? null
+    : block.subtitle;
+
+  const heroDesc = block.slug === 'prime-block'
+    ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
+    : block.description;
+
   return (
     <div className="space-y-8 lg:space-y-10 pb-20">
 
@@ -149,10 +164,10 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
       <section className="relative bg-[#090d16] text-white pt-28 sm:pt-32 lg:pt-36 pb-0 px-0 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-100"
-          style={{ backgroundImage: `url('${block.heroImage}')` }}
+          style={{ backgroundImage: `url('${heroBg}')` }}
         />
         {/* Subtle Transparent Overlay for Maximum Image Visibility & Readable Text */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-slate-950/30 to-slate-950/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/50 to-slate-950/60" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pb-10 sm:pb-14">
           
@@ -183,15 +198,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             )}
 
             <div className="space-y-3">
-              {block.subtitle && (
-                <span className="label-caps text-slate-200 tracking-widest block font-bold">{block.subtitle}</span>
+              {heroSubtitle && (
+                <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
                 {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
               </h1>
-              {block.description && (
-                <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-sans">
-                  {block.description}
+              {heroDesc && (
+                <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
+                  {heroDesc}
                 </p>
               )}
             </div>
