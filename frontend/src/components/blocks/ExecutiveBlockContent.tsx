@@ -44,6 +44,7 @@ import {
   X
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
+import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 
 interface PlotPriceRow {
   size: string;
@@ -464,180 +465,10 @@ export default function ExecutiveBlockContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 5. INTERACTIVE PLOT SIZE EXPLORER (TABBED FILTER)         */}
+      {/* 5. INTERACTIVE PLOT SIZE & DYNAMIC SERIES EXPLORER        */}
       {/* ========================================================= */}
-      <section className="bg-slate-900 text-white p-8 sm:p-10 lg:p-12 rounded-3xl border border-slate-800 shadow-2xl space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>Interactive Pricing Matrix</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-              Executive Block Plot Price & Size Explorer
-            </h2>
-            <p className="text-slate-400 text-xs sm:text-sm max-w-2xl">
-              Switch categories below to inspect verified resale prices, dimensions, and allotment features across Executive Block:
-            </p>
-          </div>
-
-          {/* Tab Switcher */}
-          <div className="inline-flex p-1.5 bg-slate-950 rounded-2xl border border-slate-800 shrink-0">
-            <button
-              onClick={() => setActivePlotTab('residential')}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activePlotTab === 'residential'
-                  ? 'bg-[#7b002c] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Residential Plots (5)
-            </button>
-            <button
-              onClick={() => setActivePlotTab('commercial')}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activePlotTab === 'commercial'
-                  ? 'bg-[#7b002c] text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Commercial Plazas (6)
-            </button>
-          </div>
-        </div>
-
-        {/* Tab 1: Residential Explorer */}
-        {activePlotTab === 'residential' && (
-          <div className="space-y-6">
-            {/* Horizontal Plot Pills */}
-            <div className="flex flex-wrap gap-2.5">
-              {residentialPlotDetails.map((plot, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedResPlotIndex(idx)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-                    selectedResPlotIndex === idx
-                      ? 'bg-white text-[#7b002c] border-white shadow-lg scale-105'
-                      : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <Home className="w-3.5 h-3.5" />
-                  <span>{plot.size}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Selected Plot Feature Card */}
-            <div className="bg-slate-950/80 p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
-                <div>
-                  <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">{selectedResPlot.category} Plot</span>
-                  <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white">{selectedResPlot.size} Plot ({selectedResPlot.dimension})</h3>
-                </div>
-                <div className="text-left sm:text-right">
-                  <span className="text-slate-400 text-xs block">Estimated Resale Price</span>
-                  <strong className="text-amber-400 font-serif font-bold text-xl sm:text-2xl">{selectedResPlot.price}</strong>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span className="text-slate-400 block">Best Suited For</span>
-                  <strong className="text-slate-200 text-sm block font-serif">{selectedResPlot.suitability}</strong>
-                </div>
-                <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span className="text-slate-400 block">Market Trend</span>
-                  <strong className="text-emerald-400 text-sm block font-serif">{selectedResPlot.demandRange}</strong>
-                </div>
-                <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span className="text-slate-400 block">Legal & Possession</span>
-                  <strong className="text-slate-200 text-sm block font-serif">RDA Approved & Delivered</strong>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                <div className="flex flex-wrap gap-2 text-xs">
-                  {selectedResPlot.features.map((feat, i) => (
-                    <span key={i} className="px-3 py-1 rounded-full bg-white/10 text-slate-300 border border-white/10 flex items-center gap-1.5">
-                      <Check className="w-3 h-3 text-emerald-400" />
-                      <span>{feat}</span>
-                    </span>
-                  ))}
-                </div>
-                <a
-                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedResPlot.size)}%20plot%20in%20Faisal%20Hills%20Executive%20Block.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Inquire on WhatsApp</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 2: Commercial Explorer */}
-        {activePlotTab === 'commercial' && (
-          <div className="space-y-6">
-            <div className="flex flex-wrap gap-2.5">
-              {commercialPlotDetails.map((c, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedComPlotIndex(idx)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-                    selectedComPlotIndex === idx
-                      ? 'bg-white text-[#7b002c] border-white shadow-lg scale-105'
-                      : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>{c.size}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="bg-slate-950/80 p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
-                <div>
-                  <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Commercial Plaza Plot</span>
-                  <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white">{selectedComPlot.dimension} ({selectedComPlot.size})</h3>
-                </div>
-                <div className="text-left sm:text-right">
-                  <span className="text-slate-400 text-xs block">Current Valuation</span>
-                  <strong className="text-amber-400 font-serif font-bold text-xl sm:text-2xl">{selectedComPlot.price}</strong>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span className="text-slate-400 block">Prime Frontage</span>
-                  <strong className="text-slate-200 text-sm block font-serif">{selectedComPlot.frontage}</strong>
-                </div>
-                <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span className="text-slate-400 block">Commercial Suitability</span>
-                  <strong className="text-slate-200 text-sm block font-serif">{selectedComPlot.suitability}</strong>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                <p className="text-xs text-slate-400">
-                  Direct commercial inventory near Faisal Jewel skyscraper and Roots International School.
-                </p>
-                <a
-                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedComPlot.size)}%20Commercial%20Plot%20in%20Executive%20Block.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Inquire Commercial Rate</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
+      <section id="pricing-matrix" className="scroll-mt-28">
+        <DynamicPlotSeriesExplorer blockSlug="executive-block" blockName="Executive Block" />
       </section>
 
       {/* ========================================================= */}
@@ -698,157 +529,93 @@ export default function ExecutiveBlockContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 7. NOC STATUS & LEGAL CLEARANCE                           */}
+      {/* 8. LOCATION & MAP + GOOGLE MAP EMBED (2-COLUMN LAYOUT)   */}
       {/* ========================================================= */}
-      <section id="noc-status" className="scroll-mt-28 bg-slate-900 text-white p-8 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-5">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>100% RDA Approved</span>
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-            Faisal Hills Executive Block NOC
-          </h2>
-        </div>
-
-        <div className="prose max-w-none text-slate-300 text-sm leading-relaxed space-y-3 font-sans">
-          <p>
-            One of the first things serious buyers check is the No Objection Certificate, and the <Link href="/faisal-hills-noc-status" className="text-amber-400 font-bold hover:underline">Faisal Hills Executive Block NOC</Link> has been approved by the Rawalpindi Development Authority (RDA). Even though Faisal Hills sits close to the Islamabad border and is often marketed alongside Islamabad-based societies, it technically falls under RDA’s jurisdiction — so its legal status is benchmarked against RDA’s housing regulations rather than the CDA’s.
-          </p>
-          <p>
-            In practical terms, this means the layout plan, land use and basic infrastructure requirements for Faisal Hills as an RDA approved housing society have been reviewed and cleared by the relevant authority. For a buyer, that reduces (though never fully eliminates) the risk of disputes over whether the land was legally available for housing in the first place.
-          </p>
-          <p>
-            NOC status for housing societies in Pakistan can occasionally be updated or revised pending compliance checks, so it’s worth asking for the latest RDA documentation before transferring any funds. A quick check against RDA’s published list of approved societies takes very little time and can save a lot of stress later — it’s a small step that supports the idea of Faisal Hills Executive Block as a secure investment option.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-slate-300">Layout plan fully cleared by RDA engineering directorate</span>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-slate-300">Sanctioned land title and verified boundary demarcation</span>
-          </div>
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <span className="text-slate-300">Ready for instant legal transfer and registry verification</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 8. LOCATION & MAP + GOOGLE MAP EMBED                      */}
-      {/* ========================================================= */}
-      <section id="location" className="scroll-mt-28 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>N-5 GT Road Frontage</span>
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-            Faisal Hills Executive Block Location and Map
-          </h2>
-          <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
-            <p>
-              The Faisal Hills Executive Block location is one of its strongest selling points. Positioned directly off the main G.T. Road (N-5) near the society’s grand entrance, the block has the kind of road frontage that few housing schemes along this corridor can match. If you pull up the Faisal Hills Executive Block map, you’ll notice it sits right beside <Link href="/blocks/block-a" className="text-[#7b002c] font-bold hover:underline">Faisal Hills Block A</Link> and just a short drive from Taxila and Multi Gardens B-17 — placing it firmly in what locals refer to as Zone 2, Islamabad.
-            </p>
-            <p>
-              For families relocating from Rawalpindi or Islamabad, or for overseas Pakistanis comparing options before a visit, the GT Road frontage means the block is easy to find and easy to reach — even on a first visit using GPS navigation. It’s also part of why this counts as a strategic location near Islamabad rather than a remote, hard-to-reach development.
-            </p>
-          </div>
-        </div>
-
-        {/* H3: Accessibility and Travel Times */}
-        <div className="space-y-4 pt-4 border-t border-slate-100">
-          <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-[#7b002c]" />
-            <span>Accessibility and Travel Times</span>
-          </h3>
-          <p className="text-xs text-slate-500">
-            Here’s roughly how the Executive Block connects to the surrounding area:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
-            {travelTimes.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1.5 hover:border-[#7b002c]/40 hover:shadow-xs transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">{item.destination}</span>
-                  <span className="px-2 py-0.5 bg-rose-50 text-[#7b002c] font-bold text-[10px] rounded-full border border-rose-100">
-                    {item.time}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
-                  <span>Distance: {item.distance}</span>
-                  <span className="text-slate-400 italic">{item.note}</span>
-                </div>
+      <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Content & Accessibility */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <MapPin className="w-3.5 h-3.5" />
+                <span>N-5 GT Road Frontage</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* H3: Nearby Landmarks and Places */}
-        <div className="space-y-4 pt-4 border-t border-slate-100">
-          <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2">
-            <Landmark className="w-5 h-5 text-[#7b002c]" />
-            <span>Nearby Landmarks and Places</span>
-          </h3>
-          <p className="text-xs text-slate-600">
-            A few landmarks worth knowing if you’re planning a visit or just getting familiar with the area:
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            {nearbyLandmarks.map((landmark, idx) => (
-              <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs font-semibold text-slate-800 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
-                <span>{landmark}</span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
+                Faisal Hills Executive Block Location & Map
+              </h2>
+              <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                <p>
+                  The Faisal Hills Executive Block location is one of its strongest selling points. Positioned directly off the main G.T. Road (N-5) near the society’s grand entrance, the block has the kind of road frontage that few housing schemes along this corridor can match. If you pull up the Faisal Hills Executive Block map, you’ll notice it sits right beside <Link href="/blocks/block-a" className="text-[#7b002c] font-bold hover:underline">Faisal Hills Block A</Link> and just a short drive from Taxila and Multi Gardens B-17 — placing it firmly in what locals refer to as Zone 2, Islamabad.
+                </p>
+                <p>
+                  For families relocating from Rawalpindi or Islamabad, or for overseas Pakistanis comparing options before a visit, the GT Road frontage means the block is easy to find and easy to reach — even on a first visit using GPS navigation.
+                </p>
               </div>
-            ))}
-          </div>
-          <p className="text-xs text-slate-600 italic pt-1">
-            If you’d like to see the exact plot positions, our team can share the latest Faisal Hills Executive Block map and point out which sectors sit closest to the GT Road frontage versus the quieter residential pockets further inside the block.
-          </p>
-        </div>
-
-        {/* Live Interactive Google Map Embed */}
-        <div className="space-y-3 pt-4 border-t border-slate-100">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="space-y-0.5">
-              <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-[#7b002c]" />
-                <span>Live Google Map Location</span>
-              </h3>
-              <p className="text-xs text-slate-500">
-                Exact pin location of Faisal Hills Executive Block on Main GT Road (N-5), Taxila.
-              </p>
             </div>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=Faisal+Hills+Executive+Block+Taxila"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold rounded-xl border border-slate-300 transition-all hover:scale-105 shrink-0 cursor-pointer"
-            >
-              <Navigation className="w-3.5 h-3.5 text-[#7b002c]" />
-              <span>Open in Google Maps</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
-            </a>
+
+            {/* Accessibility and Travel Times */}
+            <div className="space-y-3 pt-4 border-t border-slate-100">
+              <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#7b002c]" />
+                <span>Accessibility & Travel Times</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {travelTimes.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-1 hover:border-[#7b002c]/40 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900">{item.destination}</span>
+                      <span className="px-2 py-0.5 bg-rose-50 text-[#7b002c] font-bold text-[10px] rounded-full border border-rose-100">
+                        {item.time}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                      <span>{item.distance}</span>
+                      <span className="text-slate-400 italic">{item.note}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="relative w-full h-[360px] sm:h-[420px] rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100">
-            <iframe
-              title="Faisal Hills Executive Block Exact Location Google Map"
-              src="https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-full"
-            />
+          {/* Right Column: Live Interactive Google Map Embed */}
+          <div className="lg:col-span-5 space-y-3 lg:sticky lg:top-28">
+            <div className="flex items-center justify-between gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+              <div className="space-y-0.5">
+                <strong className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
+                  <span>Live GPS Pin Location</span>
+                </strong>
+                <span className="text-[11px] text-slate-500 block">Main GT Road (N-5), Taxila</span>
+              </div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Faisal+Hills+Executive+Block+Taxila"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl shadow-xs transition-all hover:scale-105 shrink-0 cursor-pointer"
+              >
+                <Navigation className="w-3 h-3" />
+                <span>Open Map</span>
+                <ExternalLink className="w-2.5 h-2.5 text-white/80" />
+              </a>
+            </div>
+
+            <div className="relative w-full h-[380px] sm:h-[420px] lg:h-[460px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+              <iframe
+                title="Faisal Hills Executive Block Exact Location Google Map"
+                src="https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -1422,12 +1189,12 @@ export default function ExecutiveBlockContent() {
             <span>Documentation Checklist</span>
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-            Faisal Hills Executive Block Booking Process
+            Faisal Hills Executive Block Transfering Process
           </h2>
           <p className="text-slate-700 text-sm">
-            Booking a plot is fairly straightforward. You’ll generally need:
+            Transferring a plot is fairly straightforward. You’ll generally need:
           </p>
-        </div>
+        </div>  
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">

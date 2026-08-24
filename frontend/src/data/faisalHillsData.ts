@@ -319,7 +319,7 @@ export const blocksData: BlockInfo[] = [
     slug: "executive-block",
     name: "Executive Block",
     subtitle: "",
-    // subtitle: "The Premier Entrance Block Facing N-5 GT Road",
+    
     category: "developed",
     status: "Possession Ready",
     nocStatus: "RDA Approved & Clear",
@@ -1484,7 +1484,7 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
 export async function submitLead(lead: { name: string; phone: string; interest?: string; message?: string }): Promise<any> {
   const res = await fetch(`${API_URL}/leads`, {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
@@ -1500,7 +1500,7 @@ export async function submitLead(lead: { name: string; phone: string; interest?:
 export async function adminLogin(username: string, password: string): Promise<{ token: string; user: any }> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
