@@ -440,65 +440,7 @@ export default function BlockAContent() {
     <div className="space-y-12 lg:space-y-16">
 
       {/* ========================================================= */}
-      {/* 1. EXECUTIVE QUICK METRIC STATS BAR (ANIMATED COUNTING)  */}
-      {/* ========================================================= */}
-      <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {[
-          {
-            label: 'Possession Status',
-            end: 100,
-            suffix: '%',
-            unitText: ' Ready',
-            sub: 'Immediate Construction',
-            icon: ShieldCheck,
-          },
-          {
-            label: 'Resident Families',
-            end: 500,
-            suffix: '+',
-            unitText: ' Homes',
-            sub: 'Active Populated Sector',
-            icon: Home,
-          },
-          {
-            label: 'RDA Legal NOC',
-            end: 100,
-            suffix: '%',
-            unitText: ' Sanctioned',
-            sub: 'Full Regulatory Clearance',
-            icon: Award,
-          },
-          {
-            label: 'Entrance Link',
-            end: 1,
-            suffix: '',
-            unitText: ' Min',
-            sub: 'Direct GT Road N-5 Gate',
-            icon: MapPin,
-          }
-        ].map((stat, idx) => (
-          <ScrollReveal key={idx} direction="up" delay={idx * 50}>
-            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{stat.label}</span>
-                <div className="w-10 h-10 rounded-2xl bg-[#7b002c] text-white flex items-center justify-center shadow-sm shrink-0">
-                  <stat.icon className="w-4 h-4 text-white" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight flex items-baseline gap-1">
-                  <CountUpNumber end={stat.end} suffix={stat.suffix} duration={1800} />
-                  <span className="text-sm font-sans font-semibold text-slate-600">{stat.unitText}</span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">{stat.sub}</p>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
-      </section>
-
-      {/* ========================================================= */}
-      {/* 2. ABOUT SECTOR A & STRATEGIC ADVANTAGE                  */}
+      {/* 1. ABOUT SECTOR A & STRATEGIC ADVANTAGE                  */}
       {/* ========================================================= */}
       <section className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -582,24 +524,9 @@ export default function BlockAContent() {
                 {/* Bottom Highlight Overlay */}
                 <div className="relative z-10 p-6 space-y-3">
                   <div className="space-y-1">
-                    <span className="text-xs text-amber-300 font-bold uppercase tracking-wider block">Delivered Landmark</span>
                     <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
                       Established Living with 500+ Resident Families
                     </h3>
-                  </div>
-                  <p className="text-xs text-slate-200/90 leading-relaxed font-sans">
-                    Sector A combines spiritual serenity, wide paved carpeted avenues, active commercial markets, and direct 1-minute access to the GT Road entrance gate.
-                  </p>
-                  <div className="pt-1 flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-white bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                      ✓ 100% Possession
-                    </span>
-                    <span className="text-[10px] font-bold text-white bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                      ✓ RDA Approved
-                    </span>
-                    <span className="text-[10px] font-bold text-white bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                      ✓ 12-Kanal Park
-                    </span>
                   </div>
                 </div>
               </div>
@@ -1146,47 +1073,141 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 10. COMPREHENSIVE SEO FAQS ACCORDION                     */}
+      {/* 9. SECTOR A VERIFIED BENCHMARKS & STATS HIGHLIGHT         */}
       {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <FileText className="w-3.5 h-3.5" />
-              <span>Questions & Answers</span>
+      <section className="bg-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-slate-200 shadow-sm relative space-y-8">
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-6">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#7b002c]" />
+                <span>Sector A Verified Milestones</span>
+              </div>
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
+                Key Development & Living Benchmarks
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                Official verified on-ground possession status, community occupancy, and regulatory approvals for Faisal Hills Block A.
+              </p>
             </div>
-            <TextReveal
-              as="h2"
-              text="Frequently Asked Questions About Block A"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-              staggerDelay={65}
-              direction="left"
-            />
+            <div className="shrink-0 flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>100% On-Ground Reality</span>
+            </div>
           </div>
-        </ScrollReveal>
 
-        <div className="space-y-3 pt-2">
-          {blockAFaqs.map((faq, idx) => (
-            <div
-              key={idx}
-              className="border border-slate-200 rounded-2xl overflow-hidden transition-all bg-slate-50/50"
-            >
-              <button
-                type="button"
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                className="w-full p-5 text-left flex items-center justify-between gap-4 font-serif font-bold text-sm sm:text-base text-slate-900 hover:text-[#7b002c] transition-colors"
-              >
-                <span>{faq.q}</span>
-                <ChevronDown className={`w-4 h-4 shrink-0 text-[#7b002c] transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} />
-              </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              {
+                label: 'Possession Status',
+                end: 100,
+                suffix: '%',
+                unitText: ' Ready',
+                sub: 'Immediate Home Construction Allowed',
+                icon: ShieldCheck,
+                iconStyle: 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              },
+              {
+                label: 'Resident Families',
+                end: 500,
+                suffix: '+',
+                unitText: ' Homes',
+                sub: 'Active Populated Family Community',
+                icon: Home,
+                iconStyle: 'bg-rose-50 border-rose-200 text-[#7b002c]'
+              },
+              {
+                label: 'RDA Legal NOC',
+                end: 100,
+                suffix: '%',
+                unitText: ' Sanctioned',
+                sub: 'Full Regulatory Clearance & Transfer',
+                icon: Award,
+                iconStyle: 'bg-blue-50 border-blue-200 text-blue-700'
+              },
+              {
+                label: 'Entrance Link',
+                end: 1,
+                suffix: '',
+                unitText: ' Min',
+                sub: 'Direct GT Road N-5 Main Gate Access',
+                icon: MapPin,
+                iconStyle: 'bg-amber-50 border-amber-200 text-amber-700'
+              }
+            ].map((stat, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 60}>
+                <div className="bg-slate-50/80 hover:bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 p-5 sm:p-6 transition-all duration-300 group hover:-translate-y-1 shadow-2xs hover:shadow-md h-full flex flex-col justify-between space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      {stat.label}
+                    </span>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${stat.iconStyle} shadow-2xs`}>
+                      <stat.icon className="w-5 h-5" />
+                    </div>
+                  </div>
 
-              {openFaq === idx && (
-                <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 font-sans leading-relaxed border-t border-slate-100 pt-3">
-                  {faq.a}
+                  <div>
+                    <div className="font-serif font-bold text-3xl sm:text-4xl text-slate-900 tracking-tight flex items-baseline gap-1">
+                      <CountUpNumber end={stat.end} suffix={stat.suffix} duration={1800} />
+                      <span className="text-sm font-sans font-semibold text-[#7b002c]">{stat.unitText}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-sans mt-1.5 leading-snug">{stat.sub}</p>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 10. FREQUENTLY ASKED QUESTIONS (OPEN THEME STYLE)         */}
+      {/* ========================================================= */}
+      <section className="py-12 lg:py-16 border-t border-slate-200">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start relative">
+
+          {/* Left Column: Sticky FAQ'S Title */}
+          <div className="lg:col-span-4 space-y-3 lg:sticky lg:top-24 self-start">
+            <span className="label-caps text-[#7b002c] font-bold block mb-1 text-xs uppercase tracking-widest">FAQ&apos;S</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
+              Frequently Asked Questions (FAQS)
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed pt-1">
+              Detailed answers on possession status, NOC clearance, utilities, and plot transfer for Faisal Hills Block A.
+            </p>
+          </div>
+
+          {/* Right Column: Clean Horizontal Separated Accordion */}
+          <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
+            {blockAFaqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
+                  <div className="border-b border-slate-900/80">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="w-full py-5 text-left flex items-center justify-between gap-4 cursor-pointer transition-colors group"
+                    >
+                      <h3 className="font-serif font-bold text-xs sm:text-sm text-[#7b002c] group-hover:text-[#9e1245] uppercase tracking-wider pr-4 leading-snug">
+                        {`${index + 1}. ${faq.q}`}
+                      </h3>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#7b002c] shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {isOpen && (
+                      <div className="pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans pr-6 animate-fadeIn">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+
         </div>
       </section>
 

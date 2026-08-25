@@ -29,6 +29,7 @@ import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
 import PrimeBlockContent from '@/components/blocks/PrimeBlockContent';
 import BlockAContent from '@/components/blocks/BlockAContent';
+import BlockBContent from '@/components/blocks/BlockBContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -163,9 +164,11 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.slug === 'block-a'
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    : block.slug === 'block-b'
+    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.heroImage;
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a')
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b')
     ? null
     : block.subtitle;
 
@@ -173,6 +176,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
     : block.slug === 'block-a'
     ? 'The most developed & fully populated residential sector in Faisal Hills featuring the Grand Jamia Mosque, ready family villas, 12-Kanal central park, and 100% on-ground immediate construction possession.'
+    : block.slug === 'block-b'
+    ? 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.'
     : block.description;
 
   return (
@@ -191,7 +196,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -258,34 +263,36 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
         </div>
 
-        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base */}
-        <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
-          <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
-            {[
-              'FAISAL HILLS ISLAMABAD',
-              '100% RDA APPROVED SOCIETY',
-              'LUXURY LIVING AT MARGALLA FOOTHILLS',
-              '225FT MAIN BOULEVARD ACCESS',
-              'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
-              'A PROJECT BY ZEDEM INTERNATIONAL',
-              'HIGH-ROI SECURE PROPERTY INVESTMENT',
-              'IMMEDIATE POSSESSION & CONSTRUCTION READY',
-              'FAISAL HILLS ISLAMABAD',
-              '100% RDA APPROVED SOCIETY',
-              'LUXURY LIVING AT MARGALLA FOOTHILLS',
-              '225FT MAIN BOULEVARD ACCESS',
-              'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
-              'A PROJECT BY ZEDEM INTERNATIONAL',
-              'HIGH-ROI SECURE PROPERTY INVESTMENT',
-              'IMMEDIATE POSSESSION & CONSTRUCTION READY'
-            ].map((text, idx) => (
-              <div key={idx} className="flex items-center gap-12 shrink-0">
-                <span className="font-serif tracking-[0.2em] text-white/95">{text}</span>
-                <span className="text-amber-300 font-sans text-xs">•</span>
-              </div>
-            ))}
+        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B) */}
+        {block.slug !== 'block-b' && (
+          <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
+            <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
+              {[
+                'FAISAL HILLS ISLAMABAD',
+                '100% RDA APPROVED SOCIETY',
+                'LUXURY LIVING AT MARGALLA FOOTHILLS',
+                '225FT MAIN BOULEVARD ACCESS',
+                'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+                'A PROJECT BY ZEDEM INTERNATIONAL',
+                'HIGH-ROI SECURE PROPERTY INVESTMENT',
+                'IMMEDIATE POSSESSION & CONSTRUCTION READY',
+                'FAISAL HILLS ISLAMABAD',
+                '100% RDA APPROVED SOCIETY',
+                'LUXURY LIVING AT MARGALLA FOOTHILLS',
+                '225FT MAIN BOULEVARD ACCESS',
+                'PREMIUM RESIDENTIAL & COMMERCIAL PLOTS',
+                'A PROJECT BY ZEDEM INTERNATIONAL',
+                'HIGH-ROI SECURE PROPERTY INVESTMENT',
+                'IMMEDIATE POSSESSION & CONSTRUCTION READY'
+              ].map((text, idx) => (
+                <div key={idx} className="flex items-center gap-12 shrink-0">
+                  <span className="font-serif tracking-[0.2em] text-white/95">{text}</span>
+                  <span className="text-amber-300 font-sans text-xs">•</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Executive Block Redesigned Luxury Content (Exclusive layout) */}
@@ -309,8 +316,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Block B Dedicated Luxury Content (Sports & Elevated Living Capital) */}
+      {block.slug === 'block-b' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <BlockBContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">

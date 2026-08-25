@@ -1611,10 +1611,10 @@ export default function ExecutiveBlockContent() {
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-wider block">Cross-Sector Exploration</span>
               <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-                Compare Other Faisal Hills Blocks
+                Faisal Hills Blocks
               </h3>
               <p className="text-xs text-slate-600">
-                Explore neighbouring sectors in Faisal Hills to compare plot sizes, elevations, and possession timelines:
+                Explore other  sectors in Faisal Hills to compare plot sizes, elevations, and possession timelines:
               </p>
             </div>
             <Link

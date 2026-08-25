@@ -167,6 +167,28 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     slug: 'block-b',
     name: 'Block B',
     pricingMode: 'dynamic_series',
+    seriesConfigs: {
+      '5 Marla': [
+        { start: 1, end: 200, label: '001–200', tag: 'Grand Boulevard Sector' },
+        { start: 201, end: 400, label: '201–400', tag: 'Sports Complex Sector' },
+        { start: 401, end: 600, label: '401–600', tag: 'Central Park Sector' },
+        { start: 601, end: 850, label: '601–850', tag: 'Margalla View Crest' },
+      ],
+      '8 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector' },
+        { start: 151, end: 300, label: '151–300', tag: 'Sports Park View' },
+      ],
+      '10 Marla': [
+        { start: 1, end: 200, label: '001–200', tag: 'Hilltop Promenade' },
+        { start: 201, end: 400, label: '201–400', tag: 'Boulevard Enclave' },
+      ],
+      '14 Marla': [
+        { start: 1, end: 100, label: '001–100', tag: 'Executive Ridge' },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 120, label: '001–120', tag: 'Margalla Panorama Crest' },
+      ],
+    },
   },
   'block-c': {
     slug: 'block-c',
@@ -983,6 +1005,196 @@ export const INITIAL_PLOTS_INVENTORY: PlotItem[] = [
     demandRange: '+25% Trophy Plot',
     suitability: 'Bespoke architectural masterpiece',
   },
+
+  // 5 Marla Block B
+  {
+    id: 'blkb-5m-042',
+    plotNumber: 42,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 5200000,
+    locationType: 'Standard',
+    status: 'available',
+    features: ['Grand Boulevard Proximity', 'Carpeted Street', 'Underground Elec'],
+    demandRange: '+14% High Demand',
+    suitability: 'Ideal starter family villa',
+  },
+  {
+    id: 'blkb-5m-118',
+    plotNumber: 118,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 5800000,
+    locationType: 'Corner',
+    status: 'available',
+    features: ['Double Side Open Corner', 'Wide Boulevard Link'],
+    demandRange: '+18% High Yield',
+    suitability: 'Corner modern residence',
+  },
+  {
+    id: 'blkb-5m-245',
+    plotNumber: 245,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 6100000,
+    locationType: 'Park Facing',
+    status: 'available',
+    features: ['Direct Sports Complex & Park View', 'Walking to Futsal Arena'],
+    demandRange: '+20% Active Lifestyle',
+    suitability: 'Sports arena park view villa',
+  },
+  {
+    id: 'blkb-5m-480',
+    plotNumber: 480,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 5500000,
+    locationType: 'Standard',
+    status: 'available',
+    features: ['Solid Hilltop Ground', 'Clean Demarcated Plot'],
+    demandRange: '+12% Steady Value',
+    suitability: 'Long-term family home',
+  },
+  {
+    id: 'blkb-5m-680',
+    plotNumber: 680,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 6400000,
+    locationType: 'Main Boulevard',
+    status: 'available',
+    features: ['Margalla Crest Front', '225ft Boulevard Link'],
+    demandRange: '+22% Scenic View',
+    suitability: 'Scenic mountain view residence',
+  },
+
+  // 8 Marla Block B
+  {
+    id: 'blkb-8m-065',
+    plotNumber: 65,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '8 Marla',
+    dimensions: '30 × 60',
+    price: 7400000,
+    locationType: 'Standard',
+    status: 'available',
+    features: ['Avenue Frontage', 'Full Utilities', 'Possession Handover'],
+    demandRange: '+15% High Demand',
+    suitability: 'Spacious 8 Marla villa',
+  },
+  {
+    id: 'blkb-8m-185',
+    plotNumber: 185,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '8 Marla',
+    dimensions: '30 × 60',
+    price: 8600000,
+    locationType: 'Park Facing',
+    status: 'available',
+    features: ['Direct Sector Park Facing', 'Near Jamia Mosque'],
+    demandRange: '+19% Premium',
+    suitability: 'Park view family home',
+  },
+
+  // 10 Marla Block B
+  {
+    id: 'blkb-10m-085',
+    plotNumber: 85,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '10 Marla',
+    dimensions: '35 × 70',
+    price: 9200000,
+    locationType: 'Standard',
+    status: 'available',
+    features: ['Elevated Hilltop Ground', '35ft Wide Street'],
+    demandRange: '+16% High Demand',
+    suitability: 'Executive 10 Marla home',
+  },
+  {
+    id: 'blkb-10m-240',
+    plotNumber: 240,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '10 Marla',
+    dimensions: '35 × 70',
+    price: 11200000,
+    locationType: 'Corner',
+    status: 'available',
+    features: ['Main Boulevard Double Corner', 'Fast-Track Handover'],
+    demandRange: '+22% Prime Corner',
+    suitability: 'Signature 10 Marla villa',
+  },
+
+  // 14 Marla Block B
+  {
+    id: 'blkb-14m-035',
+    plotNumber: 35,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '14 Marla',
+    dimensions: '40 × 80',
+    price: 13500000,
+    locationType: 'Park Facing',
+    status: 'available',
+    features: ['Direct Park Front', 'Panoramic Ridge View'],
+    demandRange: '+18% High Demand',
+    suitability: 'Executive residence',
+  },
+
+  // 1 Kanal Block B
+  {
+    id: 'blkb-1k-045',
+    plotNumber: 45,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '1 Kanal',
+    dimensions: '50 × 90',
+    price: 16500000,
+    locationType: 'Standard',
+    status: 'available',
+    features: ['Elevated Ridge Elevation', '50ft Frontage'],
+    demandRange: '+17% High Demand',
+    suitability: '1 Kanal luxury mansion',
+  },
+  {
+    id: 'blkb-1k-095',
+    plotNumber: 95,
+    blockSlug: 'block-b',
+    blockName: 'Block B',
+    category: 'residential',
+    size: '1 Kanal',
+    dimensions: '50 × 90',
+    price: 19800000,
+    locationType: 'Corner + Park',
+    status: 'available',
+    features: ['Double Corner & Park Facing', 'Margalla Crest Panorama'],
+    demandRange: '+24% Ultra Luxury',
+    suitability: 'Trophy estate build',
+  },
 ];
 
 // Calculation function to dynamically group plots into configured series & calculate Min/Max prices
@@ -992,18 +1204,23 @@ export function calculateSeriesGroups(
   size: string
 ): SeriesGroupResult[] {
   const blockConfig = BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
-  const seriesList = blockConfig.seriesConfigs?.[size] || [];
+  const seriesList = blockConfig?.seriesConfigs?.[size] || [];
 
   // Filter plots by block & size
-  const matchedPlots = plots.filter(
-    (p) => p.blockSlug === blockSlug && p.size === size && p.category === 'residential'
+  const matchedPlots = (plots || []).filter(
+    (p) => p && p.blockSlug === blockSlug && p.size === size && p.category === 'residential'
   );
 
   // If no custom series configs defined, generate default intervals of 100
   if (seriesList.length === 0) {
     if (matchedPlots.length === 0) return [];
-    const minPlotNum = Math.min(...matchedPlots.map((p) => p.plotNumber));
-    const maxPlotNum = Math.max(...matchedPlots.map((p) => p.plotNumber));
+    const validNumbers = matchedPlots
+      .map((p) => (typeof p.plotNumber === 'number' ? p.plotNumber : parseInt(String(p.plotNumber).replace(/\D/g, ''), 10)))
+      .filter((n) => !isNaN(n) && n > 0);
+    
+    if (validNumbers.length === 0) return [];
+    const minPlotNum = Math.min(...validNumbers);
+    const maxPlotNum = Math.max(...validNumbers);
     const defaultIntervals: SeriesConfig[] = [];
     for (let s = Math.floor(minPlotNum / 100) * 100; s <= maxPlotNum; s += 100) {
       defaultIntervals.push({
@@ -1020,9 +1237,10 @@ export function calculateSeriesGroups(
 }
 
 function buildSeriesResult(cfg: SeriesConfig, allMatchedPlots: PlotItem[]): SeriesGroupResult {
-  const plotsInSeries = allMatchedPlots.filter(
-    (p) => p.plotNumber >= cfg.start && p.plotNumber <= cfg.end
-  );
+  const plotsInSeries = allMatchedPlots.filter((p) => {
+    const pNum = typeof p.plotNumber === 'number' ? p.plotNumber : parseInt(String(p.plotNumber).replace(/\D/g, ''), 10);
+    return !isNaN(pNum) && pNum >= cfg.start && pNum <= cfg.end;
+  });
 
   const prices = plotsInSeries.map((p) => p.price);
   const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
@@ -1039,6 +1257,10 @@ function buildSeriesResult(cfg: SeriesConfig, allMatchedPlots: PlotItem[]): Seri
     minPrice,
     maxPrice,
     formattedRange: formatPriceRange(minPrice, maxPrice),
-    plots: plotsInSeries.sort((a, b) => a.plotNumber - b.plotNumber),
+    plots: plotsInSeries.sort((a, b) => {
+      const aNum = typeof a.plotNumber === 'number' ? a.plotNumber : parseInt(String(a.plotNumber).replace(/\D/g, ''), 10);
+      const bNum = typeof b.plotNumber === 'number' ? b.plotNumber : parseInt(String(b.plotNumber).replace(/\D/g, ''), 10);
+      return aNum - bNum;
+    }),
   };
 }
