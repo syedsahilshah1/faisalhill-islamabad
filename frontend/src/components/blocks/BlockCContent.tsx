@@ -136,21 +136,21 @@ const blockCPriceSchedule: BlockCPriceRow[] = [
 const defaultBlockCPlots: PlotItem[] = [
   {
     id: 'blockc-5m-1',
-    plotNumber: 'C-142',
+    plotNumber: 'C-112',
     blockSlug: 'block-c',
     blockName: 'Block C',
     category: 'Residential',
     size: '5 Marla',
     dimensions: '25 × 50',
-    price: 5450000,
-    priceFormatted: 'PKR 54.5 Lacs',
+    price: 5250000,
+    priceFormatted: 'PKR 52.5 Lacs',
     priceHistoryTrend: '+24% Annual',
     status: 'Available',
-    facing: 'Park Facing',
+    facing: 'Standard',
     mapCoords: { x: 55, y: 48 },
     features: ['Adjacent to Sector Park', '40ft Carpeted Street', 'RO Water Pipeline Connected'],
     description: 'Prime 5 Marla residential plot located near central park with immediate possession.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png'
   },
   {
     id: 'blockc-8m-1',
@@ -168,7 +168,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 58, y: 50 },
     features: ['Direct Avenue Access', 'Underground Utilities Live', 'Demarcation Completed'],
     description: 'Generous 8 Marla layout on 40ft street with wide frontage and mountain breeze.',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+    image: '/images/imgi_27_Rectangle-1-scaled.png'
   },
   {
     id: 'blockc-10m-1',
@@ -186,7 +186,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 62, y: 52 },
     features: ['Corner Dual Access', 'Panoramic Hillside Panorama', 'Near Grand Jamia Mosque'],
     description: 'Executive 10 Marla corner plot ideal for double-unit luxury villa construction.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+    image: '/images/imgi_44_Executive-Block.webp'
   },
   {
     id: 'blockc-14m-1',
@@ -204,7 +204,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 65, y: 54 },
     features: ['60ft Wide Avenue Frontage', 'Instant Home Construction', 'Zero Litigation'],
     description: '14 Marla luxury plot positioned along landscaped sector avenue.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
   },
   {
     id: 'blockc-1k-1',
@@ -222,7 +222,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 68, y: 56 },
     features: ['Facing 12-Kanal Central Park', 'Luxury Villa Demarcation', 'Biometric Zedem Transfer'],
     description: 'Flagship 1 Kanal mansion plot facing extensive green reserves and thematic parklands.',
-    image: '/images/faisal-forest.jpg'
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
   },
   {
     id: 'blockc-comm-1',
@@ -251,8 +251,9 @@ const blockCAmenities = [
     title: 'High-Capacity RO Water Filtration Plant',
     category: 'utilities',
     description: 'Fully active water purification and mineral RO filtration station supplying 24/7 crystal-clear potable water to all Block C residents.',
-    image: '/images/faisal-park.jpg',
-    tag: 'Operational'
+    image: '/images/faisal-forest.jpg',
+    tag: 'Operational Asset',
+    features: ['24/7 Filtered Mineral Water', 'Deep Tube-Well Sourced', 'Zero Water Scarcity', 'Maintained by Zedem']
   },
   {
     id: 'hills-walk',
@@ -260,7 +261,8 @@ const blockCAmenities = [
     category: 'lifestyle',
     description: 'Direct pedestrian link to the vibrant Hills Walk commercial district featuring alfresco restaurants, cafes, and flagship retail boutiques.',
     image: '/images/faisalarc (2).webp',
-    tag: 'Lifestyle Anchor'
+    tag: 'Lifestyle Anchor',
+    features: ['Pedestrian Walking Arcades', 'Food Street & Fine Dining', 'High Retail Footfall', 'Corporate Office Hub']
   },
   {
     id: 'mosque',
@@ -268,7 +270,8 @@ const blockCAmenities = [
     category: 'infrastructure',
     description: 'Architecturally stunning air-conditioned community mosque with dedicated ablution zones, lush courtyards, and Quran academy.',
     image: '/images/imgi_46_Mosques.webp',
-    tag: 'Delivered'
+    tag: 'Delivered Landmark',
+    features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
   },
   {
     id: 'central-park',
@@ -276,34 +279,73 @@ const blockCAmenities = [
     category: 'nature',
     description: 'Sprawling green reservations with children play grounds, illuminated evening walking tracks, and gazebos facing the mountains.',
     image: '/images/imgi_45_Glow-garden.webp',
-    tag: 'Recreational'
+    tag: 'Recreational Green',
+    features: ['Illuminated Night Walkways', 'Children Play Arena', 'Margalla Mountain Breeze', 'Jogging Track']
   },
   {
     id: 'underground-utilities',
     title: '100% Underground Electrification',
     category: 'utilities',
     description: 'Clean visual skyline with zero dangling wires, heavy underground power cables, grid transformer stations, and LED street lighting.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-    tag: 'Smart Infrastructure'
+    image: '/images/imgi_44_Executive-Block.webp',
+    tag: 'Smart Infrastructure',
+    features: ['Uninterrupted Grid Backup', 'Underground High-Tension Cables', 'Zero Overhead Wiring', 'LED Street Lamps']
   },
   {
     id: 'gated-security',
     title: 'Dedicated 24/7 Gated Security & Surveillance',
     category: 'security',
     description: 'Rapid-response mobile patrolling squads, barrier-controlled check posts, and smart high-definition CCTV perimeter monitoring.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
-    tag: '24/7 Secure'
+    image: '/images/faisalhillarc.jpg',
+    tag: '24/7 Secure',
+    features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
   }
 ];
 
-// Block C Development Milestones
+// Block C Development Milestones with on-ground imagery
 const blockCDevelopmentMilestones = [
-  { title: 'Roads & Boulevards', progress: 98, status: 'Paved & Functional', desc: '40ft, 60ft, and 150ft asphalt avenues completely surfaced with curbs and streetlights.' },
-  { title: 'Underground Electricity', progress: 100, status: '100% Energized', desc: 'Transformer substations installed with subterranean electrification live across all sectors.' },
-  { title: 'Water Supply & RO Plant', progress: 100, status: 'Fully Operational', desc: 'Dedicated deep-well tube wells and central RO purification unit dispensing clean water.' },
-  { title: 'Sui Gas Infrastructure', progress: 95, status: 'Lines Laid & Tested', desc: 'Underground gas mainlines tested and ready for individual home meter connections.' },
-  { title: 'Sewerage & Storm Drains', progress: 100, status: 'Completed', desc: 'Underground RCC pipe network with automated drainage ensuring zero monsoon waterlogging.' },
-  { title: 'Parks & Green Reservations', progress: 92, status: 'Landscaped', desc: 'Family parks, jogging tracks, and gazebos landscaped with native plants and turf.' },
+  {
+    title: 'Roads & Boulevards',
+    progress: 98,
+    status: 'Paved & Functional',
+    desc: '40ft, 60ft, and 150ft asphalt avenues completely surfaced with curbs and streetlights.',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+  },
+  {
+    title: 'Underground Electricity',
+    progress: 100,
+    status: '100% Energized',
+    desc: 'Transformer substations installed with subterranean electrification live across all sectors.',
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+  },
+  {
+    title: 'Water Supply & RO Plant',
+    progress: 100,
+    status: 'Fully Operational',
+    desc: 'Dedicated deep-well tube wells and central RO purification unit dispensing clean water.',
+    image: '/images/faisalhill.jpg'
+  },
+  {
+    title: 'Sui Gas Infrastructure',
+    progress: 95,
+    status: 'Lines Laid & Tested',
+    desc: 'Underground gas mainlines tested and ready for individual home meter connections.',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+  },
+  {
+    title: 'Sewerage & Storm Drains',
+    progress: 100,
+    status: 'Completed',
+    desc: 'Underground RCC pipe network with automated drainage ensuring zero monsoon waterlogging.',
+    image: '/images/faisalarc (1).webp'
+  },
+  {
+    title: 'Parks & Green Reservations',
+    progress: 92,
+    status: 'Landscaped',
+    desc: 'Family parks, jogging tracks, and gazebos landscaped with native plants and turf.',
+    image: '/images/faisal-park.jpg'
+  }
 ];
 
 // Block C Travel Times
@@ -875,31 +917,68 @@ export default function BlockCContent() {
           </div>
         </ScrollReveal>
 
-        {/* Progress Grid */}
+        {/* Progress Grid with On-Ground Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blockCDevelopmentMilestones.map((item, idx) => (
-            <ScrollReveal key={idx} direction="up" delay={idx * 50}>
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 hover:border-rose-200 transition-all">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-serif font-bold text-base text-slate-900">{item.title}</h4>
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    {item.progress}%
-                  </span>
+            <ScrollReveal key={idx} direction="up" delay={idx * 60}>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group h-full">
+                <div>
+                  {/* Photo Header */}
+                  <div className="relative h-44 w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#7b002c] text-white shadow-sm border border-white/20">
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-600 text-white shadow-sm border border-white/20">
+                        {item.progress}%
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <h4 className="font-serif font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
+                        {item.title}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Card Content & Progress */}
+                  <div className="p-5 space-y-3">
+                    {/* Progress Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>Completion Rate</span>
+                        <span className="text-emerald-700 font-bold">{item.progress}%</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#7b002c] to-emerald-600 rounded-full transition-all duration-1000"
+                          style={{ width: `${item.progress}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed font-sans">{item.desc}</p>
+                  </div>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#7b002c] to-emerald-600 rounded-full transition-all duration-1000"
-                    style={{ width: `${item.progress}%` }}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
-                    Status: {item.status}
-                  </span>
-                  <p className="text-xs text-slate-500 leading-relaxed font-sans">{item.desc}</p>
+                <div className="p-5 pt-0">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Verified On-Ground</span>
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">Block C</span>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -1268,7 +1347,7 @@ export default function BlockCContent() {
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
                     selectedAmenityFilter === cat
                       ? 'bg-[#7b002c] text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-slate-600 hover:text-slat e-900'
                   }`}
                 >
                   {cat}
@@ -1278,46 +1357,83 @@ export default function BlockCContent() {
           </div>
         </ScrollReveal>
 
-        {/* Amenities Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAmenities.map((amenity, idx) => (
-            <ScrollReveal key={amenity.id} direction="up" delay={(idx % 3) * 80}>
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full">
-                <div>
-                  <div className="relative h-48 overflow-hidden bg-slate-950">
-                    <img
-                      src={amenity.image}
-                      alt={amenity.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                    <div className="absolute top-3 left-3">
-                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white shadow-sm border border-white/20">
+        {/* Alternating Zig-Zag Amenity Rows (Image Right / Content Left, then Image Left / Content Right) */}
+        <div className="space-y-8 sm:space-y-12 lg:space-y-16">
+          {filteredAmenities.map((amenity, idx) => {
+            const isImageRight = idx % 2 === 0;
+
+            return (
+              <ScrollReveal key={amenity.id} direction="up" delay={idx * 50}>
+                <div
+                  className="p-4 sm:p-7 lg:p-10 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center overflow-hidden w-full"
+                >
+                  {/* Content Side */}
+                  <div className={`lg:col-span-6 space-y-3.5 sm:space-y-4 ${!isImageRight ? 'lg:order-2' : 'lg:order-1'}`}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-50 text-[#7b002c] border border-rose-200 uppercase tracking-wider">
                         {amenity.tag}
                       </span>
+                      <span className="text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-700 capitalize">
+                        {amenity.category}
+                      </span>
                     </div>
-                  </div>
-                  <div className="p-5 space-y-2">
-                    <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
+
+                    <h3 className="font-serif font-bold text-xl sm:text-2xl lg:text-3xl text-slate-900 leading-snug">
                       {amenity.title}
                     </h3>
-                    <p className="text-xs text-slate-600 font-sans leading-relaxed">
+
+                    <p className="text-slate-600 text-xs sm:text-sm lg:text-base leading-relaxed font-sans">
                       {amenity.description}
                     </p>
+
+                    {/* Features Badges */}
+                    {amenity.features && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        {amenity.features.map((feat, fIdx) => (
+                          <div
+                            key={fIdx}
+                            className="flex items-center gap-2 text-xs font-semibold text-slate-800 bg-slate-50 p-2 sm:p-2.5 rounded-xl border border-slate-200/80"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="truncate">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="pt-2 sm:pt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 text-xs text-slate-500">
+                      <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Delivered & Operational</span>
+                      </span>
+                      <span className="font-mono text-[11px] text-slate-400 font-semibold">Faisal Hills Block C</span>
+                    </div>
+                  </div>
+
+                  {/* Image Side */}
+                  <div className={`lg:col-span-6 w-full ${!isImageRight ? 'lg:order-1' : 'lg:order-2'}`}>
+                    <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-md border border-slate-200 h-52 sm:h-64 lg:h-[340px] bg-slate-950 group/img">
+                      <img
+                        src={amenity.image}
+                        alt={amenity.title}
+                        className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent" />
+
+                      <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white">
+                        <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider block">
+                          Sector Landmark #{idx + 1}
+                        </span>
+                        <h4 className="font-serif font-bold text-base sm:text-lg lg:text-xl text-white drop-shadow-sm line-clamp-1">
+                          {amenity.title}
+                        </h4>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="p-5 pt-0">
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      Operational Asset
-                    </span>
-                    <span className="font-mono text-[11px] text-slate-400">Block C</span>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
       </section>
 

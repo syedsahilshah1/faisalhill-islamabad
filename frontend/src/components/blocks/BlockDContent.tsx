@@ -1,0 +1,1656 @@
+'use client';
+
+import React, { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import {
+  ShieldCheck,
+  CheckCircle2,
+  MapPin,
+  Car,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Building2,
+  Trees,
+  Landmark,
+  Phone,
+  Sparkles,
+  Download,
+  ArrowRight,
+  TrendingUp,
+  Tag,
+  DollarSign,
+  Maximize2,
+  Droplets,
+  Layers,
+  HelpCircle,
+  Clock,
+  Compass,
+  MessageSquare,
+  Home,
+  ShoppingBag,
+  Zap,
+  Activity,
+  Check,
+  Award,
+  Send,
+  BadgeCheck,
+  ExternalLink,
+  Calendar,
+  Building,
+  Percent,
+  Filter,
+  Shield,
+  Navigation
+} from 'lucide-react';
+import LeadModal from '@/components/ui/LeadModal';
+import {
+  blocksData,
+  plotInventoryData,
+  PlotItem,
+  fetchPlots,
+  submitLead
+} from '@/data/faisalHillsData';
+import MapDownloadModal from '@/components/ui/MapDownloadModal';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import TextReveal from '@/components/ui/TextReveal';
+import CountUpNumber from '@/components/ui/CountUpNumber';
+import FaqAccordion from '@/components/ui/FaqAccordion';
+import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
+import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+
+// Price schedule benchmark rows for Block D
+interface BlockDPriceRow {
+  size: string;
+  dimensions: string;
+  sqYards: string;
+  sqFeet: string;
+  category: 'Residential' | 'Commercial';
+  priceRange: string;
+  possession: string;
+  highlight: string;
+}
+
+const blockDPriceSchedule: BlockDPriceRow[] = [
+  {
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    sqYards: '139 Sq. Yds',
+    sqFeet: '1,125 Sq. Ft',
+    category: 'Residential',
+    priceRange: 'PKR 40 Lacs – 48 Lacs',
+    possession: 'Development 85%',
+    highlight: 'Lowest entry price point in Faisal Hills with exceptional 3-year holding upside.'
+  },
+  {
+    size: '8 Marla',
+    dimensions: '30 × 60',
+    sqYards: '200 Sq. Yds',
+    sqFeet: '1,800 Sq. Ft',
+    category: 'Residential',
+    priceRange: 'PKR 62 Lacs – 75 Lacs',
+    possession: 'Development 85%',
+    highlight: 'Standard family-size cut situated along serene 50ft tree-lined sector avenues.'
+  },
+  {
+    size: '10 Marla',
+    dimensions: '35 × 70',
+    sqYards: '272 Sq. Yds',
+    sqFeet: '2,250 Sq. Ft',
+    category: 'Residential',
+    priceRange: 'PKR 90 Lacs – 1.10 Cr',
+    possession: 'Development 85%',
+    highlight: 'Scenic double-unit home cuts facing natural valley breezes and Margalla ridge.'
+  },
+  {
+    size: '14 Marla',
+    dimensions: '40 × 80',
+    sqYards: '356 Sq. Yds',
+    sqFeet: '3,150 Sq. Ft',
+    category: 'Residential',
+    priceRange: 'PKR 1.25 Cr – 1.45 Cr',
+    possession: 'Development 85%',
+    highlight: 'Executive estate cuts close to the proposed central healthcare & civic zone.'
+  },
+  {
+    size: '1 Kanal',
+    dimensions: '50 × 90',
+    sqYards: '500 Sq. Yds',
+    sqFeet: '4,500 Sq. Ft',
+    category: 'Residential',
+    priceRange: 'PKR 1.65 Cr – 2.10 Cr',
+    possession: 'Development 85%',
+    highlight: 'Flagship mansion plots facing natural springs, lush parkland, and wide boulevards.'
+  },
+  {
+    size: '4 Marla Commercial',
+    dimensions: '30 × 30',
+    sqYards: '100 Sq. Yds',
+    sqFeet: '900 Sq. Ft',
+    category: 'Commercial',
+    priceRange: 'PKR 1.80 Cr – 2.60 Cr',
+    possession: 'Commercial Approved',
+    highlight: 'High ROI retail promenade plots approved for Ground + 4 commercial arcades.'
+  }
+];
+
+// Fallback seed plots for Block D with authentic local photography
+const defaultBlockDPlots: PlotItem[] = [
+  {
+    id: 'blockd-5m-1',
+    plotNumber: 'D-108',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    price: 4450000,
+    priceFormatted: 'PKR 44.5 Lacs',
+    priceHistoryTrend: '+16.5% annual capital ROI',
+    status: 'Available',
+    facing: '40ft Wide Street',
+    mapCoords: { x: 78, y: 55 },
+    features: ['Solid Ground Land', 'Near Central Park', 'Fast Developing Sector'],
+    description: 'Affordable 5 Marla residential plot in Faisal Hills Block D, offering excellent value near community green spaces.',
+    image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png'
+  },
+  {
+    id: 'blockd-8m-1',
+    plotNumber: 'D-230',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Residential',
+    size: '8 Marla',
+    dimensions: '30 × 60',
+    price: 6850000,
+    priceFormatted: 'PKR 68.5 Lacs',
+    priceHistoryTrend: '+18.0% annual capital ROI',
+    status: 'Available',
+    facing: 'Boulevard Facing',
+    mapCoords: { x: 80, y: 58 },
+    features: ['50ft Sector Boulevard', 'Near Sector Jamia Mosque', 'Underground Electricity'],
+    description: 'Family-size 8 Marla plot along the 50ft wide avenue in Block D with completed utilities and open mountain air.',
+    image: '/images/imgi_27_Rectangle-1-scaled.png'
+  },
+  {
+    id: 'blockd-10m-1',
+    plotNumber: 'D-365',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Residential',
+    size: '10 Marla',
+    dimensions: '35 × 70',
+    price: 9800000,
+    priceFormatted: 'PKR 98 Lacs',
+    priceHistoryTrend: '+21.2% annual capital ROI',
+    status: 'Available',
+    facing: 'Margalla Mountain View',
+    mapCoords: { x: 82, y: 62 },
+    features: ['Corner Plot', 'Scenic Mountain Backdrop', 'Direct Allotment File'],
+    description: 'Scenic 10 Marla corner plot ideal for double-unit luxury construction, with open views of Margalla range.',
+    image: '/images/imgi_44_Executive-Block.webp'
+  },
+  {
+    id: 'blockd-14m-1',
+    plotNumber: 'D-480',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Residential',
+    size: '14 Marla',
+    dimensions: '40 × 80',
+    price: 13800000,
+    priceFormatted: 'PKR 1.38 Crore',
+    priceHistoryTrend: '+19.8% annual capital ROI',
+    status: 'Available',
+    facing: '60ft Main Avenue',
+    mapCoords: { x: 84, y: 65 },
+    features: ['Executive Estate Cut', 'Near Healthcare Zone', 'Immediate Transfer'],
+    description: 'Spacious 14 Marla executive plot cut on a 60ft avenue, minutes from the proposed medical and education complex.',
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+  },
+  {
+    id: 'blockd-1k-1',
+    plotNumber: 'D-590',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Residential',
+    size: '1 Kanal',
+    dimensions: '50 × 90',
+    price: 18500000,
+    priceFormatted: 'PKR 1.85 Crore',
+    priceHistoryTrend: '+24.5% annual capital ROI',
+    status: 'Available',
+    facing: 'Park Facing',
+    mapCoords: { x: 86, y: 68 },
+    features: ['Direct Park Facing', 'Mansion Zoning', 'Zero Litigation Risk'],
+    description: 'Premium 1 Kanal mansion plot directly overlooking central green reservations in Faisal Hills Block D.',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+  },
+  {
+    id: 'blockd-comm-1',
+    plotNumber: 'D-COMM-12',
+    blockSlug: 'block-d',
+    blockName: 'Block D',
+    category: 'Commercial',
+    size: '4 Marla',
+    dimensions: '30 × 30',
+    price: 19500000,
+    priceFormatted: 'PKR 1.95 Crore',
+    priceHistoryTrend: '+28.0% commercial appreciation',
+    status: 'Available',
+    facing: 'Main Commercial Strip',
+    mapCoords: { x: 88, y: 70 },
+    features: ['Sector Commercial Strip', 'Ground + 4 Storey Approval', 'High ROI Catchment'],
+    description: 'Prime 4 Marla commercial plot in Sector D commercial zone, approved for multi-storey retail, grocery, and clinic development.',
+    image: '/images/faisalarc (3).jpg'
+  }
+];
+
+// Block D Amenities List with Alternating Structure & Distinct Photos
+const blockDAmenities = [
+  {
+    id: 'natural-springs',
+    title: 'Natural Margalla Springs & Water Cascade',
+    category: 'nature',
+    description: 'Block D is uniquely gifted with natural underground freshwater springs and scenic water runoff streams that create a refreshingly cool micro-climate and eco-friendly setting.',
+    image: '/images/faisal-forest.jpg',
+    tag: 'Eco-Living Feature',
+    features: ['Freshwater Spring Water', 'Cool Micro-Climate', 'Lush Green Flora', 'Eco-Conscious Zoning']
+  },
+  {
+    id: 'community-center',
+    title: 'Sector D Multi-Purpose Community Center',
+    category: 'lifestyle',
+    description: 'Dedicated modern social hub featuring banquet facilities, indoor recreation halls, senior citizen lounges, and executive meeting rooms for neighborhood residents.',
+    image: '/images/faisalarc (2).webp',
+    tag: 'Community Anchor',
+    features: ['Banquet & Event Halls', 'Indoor Games Arena', 'Senior Citizen Lounge', 'Resident Meeting Suites']
+  },
+  {
+    id: 'jamia-mosque-d',
+    title: 'Grand Sector D Jamia Mosque',
+    category: 'infrastructure',
+    description: 'Modern Islamic architectural landmark designed for 2,500 worshippers, complete with air-conditioned prayer halls, expansive marble courtyards, and Quranic academy.',
+    image: '/images/imgi_46_Mosques.webp',
+    tag: 'Delivered Landmark',
+    features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
+  },
+  {
+    id: 'medical-complex',
+    title: 'Proposed Medical City & Healthcare Complex',
+    category: 'utilities',
+    description: 'Zoned high-capacity healthcare district designed to house multi-specialty hospitals, 24/7 trauma emergency care, diagnostic laboratories, and pharmacy hubs.',
+    image: '/images/imgi_49_Medical-xomplex.webp',
+    tag: 'Healthcare Hub',
+    features: ['24/7 Emergency Trauma Care', 'Specialist Clinics', 'Diagnostic Pathology Labs', 'Pharmacies & Medical Supplies']
+  },
+  {
+    id: 'underground-utilities-d',
+    title: '100% Underground Electrification & Wide Grid',
+    category: 'utilities',
+    description: 'Subterranean power distribution ensuring completely unobstructed skyline vistas, modern street lighting poles, and storm water conduits.',
+    image: '/images/imgi_44_Executive-Block.webp',
+    tag: 'Smart Infrastructure',
+    features: ['Subterranean Power Cabling', 'High-Capacity Transformers', 'LED Street Lamps', 'Zero Overhead Wiring']
+  },
+  {
+    id: 'gated-security-d',
+    title: '24/7 Gated Security & Perimeter Surveillance',
+    category: 'security',
+    description: 'Guarded sector checkposts, smart boom barriers, high-resolution night-vision CCTV coverage, and dedicated mobile patrolling units.',
+    image: '/images/faisalhillarc.jpg',
+    tag: '24/7 Secure',
+    features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
+  }
+];
+
+// Block D Development Milestones with Unique Sector Photos
+const blockDDevelopmentMilestones = [
+  {
+    title: 'Roads & Sector Boulevards',
+    progress: 90,
+    status: 'Paved & Functional',
+    desc: 'Main 50ft and 60ft avenues asphalted with drainage gutters, curbs, and street lamp foundations.',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+  },
+  {
+    title: 'Underground Electrification',
+    progress: 85,
+    status: 'Cables Laid in Trenches',
+    desc: 'Subterranean conduit pipes and underground cable trenches completed across all sectors.',
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+  },
+  {
+    title: 'Water Wells & Storage Tanks',
+    progress: 95,
+    status: 'Tube Wells Operational',
+    desc: 'High-yield deep-well tube wells and overhead water reservoirs delivering clean mountain water.',
+    image: '/images/faisalhill.jpg'
+  },
+  {
+    title: 'Sui Gas Pipeline Network',
+    progress: 80,
+    status: 'Mainlines Laid',
+    desc: 'Underground gas pipelines installed along primary avenues awaiting final pressure testing.',
+    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
+  },
+  {
+    title: 'Sewerage & Storm Drainage',
+    progress: 90,
+    status: 'RCC Pipes Laid',
+    desc: 'Heavy RCC sewerage conduits connected to main society trunk lines for rain runoff safety.',
+    image: '/images/faisalarc (1).webp'
+  },
+  {
+    title: 'Sector Parks & Green Reservations',
+    progress: 85,
+    status: 'Turf & Trees Planted',
+    desc: 'Family walking trails, children play areas, and perimeter tree plantations active.',
+    image: '/images/faisal-park.jpg'
+  }
+];
+
+// Block D Travel Times
+const blockDTravelTimes = [
+  { destination: 'M-1 Brahma Jhang Bahtar Interchange', distance: '3.2 km', time: '5 Mins', note: 'Direct access to M-1 Motorway' },
+  { destination: 'Grand GT Road (N-5 Highway)', distance: '3.8 km', time: '7 Mins', note: 'Via 225ft Grand Boulevard' },
+  { destination: 'Block C & Hills Walk Promenade', distance: '1.2 km', time: '2 Mins', note: 'Direct internal avenue connection' },
+  { destination: 'Block B Central Sports Complex', distance: '2.0 km', time: '4 Mins', note: 'Quick neighborhood access' },
+  { destination: 'Taxila Museum & Cantt Commercials', distance: '6.5 km', time: '9 Mins', note: 'Short urban drive' },
+  { destination: 'Islamabad Toll Plaza & Zero Point', distance: '26.0 km', time: '24 Mins', note: 'Signal-free drive via M-1' }
+];
+
+// Block D FAQs
+const blockDFaqs = [
+  {
+    question: 'Where exactly is Faisal Hills Block D located?',
+    answer: 'Block D is situated on the tranquil western flank of Faisal Hills, adjacent to Block C and within minutes of the M-1 Motorway Brahma Jhang Bahtar Interchange. It enjoys serene elevation with natural mountain springs and scenic Margalla ridge views.'
+  },
+  {
+    question: 'Is Faisal Hills Block D approved by RDA?',
+    answer: 'Yes, Faisal Hills Block D is 100% legally approved by the Rawalpindi Development Authority (RDA) under the comprehensive society master plan NOC. All plots are free of legal dispute with transparent biometric transfers at the Zedem International head office.'
+  },
+  {
+    question: 'What residential and commercial plot sizes are available in Block D?',
+    answer: 'Block D offers 5 Marla (25×50), 8 Marla (30×60), 10 Marla (35×70), 14 Marla (40×80), and 1 Kanal (50×90) residential cuts. Commercial plots of 4 Marla (30×30) with Ground + 4 storey construction approvals are also available.'
+  },
+  {
+    question: 'What is the current development status of Block D?',
+    answer: 'Development in Block D is approximately 85% to 90% completed. Earthwork, levelling, 50ft & 60ft asphalt road carpeting, underground utility conduits, deep tube wells, and sewerage piping networks are operational.'
+  },
+  {
+    question: 'What is the price range of 5 Marla and 10 Marla plots in Block D?',
+    answer: 'As of current market rates, a 5 Marla residential plot ranges from PKR 40 Lacs to 48 Lacs, while a 10 Marla plot ranges between PKR 90 Lacs and 1.10 Crore depending on location, category, and boulevard facing.'
+  },
+  {
+    question: 'Why is Block D considered the best value investment in Faisal Hills?',
+    answer: 'Block D provides the most economical entry prices across the society combined with proximity to the upcoming M-1 Brahma Interchange link and future Medical City. It delivers high holding ROI for investors and peaceful suburban lifestyle for end-users.'
+  },
+  {
+    question: 'Can overseas Pakistanis buy and transfer plots in Block D remotely?',
+    answer: 'Yes. Overseas Pakistanis can purchase plots using their NICOP/passport. File verification, installment ledger checks, and legal biometric allotment transfers can be facilitated seamlessly through our dedicated overseas advisory desk.'
+  }
+];
+
+export default function BlockDContent() {
+  // Plot Filters & Interactive States
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState<string>('All');
+  const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
+  const [selectedAmenityFilter, setSelectedAmenityFilter] = useState<string>('all');
+  const [isSeeMoreOpen, setIsSeeMoreOpen] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [selectedPlotForInquiry, setSelectedPlotForInquiry] = useState<PlotItem | null>(null);
+
+  // Lead Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    plotSize: '5 Marla',
+    message: ''
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const galleryImages = [
+    {
+      url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+      title: 'Block D Panoramas & Scenic Margalla Valley',
+      desc: 'Expansive natural valley setting with lush Margalla mountain air'
+    },
+    {
+      url: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+      title: 'Underground Infrastructure & 50ft Avenues',
+      desc: 'Subterranean electricity lines and wide asphalted street network'
+    },
+    {
+      url: '/images/faisal-forest.jpg',
+      title: 'Natural Margalla Springs & Greenery',
+      desc: 'Lush natural topography and crystal-clear freshwater springs'
+    },
+    {
+      url: '/images/faisal-park.jpg',
+      title: 'Sector D Parks & Recreational Belts',
+      desc: 'Spacious family parks, walking tracks, and children playgrounds'
+    },
+    {
+      url: '/images/imgi_46_Mosques.webp',
+      title: 'Sector D Grand Jamia Mosque',
+      desc: 'Grand Islamic architectural landmark for daily community prayers'
+    },
+    {
+      url: '/images/imgi_49_Medical-xomplex.webp',
+      title: 'Planned Medical City & Healthcare District',
+      desc: 'Designated healthcare hub with multi-specialty medical centers'
+    },
+    {
+      url: '/images/faisalarc (3).jpg',
+      title: 'Commercial Promenade & Retail Zone',
+      desc: 'Modern commercial arcade strip for business and daily shopping'
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % galleryImages.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [galleryImages.length]);
+
+  // Filtered Plots
+  const filteredPlots = useMemo(() => {
+    if (selectedSizeFilter === 'All') return defaultBlockDPlots;
+    return defaultBlockDPlots.filter((p) => p.size.toLowerCase().includes(selectedSizeFilter.toLowerCase()));
+  }, [selectedSizeFilter]);
+
+  // Filtered Price Schedule
+  const filteredPriceSchedule = useMemo(() => {
+    if (selectedPriceCategory === 'All') return blockDPriceSchedule;
+    return blockDPriceSchedule.filter((p) => p.category === selectedPriceCategory);
+  }, [selectedPriceCategory]);
+
+  // Filtered Amenities
+  const filteredAmenities = useMemo(() => {
+    if (selectedAmenityFilter === 'all') return blockDAmenities;
+    return blockDAmenities.filter((a) => a.category === selectedAmenityFilter);
+  }, [selectedAmenityFilter]);
+
+  // Handle Form Submission
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone) return;
+    setIsSubmitting(true);
+    try {
+      await submitLead({
+        name: formData.name,
+        phone: formData.phone,
+        interest: `Block D (${formData.plotSize})${formData.email ? ` - Email: ${formData.email}` : ''}`,
+        message: formData.message || 'Block D inquiry via dedicated sector page'
+      });
+      setFormSubmitted(true);
+    } catch {
+      setFormSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+
+      {/* ========================================================= */}
+      {/* 1. SECTOR D OVERVIEW & STRATEGIC VISION                   */}
+      {/* ========================================================= */}
+      <section className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left Column: Narrative with See More toggle */}
+          <div className="lg:col-span-7 space-y-5">
+            <ScrollReveal direction="up" delay={50}>
+              <div className="space-y-3">
+                <TextReveal
+                  as="h1"
+                  text="Faisal Hills Block D — Tranquil Living, Natural Margalla Springs & Brahma M-1 Gateway"
+                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                  staggerDelay={65}
+                  direction="left"
+                />
+
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans">
+                  Faisal Hills Block D represents the most peaceful, eco-friendly suburban sector in the master community. Positioned on the elevated western wing adjacent to Block C, Block D combines refreshing Margalla valley breezes, natural freshwater springs, economical entry-level plot pricing, and direct connectivity to the upcoming Brahma Jhang Bahtar M-1 Motorway link.
+                </p>
+
+                {isSeeMoreOpen ? (
+                  <div className="space-y-4 pt-2 text-slate-600 text-sm sm:text-base leading-relaxed font-sans animate-in fade-in duration-500">
+                    <p>
+                      Spanning over 2,100 residential and commercial plots, Sector D is engineered around a modern 50ft and 60ft grid road system. With 85%+ on-ground development completed, underground utility conduit infrastructure in place, and active deep tube wells, Block D is the premier choice for family homebuilders seeking serene living and astute investors eyeing substantial capital gains.
+                    </p>
+                    <p>
+                      The sector is designated to host the future Faisal Hills Medical City healthcare complex, grand community mosques, sector sports facilities, and landscaped nature parks. Whether purchasing a compact 5 Marla starter plot, an 8 or 10 Marla family cut, or a 1 Kanal executive estate, Block D delivers unbeatable value per square foot in the Islamabad-Rawalpindi region.
+                    </p>
+                  </div>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={() => setIsSeeMoreOpen(!isSeeMoreOpen)}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors pt-1 cursor-pointer focus:outline-hidden"
+                >
+                  <span>{isSeeMoreOpen ? 'Read Less Overview' : 'Read Full Sector D Overview & Vision'}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isSeeMoreOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </ScrollReveal>
+
+            {/* Quick Feature Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Development</span>
+                <span className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <BadgeCheck className="w-4 h-4 text-emerald-600" />
+                  <span>85%+ Completed</span>
+                </span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">NOC Approval</span>
+                <span className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>100% RDA Approved</span>
+                </span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 col-span-2 sm:col-span-1">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Plot Sizes</span>
+                <span className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <Tag className="w-4 h-4 text-[#7b002c]" />
+                  <span>5, 8, 10, 14M & 1K</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Interactive Quick Consultation Card */}
+          <div className="lg:col-span-5">
+            <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5 border border-slate-800">
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#7b002c]/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="space-y-2 relative z-10">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 text-rose-300 text-xs font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Live Sector Inventory</span>
+                </span>
+                <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+                  Buy or Sell Plots in Block D
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
+                  Get real-time market valuations, plot file biometric verification, and updated resale inventory directly from our verified advisory desk.
+                </p>
+              </div>
+
+              <div className="space-y-2.5 relative z-10 text-xs text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Immediate file transfer at Zedem Head Office</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>100% RDA approved layout plan with zero litigation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Direct connection to Brahma Bahtar M-1 Interchange</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row gap-3 relative z-10">
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-lg transition-all text-center cursor-pointer"
+                >
+                  Request Rate Card
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="flex-1 py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Map</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 2. VISUAL PHOTO GALLERY SLIDER CAROUSEL                  */}
+      {/* ========================================================= */}
+      <section className="space-y-4">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Ground Reality Visuals</span>
+              </div>
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 mt-1">
+                Faisal Hills Block D On-Ground Visual Showcase
+              </h2>
+            </div>
+            <span className="text-xs text-slate-500 font-sans">
+              Slide {activeSlide + 1} of {galleryImages.length}
+            </span>
+          </div>
+        </ScrollReveal>
+
+        <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 aspect-[16/9] sm:aspect-[21/9] max-h-[520px] bg-slate-950 group">
+          {galleryImages.map((img, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              <img
+                src={img.url}
+                alt={img.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
+              <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 text-white space-y-1 max-w-2xl">
+                <span className="text-xs font-bold text-amber-300 uppercase tracking-widest block font-mono">
+                  Authentic Drone & Site Capture
+                </span>
+                <h3 className="font-serif font-bold text-xl sm:text-3xl text-white">
+                  {img.title}
+                </h3>
+                <p className="text-xs text-sm text-slate-200 font-sans hidden sm:block">
+                  {img.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Navigation Arrows */}
+          <button
+            type="button"
+            onClick={() => setActiveSlide((prev) => (prev - 1 + galleryImages.length) % galleryImages.length)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSlide((prev) => (prev + 1) % galleryImages.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition-all cursor-pointer opacity-0 group-hover:opacity-100"
+            aria-label="Next Slide"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Dot Indicators */}
+          <div className="absolute bottom-4 right-6 z-20 flex items-center gap-1.5">
+            {galleryImages.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setActiveSlide(i)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  i === activeSlide ? 'w-6 bg-[#7b002c]' : 'w-2 bg-white/60 hover:bg-white'
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 3. QUANTITATIVE FIGURES & BENCHMARKS                      */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-1.5 text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Activity className="w-3.5 h-3.5" />
+              <span>Block D Key Metrics</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Sector D Development & Investment Benchmarks
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Key verifiable metrics defining the growth, legal clarity, and infrastructure scale in Faisal Hills Block D:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-[#7b002c]">
+                <CountUpNumber end={85} duration={1.5} suffix="%+" />
+              </span>
+              <span className="text-xs font-bold text-slate-900 block">Development Work Done</span>
+              <p className="text-[11px] text-slate-500 font-sans">Asphalt roads, conduit trenches, and tube wells</p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={100}>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">
+                <CountUpNumber end={2100} duration={1.5} suffix="+" />
+              </span>
+              <span className="text-xs font-bold text-slate-900 block">Planned Plot Cuts</span>
+              <p className="text-[11px] text-slate-500 font-sans">5 Marla, 8 Marla, 10 Marla, 14 Marla & 1 Kanal</p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={150}>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-emerald-700">
+                100%
+              </span>
+              <span className="text-xs font-bold text-slate-900 block">RDA Approved NOC</span>
+              <p className="text-[11px] text-slate-500 font-sans">Fully sanctioned master plan with clear title</p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={200}>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">
+                50<span className="text-lg">ft+</span>
+              </span>
+              <span className="text-xs font-bold text-slate-900 block">Wide Street Grid</span>
+              <p className="text-[11px] text-slate-500 font-sans">Tree-lined avenues with underground cabling</p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 4. ON-GROUND DEVELOPMENT STATUS & MILESTONE TRACKER       */}
+      {/* ========================================================= */}
+      <section id="development-status" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                <BadgeCheck className="w-3.5 h-3.5" />
+                <span>Real On-Ground Progress</span>
+              </div>
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+                Block D Development Milestones & Delivery Status
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-sans">
+                Track completion status across roads, underground utilities, water wells, and community infrastructure:
+              </p>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 text-emerald-800 text-xs font-bold shrink-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Phase 1 Delivery Active</span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Progress Grid with On-Ground Images */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blockDDevelopmentMilestones.map((item, idx) => (
+            <ScrollReveal key={idx} direction="up" delay={idx * 60}>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group h-full">
+                <div>
+                  {/* Photo Header */}
+                  <div className="relative h-44 w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#7b002c] text-white shadow-sm border border-white/20">
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-600 text-white shadow-sm border border-white/20">
+                        {item.progress}%
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <h4 className="font-serif font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
+                        {item.title}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Card Content & Progress */}
+                  <div className="p-5 space-y-3">
+                    {/* Progress Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>Completion Rate</span>
+                        <span className="text-emerald-700 font-bold">{item.progress}%</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#7b002c] to-emerald-600 rounded-full transition-all duration-1000"
+                          style={{ width: `${item.progress}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed font-sans">{item.desc}</p>
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Verified On-Ground</span>
+                    </span>
+                    <span className="font-mono text-[11px] text-slate-400">Block D</span>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 5. DYNAMIC PLOT SERIES EXPLORER                           */}
+      {/* ========================================================= */}
+      <section className="scroll-mt-28">
+        <ScrollReveal direction="up" delay={50}>
+          <DynamicPlotSeriesExplorer blockSlug="block-d" blockName="Block D" />
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 6. VERIFIED PLOTS LISTED FOR SALE (BLOCK D)               */}
+      {/* ========================================================= */}
+      <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Home className="w-3.5 h-3.5" />
+              <span>Available Inventory</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Verified Plots for Sale in Faisal Hills Block D
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Explore live on-ground and file listings with direct seller pricing and biometric transfer:
+            </p>
+          </div>
+
+          {/* Plot Size Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+            {['All', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', 'Commercial'].map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => setSelectedSizeFilter(size)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  selectedSizeFilter === size
+                    ? 'bg-[#7b002c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plot Inventory Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPlots.map((plot) => (
+            <div
+              key={plot.id}
+              className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all space-y-4 flex flex-col justify-between group"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-3 py-1 bg-rose-50 border border-rose-100 text-[#7b002c] rounded-full font-mono text-xs font-bold">
+                    Plot #{plot.plotNumber}
+                  </span>
+                  <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
+                    {plot.status}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="font-serif font-bold text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    {plot.size} {plot.category} Plot
+                  </h3>
+                  <p className="text-xs text-slate-500 font-sans mt-0.5">
+                    Facing: <strong>{plot.facing || 'Main Avenue'}</strong> • Dimensions: <strong>{plot.dimensions}</strong>
+                  </p>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-xl space-y-1 border border-slate-100">
+                  <div className="text-[11px] text-slate-500 uppercase tracking-wider">Demand Price</div>
+                  <div className="text-xl font-bold font-serif text-[#7b002c]">
+                    {plot.priceFormatted}
+                  </div>
+                  <div className="text-[11px] text-emerald-600 font-semibold">
+                    {plot.priceHistoryTrend || '+18.5% annual ROI trend'}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  {plot.features?.slice(0, 3).map((feat, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5 text-xs text-slate-600">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPlotForInquiry(plot);
+                    setIsLeadModalOpen(true);
+                  }}
+                  className="flex-1 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center cursor-pointer"
+                >
+                  Inquire Now
+                </button>
+                <a
+                  href={`https://wa.me/923044811717?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20D%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Sell / List Your Block D Plot Banner */}
+        <div className="p-6 sm:p-8 bg-rose-50/70 border border-rose-200/80 rounded-3xl text-slate-900 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-[#7b002c] text-xs font-bold uppercase tracking-wider border border-rose-200 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Owner Resale & Liquidation Desk</span>
+            </div>
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900">
+              Want to Sell or Assess Your Block D Plot / Resale File?
+            </h3>
+            <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
+              Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.
+            </p>
+          </div>
+
+          <a
+            href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20D."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md shrink-0 flex items-center gap-2"
+          >
+            <span>List Your Plot File</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 7. MASTER PLAN BLUEPRINT & SECTOR LAYOUT                  */}
+      {/* ========================================================= */}
+      <section id="master-plan" className="scroll-mt-28 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Master Plan & Sector Layout</span>
+            </div>
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+              Faisal Hills Block D Master Blueprint & Cuts
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+              High-resolution zoning blueprint highlighting street grid numbers, central parks, water spring corridors, and commercial strips.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsMapModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF Map</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Blueprint Preview Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-8 rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 relative group">
+            <img
+              src="/images/faisal-hills-master-plan-map-opt.webp"
+              alt="Faisal Hills Block D Master Layout Plan"
+              className="w-full h-auto object-cover max-h-[500px]"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsMapModalOpen(true)}
+                className="px-5 py-2.5 bg-white text-slate-900 rounded-xl text-xs font-bold shadow-lg hover:bg-slate-100 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Maximize2 className="w-4 h-4" />
+                <span>Expand Full Map</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 space-y-4">
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <h4 className="font-serif font-bold text-base text-slate-900 flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#7b002c]" />
+                <span>Sector D Master Key Features</span>
+              </h4>
+              <div className="space-y-2 text-xs text-slate-600">
+                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
+                  <strong>• 50ft & 60ft Street Network:</strong> Wide paved avenues facilitating effortless two-way vehicular transit.
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
+                  <strong>• Natural Springs & Streamline:</strong> Dedicated eco-reserve protecting natural Margalla water runoff.
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
+                  <strong>• Future Medical City Site:</strong> High-density healthcare zone planned for regional medical centers.
+                </div>
+                <div className="p-2.5 rounded-xl bg-rose-50/60 border border-rose-100 text-slate-700">
+                  <strong>• Brahma M-1 Interchange:</strong> 5-minute direct route to the upcoming dedicated motorway ramp.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 8. ON-GROUND AMENITIES (ALTERNATING ZIG-ZAG ROWS)        */}
+      {/* ========================================================= */}
+      <section id="amenities" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Trees className="w-3.5 h-3.5" />
+                <span>Delivered Infrastructure</span>
+              </div>
+              <TextReveal
+                as="h2"
+                text="On-Ground Amenities & Community Landmarks in Sector D"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+                Experience nature-centric master planning: natural Margalla springs, community recreation center, sector Jamia Mosque, and healthcare reservations.
+              </p>
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+              {(['all', 'nature', 'lifestyle', 'infrastructure', 'utilities', 'security'] as const).map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedAmenityFilter(cat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
+                    selectedAmenityFilter === cat
+                      ? 'bg-[#7b002c] text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Alternating Zig-Zag Amenity Rows (Image Right / Content Left, then Image Left / Content Right) */}
+        <div className="space-y-8 sm:space-y-12 lg:space-y-16">
+          {filteredAmenities.map((amenity, idx) => {
+            const isImageRight = idx % 2 === 0;
+
+            return (
+              <ScrollReveal key={amenity.id} direction="up" delay={idx * 50}>
+                <div
+                  className="p-4 sm:p-7 lg:p-10 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center overflow-hidden w-full"
+                >
+                  {/* Content Side */}
+                  <div className={`lg:col-span-6 space-y-3.5 sm:space-y-4 ${!isImageRight ? 'lg:order-2' : 'lg:order-1'}`}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-50 text-[#7b002c] border border-rose-200 uppercase tracking-wider">
+                        {amenity.tag}
+                      </span>
+                      <span className="text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-700 capitalize">
+                        {amenity.category}
+                      </span>
+                    </div>
+
+                    <h3 className="font-serif font-bold text-xl sm:text-2xl lg:text-3xl text-slate-900 leading-snug">
+                      {amenity.title}
+                    </h3>
+
+                    <p className="text-slate-600 text-xs sm:text-sm lg:text-base leading-relaxed font-sans">
+                      {amenity.description}
+                    </p>
+
+                    {/* Features Badges */}
+                    {amenity.features && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        {amenity.features.map((feat, fIdx) => (
+                          <div
+                            key={fIdx}
+                            className="flex items-center gap-2 text-xs font-semibold text-slate-800 bg-slate-50 p-2 sm:p-2.5 rounded-xl border border-slate-200/80"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="truncate">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="pt-2 sm:pt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 text-xs text-slate-500">
+                      <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Delivered & Operational</span>
+                      </span>
+                      <span className="font-mono text-[11px] text-slate-400 font-semibold">Faisal Hills Block D</span>
+                    </div>
+                  </div>
+
+                  {/* Image Side */}
+                  <div className={`lg:col-span-6 w-full ${!isImageRight ? 'lg:order-1' : 'lg:order-2'}`}>
+                    <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-md border border-slate-200 h-52 sm:h-64 lg:h-[340px] bg-slate-950 group/img">
+                      <img
+                        src={amenity.image}
+                        alt={amenity.title}
+                        className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent" />
+
+                      <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white">
+                        <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider block">
+                          Sector Landmark #{idx + 1}
+                        </span>
+                        <h4 className="font-serif font-bold text-base sm:text-lg lg:text-xl text-white drop-shadow-sm line-clamp-1">
+                          {amenity.title}
+                        </h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 9. CURRENT PRICE SCHEDULE & VALUATION TABLE               */}
+      {/* ========================================================= */}
+      <section id="pricing-matrix" className="scroll-mt-28 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+              <DollarSign className="w-3.5 h-3.5" />
+              <span>Current Market Valuations</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Block D Plot Pricing Schedule & Square Foot Matrix
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Transparent market rates for resale files and developing plots in Faisal Hills Block D:
+            </p>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 shrink-0 text-xs font-bold">
+            {(['All', 'Residential', 'Commercial'] as const).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedPriceCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  selectedPriceCategory === cat
+                    ? 'bg-[#7b002c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Pricing Schedule Table */}
+        <div className="rounded-3xl border border-slate-200 overflow-hidden shadow-xs bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-900 text-white font-serif">
+                  <th className="p-4 sm:p-5">Plot Category & Cut</th>
+                  <th className="p-4 sm:p-5">Dimensions</th>
+                  <th className="p-4 sm:p-5">Total Area</th>
+                  <th className="p-4 sm:p-5">Market Price Band</th>
+                  <th className="p-4 sm:p-5">Possession Status</th>
+                  <th className="p-4 sm:p-5">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-slate-700">
+                {filteredPriceSchedule.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
+                      <span>{row.size}</span>
+                    </td>
+                    <td className="p-4 sm:p-5 font-mono text-slate-600">{row.dimensions}</td>
+                    <td className="p-4 sm:p-5">
+                      <div className="font-semibold text-slate-900">{row.sqYards}</div>
+                      <div className="text-[11px] text-slate-400">{row.sqFeet}</div>
+                    </td>
+                    <td className="p-4 sm:p-5 font-bold text-[#7b002c] font-serif text-sm sm:text-base">
+                      {row.priceRange}
+                    </td>
+                    <td className="p-4 sm:p-5">
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
+                        {row.possession}
+                      </span>
+                    </td>
+                    <td className="p-4 sm:p-5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, plotSize: row.size }));
+                          setIsLeadModalOpen(true);
+                        }}
+                        className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                      >
+                        Inquire
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 10. INVESTMENT ADVANTAGES / WHY CHOOSE BLOCK D            */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>Investment Thesis & ROI Drivers</span>
+            </div>
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+              Why Invest in Faisal Hills Block D?
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+              Discover the 6 key growth catalysts making Block D one of the highest future yield sectors in Taxila and Rawalpindi:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center border border-rose-100">
+              <Car className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Brahma Bahtar M-1 Interchange</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              Block D enjoys fast 5-minute access to the Brahma Jhang Bahtar Interchange on the M-1 Motorway, connecting seamlessly to Islamabad Zero Point and CPEC.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
+              <DollarSign className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Lowest Entry Price & High ROI</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              Block D offers the most competitive entry rates in Faisal Hills, ensuring the highest percentage capital appreciation as final possession finishes.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+              <Droplets className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Natural Springs & Clean Air</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              Natural underground freshwater springs and cooler Margalla hillside elevation make Block D a pristine, pollution-free residential sanctuary.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-100">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Future Medical City Complex</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              The designated Healthcare and Medical Complex zone in Sector D guarantees high long-term rental demand from medical professionals and executives.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">100% RDA Approved & Clear NOC</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              Full Rawalpindi Development Authority planning permission with zero litigation risk and transparent biometric deed transfers at the Zedem head office.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center border border-rose-100">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Rapid Development Momentum</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
+              With 85%+ groundwork complete and asphalt carpet roads underway, Block D is on a fast track toward full on-ground possession handover.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 11. DIRECT LEAD CONSULTATION & BOOKING FORM               */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-6 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Phone className="w-3.5 h-3.5" />
+              <span>Official Sales Consultation</span>
+            </div>
+            <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+              Schedule a Site Visit or Request Block D File Verification
+            </h3>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans leading-relaxed">
+              Connect directly with our senior Faisal Hills advisory desk. Receive on-ground plot video walkthroughs, instant biometric allotment file checks, and updated resale inventory.
+            </p>
+            <div className="space-y-2.5 pt-2 text-xs text-slate-700">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Zero service charge on official file verification</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Custom video tours available for overseas Pakistanis</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Dedicated Zedem International transfer facilitation</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-xs">
+              {formSubmitted ? (
+                <div className="p-8 text-center space-y-3 bg-emerald-50 rounded-2xl border border-emerald-200">
+                  <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto">
+                    <Check className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-serif font-bold text-xl text-emerald-900">Inquiry Received!</h4>
+                  <p className="text-xs text-emerald-700 font-sans">
+                    Our Faisal Hills Block D property desk will reach out with the complete price sheet and plot inventory within 15 minutes.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleLeadSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Your Name"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-hidden focus:border-[#7b002c]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">WhatsApp / Phone *</label>
+                      <input
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="+92 300 1234567"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-hidden focus:border-[#7b002c]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">Email (Optional)</label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="you@domain.com"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-hidden focus:border-[#7b002c]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-slate-700 block">Preferred Plot Cut</label>
+                      <select
+                        value={formData.plotSize}
+                        onChange={(e) => setFormData({ ...formData, plotSize: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-hidden focus:border-[#7b002c]"
+                      >
+                        <option value="5 Marla">5 Marla (25×50)</option>
+                        <option value="8 Marla">8 Marla (30×60)</option>
+                        <option value="10 Marla">10 Marla (35×70)</option>
+                        <option value="14 Marla">14 Marla (40×80)</option>
+                        <option value="1 Kanal">1 Kanal (50×90)</option>
+                        <option value="4 Marla Commercial">4 Marla Commercial</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 block">Specific Requirements</label>
+                    <textarea
+                      rows={2}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="e.g. Inquiring about park-facing or corner 5/8 Marla plot in Block D..."
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-hidden focus:border-[#7b002c]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{isSubmitting ? 'Submitting...' : 'Submit Official Block D Inquiry'}</span>
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 12. EXPANDING PROJECTS SHOWCASE                           */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Building className="w-3.5 h-3.5" />
+              <span>Master Community Portfolio</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Explore Expanding Sectors in Faisal Hills
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+              Discover connected sectors across the master development, from Executive and Prime blocks to Hills Walk:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={defaultFaisalHillsBlocks}
+            defaultActiveIndex={3}
+            containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
+            roundedClass="rounded-2xl sm:rounded-3xl"
+          />
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 13. ROAD NETWORK & TRAVEL TIMES WITH INTERACTIVE MAP      */}
+      {/* ========================================================= */}
+      <section className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Car className="w-3.5 h-3.5" />
+              <span>Accessibility & Commuting Links</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Block D Distance Matrix & Motorway Connectivity
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+              Enjoy rapid dual commuting to Islamabad and Taxila via the Brahma Jhang Bahtar M-1 Interchange and 225ft Grand Boulevard.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: 6 Distance Cards */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {blockDTravelTimes.map((dest, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 40}>
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="font-serif font-bold text-sm text-slate-900">{dest.destination}</h4>
+                    <span className="text-xs font-bold text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 shrink-0">
+                      {dest.time}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
+                    <span>
+                      Distance: <strong>{dest.distance}</strong>
+                    </span>
+                    <span className="italic text-[11px] text-slate-400 truncate max-w-[170px]">{dest.note}</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Right Column: Live Interactive Google Map Embed */}
+          <div className="lg:col-span-5 space-y-3">
+            <div className="flex items-center justify-between gap-2 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
+              <div className="space-y-0.5">
+                <strong className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
+                  <span>Block D Live Location Map</span>
+                </strong>
+                <span className="text-[11px] text-slate-500 block">Near Brahma Bahtar M-1 Interchange & Block C</span>
+              </div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Faisal+Hills+Taxila+Block+D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl shadow-xs transition-all hover:scale-105 shrink-0 cursor-pointer"
+              >
+                <Navigation className="w-3 h-3" />
+                <span>Open Map</span>
+                <ExternalLink className="w-2.5 h-2.5 text-white/80" />
+              </a>
+            </div>
+
+            <div className="relative w-full h-[320px] sm:h-[360px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+              <iframe
+                title="Faisal Hills Block D Google Map Location"
+                src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 14. FAQS ACCORDION SECTION                                */}
+      {/* ========================================================= */}
+      <section id="faqs" className="scroll-mt-28 space-y-6">
+        <div className="space-y-2 border-b border-slate-200 pb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>Frequently Asked Questions</span>
+          </div>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            Faisal Hills Block D Buying & Allotment FAQs
+          </h2>
+          <p className="text-slate-600 text-xs sm:text-sm font-sans">
+            Clear answers regarding Block D development status, RDA NOC approvals, plot transfer process, and investment upside.
+          </p>
+        </div>
+
+        <FaqAccordion faqs={blockDFaqs} blockName="Block D" />
+      </section>
+
+      {/* Map Download Modal */}
+      <MapDownloadModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        blockName="Block D"
+      />
+
+      {/* Lead Inquiry Modal */}
+      <LeadModal
+        isOpen={isLeadModalOpen}
+        onClose={() => {
+          setIsLeadModalOpen(false);
+          setSelectedPlotForInquiry(null);
+        }}
+        defaultBlock="Block D"
+        defaultPlot={selectedPlotForInquiry ? `Plot #${selectedPlotForInquiry.plotNumber} (${selectedPlotForInquiry.size})` : undefined}
+        interest={selectedPlotForInquiry ? `${selectedPlotForInquiry.size} ${selectedPlotForInquiry.category} in Block D` : 'Block D General Inquiry'}
+      />
+    </div>
+  );
+}

@@ -32,6 +32,7 @@ import BlockAContent from '@/components/blocks/BlockAContent';
 import BlockBContent from '@/components/blocks/BlockBContent';
 import BlockB1ExtensionContent from '@/components/blocks/BlockB1ExtensionContent';
 import BlockCContent from '@/components/blocks/BlockCContent';
+import BlockDContent from '@/components/blocks/BlockDContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -143,6 +144,19 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
     };
   }
 
+  if (params.slug === 'block-d') {
+    return {
+      title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
+      description: 'Faisal Hills Block D: 100% RDA-approved plots with natural freshwater springs, Brahma Bahtar M-1 Motorway access, and Medical City. Explore 5, 8, 10, 14 Marla & 1 Kanal plot prices, NOC & master plan.',
+      keywords: ['Faisal Hills Block D', 'Block D Faisal Hills plots', 'Faisal Hills Block D price', 'Block D payment plan', 'Faisal Hills Block D map', 'Brahma Bahtar Interchange Faisal Hills', 'Faisal Hills RDA NOC'],
+      openGraph: {
+        title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
+        description: 'Faisal Hills Block D: 100% RDA-approved plots with natural freshwater springs, Brahma Bahtar M-1 Motorway access, and Medical City.',
+        images: [{ url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' }]
+      }
+    };
+  }
+
   return {
     title: `${block.name} Faisal Hills | Plot Prices, Map, NOC & Payment Plan`,
     description: `${block.name} Faisal Hills Rawalpindi. ${block.subtitle}. Explore 5 Marla, 10 Marla, 1 Kanal plot prices, NOC status, master plan, and 3-year payment plans. Verified: ${block.verificationDate}.`,
@@ -161,18 +175,22 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
   // Authentic Hero images and descriptions for custom blocks
   const heroBg = block.slug === 'prime-block'
-    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    ? '/images/faisalhillexecutive.webp'
     : block.slug === 'executive-block'
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.slug === 'block-a'
-    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    ? '/images/imgi_44_Executive-Block.webp'
     : block.slug === 'block-b'
-    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    ? '/images/imgi_48_sports-arena.webp'
+    : block.slug === 'block-b1-extension'
+    ? '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
     : block.slug === 'block-c'
-    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    ? '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+    : block.slug === 'block-d'
+    ? '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
     : block.heroImage;
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c')
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c' || block.slug === 'block-d')
     ? null
     : block.subtitle;
 
@@ -186,6 +204,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.'
     : block.slug === 'block-c'
     ? 'RDA-approved possession sector adjacent to Hills Walk & M-1 corridor, offering scenic Margalla views, live RO water supply, and high capital growth.'
+    : block.slug === 'block-d'
+    ? 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.'
     : block.description;
 
   return (
@@ -204,7 +224,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -345,8 +365,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Block D Dedicated Eco-Living Content (Margalla Springs & Brahma M-1 Gateway) */}
+      {block.slug === 'block-d' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <BlockDContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
