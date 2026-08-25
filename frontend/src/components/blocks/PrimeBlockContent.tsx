@@ -359,6 +359,7 @@ const defaultPrimeSellingPlots = [
 export default function PrimeBlockContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [isMasterPlanExpanded, setIsMasterPlanExpanded] = useState(false);
   const [isDevStatusExpanded, setIsDevStatusExpanded] = useState(false);
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'infrastructure' | 'nature' | 'amenities'>('all');
@@ -530,9 +531,34 @@ export default function PrimeBlockContent() {
                   <p>
                     <strong>Faisal Hills Prime Block</strong> is the premier, master-planned residential and commercial sector developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group & Zedem International</Link>. Occupying the highest elevation ridge of the entire society, Prime Block commands scenic, unobstructed panoramas of the Margalla Hills while enjoying direct connectivity to the Grand Entrance and the Main GT Road (N-5).
                   </p>
-                  <p>
-                    Unlike standard resale sectors where prices fluctuate dynamically across plot series, Prime Block is introduced with <strong>official fixed launch rates</strong> and an accessible <strong>4-year (48-month) flexible installment plan</strong>. This makes it the highest priority investment choice for families seeking to build modern homes and savvy investors securing early-phase capital growth.
-                  </p>
+
+                  {isOverviewExpanded && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <p>
+                        Unlike standard resale sectors where prices fluctuate dynamically across plot series, Prime Block is introduced with <strong>official fixed launch rates</strong> and an accessible <strong>4-year (48-month) flexible installment plan</strong>. This makes it the highest priority investment choice for families seeking to build modern homes and savvy investors securing early-phase capital growth.
+                      </p>
+                      <p>
+                        Featuring an expansive 225ft wide Main Boulevard, 100% underground high-capacity electrification, modern drainage networks, dedicated school campuses, and vibrant commercial plazas, Prime Block is engineered as a self-sustaining luxury lifestyle zone.
+                      </p>
+                      <div className="p-4 bg-gradient-to-r from-rose-50/90 via-rose-50/50 to-amber-50/60 rounded-2xl border border-rose-200/80 text-xs sm:text-sm text-slate-800 font-medium flex items-start gap-3 shadow-2xs">
+                        <CheckCircle2 className="w-5 h-5 text-[#7b002c] shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Investor Insight:</strong> Prime Block's official installment schedule allows buyers to lock in pre-development pricing before on-ground possession milestones trigger immediate capital appreciation.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                      className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
+                    >
+                      <span>{isOverviewExpanded ? 'See Less' : 'See More Overview Details'}</span>
+                      <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isOverviewExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -634,7 +660,54 @@ export default function PrimeBlockContent() {
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={80}>
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+          {/* Mobile Card Layout */}
+          <div className="block md:hidden space-y-4">
+            {primeFixedPriceSchedule.map((row, idx) => (
+              <div key={idx} className="bg-slate-50/70 rounded-2xl border border-slate-200 p-4 space-y-3.5 shadow-2xs">
+                <div className="flex items-start justify-between gap-2 border-b border-slate-200/80 pb-3">
+                  <div>
+                    <span className="font-serif font-bold text-lg text-slate-900 block">{row.size}</span>
+                    <span className="text-[11px] text-slate-500 font-mono">{row.dimensions} • {row.sqYards}</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full shrink-0">
+                    {row.status.split('—')[0].trim()}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 text-xs">
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Price</span>
+                    <strong className="font-serif text-sm sm:text-base font-bold text-[#7b002c] block mt-0.5">{row.totalPrice}</strong>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">20% Down Payment</span>
+                    <strong className="text-slate-900 font-bold block mt-0.5">{row.downPayment}</strong>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Installment</span>
+                    <span className="text-slate-800 font-semibold block mt-0.5">{row.quarterlyInstallment}</span>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Balloting (10%)</span>
+                    <span className="text-slate-700 font-medium block mt-0.5">{row.balloting}</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20booking%20a%20${encodeURIComponent(row.size)}%20plot%20in%20Faisal%20Hills%20Prime%20Block.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Inquire / Book {row.size}</span>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
             <table className="w-full text-left text-xs border-collapse min-w-[700px]">
               <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
                 <tr>
