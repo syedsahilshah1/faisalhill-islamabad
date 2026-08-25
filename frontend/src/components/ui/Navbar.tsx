@@ -273,25 +273,17 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* CENTER LOGO: FAISALTOWN GROUP | FT (Perfect Center Anchor) */}
-          <Link href="/" className="flex items-center group shrink-0 whitespace-nowrap gap-2 sm:gap-3 px-2 lg:px-4">
-            {/* Text Part */}
-            <div className="flex flex-col leading-none select-none items-end">
-              <span className={`text-[13px] sm:text-[16px] xl:text-[18px] font-bold tracking-[0.2em] sm:tracking-[0.25em] transition-colors duration-300 ${isSolidNav ? 'text-[#7b002c]' : 'text-white'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                FAISALTOWN
-              </span>
-              <span className={`text-[9px] sm:text-[10px] xl:text-[12px] font-semibold tracking-[0.3em] sm:tracking-[0.35em] mt-[2px] transition-colors duration-300 ${isSolidNav ? 'text-[#7b002c]/90' : 'text-white/90'}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                GROUP
-              </span>
-            </div>
-            {/* Vertical Separator */}
-            <div className={`w-[1.5px] h-6 sm:h-8 block transition-colors duration-300 ${isSolidNav ? 'bg-[#7b002c]/20' : 'bg-white/30'}`}></div>
-            {/* FT Monogram */}
-            <div className="relative flex items-center justify-center" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-              <span className={`text-[28px] sm:text-[36px] xl:text-[42px] font-bold leading-none tracking-tight select-none transition-colors duration-300 ${isSolidNav ? 'text-[#7b002c]' : 'text-white'}`} style={{ letterSpacing: '-0.05em' }}>
-                F T
-              </span>
-            </div>
+          {/* CENTER LOGO: Official FAISALTOWN GROUP FT Emblem */}
+          <Link href="/" className="flex items-center group shrink-0 px-1 sm:px-2 lg:px-4 py-1">
+            <img
+              src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+              alt="Faisal Town Group"
+              className={`w-auto object-contain transition-all duration-300 ${
+                isSolidNav
+                  ? 'h-10 sm:h-11 lg:h-13 filter-none'
+                  : 'h-14 sm:h-16 lg:h-18 xl:h-20 brightness-0 invert'
+              }`}
+            />
           </Link>
 
           {/* RIGHT SIDE: Navigation Links & Hotline Pill */}
@@ -412,19 +404,12 @@ export default function Navbar() {
 
             {/* Drawer Top Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
-              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
-                <div className="flex flex-col leading-none items-end">
-                  <span className="text-sm font-bold tracking-[0.2em] text-[#7b002c]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                    FAISALTOWN
-                  </span>
-                  <span className="text-[9px] font-semibold tracking-[0.3em] text-[#7b002c]/90 mt-[1px]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                    GROUP
-                  </span>
-                </div>
-                <div className="w-[1.5px] h-6 bg-[#7b002c]/20" />
-                <span className="text-2xl font-bold leading-none text-[#7b002c]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", letterSpacing: '-0.05em' }}>
-                  F T
-                </span>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center py-1">
+                <img
+                  src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+                  alt="Faisal Town Group"
+                  className="h-11 sm:h-13 w-auto object-contain"
+                />
               </Link>
 
               <button

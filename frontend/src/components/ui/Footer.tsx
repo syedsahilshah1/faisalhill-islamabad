@@ -12,16 +12,18 @@ export default function Footer() {
   return (
     <footer className="bg-[#4c0215] text-white border-t border-[#7b002c]">
 
-      {/* Top Section with FT Monogram and Slogan */}
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 pt-12 pb-8 text-center space-y-3 border-b border-white/10">
-        <div className="font-serif text-5xl sm:text-6xl font-bold tracking-tighter text-white select-none inline-block">
-          FT
-        </div>
+      {/* Top Section with Official FT Emblem and Slogan */}
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 pt-12 pb-8 text-center space-y-4 border-b border-white/10 flex flex-col items-center">
+        <Link href="/" className="inline-block py-2">
+          <img
+            src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+            alt="Faisal Town Group"
+            className="h-16 sm:h-20 lg:h-24 w-auto object-contain brightness-0 invert opacity-95 hover:opacity-100 transition-opacity"
+          />
+        </Link>
         <p className="text-white/90 text-sm sm:text-base font-serif italic max-w-2xl mx-auto leading-relaxed">
           FaisalTown Group continues to lead the way in redefining real estate development in Pakistan.
         </p>
-
-
       </div>
 
       {/* Main 4-Column Footer Grid */}

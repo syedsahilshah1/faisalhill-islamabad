@@ -79,6 +79,7 @@ module.exports = {
       },
       fontFamily: {
         serif: ['var(--font-playfair)', 'Playfair Display', 'Georgia', 'serif'],
+        bodoni: ['var(--font-bodoni)', 'Bodoni Moda', 'Libre Bodoni', 'Didot', 'Georgia', 'serif'],
         sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
       },
       boxShadow: {

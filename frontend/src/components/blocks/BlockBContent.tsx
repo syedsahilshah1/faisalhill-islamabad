@@ -909,131 +909,182 @@ export default function BlockBContent() {
       {/* ========================================================= */}
       {/* 8. VERIFIED PLOTS LISTED FOR SALE (BLOCK B)               */}
       {/* ========================================================= */}
-      <section id="series-explorer" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Tag className="w-3.5 h-3.5" />
-              <span>Direct Resale & Builder Listings</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Verified Plots for Sale in Block B
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              Explore available on-ground plots in Block B with verified transfer documents & immediate possession:
-            </p>
-          </div>
-
-          {/* Size Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 shrink-0 text-xs font-bold">
-            {(['all', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', 'Commercial'] as const).map((sz) => (
-              <button
-                key={sz}
-                type="button"
-                onClick={() => setSelectedBlockBPlotFilter(sz)}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  selectedBlockBPlotFilter === sz
-                    ? 'bg-[#7b002c] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {sz === 'all' ? 'All Sizes' : sz}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Plots Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayedBlockBPlots.map((plot) => (
-            <div
-              key={plot.id}
-              className="bg-white rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-md transition-all p-5 flex flex-col justify-between space-y-4 group"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-xs text-[#7b002c] bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
-                    Plot #{plot.plotNumber}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {plot.status || 'Available'}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    {plot.size} {plot.category} Plot
-                  </h3>
-                  <p className="text-xs text-slate-500 font-sans">
-                    {plot.dimensions} • Facing: <span className="font-semibold text-slate-700">{plot.facing}</span>
-                  </p>
-                </div>
-
-                {plot.features && plot.features.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {plot.features.slice(0, 3).map((feat, idx) => (
-                      <span key={idx} className="text-[10px] bg-slate-50 text-slate-600 px-2 py-0.5 rounded-md border border-slate-100 font-medium">
-                        {feat}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-[11px] text-slate-400 font-mono uppercase">Demand Price</span>
-                  <span className="font-serif font-bold text-lg text-slate-900">{plot.priceFormatted}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    href={`/plots/${plot.id}`}
-                    className="w-full py-2 px-3 text-center text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
-                  >
-                    View Details
-                  </Link>
-                  <a
-                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
-                      `Hello! I am inquiring about Plot #${plot.plotNumber} (${plot.size}, ${plot.priceFormatted}) listed for sale in Faisal Hills Block B.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-2 px-3 text-center text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl transition flex items-center justify-center gap-1 shadow-xs"
-                  >
-                    <span>Inquire</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* List Your Plot Callout Card */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 border border-slate-800 flex flex-col justify-between space-y-4">
+      <section id="series-explorer" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 bg-rose-900/50 px-2.5 py-0.5 rounded-full inline-block border border-rose-700/50">
-                Sell or List Your Plot
-              </span>
-              <h3 className="font-serif font-bold text-lg text-white">
-                Have a Plot in Block B to Sell?
-              </h3>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                Connect with verified genuine buyers instantly. List your Block B plot for free on our official platform.
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Tag className="w-3.5 h-3.5" />
+                <span>Verified Inventory & Resale Files</span>
+              </div>
+              <TextReveal
+                as="h2"
+                text="Faisal Hills Block B Plots for Sale — Direct Booking & Verified Files"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+                Explore available on-ground residential plots and commercial plazas in Block B with transparent pricing, zero dealer markup, and immediate allotment file verification.
               </p>
             </div>
 
-            <a
-              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20my%20plot%20in%20Faisal%20Hills%20Block%20B%20for%20sale."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 bg-white hover:bg-rose-50 text-slate-900 hover:text-[#7b002c] rounded-xl text-xs font-bold text-center transition shadow-md flex items-center justify-center gap-1.5"
-            >
-              <span>Submit Plot for Listing</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            {/* Filter Tabs */}
+            <div className="flex flex-wrap items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+              {(['all', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', 'Commercial'] as const).map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => setSelectedBlockBPlotFilter(sz)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    selectedBlockBPlotFilter === sz
+                      ? 'bg-[#7b002c] text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {sz === 'all' ? `All (${blockBPlots.length})` : sz}
+                </button>
+              ))}
+            </div>
           </div>
+        </ScrollReveal>
+
+        {/* Plot Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {displayedBlockBPlots.map((plot, idx) => (
+            <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                <div>
+                  {/* Plot Image Container -> Links to /plots inventory page */}
+                  <Link
+                    href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b`}
+                    className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                  >
+                    <img
+                      src={plot.image || 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80'}
+                      alt={plot.plotNumber}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                    {/* Top Badges Row */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
+                          {plot.category}
+                        </span>
+                        <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-200 border border-white/15 truncate max-w-[95px]">
+                          {plot.size}
+                        </span>
+                      </div>
+                      <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
+                        {plot.status || 'Available'}
+                      </span>
+                    </div>
+
+                    {/* Plot Number & Block */}
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName || 'Block B'}</span>
+                      <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
+                    </div>
+                  </Link>
+
+                  {/* Specs Details -> Links to /plots inventory page */}
+                  <Link
+                    href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b`}
+                    className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                  >
+                    <div className="space-y-2 text-xs text-slate-600">
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Plot Size:</span>
+                        <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Dimensions:</span>
+                        <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
+                      </div>
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Orientation:</span>
+                        <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 font-medium">Trend / Status:</span>
+                        <span className="text-emerald-700 font-bold">{plot.priceHistoryTrend || 'Active Demand'}</span>
+                      </div>
+                    </div>
+
+                    {/* Feature Pills */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat, fIdx) => (
+                        <span
+                          key={fIdx}
+                          className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
+                        >
+                          {feat}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
+                </div>
+
+                {/* Price & Action Buttons Footer */}
+                <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Price</span>
+                    <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href={`/plots/${plot.id}`}
+                      className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
+                    >
+                      <span>Details</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+
+                    <a
+                      href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                        `Hi! I am interested in buying Block B Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span>Book</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {/* Sell / List Your Block B Plot Banner */}
+        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Owner Resale & Liquidation Desk</span>
+            </div>
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+              Want to Sell or Assess Your Block B Plot / File?
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.
+            </p>
+          </div>
+
+          <a
+            href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20B."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
+          >
+            <span>List Your Plot File</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
       </section>
 

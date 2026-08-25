@@ -300,22 +300,30 @@ export default function BlockB1ExtensionContent() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
             <span className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Entry Advantage</span>
-            <div className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c]">Under 50L</div>
+            <div className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c]">
+              Under <CountUpNumber end={50} duration={1800} />L
+            </div>
             <span className="text-xs text-slate-500 font-sans">Most accessible entry in scheme</span>
           </div>
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
             <span className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Appreciation Potential</span>
-            <div className="font-serif text-2xl sm:text-3xl font-bold text-emerald-700">+60% Growth</div>
+            <div className="font-serif text-2xl sm:text-3xl font-bold text-emerald-700">
+              <CountUpNumber end={60} prefix="+" suffix="% Growth" duration={2000} />
+            </div>
             <span className="text-xs text-slate-500 font-sans">High multiple on handover</span>
           </div>
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
             <span className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Plot Cuts</span>
-            <div className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">5, 8 & 10 Marla</div>
+            <div className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              <CountUpNumber end={5} duration={1000} />, <CountUpNumber end={8} duration={1400} /> & <CountUpNumber end={10} duration={1800} /> Marla
+            </div>
             <span className="text-xs text-slate-500 font-sans">Optimized compact family cuts</span>
           </div>
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
             <span className="text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Security & NOC</span>
-            <div className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">100% RDA</div>
+            <div className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              <CountUpNumber end={100} suffix="% RDA" duration={1800} />
+            </div>
             <span className="text-xs text-slate-500 font-sans">Official Zedem head office transfer</span>
           </div>
         </div>
@@ -326,58 +334,59 @@ export default function BlockB1ExtensionContent() {
       {/* 2. SMART AFFORDABILITY & ROI VALUE CALCULATOR (UNIQUE)    */}
       {/* ========================================================= */}
       <section id="affordability-calc" className="scroll-mt-28 space-y-6">
-        <div className="bg-gradient-to-br from-slate-950 via-[#21020b] to-slate-900 text-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-rose-900/30 shadow-2xl space-y-8">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold uppercase tracking-wider border border-rose-400/30">
-                <Calculator className="w-3.5 h-3.5" />
-                <span>Interactive Investment Intelligence</span>
-              </div>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-                B1 Extension Smart Value & ROI Explorer
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-2xl leading-relaxed">
-                Select your preferred plot size below to evaluate initial entry capital, projected completion valuation, and capital growth metrics:
-              </p>
+        
+        {/* Header Outside the Container */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Interactive Investment Intelligence</span>
             </div>
-
-            {/* Size Selector Buttons */}
-            <div className="flex items-center gap-2 bg-white/10 p-1.5 rounded-2xl border border-white/15 shrink-0">
-              {(['5 Marla', '8 Marla', '10 Marla'] as const).map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => setSelectedCalcSize(size)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    selectedCalcSize === size
-                      ? 'bg-[#7b002c] text-white shadow-lg scale-105'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
+              B1 Extension Smart Value & ROI Explorer
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-2xl leading-relaxed">
+              Select your preferred plot size below to evaluate initial entry capital, projected completion valuation, and capital growth metrics:
+            </p>
           </div>
 
-          {/* Calculator Output Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Size Selector Buttons */}
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 shrink-0">
+            {(['5 Marla', '8 Marla', '10 Marla'] as const).map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => setSelectedCalcSize(size)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  selectedCalcSize === size
+                    ? 'bg-[#7b002c] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Calculator Output Container */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200 shadow-sm space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             
             {/* Left Output Specs */}
             <div className="lg:col-span-7 space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Current Market Entry</span>
-                  <div className="font-serif font-bold text-2xl text-white">{activeCalc.price}</div>
-                  <span className="text-[11px] text-slate-400">{activeCalc.dimensions}</span>
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Current Market Entry</span>
+                  <div className="font-serif font-bold text-2xl text-slate-900">{activeCalc.price}</div>
+                  <span className="text-[11px] text-slate-500 block">{activeCalc.dimensions}</span>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-1">
-                  <span className="text-[11px] font-mono text-emerald-300 uppercase tracking-wider">Projected Handover Value</span>
-                  <div className="font-serif font-bold text-2xl text-emerald-400">{activeCalc.projected}</div>
-                  <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                  <span className="text-[11px] font-mono text-emerald-800 uppercase tracking-wider font-semibold">Projected Handover Value</span>
+                  <div className="font-serif font-bold text-2xl text-emerald-700">{activeCalc.projected}</div>
+                  <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
                     <TrendingUp className="w-3.5 h-3.5" />
                     {activeCalc.roi}
                   </span>
@@ -385,13 +394,13 @@ export default function BlockB1ExtensionContent() {
 
               </div>
 
-              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <strong className="text-xs text-rose-200 font-serif block">Suitability & Market Dynamics:</strong>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">{activeCalc.suitability}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <strong className="text-xs text-[#7b002c] font-serif uppercase tracking-wider block">Suitability & Market Dynamics:</strong>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">{activeCalc.suitability}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-200/70">
                   {activeCalc.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div key={idx} className="flex items-center gap-1.5 text-xs text-slate-700">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -400,23 +409,23 @@ export default function BlockB1ExtensionContent() {
             </div>
 
             {/* Right Action Callout */}
-            <div className="lg:col-span-5 flex flex-col justify-between p-7 rounded-2xl bg-white/10 border border-white/15 space-y-5">
-              <div className="space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 bg-rose-900/40 px-3 py-1 rounded-full border border-rose-400/20 inline-block">
+            <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-gradient-to-br from-rose-50/80 via-white to-slate-50 border border-rose-200/80 shadow-xs space-y-5 h-full">
+              <div className="space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-100/80 px-3 py-1 rounded-full border border-rose-300/50 inline-block">
                   Verified Resale Availability
                 </span>
-                <h3 className="font-serif font-bold text-xl text-white">
+                <h3 className="font-serif font-bold text-xl text-slate-900">
                   Lock {selectedCalcSize} at Today's Baseline
                 </h3>
-                <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                <p className="text-xs text-slate-600 font-sans leading-relaxed">
                   Avoid paying post-possession premiums. Speak directly with our sales team to verify available plot serial numbers and corner units.
                 </p>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5 pt-2">
                 <a
                   href="#plots-for-sale"
-                  className="w-full py-3 px-5 bg-white hover:bg-rose-50 text-slate-900 hover:text-[#7b002c] rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 px-5 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Tag className="w-4 h-4 text-[#7b002c]" />
                   <span>View Available {selectedCalcSize} Plots</span>
@@ -734,11 +743,53 @@ export default function BlockB1ExtensionContent() {
           </div>
         </div>
 
-        {/* Responsive Price Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+        {/* Mobile Cards Layout (Clean, No Squeezing) */}
+        <div className="block sm:hidden space-y-3.5">
+          {filteredPrices.map((row, idx) => (
+            <div
+              key={idx}
+              className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3"
+            >
+              <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                <div>
+                  <h4 className="font-serif font-bold text-base text-slate-900">{row.size}</h4>
+                  <span className="text-[11px] text-slate-500">{row.dimensions} ({row.sqYards})</span>
+                </div>
+                <span
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    row.category === 'Residential'
+                      ? 'bg-rose-50 text-[#7b002c] border border-rose-200'
+                      : 'bg-amber-50 text-amber-800 border border-amber-200'
+                  }`}
+                >
+                  {row.category}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-medium block uppercase tracking-wider">Price Range</span>
+                  <strong className="font-serif font-bold text-sm text-[#7b002c] block mt-0.5">{row.priceRange}</strong>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-medium block uppercase tracking-wider">Status</span>
+                  <strong className="text-emerald-700 font-bold block mt-0.5 text-xs">{row.possession}</strong>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-600 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100/80 leading-relaxed">
+                <span className="font-semibold text-slate-700">Market Insight: </span>
+                {row.highlight}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop / Tablet Table Layout */}
+        <div className="hidden sm:block overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+          <table className="w-full text-left text-xs border-collapse min-w-[700px]">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-500 font-mono text-[11px] uppercase tracking-wider">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-mono text-[11px] uppercase tracking-wider">
                 <th className="py-3.5 px-4 font-bold">Plot Size</th>
                 <th className="py-3.5 px-4 font-bold">Dimensions</th>
                 <th className="py-3.5 px-4 font-bold">Category</th>
@@ -750,9 +801,9 @@ export default function BlockB1ExtensionContent() {
             <tbody className="divide-y divide-slate-100 font-sans">
               {filteredPrices.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-4 px-4 font-bold font-serif text-sm text-slate-900">{row.size}</td>
-                  <td className="py-4 px-4 text-slate-600">{row.dimensions} ({row.sqYards})</td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-4 font-bold font-serif text-sm text-slate-900 whitespace-nowrap">{row.size}</td>
+                  <td className="py-4 px-4 text-slate-600 whitespace-nowrap">{row.dimensions} ({row.sqYards})</td>
+                  <td className="py-4 px-4 whitespace-nowrap">
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       row.category === 'Residential'
                         ? 'bg-rose-50 text-[#7b002c] border border-rose-200'
@@ -761,9 +812,9 @@ export default function BlockB1ExtensionContent() {
                       {row.category}
                     </span>
                   </td>
-                  <td className="py-4 px-4 font-serif font-bold text-sm text-slate-900">{row.priceRange}</td>
-                  <td className="py-4 px-4 text-emerald-700 font-medium">{row.possession}</td>
-                  <td className="py-4 px-4 text-slate-500 text-[11px] max-w-xs">{row.highlight}</td>
+                  <td className="py-4 px-4 font-serif font-bold text-sm text-[#7b002c] whitespace-nowrap">{row.priceRange}</td>
+                  <td className="py-4 px-4 text-emerald-700 font-semibold whitespace-nowrap">{row.possession}</td>
+                  <td className="py-4 px-4 text-slate-600 text-xs max-w-xs">{row.highlight}</td>
                 </tr>
               ))}
             </tbody>
@@ -774,131 +825,182 @@ export default function BlockB1ExtensionContent() {
       {/* ========================================================= */}
       {/* 6. VERIFIED PLOTS LISTED FOR SALE (B1 EXTENSION)          */}
       {/* ========================================================= */}
-      <section id="plots-for-sale" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Tag className="w-3.5 h-3.5" />
-              <span>Direct Resale & Builder Listings</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Verified Plots for Sale in Block B-1 Extension
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              Verified inventory and resale plot files available with clean transfer records:
-            </p>
-          </div>
-
-          {/* Size Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 shrink-0 text-xs font-bold">
-            {(['all', '5 Marla', '8 Marla', '10 Marla'] as const).map((sz) => (
-              <button
-                key={sz}
-                type="button"
-                onClick={() => setSelectedPlotSizeFilter(sz)}
-                className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  selectedPlotSizeFilter === sz
-                    ? 'bg-[#7b002c] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {sz === 'all' ? 'All Sizes' : sz}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Plots Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayedB1Plots.map((plot) => (
-            <div
-              key={plot.id}
-              className="bg-white rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-md transition-all p-5 flex flex-col justify-between space-y-4 group"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-xs text-[#7b002c] bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
-                    Plot #{plot.plotNumber}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {plot.status || 'Available'}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    {plot.size} {plot.category} Plot
-                  </h3>
-                  <p className="text-xs text-slate-500 font-sans">
-                    {plot.dimensions} • Facing: <span className="font-semibold text-slate-700">{plot.facing}</span>
-                  </p>
-                </div>
-
-                {plot.features && plot.features.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {plot.features.slice(0, 3).map((feat, idx) => (
-                      <span key={idx} className="text-[10px] bg-slate-50 text-slate-600 px-2 py-0.5 rounded-md border border-slate-100 font-medium">
-                        {feat}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-[11px] text-slate-400 font-mono uppercase">Demand Price</span>
-                  <span className="font-serif font-bold text-lg text-slate-900">{plot.priceFormatted}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    href={`/plots/${plot.id}`}
-                    className="w-full py-2 px-3 text-center text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
-                  >
-                    View Details
-                  </Link>
-                  <a
-                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
-                      `Hello! I am inquiring about Plot #${plot.plotNumber} (${plot.size}, ${plot.priceFormatted}) listed for sale in Faisal Hills Block B-1 Extension.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-2 px-3 text-center text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl transition flex items-center justify-center gap-1 shadow-xs"
-                  >
-                    <span>Inquire</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* List Your Plot Callout Card */}
-          <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 border border-slate-800 flex flex-col justify-between space-y-4">
+      <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 bg-rose-900/50 px-2.5 py-0.5 rounded-full inline-block border border-rose-700/50">
-                Sell or List Your Plot
-              </span>
-              <h3 className="font-serif font-bold text-lg text-white">
-                Have a Plot in B-1 Extension to Sell?
-              </h3>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                Connect with verified genuine buyers instantly. List your 5, 8, or 10 Marla plot file for free on our platform.
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Tag className="w-3.5 h-3.5" />
+                <span>Verified Inventory & Resale Files</span>
+              </div>
+              <TextReveal
+                as="h2"
+                text="Block B-1 Extension Plots for Sale — Direct Booking & Resale Files"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+                Explore available residential plots and commercial cuts in B1 Extension with transparent market pricing, zero dealer hidden charges, and immediate allotment file verification.
               </p>
             </div>
 
-            <a
-              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20my%20plot%20in%20Faisal%20Hills%20Block%20B1%20Extension%20for%20sale."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 bg-white hover:bg-rose-50 text-slate-900 hover:text-[#7b002c] rounded-xl text-xs font-bold text-center transition shadow-md flex items-center justify-center gap-1.5"
-            >
-              <span>Submit Plot for Listing</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            {/* Filter Tabs */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+              {(['all', '5 Marla', '8 Marla', '10 Marla'] as const).map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => setSelectedPlotSizeFilter(sz)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    selectedPlotSizeFilter === sz
+                      ? 'bg-[#7b002c] text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {sz === 'all' ? `All (${b1Plots.length})` : sz}
+                </button>
+              ))}
+            </div>
           </div>
+        </ScrollReveal>
+
+        {/* Plot Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {displayedB1Plots.map((plot, idx) => (
+            <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                <div>
+                  {/* Plot Image Container -> Links to /plots inventory page */}
+                  <Link
+                    href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
+                    className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                  >
+                    <img
+                      src={plot.image || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'}
+                      alt={plot.plotNumber}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                    {/* Top Badges Row */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
+                          {plot.category}
+                        </span>
+                        <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-200 border border-white/15 truncate max-w-[95px]">
+                          {plot.size}
+                        </span>
+                      </div>
+                      <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
+                        {plot.status || 'Available'}
+                      </span>
+                    </div>
+
+                    {/* Plot Number & Block */}
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName || 'Block B-1 Extension'}</span>
+                      <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
+                    </div>
+                  </Link>
+
+                  {/* Specs Details -> Links to /plots inventory page */}
+                  <Link
+                    href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
+                    className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                  >
+                    <div className="space-y-2 text-xs text-slate-600">
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Plot Size:</span>
+                        <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Dimensions:</span>
+                        <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
+                      </div>
+                      <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Orientation:</span>
+                        <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-500 font-medium">Trend / Status:</span>
+                        <span className="text-emerald-700 font-bold">{plot.priceHistoryTrend || 'High Demand Resale'}</span>
+                      </div>
+                    </div>
+
+                    {/* Feature Pills */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat, fIdx) => (
+                        <span
+                          key={fIdx}
+                          className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
+                        >
+                          {feat}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
+                </div>
+
+                {/* Price & Action Buttons Footer */}
+                <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Demand</span>
+                    <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href={`/plots/${plot.id}`}
+                      className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
+                    >
+                      <span>Details</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+
+                    <a
+                      href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                        `Hi! I am interested in buying Block B-1 Extension Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span>Book</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {/* Sell / List Your B-1 Extension Plot Banner */}
+        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Owner Resale & Liquidation Desk</span>
+            </div>
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+              Want to Sell or Assess Your Block B-1 Extension Plot / File?
+            </h3>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.
+            </p>
+          </div>
+
+          <a
+            href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20B1%20Extension."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
+          >
+            <span>List Your Plot File</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
       </section>
 
