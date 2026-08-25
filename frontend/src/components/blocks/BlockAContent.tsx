@@ -184,7 +184,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Possession',
     status: 'Executive Ready',
     badge: 'Wide Street',
-    image: '/images/faisal-hills-aerial.jpg',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
     features: ['50ft Wide Boulevard Street', 'Ideal for Multi-Floor Villa', 'Immediate Allotment Transfer']
   },
   {

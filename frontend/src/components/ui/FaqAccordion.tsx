@@ -10,10 +10,10 @@ interface FAQItem {
 
 interface FaqAccordionProps {
   faqs: FAQItem[];
-  blockName: string;
+  blockName?: string;
 }
 
-export default function FaqAccordion({ faqs, blockName }: FaqAccordionProps) {
+export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleIndex = (idx: number) => {

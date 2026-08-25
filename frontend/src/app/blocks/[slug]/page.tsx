@@ -31,6 +31,7 @@ import PrimeBlockContent from '@/components/blocks/PrimeBlockContent';
 import BlockAContent from '@/components/blocks/BlockAContent';
 import BlockBContent from '@/components/blocks/BlockBContent';
 import BlockB1ExtensionContent from '@/components/blocks/BlockB1ExtensionContent';
+import BlockCContent from '@/components/blocks/BlockCContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -167,9 +168,11 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.slug === 'block-b'
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    : block.slug === 'block-c'
+    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.heroImage;
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension')
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c')
     ? null
     : block.subtitle;
 
@@ -181,6 +184,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.'
     : block.slug === 'block-b1-extension'
     ? 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.'
+    : block.slug === 'block-c'
+    ? 'RDA-approved possession sector adjacent to Hills Walk & M-1 corridor, offering scenic Margalla views, live RO water supply, and high capital growth.'
     : block.description;
 
   return (
@@ -199,7 +204,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -266,8 +271,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
         </div>
 
-        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B & B1) */}
-        {block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
+        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B, B1 & C) */}
+        {block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
           <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
             <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
               {[
@@ -333,8 +338,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Block C Dedicated Luxury Content (Hills Walk & M-1 Motorway Gateway) */}
+      {block.slug === 'block-c' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <BlockCContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -1741,187 +1753,191 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
       </section>
 
-      {/* Interactive Master Plan Map for this specific block */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-4">
-        <div className="space-y-1">
-          <span className="label-caps text-[#7b002c] font-bold block">Vector Sector Map</span>
-          <h2 className="font-serif text-3xl font-bold text-slate-900">
-            {block.name} Master Plan & Plot Locations
-          </h2>
-        </div>
-        <InteractiveMasterPlan initialBlockSlug={block.slug} />
-      </section>
-
-      {/* Plots for Sale Gallery */}
-      {blockPlots.length > 0 && (
-        <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
+      {/* Interactive Master Plan Map for this specific block (only for generic blocks) */}
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
+        <>
+          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-4">
             <div className="space-y-1">
-              <span className="label-caps text-[#7b002c] font-bold block">Verified Listings</span>
+              <span className="label-caps text-[#7b002c] font-bold block">Vector Sector Map</span>
               <h2 className="font-serif text-3xl font-bold text-slate-900">
-                Available Plots in {block.name}
+                {block.name} Master Plan & Plot Locations
               </h2>
-              <p className="text-xs text-slate-500 font-sans max-w-xl">
-                Browse verified residential, commercial, and specialty plots currently listed in this sector. All prices are indicative market rates.
-              </p>
             </div>
-            <Link
-              href="/plots"
-              className="shrink-0 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow transition-all duration-300 hover:scale-105 flex items-center gap-2"
-            >
-              <span>View All {block.name} Plots</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+            <InteractiveMasterPlan initialBlockSlug={block.slug} />
+          </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {blockPlots.map((plot) => (
-              <div
-                key={plot.id}
-                className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group overflow-hidden flex flex-col"
-              >
-                {/* Plot Image */}
-                <div className="relative h-48 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src={plot.image || '/images/faisal-hills-aerial.jpg'}
-                    alt={`Plot ${plot.plotNumber} in ${block.name}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20 ${
-                      plot.status === 'Available' ? 'bg-emerald-600 text-white' :
-                      plot.status === 'Reserved' ? 'bg-amber-600 text-white' :
-                      'bg-slate-700 text-white'
-                    }`}>
-                      {plot.status}
-                    </span>
-                    <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shadow bg-[#7b002c] text-white border border-white/20">
-                      {plot.category}
-                    </span>
-                  </div>
-
-                  {/* Plot Number */}
-                  <div className="absolute bottom-3 left-3 text-white">
-                    <span className="text-[9px] text-slate-300 block font-semibold uppercase tracking-wider">Plot</span>
-                    <span className="font-serif font-bold text-lg leading-none">#{plot.plotNumber}</span>
-                  </div>
+          {/* Plots for Sale Gallery */}
+          {blockPlots.length > 0 && (
+            <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
+                <div className="space-y-1">
+                  <span className="label-caps text-[#7b002c] font-bold block">Verified Listings</span>
+                  <h2 className="font-serif text-3xl font-bold text-slate-900">
+                    Available Plots in {block.name}
+                  </h2>
+                  <p className="text-xs text-slate-500 font-sans max-w-xl">
+                    Browse verified residential, commercial, and specialty plots currently listed in this sector. All prices are indicative market rates.
+                  </p>
                 </div>
-
-                {/* Plot Details */}
-                <div className="p-4 flex-grow flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <span className="text-slate-400 block text-[9px] uppercase font-semibold">Size</span>
-                        <strong className="text-slate-900 font-bold">{plot.size}</strong>
-                      </div>
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <span className="text-slate-400 block text-[9px] uppercase font-semibold">Facing</span>
-                        <strong className="text-slate-900 font-bold">{plot.facing}</strong>
-                      </div>
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <span className="text-slate-400 block text-[9px] uppercase font-semibold">Dimensions</span>
-                        <strong className="text-slate-900 font-bold">{plot.dimensions}</strong>
-                      </div>
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <span className="text-slate-400 block text-[9px] uppercase font-semibold">Trend</span>
-                        <strong className="text-emerald-600 font-bold text-[10px]">{plot.priceHistoryTrend}</strong>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2 font-sans">{plot.description}</p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <div>
-                      <span className="text-[9px] text-slate-400 uppercase block font-semibold">Demand Price</span>
-                      <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
-                    </div>
-                    <a
-                      href={`https://wa.me/923044811717?text=I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1.5"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>Inquire</span>
-                    </a>
-                  </div>
-                </div>
+                <Link
+                  href="/plots"
+                  className="shrink-0 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                >
+                  <span>View All {block.name} Plots</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-            ))}
-          </div>
-        </section>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {blockPlots.map((plot) => (
+                  <div
+                    key={plot.id}
+                    className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group overflow-hidden flex flex-col"
+                  >
+                    {/* Plot Image */}
+                    <div className="relative h-48 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={plot.image || '/images/faisal-hills-aerial.jpg'}
+                        alt={`Plot ${plot.plotNumber} in ${block.name}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                      {/* Badges */}
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20 ${
+                          plot.status === 'Available' ? 'bg-emerald-600 text-white' :
+                          plot.status === 'Reserved' ? 'bg-amber-600 text-white' :
+                          'bg-slate-700 text-white'
+                        }`}>
+                          {plot.status}
+                        </span>
+                        <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shadow bg-[#7b002c] text-white border border-white/20">
+                          {plot.category}
+                        </span>
+                      </div>
+
+                      {/* Plot Number */}
+                      <div className="absolute bottom-3 left-3 text-white">
+                        <span className="text-[9px] text-slate-300 block font-semibold uppercase tracking-wider">Plot</span>
+                        <span className="font-serif font-bold text-lg leading-none">#{plot.plotNumber}</span>
+                      </div>
+                    </div>
+
+                    {/* Plot Details */}
+                    <div className="p-4 flex-grow flex flex-col justify-between space-y-3">
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-slate-400 block text-[9px] uppercase font-semibold">Size</span>
+                            <strong className="text-slate-900 font-bold">{plot.size}</strong>
+                          </div>
+                          <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-slate-400 block text-[9px] uppercase font-semibold">Facing</span>
+                            <strong className="text-slate-900 font-bold">{plot.facing}</strong>
+                          </div>
+                          <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-slate-400 block text-[9px] uppercase font-semibold">Dimensions</span>
+                            <strong className="text-slate-900 font-bold">{plot.dimensions}</strong>
+                          </div>
+                          <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-slate-400 block text-[9px] uppercase font-semibold">Trend</span>
+                            <strong className="text-emerald-600 font-bold text-[10px]">{plot.priceHistoryTrend}</strong>
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2 font-sans">{plot.description}</p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                        <div>
+                          <span className="text-[9px] text-slate-400 uppercase block font-semibold">Demand Price</span>
+                          <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
+                        </div>
+                        <a
+                          href={`https://wa.me/923044811717?text=I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1.5"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Inquire</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Compare other blocks callout - Premium Floating Glass Cards Grid */}
+          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-6 pb-4">
+            <div className="space-y-6">
+              <div className="text-center space-y-2 max-w-2xl mx-auto">
+                <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-widest bg-red-50 border border-red-200 px-3 py-1 rounded-full inline-block">
+                  Society Sectors
+                </span>
+                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+                  Compare with Other Faisal Hills Blocks
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-sans">
+                  Select another block sector to compare prices, possession timelines, and community amenities.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {otherBlocks.map((ob) => (
+                  <Link
+                    key={ob.id}
+                    href={`/blocks/${ob.slug}`}
+                    className="bg-white rounded-3xl border border-slate-200 hover:border-[#7b002c]/30 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col overflow-hidden h-[250px]"
+                  >
+                    {/* Block Image Thumbnail */}
+                    <div className="relative h-28 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={ob.heroImage || ob.masterPlanImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75'}
+                        alt={ob.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+                      
+                      <div className="absolute top-3 left-3">
+                        <span className="text-[8px] font-bold text-white bg-[#7b002c] border border-white/20 px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider">
+                          {ob.category === 'developed' ? 'Developed' : 'VIP Enclave'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-4 flex-grow flex flex-col justify-between">
+                      <div className="space-y-1">
+                        <h4 className="font-serif font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#7b002c] transition-colors line-clamp-1">
+                          {ob.name}
+                        </h4>
+                        <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed font-sans">
+                          {ob.subtitle || 'Premium residential and commercial plots.'}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+                        <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 group-hover:bg-[#7b002c]/10 group-hover:text-[#7b002c] px-2 py-0.5 rounded transition-colors">
+                          {ob.status === 'Possession Ready' || ob.status === 'Fully Developed & Populated' ? 'Ready' : 'Progress'}
+                        </span>
+                        <span className="text-[10px] font-bold text-[#7b002c] flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span>View</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </>
       )}
-
-      {/* Compare other blocks callout - Premium Floating Glass Cards Grid */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-6 pb-4">
-        <div className="space-y-6">
-          <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-widest bg-red-50 border border-red-200 px-3 py-1 rounded-full inline-block">
-              Society Sectors
-            </span>
-            <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-              Compare with Other Faisal Hills Blocks
-            </h3>
-            <p className="text-xs text-slate-500 leading-relaxed font-sans">
-              Select another block sector to compare prices, possession timelines, and community amenities.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {otherBlocks.map((ob) => (
-              <Link
-                key={ob.id}
-                href={`/blocks/${ob.slug}`}
-                className="bg-white rounded-3xl border border-slate-200 hover:border-[#7b002c]/30 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col overflow-hidden h-[250px]"
-              >
-                {/* Block Image Thumbnail */}
-                <div className="relative h-28 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src={ob.heroImage || ob.masterPlanImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75'}
-                    alt={ob.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-                  
-                  <div className="absolute top-3 left-3">
-                    <span className="text-[8px] font-bold text-white bg-[#7b002c] border border-white/20 px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider">
-                      {ob.category === 'developed' ? 'Developed' : 'VIP Enclave'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="p-4 flex-grow flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <h4 className="font-serif font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#7b002c] transition-colors line-clamp-1">
-                      {ob.name}
-                    </h4>
-                    <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed font-sans">
-                      {ob.subtitle || 'Premium residential and commercial plots.'}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
-                    <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 group-hover:bg-[#7b002c]/10 group-hover:text-[#7b002c] px-2 py-0.5 rounded transition-colors">
-                      {ob.status === 'Possession Ready' || ob.status === 'Fully Developed & Populated' ? 'Ready' : 'Progress'}
-                    </span>
-                    <span className="text-[10px] font-bold text-[#7b002c] flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>View</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Official Faisal Jewels Project Showcase (Only for Faisal Jewels) */}
       {block.id === 'faisal-jewels' && (

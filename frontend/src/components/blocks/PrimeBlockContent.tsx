@@ -139,7 +139,7 @@ const primeGalleryItems = [
     title: 'Scenic Margalla Ridge Panoramic Crest Enclave',
     category: 'nature',
     tag: 'Margalla Views',
-    image: '/images/faisal-hills-aerial.jpg',
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
     desc: 'Breathtaking high-elevation vistas over the Margalla Hills and serene natural green topography.'
   },
   {
@@ -261,7 +261,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 9,60,000 (20%)',
     status: 'High Demand',
     badge: 'Scenic Elevation',
-    image: '/images/faisal-hills-aerial.jpg',
+    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
     features: ['Elevated Margalla Ridge', '50ft Wide Carpeted Road', 'Zero Premium']
   },
   {
@@ -321,7 +321,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 42,00,000 (20%)',
     status: 'Exclusive Estate',
     badge: 'Hilltop Mansion',
-    image: '/images/faisal-hills-aerial.jpg',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
     features: ['Private High-Altitude Crest', 'Bespoke Architectural Scope', 'Strict Gated Access']
   },
   {
@@ -381,7 +381,7 @@ export default function PrimeBlockContent() {
 
   const defaultPrimePlotImages = [
     '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-    '/images/faisal-hills-aerial.jpg',
+    '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
     '/images/faisalhillarc.jpg',
     '/images/faisal-park.jpg',
     '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',

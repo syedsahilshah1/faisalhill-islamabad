@@ -34,7 +34,7 @@ export interface PlotItem {
   priceFormatted: string;
   priceHistoryTrend: string;
   status: 'Available' | 'Reserved' | 'Sold';
-  facing: 'Park Facing' | 'Corner' | 'Main Boulevard' | 'Standard' | 'Hill View';
+  facing: 'Park Facing' | 'Corner' | 'Main Boulevard' | 'Standard' | 'Hill View' | string;
   mapCoords: { x: number; y: number }; // percentage coords on interactive master map
   features: string[];
   description: string;
@@ -512,6 +512,115 @@ export const plotInventoryData: PlotItem[] = [
     features: ["Margalla View Elevation", "Wide Frontage", "High Executive Appeal"],
     description: "Prestigious 10 Marla executive villa plot in B1 Extension with panoramic hill views.",
     image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+  },
+  // Block C Starter Listings
+  {
+    id: "plot-c-01",
+    plotNumber: "C-112",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 5200000,
+    priceFormatted: "PKR 52 Lacs",
+    priceHistoryTrend: "+14.8% annual capital ROI",
+    status: "Available",
+    facing: "40ft Wide Street",
+    mapCoords: { x: 55, y: 48 },
+    features: ["Solid Ground", "Near Hills Walk Promenade", "Possession Ready"],
+    description: "Prime 5 Marla residential plot in Block C close to central park, RO water plant, and commercial market.",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-c-02",
+    plotNumber: "C-245",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Residential",
+    size: "8 Marla",
+    dimensions: "30 x 60",
+    price: 7800000,
+    priceFormatted: "PKR 78 Lacs",
+    priceHistoryTrend: "+18.2% annual capital ROI",
+    status: "Available",
+    facing: "Boulevard Facing",
+    mapCoords: { x: 58, y: 52 },
+    features: ["Park Proximity", "Main Internal Avenue", "Direct Allotment File"],
+    description: "Family-size 8 Marla plot in developed sector of Block C with complete utilities and underground electricity.",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-c-03",
+    plotNumber: "C-390",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 12500000,
+    priceFormatted: "PKR 1.25 Crore",
+    priceHistoryTrend: "+22.5% annual capital ROI",
+    status: "Available",
+    facing: "Margalla Hill View",
+    mapCoords: { x: 62, y: 55 },
+    features: ["Corner Plot", "Panoramic Mountain Views", "Fast Construction Zone"],
+    description: "Luxury 10 Marla corner plot ideal for double-unit villa with open vistas of the Margalla foothills.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-c-04",
+    plotNumber: "C-510",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Residential",
+    size: "14 Marla",
+    dimensions: "40 x 80",
+    price: 16500000,
+    priceFormatted: "PKR 1.65 Crore",
+    priceHistoryTrend: "+19.0% annual capital ROI",
+    status: "Available",
+    facing: "60ft Boulevard",
+    mapCoords: { x: 65, y: 58 },
+    features: ["Executive Double Width", "Near Jamia Mosque", "Immediate Registry"],
+    description: "Expansive 14 Marla executive plot cut on a 60ft avenue, seconds from the main sector Jamia Mosque.",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-c-05",
+    plotNumber: "C-620",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Residential",
+    size: "1 Kanal",
+    dimensions: "50 x 90",
+    price: 21000000,
+    priceFormatted: "PKR 2.10 Crore",
+    priceHistoryTrend: "+26.4% annual capital ROI",
+    status: "Available",
+    facing: "Park Facing",
+    mapCoords: { x: 68, y: 60 },
+    features: ["Direct Park Facing", "Mansion Zoning", "Zero Litigation"],
+    description: "Prestigious 1 Kanal luxury estate plot fronting a 12-Kanal central park in the heart of Faisal Hills Block C.",
+    image: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-c-06",
+    plotNumber: "C-COMM-18",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Commercial",
+    size: "4 Marla",
+    dimensions: "30 x 30",
+    price: 24000000,
+    priceFormatted: "PKR 2.40 Crore",
+    priceHistoryTrend: "+31.0% commercial rental upside",
+    status: "Available",
+    facing: "Main Commercial Promenade",
+    mapCoords: { x: 72, y: 62 },
+    features: ["Hills Walk Access", "Ground + 4 Approval", "High Retail Footfall"],
+    description: "High-yield commercial plot approved for plaza development, retail arcade, brand outlets, and corporate offices.",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
   }
 ];
 

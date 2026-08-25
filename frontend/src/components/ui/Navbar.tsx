@@ -94,7 +94,7 @@ export default function Navbar() {
         {/* Inner Floating Navbar Wrapper */}
         <div
           className={`max-w-[1440px] mx-auto transition-all duration-500 flex items-center justify-between gap-2 sm:gap-4 ${isSolidNav
-            ? 'bg-white/95 backdrop-blur-xl rounded-full shadow-2xl border border-slate-200/90 text-slate-900 px-6 sm:px-8 lg:px-10 h-14 sm:h-16 lg:h-18 ring-1 ring-black/5'
+            ? 'bg-white/95 backdrop-blur-xl rounded-full shadow-2xl border border-slate-200/90 text-slate-900 px-6 sm:px-8 lg:px-10 h-16 sm:h-18 lg:h-20 ring-1 ring-black/5'
             : 'bg-transparent text-white px-6 sm:px-8 lg:px-10 h-16 sm:h-20 lg:h-24'
             }`}
         >
@@ -274,14 +274,14 @@ export default function Navbar() {
           </nav>
 
           {/* CENTER LOGO: Official FAISALTOWN GROUP FT Emblem */}
-          <Link href="/" className="flex items-center group shrink-0 px-1 sm:px-2 lg:px-4 py-1">
+          <Link href="/" className="flex items-center group shrink-0 px-2 sm:px-3 lg:px-5 py-1">
             <img
               src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
               alt="Faisal Town Group"
               className={`w-auto object-contain transition-all duration-300 ${
                 isSolidNav
-                  ? 'h-10 sm:h-11 lg:h-13 filter-none'
-                  : 'h-14 sm:h-16 lg:h-18 xl:h-20 brightness-0 invert'
+                  ? 'h-12 sm:h-14 lg:h-16 xl:h-[4.25rem] filter-none'
+                  : 'h-16 sm:h-18 lg:h-20 xl:h-24 brightness-0 invert'
               }`}
             />
           </Link>
@@ -408,7 +408,7 @@ export default function Navbar() {
                 <img
                   src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
                   alt="Faisal Town Group"
-                  className="h-11 sm:h-13 w-auto object-contain"
+                  className="h-13 sm:h-15 w-auto object-contain"
                 />
               </Link>
 

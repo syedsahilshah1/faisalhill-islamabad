@@ -214,7 +214,7 @@ export default function BlockBContent() {
       title: 'MARGALLA MOUNTAIN PANORAMA',
       sub: 'Elevated Hilltop Ridge with Natural Valley Vistas',
       tag: 'Scenic Crest',
-      image: '/images/faisal-hills-aerial.jpg'
+      image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
     },
     {
       id: 5,
