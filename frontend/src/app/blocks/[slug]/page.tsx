@@ -30,6 +30,7 @@ import ExecutiveBlockContent from '@/components/blocks/ExecutiveBlockContent';
 import PrimeBlockContent from '@/components/blocks/PrimeBlockContent';
 import BlockAContent from '@/components/blocks/BlockAContent';
 import BlockBContent from '@/components/blocks/BlockBContent';
+import BlockB1ExtensionContent from '@/components/blocks/BlockB1ExtensionContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -168,7 +169,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
     : block.heroImage;
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b')
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension')
     ? null
     : block.subtitle;
 
@@ -178,6 +179,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'The most developed & fully populated residential sector in Faisal Hills featuring the Grand Jamia Mosque, ready family villas, 12-Kanal central park, and 100% on-ground immediate construction possession.'
     : block.slug === 'block-b'
     ? 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.'
+    : block.slug === 'block-b1-extension'
+    ? 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.'
     : block.description;
 
   return (
@@ -196,7 +199,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -263,8 +266,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
         </div>
 
-        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B) */}
-        {block.slug !== 'block-b' && (
+        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B & B1) */}
+        {block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
           <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
             <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
               {[
@@ -323,8 +326,15 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Block B1 Extension Dedicated Modern Content */}
+      {block.slug === 'block-b1-extension' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <BlockB1ExtensionContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -1674,254 +1684,6 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               <h3 className="font-serif text-xl font-bold text-white">Compare D Block vs Other Sectors</h3>
               <p className="text-xs text-slate-400 leading-relaxed max-w-3xl font-sans">
                 Compare development phases with <Link href="/blocks/block-c" className="text-amber-400 hover:underline">Block C</Link> or <Link href="/blocks/block-b" className="text-amber-400 hover:underline">Block B</Link>. If mixed-use developments matter, check the <Link href="/blocks/executive-block" className="text-amber-400 hover:underline">Executive Block</Link> layout details.
-              </p>
-            </div>
-
-          </div>
-        )}
-
-        {/* Block B1 Extension SEO Content Expansion */}
-        {block.slug === 'block-b1-extension' && (
-          <div className="lg:col-span-12 space-y-12 pt-8 border-t border-slate-200">
-            
-            {/* SEO Content Introduction */}
-            <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-4 font-sans">
-              <p className="font-semibold text-base text-slate-950">
-                Beyond the map and marketing claims, discover the real location, current prices, development status and investment potential of Faisal Hills B1 Extension before you make a decision.
-              </p>
-              <p>
-                The land sits inside an RDA-approved scheme built by Faisal Town Group, the team behind Faisal Town Phase 1, Faisal Margalla City and Faisal Residencia. The society holds a No Objection Certificate covering roughly 11,823 kanals, and its gate opens onto the Grand Trunk Road between Rawalpindi and Taxila. Approval and access are what separate a plot you can build on from a file you get stuck with.
-              </p>
-              <p>
-                What makes Faisal Hills B Extension worth a look is simple arithmetic. It carries one of the lowest entry prices in the whole scheme while sharing the same NOC, the same developer and the same road network as blocks where families already live.
-              </p>
-            </div>
-
-            {/* Grid for Sector Differences & Accessibility */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              {/* Sector differences */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    What Makes This Block Different?
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Think of it as the affordable sibling in an established family. It was carved out later to absorb demand from buyers priced out of the Executive Block and Block A, and it stays compact by design, roughly 650 homes plus a small business pocket. Smaller also means quicker: fewer roads to lay and a shorter runway to completion.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Three profiles do well here: the salaried buyer who wants legally clean land without a crore-plus budget; the patient investor comfortable holding two to four years; and the family planning a modest 5 or 8 marla home in a quiet street.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  Ideal entry point for home builders, first-time buyers & long-term investors.
-                </p>
-              </div>
-
-              {/* Location & Access */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                    Location & Connectivity Explained
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Location is the one thing you cannot renovate later, so precision matters. The society entrance sits on the main GT Road (N-5) near the Taxila Bypass, and this pocket lies inside the boundary beside <Link href="/blocks/block-b" className="text-[#7b002c] font-bold hover:underline">Block B</Link>, with <Link href="/blocks/block-a" className="text-[#7b002c] font-bold hover:underline">Block A</Link>, <Link href="/blocks/block-d" className="text-[#7b002c] font-bold hover:underline">Block D</Link> and the Prime Block as neighbours.
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    From the main gate you reach the highway in minutes via a wide approach road. Sector B-17 Islamabad lies just east, and its rates now sit far above what comparable land costs here.
-                  </p>
-                </div>
-                <p className="text-xs text-slate-500 italic font-sans pt-2 border-t border-slate-50">
-                  Motorway links and future interchange advantage will shorten travel times.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Travel Times Landmarks */}
-            <div className="bg-slate-950 text-white rounded-3xl p-6 lg:p-10 border border-slate-800 shadow-lg space-y-6">
-              <div className="space-y-2">
-                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Landmarks</span>
-                <h4 className="font-serif text-2xl font-bold text-white">Nearby Landmarks & Institutions</h4>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans max-w-3xl">
-                  Daily life leans on institutions that already exist. UET Taxila, HITEC University and Wah Medical College sit within a short radius and keep rental demand steady. The heritage sites of ancient Taxila draw visitors year round, the airport is reachable by motorway, and central Rawalpindi is a straight run down the highway. B Extension Faisal Hills Taxila plugs into a working city rather than waiting for one.
-                </p>
-              </div>
-            </div>
-
-            {/* Master Plan & Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Master Plan layout */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Master Plan & Layout Organisation
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The Faisal Hills B Extension master plan gives most of the land to housing, with roughly 457 plots of 5 marla, 167 of 8 marla and 28 of 10 marla, plus 34 commercial units. Shops are grouped along the wider internal roads rather than scattered through the lanes, so the commercial area stays reachable without pushing traffic past bedroom windows. A mosque, a park, green belts and a reserved high-rise apartment site complete the plan.
-                </p>
-              </div>
-
-              {/* Road network */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Road Network & Map Reading
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  Internal streets feed into the wider society road network, which connects to the main boulevard and out to the highway. Lanes are sized for two-way movement plus parking, while the access roads linking this pocket to Block B carry the heavier flow.
-                </p>
-                <p className="text-xs text-slate-606 leading-relaxed font-sans">
-                  Sit with the official drawing to locate your plot number, the nearest park or mosque, and walk the ground. Reading the Faisal Hills B Extension map exposes what actually decides resale value.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Plot Sizes & Premium */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                Available Plot Sizes & Surcharge Premiums
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2 text-xs">
-                <div className="space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c] block">Plot Formats</span>
-                  <div className="text-slate-600 space-y-2 font-sans">
-                    <div>• <strong>5 Marla (25×50)</strong> — Fast resale category.</div>
-                    <div>• <strong>8 Marla (30×60)</strong> — Ideal double storey size.</div>
-                    <div>• <strong>10 Marla (35×65)</strong> — Scarce at fewer than thirty units.</div>
-                    <div>• <strong>Commercial Plots</strong> — 4.8 Marla (30×40) and 7.2 Marla (40×45) formats.</div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c] block">Premium Rates</span>
-                  <p className="text-slate-600 font-sans leading-relaxed">
-                    Corner units typically add ten to fifteen percent for two open sides and better light. Boulevard and main-road plots add around ten. Park-facing units carry their own surcharge, since an open view cannot be built out later.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Price Table */}
-            <div className="space-y-4 pt-2">
-              <div className="space-y-1">
-                <span className="label-caps text-[#7b002c] font-bold block">Pricing Matrix</span>
-                <h3 className="font-serif text-2xl font-bold text-slate-900">
-                  B1 Extension Plot Price Ranges
-                </h3>
-                <p className="text-xs text-slate-600 font-sans">
-                  The prices below show current market rates for B1 Extension plots. Resale values shift depending on development status and street position:
-                </p>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                    <tr>
-                      <th className="p-4">Plot Size</th>
-                      <th className="p-4">Approximate Price Range (PKR)</th>
-                      <th className="p-4">Market Demand</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">5 Marla Residential</td>
-                      <td className="p-4 font-bold">50 Lakh – 60 Lakh</td>
-                      <td className="p-4 text-emerald-600 font-bold">Very High (Fastest moving)</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">8 Marla Residential</td>
-                      <td className="p-4 font-bold">75 Lakh – 90 Lakh</td>
-                      <td className="p-4 text-slate-500 font-medium">Moderate</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-[#7b002c]">10 Marla Residential</td>
-                      <td className="p-4 font-bold">1.0 Crore – 1.2 Crore</td>
-                      <td className="p-4 text-emerald-600 font-bold">High (Scarce availability)</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[10px] text-slate-500 italic font-sans">
-                * Note: Corner surcharges, transfer fees, and possession dues may apply. Prices are lower here than in Block A or the Executive Block due to the early development stage.
-              </p>
-            </div>
-
-            {/* Payment & Documents */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-              
-              {/* Payment Details */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Payment Plan Options
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  The Faisal Hills B Extension payment plan has historically been offered with a down payment and quarterly instalments over roughly four years. Much of the residential inventory has recently moved to full-cash pricing, with instalments concentrated in commercial units. Buyers paying in full at booking are typically offered a discount of around twenty percent.
-                </p>
-                <div className="text-[11px] text-slate-500 font-sans pt-1 border-t border-slate-50">
-                  Compare plans in our <Link href="/faisal-hills-payment-plan" className="text-[#7b002c] font-bold hover:underline">payment plans across blocks</Link> section.
-                </div>
-              </div>
-
-              {/* Documents Required */}
-              <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                  Booking Process & Documents
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans mb-2">
-                  Keep paperwork ready to secure your plot number:
-                </p>
-                <div className="text-xs text-slate-700 leading-relaxed font-sans space-y-1">
-                  <div>• CNIC copies (or NICOP and passport for overseas clients)</div>
-                  <div>• Two passport-size photographs</div>
-                  <div>• CNIC copy of your nominee or next of kin</div>
-                  <div>• Pay order or demand draft in the developer name</div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Development Status */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                Development Status & Earthwork Progress
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                Earthworks and infrastructure are active:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-2 text-xs">
-                  <strong className="text-[#7b002c] block font-serif">Earthworks & Road Formation</strong>
-                  <p className="text-slate-600 font-sans leading-relaxed text-[11px]">
-                    Levelling and plot demarcation are complete, and street boundaries are marked. Road formation is in progress with heavy machinery active. Trenching for underground utility mapping and sewerage conduits has begun.
-                  </p>
-                </div>
-                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-2 text-xs">
-                  <strong className="text-[#7b002c] block font-serif">Possession Outlook</strong>
-                  <p className="text-slate-600 font-sans leading-relaxed text-[11px]">
-                    Faisal Hills B Extension possession remains tied to the completion of road and utility work. For families wanting to break ground immediately, other blocks with confirmed possession status might be a better fit.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Why Invest list */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="font-serif font-bold text-xl text-slate-900 border-b border-slate-100 pb-2">
-                Why Invest in Block B1 Extension?
-              </h3>
-              <ul className="text-xs text-slate-600 space-y-2 list-disc list-inside leading-relaxed font-sans">
-                <li><strong>Lowest Entry Point:</strong> This block ranks among the most affordable inside a proven housing society.</li>
-                <li><strong>Capital Appreciation Drivers:</strong> Repricing occurs as possession handovers start, motorway interchange links open, and CPEC alignments develop.</li>
-                <li><strong>Captive Commercial Yields:</strong> Shop units have strong rental potential serving a compact community of several hundred households.</li>
-              </ul>
-            </div>
-
-            {/* Block Comparisons */}
-            <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-xl space-y-4">
-              <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">Block Comparison</span>
-              <h3 className="font-serif text-xl font-bold text-white">Compare B1 Extension vs Other Sectors</h3>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-3xl font-sans">
-                Review development timelines of <Link href="/blocks/block-c" className="text-amber-400 hover:underline">Block C</Link> and <Link href="/blocks/block-d" className="text-amber-400 hover:underline">Block D</Link>, or look up detailed layouts of the <Link href="/blocks/executive-block" className="text-amber-400 hover:underline">Executive Block</Link>.
               </p>
             </div>
 

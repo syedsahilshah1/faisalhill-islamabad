@@ -417,6 +417,101 @@ export const plotInventoryData: PlotItem[] = [
     features: ["Margalla Foothill Vista", "50ft Frontage", "Gated Security Enclave"],
     description: "Flagship 1 Kanal residential villa plot with panoramic Margalla hill views.",
     image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
+  },
+  // 18. 5 Marla - Block B1 Extension
+  {
+    id: "plot-b1-01",
+    plotNumber: "B1-045",
+    blockSlug: "block-b1-extension",
+    blockName: "Block B-1 Extension",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 4100000,
+    priceFormatted: "PKR 41 Lacs",
+    priceHistoryTrend: "+18% capital growth",
+    status: "Available",
+    facing: "Standard",
+    mapCoords: { x: 62, y: 38 },
+    features: ["Solid Ground", "Level Demarcation", "Near Sector Main Road"],
+    description: "Affordable 5 Marla residential plot in B1 Extension. Ideal for high capital appreciation and first-time home construction.",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+  },
+  // 19. 5 Marla Corner - Block B1 Extension
+  {
+    id: "plot-b1-02",
+    plotNumber: "B1-112",
+    blockSlug: "block-b1-extension",
+    blockName: "Block B-1 Extension",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 4500000,
+    priceFormatted: "PKR 45 Lacs",
+    priceHistoryTrend: "+22% high yield",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 64, y: 40 },
+    features: ["Corner Plot", "Wide 40ft Street", "Fast-Track Development Zone"],
+    description: "Prime 5 Marla Corner plot in Block B1 Extension with dual road frontage.",
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
+  },
+  // 20. 5 Marla Park Facing - Block B1 Extension
+  {
+    id: "plot-b1-03",
+    plotNumber: "B1-185",
+    blockSlug: "block-b1-extension",
+    blockName: "Block B-1 Extension",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 4700000,
+    priceFormatted: "PKR 47 Lacs",
+    priceHistoryTrend: "+20% high demand",
+    status: "Available",
+    facing: "Park Facing",
+    mapCoords: { x: 66, y: 42 },
+    features: ["Direct Community Park View", "Walking to Mosque", "Level Ground"],
+    description: "Scenic 5 Marla park-facing plot in B1 Extension. Premium location within the sector.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+  },
+  // 21. 8 Marla - Block B1 Extension
+  {
+    id: "plot-b1-04",
+    plotNumber: "B1-055",
+    blockSlug: "block-b1-extension",
+    blockName: "Block B-1 Extension",
+    category: "Residential",
+    size: "8 Marla",
+    dimensions: "30 x 60",
+    price: 6400000,
+    priceFormatted: "PKR 64 Lacs",
+    priceHistoryTrend: "+16% steady growth",
+    status: "Available",
+    facing: "Standard",
+    mapCoords: { x: 68, y: 36 },
+    features: ["Double Unit Ready", "30ft Frontage", "Boulevard Link"],
+    description: "Spacious 8 Marla family plot in Block B1 Extension. Excellent value for 4-bedroom dual living.",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+  },
+  // 22. 10 Marla - Block B1 Extension
+  {
+    id: "plot-b1-05",
+    plotNumber: "B1-030",
+    blockSlug: "block-b1-extension",
+    blockName: "Block B-1 Extension",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 7900000,
+    priceFormatted: "PKR 79 Lacs",
+    priceHistoryTrend: "+24% executive demand",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 70, y: 34 },
+    features: ["Margalla View Elevation", "Wide Frontage", "High Executive Appeal"],
+    description: "Prestigious 10 Marla executive villa plot in B1 Extension with panoramic hill views.",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
   }
 ];
 

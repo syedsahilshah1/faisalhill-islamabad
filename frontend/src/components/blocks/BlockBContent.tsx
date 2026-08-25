@@ -53,7 +53,6 @@ import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
-import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 
 interface BlockBPriceRow {
@@ -245,6 +244,7 @@ export default function BlockBContent() {
   const [leadName, setLeadName] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [selectedBlockBPlotFilter, setSelectedBlockBPlotFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla' | '14 Marla' | '1 Kanal' | 'Commercial'>('all');
 
   // Live plots sync
   const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
@@ -258,6 +258,24 @@ export default function BlockBContent() {
     window.addEventListener('faisal_plots_updated', handleSync);
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
   }, []);
+
+  const blockBPlots = useMemo(() => {
+    const filtered = allPlots.filter(
+      p => p.blockSlug === 'block-b' || (p.blockName && p.blockName.toLowerCase() === 'block b')
+    );
+    if (filtered.length > 0) return filtered;
+    return plotInventoryData.filter(
+      p => p.blockSlug === 'block-b' || (p.blockName && p.blockName.toLowerCase() === 'block b')
+    );
+  }, [allPlots]);
+
+  const displayedBlockBPlots = useMemo(() => {
+    if (selectedBlockBPlotFilter === 'all') return blockBPlots;
+    if (selectedBlockBPlotFilter === 'Commercial') {
+      return blockBPlots.filter(p => p.category === 'Commercial');
+    }
+    return blockBPlots.filter(p => p.size.toLowerCase().includes(selectedBlockBPlotFilter.toLowerCase()));
+  }, [blockBPlots, selectedBlockBPlotFilter]);
 
   const handleInquirySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -355,7 +373,12 @@ export default function BlockBContent() {
             {/* Quick Directory Jump Chips */}
             <ScrollReveal direction="up" delay={100}>
               <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2">
-
+                <a
+                  href="#series-explorer"
+                  className="px-3.5 py-1.5 rounded-full bg-[#7b002c] text-white hover:bg-[#9e1245] border border-[#7b002c] text-xs font-bold transition-all shadow-2xs hover:scale-105"
+                >
+                  🏡 Plots for Sale
+                </a>
                 <a
                   href="#travel-times"
                   className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-2xs hover:scale-105"
@@ -884,10 +907,134 @@ export default function BlockBContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 8. DYNAMIC PLOT SERIES & LIVE INVENTORY EXPLORER          */}
+      {/* 8. VERIFIED PLOTS LISTED FOR SALE (BLOCK B)               */}
       {/* ========================================================= */}
-      <section id="series-explorer" className="scroll-mt-28">
-        <DynamicPlotSeriesExplorer blockSlug="block-b" blockName="Block B" />
+      <section id="series-explorer" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Tag className="w-3.5 h-3.5" />
+              <span>Direct Resale & Builder Listings</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Verified Plots for Sale in Block B
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Explore available on-ground plots in Block B with verified transfer documents & immediate possession:
+            </p>
+          </div>
+
+          {/* Size Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 shrink-0 text-xs font-bold">
+            {(['all', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', 'Commercial'] as const).map((sz) => (
+              <button
+                key={sz}
+                type="button"
+                onClick={() => setSelectedBlockBPlotFilter(sz)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  selectedBlockBPlotFilter === sz
+                    ? 'bg-[#7b002c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {sz === 'all' ? 'All Sizes' : sz}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plots Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedBlockBPlots.map((plot) => (
+            <div
+              key={plot.id}
+              className="bg-white rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-md transition-all p-5 flex flex-col justify-between space-y-4 group"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-xs text-[#7b002c] bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+                    Plot #{plot.plotNumber}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    {plot.status || 'Available'}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    {plot.size} {plot.category} Plot
+                  </h3>
+                  <p className="text-xs text-slate-500 font-sans">
+                    {plot.dimensions} • Facing: <span className="font-semibold text-slate-700">{plot.facing}</span>
+                  </p>
+                </div>
+
+                {plot.features && plot.features.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {plot.features.slice(0, 3).map((feat, idx) => (
+                      <span key={idx} className="text-[10px] bg-slate-50 text-slate-600 px-2 py-0.5 rounded-md border border-slate-100 font-medium">
+                        {feat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[11px] text-slate-400 font-mono uppercase">Demand Price</span>
+                  <span className="font-serif font-bold text-lg text-slate-900">{plot.priceFormatted}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href={`/plots/${plot.id}`}
+                    className="w-full py-2 px-3 text-center text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                  >
+                    View Details
+                  </Link>
+                  <a
+                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                      `Hello! I am inquiring about Plot #${plot.plotNumber} (${plot.size}, ${plot.priceFormatted}) listed for sale in Faisal Hills Block B.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2 px-3 text-center text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl transition flex items-center justify-center gap-1 shadow-xs"
+                  >
+                    <span>Inquire</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* List Your Plot Callout Card */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 border border-slate-800 flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 bg-rose-900/50 px-2.5 py-0.5 rounded-full inline-block border border-rose-700/50">
+                Sell or List Your Plot
+              </span>
+              <h3 className="font-serif font-bold text-lg text-white">
+                Have a Plot in Block B to Sell?
+              </h3>
+              <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                Connect with verified genuine buyers instantly. List your Block B plot for free on our official platform.
+              </p>
+            </div>
+
+            <a
+              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20my%20plot%20in%20Faisal%20Hills%20Block%20B%20for%20sale."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 px-4 bg-white hover:bg-rose-50 text-slate-900 hover:text-[#7b002c] rounded-xl text-xs font-bold text-center transition shadow-md flex items-center justify-center gap-1.5"
+            >
+              <span>Submit Plot for Listing</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* ========================================================= */}
@@ -1188,24 +1335,63 @@ export default function BlockBContent() {
             </ScrollReveal>
           </div>
 
-          {/* Image Right */}
+          {/* Booking & Transfer Facilitation Action Card */}
           <div className="lg:col-span-5">
             <ScrollReveal direction="right" delay={50}>
-              <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl group min-h-[340px] sm:min-h-[400px] flex flex-col justify-end">
-                <img
-                  src="/images/faisal-jewel.jpg"
-                  alt="Faisal Hills Booking & File Verification Desk"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
-                <div className="relative z-10 p-6 space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-200 bg-[#7b002c] px-3 py-1 rounded-full border border-white/20 inline-block shadow">
-                    Verified Sales Facilitation
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">Registered Transfer Assistance</h4>
-                  <p className="text-[11px] text-slate-300 font-sans">
-                    Fast-track on-ground plot verification and official file transfer at Zedem head office.
-                  </p>
+              <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-[#3b0015] text-white p-7 sm:p-8 rounded-3xl border border-rose-900/40 shadow-xl space-y-6 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-200 bg-[#7b002c] px-3.5 py-1 rounded-full border border-white/20 shadow">
+                      Official Zedem Transfer
+                    </span>
+                    <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+                      <ShieldCheck className="w-4 h-4" />
+                      100% Verified
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-serif font-bold text-xl sm:text-2xl text-white">
+                      Block B Transfer Desk
+                    </h4>
+                    <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                      Our certified advisors coordinate file verification, NDC clearance, and legal biometric transfer directly at Zedem International head office.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5 pt-2">
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-2xl">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-white block">Official NDC & Dues Clearance</span>
+                        <span className="text-[10px] text-slate-400">Zero dues verification before final payment</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-2xl">
+                      <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-white block">On-Ground Plot Demarcation</span>
+                        <span className="text-[10px] text-slate-400">Physical site visit with survey peg markers</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <a
+                    href="https://wa.me/923000000000?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20resale%20plot%20in%20Faisal%20Hills%20Block%20B"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>WhatsApp Plot Verification Desk</span>
+                  </a>
                 </div>
               </div>
             </ScrollReveal>

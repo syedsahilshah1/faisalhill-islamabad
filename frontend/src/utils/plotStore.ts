@@ -12,7 +12,15 @@ export function getStoredPlots(): PlotItem[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PLOTS_INVENTORY));
       return INITIAL_PLOTS_INVENTORY;
     }
-    return JSON.parse(data);
+    const parsed: PlotItem[] = JSON.parse(data);
+    const existingIds = new Set(parsed.map((p) => p.id));
+    const missingDefaults = INITIAL_PLOTS_INVENTORY.filter((p) => !existingIds.has(p.id));
+    if (missingDefaults.length > 0) {
+      const merged = [...parsed, ...missingDefaults];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return parsed;
   } catch (e) {
     console.error('Error reading plots from localStorage', e);
     return INITIAL_PLOTS_INVENTORY;

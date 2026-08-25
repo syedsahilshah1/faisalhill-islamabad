@@ -33,7 +33,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     areaSubtitle: 'TOTAL AREA: 3.2 MILLION SQM',
     tag: 'Flagship Entrance',
     badge: 'GT Road Frontage',
-    description: 'Prestigious front entrance block featuring Roots Millennium School, civic centers, and direct GT Road access.',
+    description: 'Prestigious front entrance block featuring the iconic Arc Gate, Roots Millennium School, and direct GT Road access.',
     image: '/images/faisalhillarc.jpg',
     href: '/blocks/executive-block'
   },
@@ -44,7 +44,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Civic Core',
     badge: 'Possession Ready',
     description: 'Fully developed sector with Grand Jamia Mosque, active family villas, commercial plazas, and lush public parks.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/imgi_46_Mosques.webp',
     href: '/blocks/block-a'
   },
   {
@@ -52,9 +52,9 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     title: 'Block B',
     areaSubtitle: 'TOTAL AREA: 2.6 MILLION SQM',
     tag: 'Central Sector',
-    badge: 'Parks & Sports Arena',
-    description: 'Serene residential sector with community parks, sports grounds, 225ft Grand Boulevard, and rapid home construction.',
-    image: '/images/faisal-park.jpg',
+    badge: 'Sports Complex & Parks',
+    description: 'Premier central sector built on the 225ft Grand Boulevard with dedicated Sports Complex, futsal turf, and community parks.',
+    image: '/images/imgi_48_sports-arena.webp',
     href: '/blocks/block-b'
   },
   {
@@ -63,8 +63,8 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     areaSubtitle: 'TOTAL AREA: 2.4 MILLION SQM',
     tag: 'Margalla Hillside',
     badge: 'High Appreciation',
-    description: 'Commanding high-elevation Margalla mountain crest views, natural water springs, and luxury 1 & 2 Kanal hillside plots.',
-    image: '/images/faisal-hills-aerial.jpg',
+    description: 'Commanding high-elevation Margalla mountain crest views, natural green belts, and luxury 1 & 2 Kanal hillside plots.',
+    image: '/images/faisal-forest.jpg',
     href: '/blocks/block-c'
   },
   {
@@ -74,7 +74,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Motorway Access',
     badge: 'M-1 Link Road',
     description: 'Strategically positioned next to the upcoming dedicated M-1 Motorway interchange for rapid commuting.',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
     href: '/blocks/block-d'
   }
 ];
