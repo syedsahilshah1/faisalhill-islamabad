@@ -1199,11 +1199,11 @@ export function FaisalJewelContent() {
                 className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
               >
                 <div>
-                  {/* Photo Banner with Zoom on Hover */}
-                  <div
-                    onClick={() => setActiveUnitForModal(unit)}
-                    className="relative h-52 w-full overflow-hidden bg-slate-950 cursor-pointer"
-                    title={`Click to view full specs for ${unit.unitNumber}`}
+                  {/* Photo Banner with Link to Plot Inventory */}
+                  <Link
+                    href={`/plots?category=Commercial&block=faisal-jewel-islamabad`}
+                    className="relative h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer"
+                    title={`Click to view ${unit.unitNumber} in Plot Inventory`}
                   >
                     <img
                       src={unit.image}
@@ -1235,7 +1235,7 @@ export function FaisalJewelContent() {
                         {unit.dimensions}
                       </span>
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Details Body */}
                   <div className="p-5 space-y-3.5">
@@ -1317,10 +1317,10 @@ export function FaisalJewelContent() {
                   {filteredUnits.map((unit) => (
                     <tr key={unit.id} className="hover:bg-rose-50/40 transition-colors">
                       <td className="p-4">
-                        <div
-                          onClick={() => setActiveUnitForModal(unit)}
+                        <Link
+                          href={`/plots?category=Commercial&block=faisal-jewel-islamabad`}
                           className="flex items-center gap-3 cursor-pointer group/item"
-                          title={`Click to view full specs for ${unit.unitNumber}`}
+                          title={`Click to view ${unit.unitNumber} in Plot Inventory`}
                         >
                           <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
                             <img src={unit.image} alt={unit.unitNumber} className="w-full h-full object-cover" />
@@ -1331,7 +1331,7 @@ export function FaisalJewelContent() {
                               {unit.category}
                             </strong>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="p-4 font-semibold text-slate-800">{unit.category}</td>
                       <td className="p-4 font-sans text-slate-600">{unit.floorLevel}</td>
