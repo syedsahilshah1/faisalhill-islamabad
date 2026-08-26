@@ -33,6 +33,8 @@ import BlockBContent from '@/components/blocks/BlockBContent';
 import BlockB1ExtensionContent from '@/components/blocks/BlockB1ExtensionContent';
 import BlockCContent from '@/components/blocks/BlockCContent';
 import BlockDContent from '@/components/blocks/BlockDContent';
+import HillsWalkContent from '@/components/blocks/HillsWalkContent';
+import FaisalJewelContent from '@/components/blocks/FaisalJewelContent';
 import BlockHeroInquiryForm from '@/components/blocks/BlockHeroInquiryForm';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 
@@ -144,6 +146,32 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
     };
   }
 
+  if (params.slug === 'hills-walk') {
+    return {
+      title: 'Faisal Hills Walk – Commercial Plots, Promenade, Prices & Map',
+      description: 'Faisal Hills Walk: European-style open-air pedestrian commercial promenade with Ground + 4 approved arcades, rooftop dining, outdoor amphitheater, and high rental yields. Explore commercial prices, master plan & NOC.',
+      keywords: ['Faisal Hills Walk', 'Hills Walk Faisal Hills', 'Faisal Hills Walk commercial plots', 'Hills Walk price', 'Hills Walk commercial promenade', 'Hills Walk payment plan', 'Faisal Hills RDA NOC'],
+      openGraph: {
+        title: 'Faisal Hills Walk – Commercial Plots, Promenade, Prices & Map',
+        description: 'Faisal Hills Walk: European-style open-air pedestrian commercial promenade with Ground + 4 approved arcades, rooftop dining, outdoor amphitheater, and high rental yields.',
+        images: [{ url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' }]
+      }
+    };
+  }
+
+  if (params.slug === 'faisal-jewel-islamabad' || params.slug === 'faisal-jewels') {
+    return {
+      title: 'Faisal Jewel Islamabad – 27-Storey Skyscraper, Shops & Apartments',
+      description: 'Faisal Jewel Islamabad: Landmark 27-floor luxury mixed-use skyscraper on GT Road. 6-floor shopping mall, 250+ luxury serviced apartments, 4-star hotel, 3 basement parking levels & 4-year installment plans.',
+      keywords: ['Faisal Jewel Islamabad', 'Faisal Jewel apartments', 'Faisal Jewel commercial shops', 'Faisal Jewel price', 'Faisal Jewel payment plan', 'Faisal Jewel floor plan', 'Faisal Hills skyscraper', 'Zedem Faisal Jewel'],
+      openGraph: {
+        title: 'Faisal Jewel Islamabad – 27-Storey Skyscraper, Shops & Apartments',
+        description: 'Faisal Jewel Islamabad: Landmark 27-floor luxury mixed-use skyscraper on GT Road. 6-floor shopping mall, 250+ luxury serviced apartments, 4-star hotel, 3 basement parking levels & 4-year installment plans.',
+        images: [{ url: '/faisal-jewel.jpg' }]
+      }
+    };
+  }
+
   if (params.slug === 'block-d') {
     return {
       title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
@@ -174,7 +202,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const otherBlocks = allBlocks.filter((b) => b.slug !== block.slug);
 
   // Authentic Hero images and descriptions for custom blocks
-  const heroBg = block.slug === 'prime-block'
+  const heroBg = (block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
+    ? '/faisal-jewel.jpg'
+    : block.slug === 'prime-block'
     ? '/images/faisalhillexecutive.webp'
     : block.slug === 'executive-block'
     ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
@@ -190,11 +220,13 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
     : block.heroImage;
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c' || block.slug === 'block-d')
+  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
     ? null
     : block.subtitle;
 
-  const heroDesc = block.slug === 'prime-block'
+  const heroDesc = (block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
+    ? 'Faisal Jewel is a landmark 27-story mixed-use skyscraper featuring 6 commercial shopping mall floors, luxury serviced residences, a 4-star hotel, rooftop infinity dining, and 3-level underground parking at the grand GT Road entrance.'
+    : block.slug === 'prime-block'
     ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
     : block.slug === 'block-a'
     ? 'The most developed & fully populated residential sector in Faisal Hills featuring the Grand Jamia Mosque, ready family villas, 12-Kanal central park, and 100% on-ground immediate construction possession.'
@@ -206,6 +238,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'RDA-approved possession sector adjacent to Hills Walk & M-1 corridor, offering scenic Margalla views, live RO water supply, and high capital growth.'
     : block.slug === 'block-d'
     ? 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.'
+    : block.slug === 'hills-walk'
+    ? 'Faisal Hills Walk is the signature European-style open-air pedestrian commercial promenade, featuring luxury retail arcades, rooftop dining, amphitheater, and high-yield commercial plaza cuts.'
     : block.description;
 
   return (
@@ -224,7 +258,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
-            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && (
+            {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
               <>
                 <Link href="/faisal-hills-blocks" className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4" />
@@ -253,7 +287,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
-                {block.id === 'faisal-jewels' ? 'Faisal Jewel Islamabad — A New Landmark in Faisal Hills' : block.name}
+                {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
               </h1>
               {heroDesc && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
@@ -291,8 +325,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
         </div>
 
-        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base (hidden for Block B, B1 & C) */}
-        {block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && (
+        {/* Moving Slogan Marquee Ticker attached directly to Hero Section base */}
+        {block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
           <div className="relative z-10 w-full overflow-hidden py-3 bg-gradient-to-r from-[#7b002c] via-[#9e1245] to-[#7b002c] text-white border-t border-b border-white/10 select-none shadow-xl">
             <div className="ticker-track flex items-center gap-12 whitespace-nowrap text-xs sm:text-sm font-serif font-bold tracking-[0.2em] uppercase text-white">
               {[
@@ -372,8 +406,22 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         </div>
       )}
 
+      {/* Hills Walk Dedicated Commercial Content (European-Style Promenade & Dining) */}
+      {block.slug === 'hills-walk' && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <HillsWalkContent />
+        </div>
+      )}
+
+      {/* Faisal Jewel Dedicated Skyscraper Content (27-Storey Mixed-Use Landmark) */}
+      {(block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels' || block.id === 'faisal-jewels') && (
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <FaisalJewelContent />
+        </div>
+      )}
+
       {/* For all other blocks */}
-      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && (
+      {block.slug !== 'executive-block' && block.slug !== 'prime-block' && block.slug !== 'block-a' && block.slug !== 'block-b' && block.slug !== 'block-b1-extension' && block.slug !== 'block-c' && block.slug !== 'block-d' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && block.id !== 'faisal-jewels' && (
         <>
           {/* Location & Key Highlights */}
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12">

@@ -28,6 +28,16 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     href: '/blocks/faisal-jewel-islamabad'
   },
   {
+    id: 'hills-walk',
+    title: 'Hills Walk',
+    areaSubtitle: 'COMMERCIAL PROMENADE & DINING',
+    tag: 'Retail Promenade',
+    badge: 'Alfresco Dining & Cafes',
+    description: 'European-style open-air pedestrian promenade lined with luxury retail brands, rooftop restaurants, banks, and corporate towers.',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    href: '/blocks/hills-walk'
+  },
+  {
     id: 'executive-block',
     title: 'Executive Block',
     areaSubtitle: 'TOTAL AREA: 3.2 MILLION SQM',
@@ -36,6 +46,16 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     description: 'Prestigious front entrance block featuring the iconic Arc Gate, Roots Millennium School, and direct GT Road access.',
     image: '/images/faisalhillarc.jpg',
     href: '/blocks/executive-block'
+  },
+  {
+    id: 'prime-block',
+    title: 'Prime Block',
+    areaSubtitle: 'TOTAL AREA: 1.8 MILLION SQM',
+    tag: 'Elite Enclave',
+    badge: 'Margalla Foothills',
+    description: 'Exclusive residential sector with wider streets, elevated topography, private security, and scenic hilltop vistas.',
+    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+    href: '/blocks/prime-block'
   },
   {
     id: 'block-a',
@@ -74,7 +94,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Motorway Access',
     badge: 'M-1 Link Road',
     description: 'Strategically positioned next to the upcoming dedicated M-1 Motorway interchange for rapid commuting.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
     href: '/blocks/block-d'
   }
 ];
