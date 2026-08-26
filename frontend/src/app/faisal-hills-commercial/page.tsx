@@ -201,54 +201,46 @@ export default function FaisalHillsCommercialPage() {
       />
 
       {/* Hero Section */}
-      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/commercial/flagship-store.jpg')` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/25 rounded-full blur-[140px] pointer-events-none" />
-        
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 space-y-6 text-center sm:text-left">
+      <section className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-12 lg:pb-16 bg-transparent text-slate-900 border-b border-slate-200">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 space-y-5 text-center flex flex-col items-center justify-center">
           <ScrollReveal direction="down" delay={0}>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#7b002c]/40 text-rose-300 border border-rose-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-[#7b002c] border border-rose-200 shadow-2xs">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>High Yield Commercial Real Estate • 12% - 16% Rental ROI</span>
             </span>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={80}>
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight max-w-3xl mx-auto text-center">
               Faisal Hills Commercial Plots for Sale in Taxila, Islamabad
             </h1>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={140}>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
+            <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto text-center font-sans">
               Own a premier business address on GT Road, minutes from the M-1 Motorway and Margalla Avenue. Explore verified on-ground commercial plots, multi-storey plaza plots, and flexible installment plans across Executive Block, Block A, B, C, D, Prime Block, and Faisal Jewel.
             </p>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={200}>
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-              <a
-                href="#commercial-plots-inventory"
-                className="w-full sm:w-auto px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 w-full">
+              <Link
+                href="/plots?category=Commercial"
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               >
-                <Store className="w-4 h-4 text-[#7b002c]" />
+                <Store className="w-4 h-4 text-white" />
                 <span>Explore Commercial Inventory</span>
-              </a>
+              </Link>
 
               <Link
                 href="/faisal-hills-payment-plan"
-                className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs uppercase tracking-wider rounded-full shadow-xs flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95"
               >
-                <Coins className="w-4 h-4 text-white" />
+                <Coins className="w-4 h-4 text-[#7b002c]" />
                 <span>Commercial Payment Plans</span>
               </Link>
             </div>
           </ScrollReveal>
-
         </div>
       </section>
 
@@ -406,7 +398,11 @@ export default function FaisalHillsCommercialPage() {
           {commercialSizesShowcase.map((item, idx) => (
             <ScrollReveal key={idx} direction="pop" delay={idx * 50}>
               <div className="bg-slate-50 rounded-3xl border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
-                <div className="relative h-48 w-full overflow-hidden bg-slate-900">
+                <Link 
+                  href="/plots?category=Commercial"
+                  className="relative h-48 w-full overflow-hidden bg-slate-900 block cursor-pointer"
+                  title={`Click to view ${item.size} in Plot Inventory`}
+                >
                   <Image
                     src={item.image}
                     alt={item.size}
@@ -419,9 +415,12 @@ export default function FaisalHillsCommercialPage() {
                   </span>
                   <div className="absolute bottom-3 left-3 right-3 text-white">
                     <span className="text-[11px] font-semibold text-rose-300 block">{item.dimensions}</span>
-                    <h3 className="font-serif font-bold text-lg text-white">{item.size}</h3>
+                    <h3 className="font-serif font-bold text-lg text-white group-hover:text-amber-300 transition-colors flex items-center justify-between">
+                      <span>{item.size}</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-amber-300" />
+                    </h3>
                   </div>
-                </div>
+                </Link>
 
                 <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-2.5 text-xs font-sans">
@@ -439,15 +438,13 @@ export default function FaisalHillsCommercialPage() {
                     </div>
                   </div>
 
-                  <a
-                    href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20am%20interested%20in%20${encodeURIComponent(item.size)}%20plots.%20Please%20send%20available%20options.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-2.5 bg-white border border-slate-300 hover:bg-[#7b002c] hover:border-[#7b002c] hover:text-white text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl text-center shadow-2xs transition-all duration-300 flex items-center justify-center gap-1.5"
+                  <Link
+                    href="/plots?category=Commercial"
+                    className="w-full py-2.5 bg-white border border-slate-300 hover:bg-[#7b002c] hover:border-[#7b002c] hover:text-white text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl text-center shadow-2xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Inquire About {item.size}</span>
-                  </a>
+                    <Store className="w-3.5 h-3.5" />
+                    <span>View in Plot Inventory</span>
+                  </Link>
                 </div>
               </div>
             </ScrollReveal>

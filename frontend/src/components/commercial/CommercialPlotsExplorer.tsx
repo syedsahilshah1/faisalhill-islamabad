@@ -673,7 +673,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
               aria-label="Filter by Society Block"
               className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
             >
-              <option value="all">🏢 All Blocks (Executive, A–D, Jewel)</option>
+              <option value="all">Select Block</option>
               <option value="executive-block">Executive Block (Main GT Entrance)</option>
               <option value="block-a">Block A (Settled Families Hub)</option>
               <option value="block-b">Block B (Margalla View Commercial)</option>
@@ -692,7 +692,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
               aria-label="Filter by Plot Size"
               className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
             >
-              <option value="all">📐 All Sizes</option>
+              <option value="all">Select Size</option>
               <option value="5-marla">4 – 5.33 Marla</option>
               <option value="8-marla">8 Marla Commercial</option>
               <option value="10-marla">10 Marla Plaza</option>
@@ -708,7 +708,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
               aria-label="Filter by Plot Status"
               className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
             >
-              <option value="all">⚡ All Statuses</option>
+              <option value="all">Select Status</option>
               <option value="possession">Possession Ready</option>
               <option value="installments">On Installment Plan</option>
               <option value="hot-deal">Hot Deals & Corners</option>
@@ -741,78 +741,46 @@ export const CommercialPlotsExplorer: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {/* Quick Filter Tags / Chips */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Quick Filters:</span>
-            {[
-              { label: 'All Commercials', block: 'all', size: 'all' },
-              { label: 'Executive 225ft Boulevard', block: 'executive-block', size: 'all' },
-              { label: 'Block C Civic Plaza', block: 'block-c', size: 'all' },
-              { label: '5.33 Marla Standard', block: 'all', size: '5-marla' },
-              { label: '8 Marla Boulevard', block: 'all', size: '8-marla' },
-              { label: 'Faisal Jewel Tower', block: 'faisal-jewel-islamabad', size: 'all' },
-            ].map((chip, idx) => {
-              const isActive = selectedBlock === chip.block && selectedSize === chip.size;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setSelectedBlock(chip.block);
-                    setSelectedSize(chip.size);
-                  }}
-                  className={`text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#7b002c] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {chip.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sort Selector */}
-          <div className="flex items-center gap-2 text-xs text-slate-600">
-            <span className="font-semibold text-slate-400">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              aria-label="Sort plots"
-              className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
-            >
-              <option value="featured">Featured / Best Return</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="size-asc">Size: Small to Large</option>
-              <option value="size-desc">Size: Large to Small</option>
-            </select>
-          </div>
-        </div>
       </div>
 
-      {/* Results Header Count */}
-      <div className="flex items-center justify-between text-xs text-slate-500 font-sans px-1">
-        <span>
-          Showing <strong className="text-slate-900 font-bold">{filteredPlots.length}</strong> of{' '}
-          <strong>{COMMERCIAL_PLOTS_INVENTORY.length}</strong> commercial plots & plazas
-        </span>
-        {(selectedBlock !== 'all' || selectedSize !== 'all' || selectedStatus !== 'all' || searchQuery) && (
-          <button
-            onClick={() => {
-              setSelectedBlock('all');
-              setSelectedSize('all');
-              setSelectedStatus('all');
-              setSearchQuery('');
-            }}
-            className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer"
+      {/* Results Header Count & Sort */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
+        <div className="flex items-center gap-3">
+          <span>
+            Showing <strong className="text-slate-900 font-bold">{filteredPlots.length}</strong> of{' '}
+            <strong>{COMMERCIAL_PLOTS_INVENTORY.length}</strong> commercial plots & plazas
+          </span>
+          {(selectedBlock !== 'all' || selectedSize !== 'all' || selectedStatus !== 'all' || searchQuery) && (
+            <button
+              onClick={() => {
+                setSelectedBlock('all');
+                setSelectedSize('all');
+                setSelectedStatus('all');
+                setSearchQuery('');
+              }}
+              className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer ml-2"
+            >
+              <X className="w-3.5 h-3.5" />
+              Reset filters
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 font-semibold">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="Sort plots"
+            className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
           >
-            <X className="w-3.5 h-3.5" />
-            Reset all filters
-          </button>
-        )}
+            <option value="featured">Featured / Best Return</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="size-asc">Size: Small to Large</option>
+            <option value="size-desc">Size: Large to Small</option>
+          </select>
+        </div>
       </div>
 
       {/* GRID VIEW */}
@@ -823,8 +791,12 @@ export const CommercialPlotsExplorer: React.FC = () => {
               key={plot.id}
               className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group"
             >
-              {/* Image Container with Badge */}
-              <div className="relative h-56 w-full overflow-hidden bg-slate-900">
+              {/* Image Container with Badge - Redirects to Plot Inventory Page */}
+              <Link 
+                href={`/plots?category=Commercial&block=${plot.blockSlug}`}
+                className="relative h-56 w-full overflow-hidden bg-slate-900 block cursor-pointer"
+                title={`Click to view ${plot.title} in Plot Inventory`}
+              >
                 <Image
                   src={plot.image}
                   alt={plot.title}
@@ -861,7 +833,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
                     {plot.title}
                   </h3>
                 </div>
-              </div>
+              </Link>
 
               {/* Card Body Specs */}
               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
@@ -968,17 +940,21 @@ export const CommercialPlotsExplorer: React.FC = () => {
                 {filteredPlots.map((plot) => (
                   <tr key={plot.id} className="hover:bg-rose-50/40 transition-colors">
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <Link 
+                        href={`/plots?category=Commercial&block=${plot.blockSlug}`}
+                        className="flex items-center gap-3 cursor-pointer group/item"
+                        title={`Click to view ${plot.title} in Plot Inventory`}
+                      >
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
                           <Image src={plot.image} alt={plot.title} fill className="object-cover" />
                         </div>
                         <div>
                           <span className="font-mono font-bold text-xs text-[#7b002c]">#{plot.plotNumber}</span>
-                          <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[220px]">
+                          <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[220px] group-hover/item:text-[#7b002c] transition-colors">
                             {plot.title}
                           </strong>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="p-4 font-semibold text-slate-800">{plot.blockName}</td>
                     <td className="p-4 font-sans">

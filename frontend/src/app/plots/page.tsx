@@ -2,14 +2,139 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import {
-  Search, Filter, MapPin, CheckCircle, SlidersHorizontal, MessageSquare,
-  RefreshCw, ArrowRight, Home, Building2, Trees, ShieldCheck, Sparkles,
-  Award, ChevronRight, Info, Compass, Check
+  Search,
+  Filter,
+  MapPin,
+  CheckCircle,
+  SlidersHorizontal,
+  MessageSquare,
+  RefreshCw,
+  ArrowRight,
+  Home,
+  Building2,
+  Trees,
+  ShieldCheck,
+  Sparkles,
+  Award,
+  ChevronRight,
+  Info,
+  Compass,
+  Check,
+  Grid,
+  List,
+  Eye,
+  PhoneCall,
+  X,
+  Store,
+  BadgeCheck,
+  CheckCircle2
 } from 'lucide-react';
-import { plotInventoryData, blocksData, PlotItem, fetchPlots } from '@/data/faisalHillsData';
+import {
+  plotInventoryData,
+  blocksData,
+  PlotItem,
+  fetchPlots
+} from '@/data/faisalHillsData';
 import LeadModal from '@/components/ui/LeadModal';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+
+// Additional commercial & residential mock plot items to ensure all blocks and sizes are richly represented
+const EXTENDED_PLOT_INVENTORY: PlotItem[] = [
+  ...plotInventoryData,
+  {
+    id: "plot-com-01",
+    plotNumber: "EXE-COM-014",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Commercial",
+    size: "8 Marla",
+    dimensions: "40 × 45 ft",
+    price: 68000000,
+    priceFormatted: "PKR 6.80 Crore",
+    priceHistoryTrend: "+22.4% capital growth",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 20, y: 30 },
+    features: ["225ft Grand Boulevard Frontage", "B+G+8 Storeys Approved", "Underground 3-Phase Utilities"],
+    description: "Prestigious 8 Marla commercial plaza plot on Executive Main Boulevard directly facing GT Road entrance.",
+    image: "/images/commercial/flagship-store.jpg"
+  },
+  {
+    id: "plot-com-02",
+    plotNumber: "C-COM-302",
+    blockSlug: "block-c",
+    blockName: "Block C",
+    category: "Commercial",
+    size: "10 Marla",
+    dimensions: "45 × 50 ft",
+    price: 85000000,
+    priceFormatted: "PKR 8.50 Crore",
+    priceHistoryTrend: "+25.0% rapid growth",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 50, y: 40 },
+    features: ["Block C Civic Center Hub", "B+G+9 Approved High-Rise", "80ft Wide Parking Apron"],
+    description: "Centrally located 10 Marla commercial plot inside Block C mega civic center.",
+    image: "/images/commercial/food-court.jpg"
+  },
+  {
+    id: "plot-com-03",
+    plotNumber: "A-COM-108",
+    blockSlug: "block-a",
+    blockName: "Block A",
+    category: "Commercial",
+    size: "5 Marla",
+    dimensions: "30 × 37.5 ft",
+    price: 28500000,
+    priceFormatted: "PKR 2.85 Crore",
+    priceHistoryTrend: "+16.5% rental yield",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 40, y: 45 },
+    features: ["1200+ Settled Families", "Immediate Construction", "Corner Dual Road Access"],
+    description: "Established 5 Marla commercial plot in settled Block A, perfect for supermarket or medical clinic.",
+    image: "/images/commercial/hypermarket.jpg"
+  },
+  {
+    id: "plot-com-04",
+    plotNumber: "PRM-COM-077",
+    blockSlug: "prime-block",
+    blockName: "Prime Block",
+    category: "Commercial",
+    size: "5.33 Marla",
+    dimensions: "40 × 30 ft",
+    price: 36000000,
+    priceFormatted: "PKR 3.60 Crore",
+    priceHistoryTrend: "+28.0% pre-launch ROI",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 75, y: 25 },
+    features: ["4-Year Easy Installments", "Direct M-1 Motorway Link", "Corner 60ft Boulevard"],
+    description: "Exclusive 5.33 Marla commercial launch plot in VIP Prime Block on 4-year quarterly installments.",
+    image: "/images/commercial/tech-gadgets.jpg"
+  },
+  {
+    id: "plot-com-05",
+    plotNumber: "FJ-TOWER-G09",
+    blockSlug: "faisal-jewel-islamabad",
+    blockName: "Faisal Jewel",
+    category: "Commercial",
+    size: "12 Marla",
+    dimensions: "1,850 Sq Ft Showroom",
+    price: 115000000,
+    priceFormatted: "PKR 11.50 Crore",
+    priceHistoryTrend: "+32.0% landmark ROI",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 15, y: 22 },
+    features: ["27-Storey Skyscraper Showroom", "Double Height Glass Facade", "5-Star Brand Management"],
+    description: "Iconic flagship showroom unit in 27-storey Faisal Jewel Tower at the gateway of Faisal Hills.",
+    image: "/faisal-jewel-tower.jpg"
+  }
+];
 
 function PlotSearchContent() {
   const searchParams = useSearchParams();
@@ -20,15 +145,17 @@ function PlotSearchContent() {
   const [selectedBlock, setSelectedBlock] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSize, setSelectedSize] = useState('all');
-  const [maxPrice, setMaxPrice] = useState(70000000); // 7 Crore
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('featured');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   const [activePlotForModal, setActivePlotForModal] = useState<PlotItem | null>(null);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>(EXTENDED_PLOT_INVENTORY);
 
-  // Sync with URL query parameters when navigating from Homepage or elsewhere
+  // Sync with URL query parameters when navigating from other pages
   useEffect(() => {
     if (querySize) setSelectedSize(querySize);
     if (queryCategory) setSelectedCategory(queryCategory);
@@ -36,330 +163,658 @@ function PlotSearchContent() {
   }, [querySize, queryCategory, queryBlock]);
 
   useEffect(() => {
-    fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+    fetchPlots()
+      .then((data) => {
+        if (data && data.length > 0) {
+          const existingIds = new Set(data.map((p) => p.id));
+          const extraDefaults = EXTENDED_PLOT_INVENTORY.filter((p) => !existingIds.has(p.id));
+          setAllPlots([...data, ...extraDefaults]);
+        }
+      })
+      .catch(console.error);
 
     const handlePlotsSync = () => {
-      fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+      fetchPlots().then((data) => {
+        if (data && data.length > 0) {
+          const existingIds = new Set(data.map((p) => p.id));
+          const extraDefaults = EXTENDED_PLOT_INVENTORY.filter((p) => !existingIds.has(p.id));
+          setAllPlots([...data, ...extraDefaults]);
+        }
+      }).catch(console.error);
     };
+
     window.addEventListener('faisal_plots_updated', handlePlotsSync);
     return () => window.removeEventListener('faisal_plots_updated', handlePlotsSync);
   }, []);
 
-  // Filtered Plot List (Removed statusFilter as per requirements)
+  // Filtered & Sorted Plots
   const filteredPlots = useMemo(() => {
-    return allPlots.filter(plot => {
-      const matchBlock = selectedBlock === 'all' || plot.blockSlug === selectedBlock;
-      const matchCategory = selectedCategory === 'all' || plot.category === selectedCategory;
-      const matchSize = selectedSize === 'all' || plot.size.toLowerCase() === selectedSize.toLowerCase();
-      const matchPrice = plot.price <= maxPrice;
-      const matchQuery = searchQuery === '' ||
-        (plot.plotNumber && plot.plotNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (plot.blockName && plot.blockName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (plot.size && plot.size.toLowerCase().includes(searchQuery.toLowerCase()));
+    return allPlots
+      .filter((plot) => {
+        // Block filter
+        if (selectedBlock !== 'all' && plot.blockSlug !== selectedBlock) return false;
 
-      return matchBlock && matchCategory && matchSize && matchPrice && matchQuery;
-    });
-  }, [allPlots, selectedBlock, selectedCategory, selectedSize, maxPrice, searchQuery]);
+        // Category filter
+        if (selectedCategory !== 'all') {
+          if (selectedCategory === 'Residential' && plot.category !== 'Residential') return false;
+          if (selectedCategory === 'Commercial' && plot.category !== 'Commercial') return false;
+          if (selectedCategory === 'Apartment' && plot.category !== 'Apartment') return false;
+        }
+
+        // Size filter
+        if (selectedSize !== 'all') {
+          const pSize = plot.size.toLowerCase();
+          const sFilter = selectedSize.toLowerCase();
+          if (sFilter === '5 marla' && !pSize.includes('5 marla') && !pSize.includes('5.33') && !pSize.includes('5.8')) return false;
+          if (sFilter === '8 marla' && !pSize.includes('8 marla')) return false;
+          if (sFilter === '10 marla' && !pSize.includes('10 marla')) return false;
+          if (sFilter === '14 marla' && !pSize.includes('14 marla')) return false;
+          if (sFilter === '1 kanal' && !pSize.includes('1 kanal') && !pSize.includes('12 marla')) return false;
+          if (sFilter === 'apartments' && plot.category !== 'Apartment') return false;
+        }
+
+        // Status filter
+        if (selectedStatus !== 'all') {
+          if (selectedStatus === 'available' && plot.status !== 'Available') return false;
+          if (selectedStatus === 'commercial' && plot.category !== 'Commercial') return false;
+          if (selectedStatus === 'boulevard' && !plot.facing.toLowerCase().includes('boulevard')) return false;
+          if (selectedStatus === 'corner' && !plot.facing.toLowerCase().includes('corner')) return false;
+        }
+
+        // Search query
+        if (searchQuery.trim() !== '') {
+          const q = searchQuery.toLowerCase();
+          const matches =
+            (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
+            (plot.blockName && plot.blockName.toLowerCase().includes(q)) ||
+            (plot.size && plot.size.toLowerCase().includes(q)) ||
+            (plot.facing && plot.facing.toLowerCase().includes(q)) ||
+            (plot.description && plot.description.toLowerCase().includes(q)) ||
+            (plot.features && plot.features.some((f) => f.toLowerCase().includes(q)));
+          if (!matches) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'name-asc') return a.plotNumber.localeCompare(b.plotNumber);
+        return 0; // featured default
+      });
+  }, [allPlots, selectedBlock, selectedCategory, selectedSize, selectedStatus, searchQuery, sortBy]);
 
   const resetFilters = () => {
     setSelectedBlock('all');
     setSelectedCategory('all');
     setSelectedSize('all');
-    setMaxPrice(70000000);
+    setSelectedStatus('all');
     setSearchQuery('');
+    setSortBy('featured');
   };
 
-  const hasActiveFilters = selectedBlock !== 'all' || selectedCategory !== 'all' || selectedSize !== 'all' || maxPrice < 70000000 || searchQuery !== '';
+  const hasActiveFilters =
+    selectedBlock !== 'all' ||
+    selectedCategory !== 'all' ||
+    selectedSize !== 'all' ||
+    selectedStatus !== 'all' ||
+    searchQuery !== '';
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-16 space-y-10">
-
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-16 space-y-8">
       {/* ========================================================= */}
-      {/* 1. TITLE HEADER & QUICK HIERARCHICAL FILTERS              */}
+      {/* 1. TITLE & STATS HEADER                                   */}
       {/* ========================================================= */}
-      <div className="space-y-6 border-b border-slate-200 pb-6">
-        <div className="space-y-2 max-w-3xl">
-          <span className="label-caps text-[#7b002c] font-bold block mb-1">Live Inventory Explorer</span>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight">
-            Search Faisal Hills Plot & Flat Inventory
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+            <Store className="w-3.5 h-3.5" />
+            <span>Faisal Hills Official Plot & Property Inventory 2026</span>
+          </div>
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+            Faisal Hills Plot Inventory Explorer
           </h1>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            Explore and filter residential plots, commercial investments, and luxury apartments across all blocks of Faisal Hills Islamabad.
+          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl leading-relaxed">
+            Search verified residential plots, commercial investments, and luxury apartments across Executive Block, Block A, B, C, D, Prime Block, and Faisal Jewel. Inspect dimensions, road facing, and live demand prices.
           </p>
         </div>
 
-        {/* Hierarchical Quick Filters Container */}
-        <div className="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3.5">
-          
-          {/* Level 1: Block Selection */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider min-w-[130px] flex items-center gap-1.5 shrink-0">
-              <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
-              1. Select Block:
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <button
-                onClick={() => setSelectedBlock('all')}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                  selectedBlock === 'all'
-                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-sm'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70'
-                }`}
-              >
-                All Blocks
-              </button>
-              {blocksData.map((block) => (
-                <button
-                  key={block.slug}
-                  onClick={() => setSelectedBlock(block.slug)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                    selectedBlock === block.slug
-                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-sm'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70'
-                  }`}
-                >
-                  {block.name}
-                </button>
-              ))}
-            </div>
+        {/* Quick Stats Pill */}
+        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm shrink-0">
+          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
+            <span className="block text-base font-bold text-[#7b002c]">{allPlots.length}+</span>
+            <span className="text-[10px] text-slate-500 font-semibold uppercase">Live Listings</span>
           </div>
-
-          {/* Level 2: Size Selection */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 pt-2.5 border-t border-slate-200/60">
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider min-w-[130px] flex items-center gap-1.5 shrink-0">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#7b002c]" />
-              2. Plot Size:
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              {['all', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal'].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                    selectedSize.toLowerCase() === size.toLowerCase()
-                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-sm'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70'
-                  }`}
-                >
-                  {size === 'all' ? 'All Sizes' : size}
-                </button>
-              ))}
-            </div>
+          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
+            <span className="block text-base font-bold text-emerald-600">RDA NOC</span>
+            <span className="text-[10px] text-slate-500 font-semibold uppercase">100% Approved</span>
           </div>
+          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
+            <span className="block text-base font-bold text-slate-900">Direct</span>
+            <span className="text-[10px] text-slate-500 font-semibold uppercase">Transfer</span>
+          </div>
+        </div>
+      </div>
 
-          {/* Level 3: Category / Type Selection */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2.5 border-t border-slate-200/60">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider min-w-[130px] flex items-center gap-1.5 shrink-0">
-                <Building2 className="w-3.5 h-3.5 text-[#7b002c]" />
-                3. Category:
-              </span>
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                {[
-                  { label: 'All Categories', value: 'all' },
-                  { label: 'Residential', value: 'Residential' },
-                  { label: 'Commercial', value: 'Commercial' },
-                  { label: 'Luxury Flats', value: 'Apartment' },
-                ].map((cat) => (
-                  <button
-                    key={cat.value}
-                    onClick={() => setSelectedCategory(cat.value)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                      selectedCategory === cat.value
-                        ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {hasActiveFilters && (
+      {/* ========================================================= */}
+      {/* 2. UNIFIED MODERN FILTER BAR (EXACT SAME STYLE AS COMMERCIAL) */}
+      {/* ========================================================= */}
+      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+          {/* Search Input */}
+          <div className="relative md:col-span-4">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search by plot #, boulevard, block, or type..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white transition-all"
+            />
+            {searchQuery && (
               <button
-                onClick={resetFilters}
-                className="text-xs font-semibold text-[#7b002c] hover:text-[#9e1245] transition flex items-center gap-1 shrink-0 self-start sm:self-center bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-xl border border-rose-100 cursor-pointer"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                <RefreshCw className="w-3 h-3" />
-                Reset Quick Filters
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
+          {/* Block Selector */}
+          <div className="md:col-span-3">
+            <select
+              value={selectedBlock}
+              onChange={(e) => setSelectedBlock(e.target.value)}
+              aria-label="Select Block"
+              className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+            >
+              <option value="all">Select Block</option>
+              <option value="executive-block">Executive Block (Main GT Entrance)</option>
+              <option value="block-a">Block A (Settled Families)</option>
+              <option value="block-b">Block B (Margalla View)</option>
+              <option value="block-c">Block C (Civic Center Hub)</option>
+              <option value="block-d">Block D (Possession Granted)</option>
+              <option value="prime-block">Prime Block (VIP Sector)</option>
+              <option value="faisal-jewel-islamabad">Faisal Jewel (27-Storey)</option>
+            </select>
+          </div>
+
+          {/* Size Filter */}
+          <div className="md:col-span-2">
+            <select
+              value={selectedSize}
+              onChange={(e) => setSelectedSize(e.target.value)}
+              aria-label="Select Size"
+              className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+            >
+              <option value="all">Select Size</option>
+              <option value="5 Marla">5 Marla (25 × 50)</option>
+              <option value="8 Marla">8 Marla (30 × 60)</option>
+              <option value="10 Marla">10 Marla (35 × 70)</option>
+              <option value="14 Marla">14 Marla (40 × 80)</option>
+              <option value="1 Kanal">1 Kanal (50 × 90)</option>
+              <option value="apartments">Luxury Apartments</option>
+            </select>
+          </div>
+
+          {/* Category / Status Filter */}
+          <div className="md:col-span-2">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              aria-label="Select Category"
+              className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+            >
+              <option value="all">Select Status / Type</option>
+              <option value="Residential">Residential Plots</option>
+              <option value="Commercial">Commercial Plots & Plazas</option>
+              <option value="Apartment">Luxury Flats & Suites</option>
+            </select>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="md:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-all cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-white text-[#7b002c] shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Grid View"
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-2 rounded-lg transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-white text-[#7b002c] shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Table View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 2. SEARCH & BUDGET FILTER BAR                             */}
+      {/* 3. RESULTS COUNT & SORT SELECTOR                           */}
       {/* ========================================================= */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-md space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2 font-serif font-bold text-base sm:text-lg text-[#7b002c]">
-            <SlidersHorizontal className="w-5 h-5 text-[#7b002c]" />
-            <span>Search & Budget Filter</span>
-          </div>
-
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
+        <div className="flex items-center gap-3">
+          <span>
+            Showing <strong className="text-slate-900 font-bold">{filteredPlots.length}</strong> of{' '}
+            <strong>{allPlots.length}</strong> verified properties
+          </span>
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
-              className="text-xs text-[#7b002c] hover:text-[#9e1245] flex items-center gap-1 font-bold bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition cursor-pointer"
+              className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer ml-2"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Reset All Filters</span>
+              <X className="w-3.5 h-3.5" />
+              Reset all filters
             </button>
           )}
         </div>
 
-        {/* Filter Inputs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-
-          {/* Search Plot Number */}
-          <div className="md:col-span-5">
-            <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Search Plot / Sector Number
-            </label>
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-              <input
-                type="text"
-                placeholder="e.g. A-204, PR-014, 5 Marla, Executive"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition shadow-xs"
-              />
-            </div>
-          </div>
-
-          {/* Budget Filter */}
-          <div className="md:col-span-7 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-                Max Budget
-              </label>
-              <span className="font-serif font-bold text-[#7b002c] text-xs sm:text-sm px-3 py-1 rounded-lg bg-rose-50 border border-rose-100">
-                PKR {(maxPrice / 100000).toFixed(0)} Lacs
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min="3000000"
-                max="70000000"
-                step="1000000"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full accent-[#7b002c] cursor-pointer h-2 bg-slate-200 rounded-lg"
-              />
-            </div>
-          </div>
-
-        </div>
-
-        {/* Results Summary Row */}
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div className="text-xs text-slate-600 font-medium">
-            Showing <strong className="text-[#7b002c] font-bold">{filteredPlots.length}</strong> matching property listings
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 font-semibold">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="Sort plots"
+            className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
+          >
+            <option value="featured">Featured / Recommended</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Plot Number</option>
+          </select>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 3. INVENTORY PLOTS GRID                                   */}
+      {/* 4. GRID VIEW CARDS                                        */}
       {/* ========================================================= */}
-      <div>
-        {filteredPlots.length === 0 ? (
-          <div className="bg-white p-12 text-center rounded-3xl border border-slate-200 space-y-4 shadow-sm">
-            <MapPin className="w-12 h-12 text-[#7b002c]/40 mx-auto" />
-            <h3 className="font-serif text-2xl font-bold text-[#7b002c]">No Properties Found</h3>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-              We couldn't find any plots matching your active filters. Try resetting the filters or increasing your maximum budget.
-            </p>
-            <button
-              onClick={resetFilters}
-              className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer"
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+          {filteredPlots.map((plot) => (
+            <div
+              key={plot.id}
+              className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group"
             >
-              Reset All Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredPlots.map((plot) => (
+              {/* Image Container with Badge */}
               <div
-                key={plot.id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 h-full"
+                onClick={() => setActivePlotForModal(plot)}
+                className="relative h-56 w-full overflow-hidden bg-slate-900 cursor-pointer"
+                title={`Click to view full specs for #${plot.plotNumber}`}
               >
-                <div>
-                  {/* Image Banner */}
-                  <Link
-                    href={`/plots/${plot.id}`}
-                    className="relative h-48 w-full overflow-hidden bg-slate-900 img-zoom-container block cursor-pointer"
-                  >
-                    <img
-                      src={plot.image}
-                      alt={plot.plotNumber}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
+                <img
+                  src={plot.image}
+                  alt={plot.plotNumber}
+                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full shadow bg-[#7b002c] text-white border border-white/20">
-                        {plot.category === 'Apartment' ? 'Luxury Flat' : plot.category}
-                      </span>
-                    </div>
-
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20">
-                        {plot.status}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="label-caps text-[9px] text-slate-300 block">{plot.blockName}</span>
-                      <h4 className="font-serif font-bold text-xl group-hover:text-rose-200 transition-colors">#{plot.plotNumber}</h4>
-                    </div>
-                  </Link>
-
-                  <div className="p-5 space-y-3">
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-sans">{plot.description}</p>
-
-                    <div className="space-y-1.5 text-xs text-slate-600 pt-1 border-t border-slate-100">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Property Size:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.size}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Dimensions:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Orientation:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
-                      </div>
-                    </div>
-                  </div>
+                {/* Top Badges */}
+                <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#7b002c] text-white shadow-md">
+                    {plot.blockName}
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-400 text-slate-950 shadow-md">
+                    {plot.category === 'Apartment' ? 'Luxury Flat' : plot.category}
+                  </span>
                 </div>
 
-                <div className="p-5 pt-0 flex items-center justify-between border-t border-slate-100 mt-2">
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase block font-semibold">Demand Price</span>
-                    <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
+                {/* Bottom Overlay Title & Plot Number */}
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold text-rose-300 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                      #{plot.plotNumber}
+                    </span>
+                    <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      {plot.status}
+                    </span>
                   </div>
-
-                  <Link
-                    href={`/plots/${plot.id}`}
-                    className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>View Details</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <h3 className="font-serif font-bold text-base line-clamp-1 group-hover:text-amber-300 transition-colors">
+                    {plot.size} {plot.category} Plot
+                  </h3>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
+              {/* Card Body Specs */}
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                {/* Key Metrics Grid */}
+                <div className="grid grid-cols-2 gap-2.5 text-xs font-sans">
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Size & Dims</span>
+                    <strong className="text-slate-800 font-bold block">{plot.size}</strong>
+                    <span className="text-[10px] text-slate-500">{plot.dimensions}</span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Facing</span>
+                    <strong className="text-slate-800 font-bold block truncate">{plot.facing}</strong>
+                    <span className="text-[10px] text-slate-500">RDA Approved</span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Type</span>
+                    <strong className="text-slate-800 font-bold block truncate">{plot.category}</strong>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Trend</span>
+                    <strong className="text-emerald-600 font-bold block truncate">{plot.priceHistoryTrend || 'High Demand'}</strong>
+                  </div>
+                </div>
+
+                {/* Features Pill List */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Highlights</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {plot.features.slice(0, 2).map((feat, fIdx) => (
+                      <span
+                        key={fIdx}
+                        className="text-[11px] bg-rose-50 text-[#7b002c] border border-rose-100/80 px-2 py-0.5 rounded-md line-clamp-1"
+                      >
+                        ✓ {feat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pricing & Actions */}
+                <div className="pt-3 border-t border-slate-100 space-y-3">
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <span className="text-[10px] text-slate-400 font-semibold uppercase block">Demand Price</span>
+                      <span className="text-lg font-serif font-bold text-[#7b002c]">{plot.priceFormatted}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                      Verified Title
+                    </span>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setActivePlotForModal(plot)}
+                      className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Full Specs</span>
+                    </button>
+
+                    <a
+                      href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20interested%20in%20plot%20${plot.plotNumber}%20(${plot.size}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-white" />
+                      <span>Inquire / Book</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 5. TABLE VIEW MATRIX                                      */}
+      {/* ========================================================= */}
+      {viewMode === 'table' && (
+        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
+                <tr>
+                  <th className="p-4">Plot # & Title</th>
+                  <th className="p-4">Block</th>
+                  <th className="p-4">Size & Dims</th>
+                  <th className="p-4">Category</th>
+                  <th className="p-4">Facing</th>
+                  <th className="p-4">Demand Price</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {filteredPlots.map((plot) => (
+                  <tr key={plot.id} className="hover:bg-rose-50/40 transition-colors">
+                    <td className="p-4">
+                      <div
+                        onClick={() => setActivePlotForModal(plot)}
+                        className="flex items-center gap-3 cursor-pointer group/item"
+                        title={`Click to view full plot specs for ${plot.plotNumber}`}
+                      >
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
+                          <img src={plot.image} alt={plot.plotNumber} className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <span className="font-mono font-bold text-xs text-[#7b002c]">#{plot.plotNumber}</span>
+                          <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[200px] group-hover/item:text-[#7b002c] transition-colors">
+                            {plot.size} {plot.category}
+                          </strong>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 font-semibold text-slate-800">{plot.blockName}</td>
+                    <td className="p-4 font-sans">
+                      <strong className="block text-slate-900">{plot.size}</strong>
+                      <span className="text-[10px] text-slate-400">{plot.dimensions}</span>
+                    </td>
+                    <td className="p-4 font-sans text-slate-600">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px]">
+                        {plot.category}
+                      </span>
+                    </td>
+                    <td className="p-4 font-sans text-slate-600">{plot.facing}</td>
+                    <td className="p-4 font-serif font-bold text-[#7b002c] text-sm whitespace-nowrap">
+                      {plot.priceFormatted}
+                    </td>
+                    <td className="p-4">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full whitespace-nowrap">
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        {plot.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => setActivePlotForModal(plot)}
+                        className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                      >
+                        View Specs
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 6. EMPTY STATE                                            */}
+      {/* ========================================================= */}
+      {filteredPlots.length === 0 && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-4">
+          <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
+          <h3 className="font-serif font-bold text-xl text-slate-800">No Properties Matched Your Filters</h3>
+          <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+            Try adjusting your search criteria, selecting "Select Block" or clearing the size filter to see more available properties in Faisal Hills.
+          </p>
+          <button
+            onClick={resetFilters}
+            className="px-6 py-2.5 bg-[#7b002c] text-white text-xs font-bold rounded-full uppercase tracking-wider hover:bg-[#9e1245] transition-colors cursor-pointer"
+          >
+            Reset All Filters
+          </button>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 7. DETAILED PLOT SPECS MODAL                              */}
+      {/* ========================================================= */}
+      {activePlotForModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div
+            className="bg-white w-full max-w-4xl max-h-[92vh] rounded-3xl shadow-2xl overflow-y-auto border border-slate-200 relative flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between z-20">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c] text-white">
+                  #{activePlotForModal.plotNumber}
+                </span>
+                <div>
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900">
+                    {activePlotForModal.size} {activePlotForModal.category} Plot
+                  </h3>
+                  <p className="text-xs text-slate-500 font-sans">
+                    {activePlotForModal.blockName} • {activePlotForModal.facing}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActivePlotForModal(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Image Preview & Pricing Box */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div className="md:col-span-8 relative h-72 sm:h-80 rounded-2xl overflow-hidden bg-slate-900">
+                  <img
+                    src={activePlotForModal.image}
+                    alt={activePlotForModal.plotNumber}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs text-white text-[11px] px-3 py-1 rounded-full font-bold">
+                    {activePlotForModal.category}
+                  </div>
+                </div>
+
+                {/* Price Summary Box */}
+                <div className="md:col-span-4 flex flex-col justify-between space-y-3">
+                  <div className="bg-rose-50 border border-rose-200/80 p-5 rounded-2xl space-y-3">
+                    <span className="text-[10px] text-[#7b002c] font-bold uppercase tracking-wider block">Demand Price</span>
+                    <div className="text-2xl font-serif font-bold text-[#7b002c]">{activePlotForModal.priceFormatted}</div>
+                    <span className="text-xs text-slate-600 block">Verified Market Price</span>
+                    <div className="pt-3 border-t border-rose-200/60 flex items-center justify-between text-xs">
+                      <span className="text-slate-600 font-semibold">Growth Trend:</span>
+                      <strong className="text-emerald-700">{activePlotForModal.priceHistoryTrend || '+12.5% YoY'}</strong>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status & NOC</span>
+                    <div className="flex items-center gap-2 text-emerald-700 font-bold">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>RDA Approved Freehold Title</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <ShieldCheck className="w-4 h-4 text-[#7b002c]" />
+                      <span>Direct Head Office Transfer</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Complete Plot Specifications Grid */}
+              <div className="space-y-3">
+                <h4 className="font-serif font-bold text-base text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4 text-[#7b002c]" />
+                  <span>Technical Plot Specifications</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-sans">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Plot Size</span>
+                    <strong className="text-slate-800 text-sm block">{activePlotForModal.size}</strong>
+                    <span className="text-slate-500">{activePlotForModal.category} Plot</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Dimensions</span>
+                    <strong className="text-slate-800 text-sm block">{activePlotForModal.dimensions}</strong>
+                    <span className="text-slate-500">Standard RDA Frontage</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Facing / Orientation</span>
+                    <strong className="text-slate-800 text-sm block truncate">{activePlotForModal.facing}</strong>
+                    <span className="text-slate-500">Wide Road Access</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Sector Block</span>
+                    <strong className="text-[#7b002c] text-sm block">{activePlotForModal.blockName}</strong>
+                    <span className="text-slate-500">Faisal Hills Islamabad</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description & Features */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-sans">
+                <div className="space-y-3">
+                  <h4 className="font-serif font-bold text-sm text-slate-900">Property Overview</h4>
+                  <p className="text-slate-600 leading-relaxed">{activePlotForModal.description}</p>
+                </div>
+
+                <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  <h4 className="font-serif font-bold text-sm text-slate-900">Key Plot Amenities</h4>
+                  <div className="space-y-2">
+                    {activePlotForModal.features.map((feat, idx) => (
+                      <div key={idx} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200/60 shadow-2xs">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span className="text-slate-800 font-semibold">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer / Actions */}
+            <div className="sticky bottom-0 bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
+              <div className="text-xs text-slate-500">
+                Official biometric transfer and dues clearance verified at Zedem Head Office.
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setActivePlotForModal(null)}
+                  className="w-full sm:w-auto px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+
+                <a
+                  href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20interested%20in%20reserving/booking%20plot%20${activePlotForModal.plotNumber}%20(${activePlotForModal.size}%20in%20${activePlotForModal.blockName}).%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4 text-white" />
+                  <span>Inquire on WhatsApp</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lead Inquire Modal */}
       <LeadModal
         isOpen={isLeadModalOpen}
         onClose={() => setIsLeadModalOpen(false)}
@@ -372,11 +827,13 @@ function PlotSearchContent() {
 
 export default function PlotSearchPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center pt-32">
-        <div className="w-8 h-8 border-4 border-[#7b002c] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center pt-32">
+          <div className="w-8 h-8 border-4 border-[#7b002c] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <PlotSearchContent />
     </Suspense>
   );
