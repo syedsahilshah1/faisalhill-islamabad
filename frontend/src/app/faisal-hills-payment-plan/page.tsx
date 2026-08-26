@@ -2,28 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  Building2, ShieldCheck, Download, MessageSquare, PhoneCall, CheckCircle2, 
-  MapPin, Clock, ArrowRight, HelpCircle, FileText, ChevronDown, CheckCircle, Info, Landmark, Layers, AlertCircle
+import {
+  Building2, ShieldCheck, Download, MessageSquare, PhoneCall, CheckCircle2,
+  MapPin, Clock, ArrowRight, HelpCircle, FileText, ChevronDown, ChevronUp, CheckCircle, Info, Landmark, Layers, AlertCircle,
+  Users, TrendingUp, Globe
 } from 'lucide-react';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import { blocksData } from '@/data/faisalHillsData';
 
-
-// Quick Facts list
-const quickFacts = [
-  { label: "Project", val: "Faisal Hills Islamabad, Taxila" },
-  { label: "Developer", val: "Zedem International (Pvt) Ltd / Faisal Town Group" },
-  { label: "Chairman", val: "Chaudhry Abdul Majeed" },
-  { label: "Launched", val: "2016" },
-  { label: "NOC Status", val: "Approved by Rawalpindi Development Authority (RDA)" },
-  { label: "Approved Area", val: "11,823 Kanals" },
-  { label: "Total Plots", val: "Approximately 24,000" },
-  { label: "Blocks", val: "Executive Block, Prime, Block A, B, B Ext, C, D" },
-  { label: "Plot Sizes", val: "5 Marla to 2 Kanal residential, plus commercial" },
-  { label: "Payment Options", val: "Full cash, or Booking down payment + quarterly installments" },
-  { label: "Lump Sum Discount", val: "Up to 20% on full cash payment" }
-];
 
 // Price table
 const residentialPlans = [
@@ -134,7 +120,8 @@ export default function FaisalHillsPaymentPlanPage() {
   const [selectedSize, setSelectedSize] = useState('5 Marla');
   const [preferredBlock, setPreferredBlock] = useState('Executive Block');
   const [submitted, setSubmitted] = useState(false);
-  const [openAccordion, setOpenAccordion] = useState<string | null>('5-marla');
+  const [isHeroSeeMoreOpen, setIsHeroSeeMoreOpen] = useState(false);
+  const [isAboutSeeMoreOpen, setIsAboutSeeMoreOpen] = useState(false);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,18 +143,15 @@ export default function FaisalHillsPaymentPlanPage() {
     const waText = encodeURIComponent(
       `Hello Faisal Hills Sales Team!\n\nI am interested in Booking under the Payment Plan:\nName: ${name}\nPhone: ${phone}\nPlot Size: ${selectedSize}\nPreferred Block: ${preferredBlock}`
     );
-    
+
     setTimeout(() => {
       window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
     }, 600);
   };
 
-  const toggleAccordion = (slug: string) => {
-    setOpenAccordion(openAccordion === slug ? null : slug);
-  };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20">
+    <div className="min-h-screen bg-slate-50">
       {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
@@ -200,20 +184,24 @@ export default function FaisalHillsPaymentPlanPage() {
       />
 
       {/* Hero Section */}
-      <section className="relative bg-slate-900 py-20 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 opacity-90" />
+      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
-        
-        <div className="relative z-10 max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
+        <div className="relative z-10 max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center px-6 lg:px-12">
+
           {/* Hero Left Content */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c]/30 text-rose-300 border border-rose-500/20">
               <Landmark className="w-3.5 h-3.5" />
               <span>Developer Rates Verified</span>
             </span>
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
-              Faisal Hills Payment Plan Verified Prices, Installments and Booking 
+              Faisal Hills Payment Plan
             </h1>
             <strong className="text-amber-400 text-sm sm:text-base font-bold uppercase tracking-wider block">
               Every plot size, every block, one clear price sheet. No guesswork.
@@ -221,12 +209,28 @@ export default function FaisalHillsPaymentPlanPage() {
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-sans">
               If you are searching for the Faisal Hills Payment Plan, you have probably already noticed the problem. One website tells you the society is cash only. Another publishes a 16 quarterly installment schedule. A third lists a 1 Kanal plot at a figure that is off by a factor of ten. That confusion costs buyers real money, and it is exactly why we built this page.
             </p>
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-sans">
-              Here you get the current Faisal Hills payment plan laid out the way a serious buyer actually needs it: total plot price, down payment, confirmation amount, quarterly installment amount, possession charges, development charges and the lump sum discount, all in one place. We cover residential plots and commercial plots across the Executive Block, Prime Block, Block A, Block B, B Extension, Block C and Block D.
-            </p>
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-sans">
-              Faisal Hills is an RDA approved project by Zedem International and the Faisal Town Group, developed under the leadership of Chaudhry Abdul Majeed. It sits on Main GT Road Taxila with direct Margalla Hills views, roughly ten minutes from B-17 Multi Gardens and under half an hour from the New Islamabad International Airport.
-            </p>
+
+            {isHeroSeeMoreOpen && (
+              <div className="space-y-3 pt-1 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl font-sans animate-in fade-in duration-300">
+                <p>
+                  Here you get the current Faisal Hills payment plan laid out the way a serious buyer actually needs it: total plot price, down payment, confirmation amount, quarterly installment amount, possession charges, development charges and the lump sum discount, all in one place. We cover residential plots and commercial plots across the Executive Block, Prime Block, Block A, Block B, B Extension, Block C and Block D.
+                </p>
+                <p>
+                  Faisal Hills is an RDA approved project by Zedem International and the Faisal Town Group, developed under the leadership of Chaudhry Abdul Majeed. It sits on Main GT Road Taxila with direct Margalla Hills views, roughly ten minutes from B-17 Multi Gardens and under half an hour from the New Islamabad International Airport.
+                </p>
+              </div>
+            )}
+
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsHeroSeeMoreOpen(!isHeroSeeMoreOpen)}
+                className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer py-1"
+              >
+                <span>{isHeroSeeMoreOpen ? 'See Less' : 'See More'}</span>
+                {isHeroSeeMoreOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <a
@@ -247,7 +251,7 @@ export default function FaisalHillsPaymentPlanPage() {
             </div>
 
             <div className="pt-2 text-xs text-slate-400 font-medium">
-              Speak to a sales consultant: <a href="tel:+923044811717" className="text-[#7b002c] font-bold hover:underline">+92 304 4811717</a>
+              Speak to a sales consultant: <a href="tel:+923044811717" className="text-amber-400 font-bold hover:underline">+92 304 4811717</a>
             </div>
           </div>
 
@@ -350,114 +354,110 @@ export default function FaisalHillsPaymentPlanPage() {
         </div>
       </section>
 
-      {/* Animated Block Ticker Strip */}
-      <div className="bg-slate-950 border-y border-slate-800 py-3 overflow-hidden relative">
-        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
-        <div className="ticker-track gap-0">
-          {[...Array(2)].map((_, setIdx) => (
-            <div key={setIdx} className="flex items-center gap-0 shrink-0">
-              <a href="/blocks/executive-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Executive Block</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Possession Ready</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/prime-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Prime Block</span>
-                <span className="text-[10px] text-amber-400 font-semibold font-sans ml-1.5">Installments Open</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-a" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block A</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Families Settled</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-b" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block B</span>
-                <span className="text-[10px] text-sky-400 font-semibold font-sans ml-1.5">Margalla Views</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-b1-extension" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">B Extension</span>
-                <span className="text-[10px] text-violet-400 font-semibold font-sans ml-1.5">Affordable Entry</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-c" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block C</span>
-                <span className="text-[10px] text-amber-400 font-semibold font-sans ml-1.5">800+ Commercial Plots</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/block-d" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Block D</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans ml-1.5">Possession Granted</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-              <a href="/blocks/faisal-jewel-islamabad" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 whitespace-nowrap font-sans tracking-wide group-hover:text-amber-400 transition-colors">Faisal Jewel Tower</span>
-                <span className="text-[10px] text-rose-400 font-semibold font-sans ml-1.5">22-Storey Skyscraper</span>
-              </a>
-              <span className="text-slate-700 text-lg select-none">|</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Trust Bar Facts Strip */}
-      <section className="bg-white border-y border-slate-200 py-8">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center">
-            {quickFacts.slice(0, 6).map((fact, idx) => (
-              <div key={idx} className="space-y-1">
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">{fact.label}</span>
-                <span className="text-slate-950 font-bold text-xs block truncate" title={fact.val}>{fact.val}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-[10px] text-slate-500 italic text-center font-sans">
-            The Faisal Hills payment plan details below reflect the current sales structure. Because rates move with market demand and block availability, we re-verify every figure before publishing.
-          </p>
-        </div>
-      </section>
 
       {/* About Section */}
-      <section className="max-w-[900px] mx-auto px-6 py-12 space-y-6">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-100 pb-2">
-          About Faisal Hills Islamabad and Why the Payment Structure Matters
-        </h2>
-        <p className="text-sm text-slate-600 leading-relaxed font-sans">
-          Faisal Hills launched in 2016 as one of the most ambitious private housing projects in the Rawalpindi and Islamabad corridor. Ten years on, it is not a paper society. Families live in the Executive Block. Children attend school in Block A. The Echo petrol station in Block C is operational. The Grand Central Mosque, the 171 Kanal sports complex, the Faisal Hills Arc monument and the Miyawaki Forest are all part of a master plan that has largely been delivered rather than promised.
-        </p>
-        <p className="text-sm text-slate-600 leading-relaxed font-sans">
-          That maturity changes how you should read the Faisal Hills payment plan. In a brand new society, an installment plan is a bet on future development. In Faisal Hills, a large share of the infrastructure already exists, which means you are buying into value that is visible today. Underground electricity, an underground water supply system, proper sewerage and drainage, a 225-foot main boulevard and 120-foot internal roads are already in the ground across the developed blocks.
-        </p>
-        <p className="text-sm text-slate-600 leading-relaxed font-sans">
-          The developer's track record supports this. Chaudhry Abdul Majeed has close to three decades in the market, with Faisal Town Phase 1 and Phase 2, Faisal Residencia, Faisal Margalla City, Faisal Villas, Faisal Tower and Faisal Jewel behind him. Delivery history is the single most useful predictor of whether an installment schedule will be honoured, and this one is strong.
-        </p>
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column Content */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="space-y-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
+                Development Reality & Delivery
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-snug">
+                About Faisal Hills Islamabad and Why the Payment Structure Matters
+              </h2>
+            </div>
 
-        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 mt-6 space-y-4">
-          <strong className="text-slate-900 font-serif text-base block border-b border-slate-200 pb-1">Who This Page Is For</strong>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+              Faisal Hills launched in 2016 as one of the most ambitious private housing projects in the Rawalpindi and Islamabad corridor. Ten years on, it is not a paper society. Families live in the Executive Block. Children attend school in Block A. The Echo petrol station in Block C is operational. The Grand Central Mosque, the 171 Kanal sports complex, the Faisal Hills Arc monument and the Miyawaki Forest are all part of a master plan that has largely been delivered rather than promised.
+            </p>
+
+            {/* Collapsible Details */}
+            {isAboutSeeMoreOpen && (
+              <div className="space-y-4 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans animate-in fade-in duration-300">
+                <p>
+                  That maturity changes how you should read the Faisal Hills payment plan. In a brand new society, an installment plan is a bet on future development. In Faisal Hills, a large share of the infrastructure already exists, which means you are buying into value that is visible today. Underground electricity, an underground water supply system, proper sewerage and drainage, a 225-foot main boulevard and 120-foot internal roads are already in the ground across the developed blocks.
+                </p>
+                <p>
+                  The developer's track record supports this. Chaudhry Abdul Majeed has close to three decades in the market, with Faisal Town Phase 1 and Phase 2, Faisal Residencia, Faisal Margalla City, Faisal Villas, Faisal Tower and Faisal Jewel behind him. Delivery history is the single most useful predictor of whether an installment schedule will be honoured, and this one is strong.
+                </p>
+              </div>
+            )}
+
             <div>
-              <strong>End Users:</strong> Home builders who want to see total pricing and hidden charges before breaking ground.
+              <button
+                type="button"
+                onClick={() => setIsAboutSeeMoreOpen(!isAboutSeeMoreOpen)}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors cursor-pointer py-1"
+              >
+                <span>{isAboutSeeMoreOpen ? 'See Less' : 'See More'}</span>
+                {isAboutSeeMoreOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
             </div>
-            <div>
-              <strong>Salaried Buyers:</strong> Individuals requiring realistic quarterly schedules equivalent to their cash flows.
-            </div>
-            <div>
-              <strong>Investors:</strong> Portfolio managers analyzing lump-sum cash discounts versus holding fees.
-            </div>
-            <div>
-              <strong>Overseas Clients:</strong> Expatriates requiring step-by-step distant booking instructions.
+
+            {/* Who This Page Is For */}
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+              <strong className="text-slate-900 font-serif text-sm block border-b border-slate-200 pb-1">
+                Who This Page Is For
+              </strong>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-sans text-slate-600 leading-relaxed">
+                <div className="flex items-start gap-2">
+                  <Users className="w-4 h-4 text-[#7b002c] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-slate-900">End Users:</strong> Home builders who want to see total pricing and hidden charges before breaking ground.
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-slate-900">Salaried Buyers:</strong> Individuals requiring realistic quarterly schedules equivalent to their cash flows.
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-slate-900">Investors:</strong> Portfolio managers analyzing lump-sum cash discounts versus holding fees.
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Globe className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-slate-900">Overseas Clients:</strong> Expatriates requiring step-by-step distant booking instructions.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Right Column Image Banner */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 group">
+              <div className="relative h-80 sm:h-96 w-full">
+                <img
+                  src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                  alt="Faisal Hills Master Development and Infrastructure Overview"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+              </div>
+              <div className="absolute bottom-0 inset-x-0 p-5 text-white space-y-1">
+                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block font-mono">
+                  Delivered Master Community
+                </span>
+                <h3 className="font-serif font-bold text-base text-white">
+                  11,823 Kanals RDA-Approved Development
+                </h3>
+                <p className="text-slate-300 text-xs font-sans">
+                  Underground utilities, 225ft boulevard, and active construction on ground.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -465,7 +465,7 @@ export default function FaisalHillsPaymentPlanPage() {
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-white border-y border-slate-200 space-y-6">
         <div className="max-w-3xl mx-auto space-y-4">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 text-center">
-            How the Faisal Hills Payment Plan Actually Works 
+            How the Faisal Hills Payment Plan Actually Works
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed text-center font-sans">
             Let us clear up the biggest source of confusion first, because it costs buyers money.
@@ -555,203 +555,325 @@ export default function FaisalHillsPaymentPlanPage() {
         </p>
       </section>
 
-      {/* Plot size breakdown expandable list */}
+      {/* Plot size breakdown expandable list in image form */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-200 pb-3">
-          Faisal Hills Payment Plan by Plot Size
-        </h2>
+        <div className="space-y-2 border-b border-slate-200 pb-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
+            Plot Category Breakdown
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            Faisal Hills Payment Plan by Plot Size
+          </h2>
+          <p className="text-xs text-slate-600 font-sans">
+            Explore verified installment breakdowns, booking down payments, dimensions, and buyer suitability for every residential plot cutting.
+          </p>
+        </div>
 
-        <div className="space-y-4 max-w-4xl">
-          {/* 5 Marla Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('5-marla')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {[
+            {
+              size: "5 Marla Plot Payment Plan",
+              dims: "25 × 50 (138.89 Sq. Yds)",
+              totalPrice: "PKR 5,990,000",
+              downPayment: "PKR 1,198,000 (20%)",
+              confirmation: "PKR 599,000 (10%)",
+              quarterly: "PKR 359,400",
+              monthlyEquiv: "PKR 119,800",
+              cashPrice: "PKR 4,792,000",
+              savings: "Save PKR 1,198,000",
+              image: "/images/imgi_44_Executive-Block.webp",
+              badge: "Most Requested Size",
+              badgeColor: "bg-emerald-600",
+              desc: "The 5 Marla payment plan is the most requested option in the society, and for good reason. At a total plot price of PKR 5,990,000, you book with a down payment of PKR 1,198,000, add a confirmation amount of PKR 599,000, then carry ten quarterly installments of PKR 359,400. That works out to a monthly installment equivalent of roughly PKR 119,800, which sits inside the budget of a dual-income household in the twin cities.",
+              bestSuited: "Best suited to: first-time buyers, young families, and investors who want the fastest resale liquidity. 5 Marla plots move quicker on resale than any other size in Faisal Hills."
+            },
+            {
+              size: "8 Marla Plot Payment Plan",
+              dims: "30 × 60 (200 Sq. Yds)",
+              totalPrice: "PKR 8,470,000",
+              downPayment: "PKR 1,694,000 (20%)",
+              confirmation: "PKR 847,000 (10%)",
+              quarterly: "PKR 508,200",
+              monthlyEquiv: "PKR 169,400",
+              cashPrice: "PKR 6,776,000",
+              savings: "Save PKR 1,694,000",
+              image: "/images/faisalarc (2).webp",
+              badge: "Sweet Spot Family Plot",
+              badgeColor: "bg-amber-600",
+              desc: "The 8 Marla payment plan covers a 30 x 60 plot at a total price of PKR 8,470,000. The booking amount is PKR 1,694,000, followed by a confirmation amount of PKR 847,000 and ten quarterly installments of PKR 508,200. Monthly equivalent: approximately PKR 169,400.",
+              bestSuited: "Best suited to: buyers who find 5 Marla too tight for a growing family but do not want the construction cost of a 10 Marla home. It is underrated and often has better availability."
+            },
+            {
+              size: "10 Marla Plot Payment Plan",
+              dims: "35 × 70 (272 Sq. Yds)",
+              totalPrice: "PKR 11,170,000",
+              downPayment: "PKR 2,234,000 (20%)",
+              confirmation: "PKR 1,117,000 (10%)",
+              quarterly: "PKR 670,200",
+              monthlyEquiv: "PKR 223,400",
+              cashPrice: "PKR 8,936,000",
+              savings: "Save PKR 2,234,000",
+              image: "/images/faisalarc (3).jpg",
+              badge: "Classic Twin-Cities Standard",
+              badgeColor: "bg-[#7b002c]",
+              desc: "The 10 Marla payment plan applies to a 35 x 70 plot at PKR 11,170,000 total. Down payment is PKR 2,234,000, confirmation is PKR 1,117,000, and the quarterly installment is PKR 670,200, or roughly PKR 223,400 per month.",
+              bestSuited: "Best suited to: classic twin-cities family living. It carries the strongest end-user demand of any size in Faisal Hills, which supports resale value even in a slow market."
+            },
+            {
+              size: "14 Marla Plot Payment Plan",
+              dims: "40 × 80 (356 Sq. Yds)",
+              totalPrice: "PKR 14,550,000",
+              downPayment: "PKR 2,910,000 (20%)",
+              confirmation: "PKR 1,455,000 (10%)",
+              quarterly: "PKR 873,000",
+              monthlyEquiv: "PKR 291,000",
+              cashPrice: "PKR 11,640,000",
+              savings: "Save PKR 2,910,000",
+              image: "/images/faisal-park.jpg",
+              badge: "Scarcity & High Value",
+              badgeColor: "bg-violet-600",
+              desc: "The 14 Marla payment plan sits at a total plot price of PKR 14,550,000 for a 40 x 80 plot. Expect a down payment of PKR 2,910,000, a confirmation amount of PKR 1,455,000, and ten quarterly installments of PKR 873,000.",
+              bestSuited: "Best suited to: premium luxury living. This size is relatively scarce, giving you close to Kanal-level living space without Kanal-level capital."
+            },
+            {
+              size: "1 Kanal Plot Payment Plan",
+              dims: "50 × 90 (500 Sq. Yds)",
+              totalPrice: "PKR 19,290,000",
+              downPayment: "PKR 3,858,000 (20%)",
+              confirmation: "PKR 1,929,000 (10%)",
+              quarterly: "PKR 1,157,400",
+              monthlyEquiv: "PKR 385,800",
+              cashPrice: "PKR 15,432,000",
+              savings: "Save PKR 3,858,000",
+              image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+              badge: "Luxury Estate Benchmark",
+              badgeColor: "bg-emerald-700",
+              desc: "The 1 Kanal payment plan covers a 50 x 90 plot at PKR 19,290,000. Booking requires PKR 3,858,000, confirmation PKR 1,929,000, and ten quarterly installments of PKR 1,157,400, with a monthly installment equivalent near PKR 385,800.",
+              bestSuited: "Best suited to: luxury home builders seeking direct Margalla views and elevated prestige at a fraction of Islamabad CDA sector rates."
+            },
+            {
+              size: "2 Kanal Plot Payment Plan",
+              dims: "75 × 120 (1,000 Sq. Yds)",
+              totalPrice: "PKR 37,360,000",
+              downPayment: "PKR 7,472,000 (20%)",
+              confirmation: "PKR 3,736,000 (10%)",
+              quarterly: "PKR 2,241,600",
+              monthlyEquiv: "PKR 747,200",
+              cashPrice: "PKR 29,888,000",
+              savings: "Save PKR 7,472,000",
+              image: "/images/imgi_38_Faisal-Hills-site-home-page-header.webp",
+              badge: "Palatial Farmhouse Tier",
+              badgeColor: "bg-amber-700",
+              desc: "The 2 Kanal payment plan is the premium tier at PKR 37,360,000 for a 75 x 120 plot. Down payment lands at PKR 7,472,000, confirmation at PKR 3,736,000, and quarterly installments at PKR 2,241,600.",
+              bestSuited: "Best suited to: ultra-luxury farmhouse estates and legacy property investors. Availability is limited and concentrated in Block A and Block C."
+            }
+          ].map((item, pidx) => (
+            <div
+              key={pidx}
+              className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col justify-between group"
             >
-              <span>5 Marla Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '5-marla' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '5-marla' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 5 Marla payment plan is the most requested option in the society, and for good reason. At a total plot price of PKR 5,990,000, you book with a down payment of PKR 1,198,000, add a confirmation amount of PKR 599,000, then carry ten quarterly installments of PKR 359,400. That works out to a monthly installment equivalent of roughly PKR 119,800, which sits inside the budget of a dual-income household in the twin cities.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  Best suited to: first-time buyers, young families, and investors who want the fastest resale liquidity. 5 Marla plots move quicker on resale than any other size in Faisal Hills.
-                </p>
-              </div>
-            )}
-          </div>
+              <div>
+                {/* Visual Image Header */}
+                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src={item.image}
+                    alt={item.size}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+                  
+                  {/* Top Badges */}
+                  <span className={`absolute top-3 left-3 text-[10px] font-bold text-white px-2.5 py-0.5 rounded-full shadow ${item.badgeColor}`}>
+                    {item.badge}
+                  </span>
 
-          {/* 8 Marla Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('8-marla')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <span>8 Marla Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '8-marla' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '8-marla' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 8 Marla payment plan covers a 30 x 60 plot at a total price of PKR 8,470,000. The booking amount is PKR 1,694,000, followed by a confirmation amount of PKR 847,000 and ten quarterly installments of PKR 508,200. Monthly equivalent: approximately PKR 169,400.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  This is the sweet spot for buyers who find 5 Marla too tight for a growing family but do not want the construction cost of a 10 Marla home. It is underrated and often has better availability.
-                </p>
-              </div>
-            )}
-          </div>
+                  <span className="absolute top-3 right-3 text-[10px] font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 font-mono">
+                    {item.dims}
+                  </span>
 
-          {/* 10 Marla Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('10-marla')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <span>10 Marla Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '10-marla' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '10-marla' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 10 Marla payment plan applies to a 35 x 70 plot at PKR 11,170,000 total. Down payment is PKR 2,234,000, confirmation is PKR 1,117,000, and the quarterly installment is PKR 670,200, or roughly PKR 223,400 per month.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  Ten Marla is the classic twin-cities family plot. It carries the strongest end-user demand of any size in Faisal Hills, which supports resale value even in a slow market.
-                </p>
-              </div>
-            )}
-          </div>
+                  {/* Bottom Image Overlay Title */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+                    <h3 className="font-serif font-bold text-lg text-white">
+                      {item.size}
+                    </h3>
+                    <span className="font-serif font-bold text-amber-400 text-sm">
+                      {item.totalPrice}
+                    </span>
+                  </div>
+                </div>
 
-          {/* 14 Marla Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('14-marla')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <span>14 Marla Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '14-marla' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '14-marla' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 14 Marla payment plan sits at a total plot price of PKR 14,550,000 for a 40 x 80 plot. Expect a down payment of PKR 2,910,000, a confirmation amount of PKR 1,455,000, and ten quarterly installments of PKR 873,000.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  This size is relatively scarce, which is precisely the argument for it. Scarcity supports price. It gives you close to Kanal-level living space without Kanal-level capital.
-                </p>
-              </div>
-            )}
-          </div>
+                {/* Key Price Metric Badges */}
+                <div className="grid grid-cols-3 gap-2 p-4 bg-slate-50 border-b border-slate-100 text-center font-sans">
+                  <div className="p-2 bg-white rounded-xl border border-slate-100">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase block">Down Payment</span>
+                    <strong className="text-xs text-amber-700 block font-mono mt-0.5">{item.downPayment}</strong>
+                  </div>
+                  <div className="p-2 bg-white rounded-xl border border-slate-100">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase block">10x Quarterly</span>
+                    <strong className="text-xs text-slate-900 block font-mono mt-0.5">{item.quarterly}</strong>
+                  </div>
+                  <div className="p-2 bg-white rounded-xl border border-slate-100">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase block">Cash (20% Off)</span>
+                    <strong className="text-xs text-emerald-700 block font-mono mt-0.5">{item.cashPrice}</strong>
+                  </div>
+                </div>
 
-          {/* 1 Kanal Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('1-kanal')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <span>1 Kanal Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '1-kanal' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '1-kanal' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 1 Kanal payment plan covers a 50 x 90 plot at PKR 19,290,000. Booking requires PKR 3,858,000, confirmation PKR 1,929,000, and ten quarterly installments of PKR 1,157,400, with a monthly installment equivalent near PKR 385,800.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  One Kanal is where Faisal Hills competes directly with established Islamabad sectors at a fraction of the price. The Margalla Hills views from the elevated sectors of Block B are the differentiator here.
-                </p>
+                {/* Detailed SEO Explanation */}
+                <div className="p-5 space-y-3 font-sans">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <div className="p-3 bg-rose-50/60 rounded-xl border border-rose-100 text-xs text-[#7b002c] font-medium leading-relaxed">
+                    {item.bestSuited}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* 2 Kanal Accordion */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-            <button
-              onClick={() => toggleAccordion('2-kanal')}
-              className="w-full p-5 text-left font-serif font-bold text-base text-slate-950 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <span>2 Kanal Plot Payment Plan</span>
-              <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openAccordion === '2-kanal' ? 'rotate-180' : ''}`} />
-            </button>
-            {openAccordion === '2-kanal' && (
-              <div className="p-5 border-t border-slate-100 text-xs text-slate-600 space-y-3 font-sans leading-relaxed">
-                <p>
-                  The 2 Kanal payment plan is the premium tier at PKR 37,360,000 for a 75 x 120 plot. Down payment lands at PKR 7,472,000, confirmation at PKR 3,736,000, and quarterly installments at PKR 2,241,600.
-                </p>
-                <p className="font-bold text-[#7b002c]">
-                  Availability is limited and concentrated in Block A and Block C. If you are considering this tier, call before you plan, because inventory changes weekly.
-                </p>
+              {/* Card Footer CTA */}
+              <div className="p-5 pt-0 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-emerald-700 font-mono">
+                  {item.savings}
+                </span>
+                <a
+                  href={`https://wa.me/923044811717?text=Hello%2C%20I%20would%20like%20the%20official%20schedule%20for%20${encodeURIComponent(item.size)}.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all inline-flex items-center gap-1.5"
+                >
+                  <span>Request Schedule</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Block wise details */}
       <section id="block-wise" className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-200 pb-3">
-          Faisal Hills Payment Plan Details Block by Block
-        </h2>
+        <div className="space-y-2 border-b border-slate-200 pb-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
+            Block-By-Block Financial Overview
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            Faisal Hills Payment Plan Details Block by Block
+          </h2>
+          <p className="text-xs text-slate-600 font-sans">
+            Compare development milestones, possession status, and installment options across every sector in Faisal Hills.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Executive Block</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              The Executive Block is the most developed and most expensive part of the society. It fronts directly onto GT Road, possession is fully granted, families are living there and businesses are trading. This is also where the majority of Faisal Hills commercial plots sit, benefiting from GT Road visibility.
-            </p>
-            <span className="text-[10px] text-amber-600 font-bold block pt-1 border-t border-slate-50">Mostly Resale (Cash Route)</span>
-          </div>
+          {[
+            {
+              name: "Executive Block",
+              slug: "executive-block",
+              image: "/images/imgi_44_Executive-Block.webp",
+              desc: "The Executive Block is the most developed and prestigious sector, fronting directly onto GT Road with 100% on-ground possession, operational commercial plazas, and ready villas.",
+              status: "Mostly Resale (Cash Route)",
+              badge: "Possession Ready",
+              badgeColor: "bg-emerald-600"
+            },
+            {
+              name: "Prime Block",
+              slug: "prime-block",
+              image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+              desc: "The Prime Block is the flagship residential sector positioned at the main entrance near Taxila Chowk with a 225-foot boulevard, underground electricity, and active installment bookings.",
+              status: "Installments Available on Bookings",
+              badge: "4-Year Plan Open",
+              badgeColor: "bg-amber-600"
+            },
+            {
+              name: "Block A",
+              slug: "block-a",
+              image: "/images/imgi_46_Mosques.webp",
+              desc: "Block A is the largest populated block with over 8,000 plots, Grand Jamia Mosque, Roots International School, Business Etihad Center, and fully completed carpeted roads.",
+              status: "Possession Granted (Cash Resale)",
+              badge: "Families Settled",
+              badgeColor: "bg-emerald-600"
+            },
+            {
+              name: "Block B",
+              slug: "block-b",
+              image: "/images/faisal-park.jpg",
+              desc: "Block B offers direct panoramic Margalla Hills views in a tranquil, eco-friendly setting between Block A and Block C, priced competitively with substantial capital appreciation.",
+              status: "Calm Setting & Scenic Views",
+              badge: "Margalla Views",
+              badgeColor: "bg-sky-600"
+            },
+            {
+              name: "B Extension",
+              slug: "block-b1-extension",
+              image: "/images/faisalarc (1).webp",
+              desc: "B Extension is one of the most accessible entry points into Faisal Hills, featuring its own community park, mosque, and seamless connectivity with Block B and Prime Block.",
+              status: "Lowest Down Payment Options",
+              badge: "Budget Friendly",
+              badgeColor: "bg-violet-600"
+            },
+            {
+              name: "Block C",
+              slug: "block-c",
+              image: "/images/faisal-forest.jpg",
+              desc: "Block C is a powerhouse sector with over 8,300 residential plots and 800+ commercial plots, operational Echo petrol station, Miyawaki Forest, and upcoming direct CPEC access.",
+              status: "M-1 & CPEC Connectivity potential",
+              badge: "800+ Commercials",
+              badgeColor: "bg-emerald-600"
+            },
+            {
+              name: "Block D",
+              slug: "block-d",
+              image: "/images/imgi_48_sports-arena.webp",
+              desc: "Block D is the latest delivered possession sector featuring over 2,400 plots, 100ft central avenues, 40ft streets, underground utilities, and active family home construction.",
+              status: "Possession Ready / Mixed Routes",
+              badge: "Possession Delivered",
+              badgeColor: "bg-emerald-600"
+            }
+          ].map((item, bidx) => (
+            <div
+              key={bidx}
+              className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col justify-between group"
+            >
+              <div>
+                <div className="relative h-44 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+                  <span className={`absolute top-3 left-3 text-[10px] font-bold text-white px-2.5 py-0.5 rounded-full shadow ${item.badgeColor}`}>
+                    {item.badge}
+                  </span>
+                </div>
 
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Prime Block</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              The Prime Block is the newest residential addition, positioned at the main society entrance near Taxila Chowk with a 225-foot boulevard and underground electricity. It borders Block A and B Extension.
-            </p>
-            <span className="text-[10px] text-emerald-600 font-bold block pt-1 border-t border-slate-50">Installments Available on Bookings</span>
-          </div>
+                <div className="p-5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                      {item.name}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-600 font-sans leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
 
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Block A</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Block A is the largest residential block by plot count, with more than 8,000 plots, a 225-foot main boulevard and 120-foot internal roads. Schools, mosques, hospitals and the sports complex are in place, and families are settled. The Business Etihad Center and the Civic Center sit here.
-            </p>
-            <span className="text-[10px] text-slate-500 font-bold block pt-1 border-t border-slate-50">Possession Granted (Cash Resale)</span>
-          </div>
-
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Block B</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Block B is the largest block by land area and carries the best direct Margalla Hills views in Faisal Hills. It sits between Block A and Block C in a quieter, greener setting, and it prices below Block A for a comparable standard of living.
-            </p>
-            <span className="text-[10px] text-slate-500 font-bold block pt-1 border-t border-slate-50">Calm Setting & Scenic Views</span>
-          </div>
-
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">B Extension</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              B Extension was created to absorb overflow demand from Block B and remains one of the most affordable entry points into the society. It has its own mosque, park and green spaces, and shares boundaries with Block B, Block A, Block D and the Prime Block.
-            </p>
-            <span className="text-[10px] text-emerald-600 font-bold block pt-1 border-t border-slate-50">Lowest Down Payment Options</span>
-          </div>
-
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Block C</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Block C is one of the two largest blocks, with more than 8,300 residential plots and over 800 commercial plots. The main boulevard and internal roads are complete, the Echo petrol station is operational, and the Miyawaki Forest conservation project sits within this block.
-            </p>
-            <span className="text-[10px] text-emerald-600 font-bold block pt-1 border-t border-slate-50">M-1 & CPEC Connectivity potential</span>
-          </div>
-
-          <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-2">
-            <h3 className="font-serif font-bold text-base text-[#7b002c]">Block D</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Block D is the newest block with possession delivered, offering more than 2,400 plots. The 100-foot main roads and 40-foot streets are complete, underground electricity, water and sewerage are functional, and owners are actively building homes.
-            </p>
-            <span className="text-[10px] text-slate-500 font-bold block pt-1 border-t border-slate-50">Possession Ready / Mixed Routes</span>
-          </div>
+              <div className="p-5 pt-0 border-t border-slate-50 flex items-center justify-between mt-2">
+                <span className="text-[10px] text-amber-700 font-bold font-mono">
+                  {item.status}
+                </span>
+                <Link
+                  href={`/blocks/${item.slug}`}
+                  className="text-xs font-bold text-[#7b002c] hover:text-[#9e1245] transition-colors inline-flex items-center gap-1"
+                >
+                  <span>View Details</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -819,7 +941,7 @@ export default function FaisalHillsPaymentPlanPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
-          
+
           {/* Chart Table */}
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
             <table className="w-full text-left text-xs border-collapse">
@@ -1193,7 +1315,7 @@ export default function FaisalHillsPaymentPlanPage() {
 
       {/* Why Choose Us & Investment Outlook */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-slate-900 text-white rounded-3xl my-8 space-y-10">
-        
+
         {/* Why Choose Us */}
         <div className="space-y-6">
           <div className="max-w-2xl space-y-2">

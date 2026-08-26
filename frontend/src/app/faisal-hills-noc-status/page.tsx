@@ -65,26 +65,27 @@ export default function FHNocStatusPage() {
     <div className="bg-[#fff8f6] min-h-screen text-slate-900 font-sans selection:bg-[#7b002c] selection:text-white pb-16">
       
       {/* Hero Banner Section */}
-      <section className="relative bg-[#4c050d] text-white overflow-hidden py-20 lg:py-28 border-b border-[#7b002c]/40">
+      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80')` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#4c050d] via-transparent to-[#4c050d]/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-sm backdrop-blur-md">
+          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span className="label-caps text-xs text-white tracking-widest font-bold">
+            <span className="text-xs text-white tracking-widest font-bold font-mono uppercase">
               RDA NOC Approved Society
             </span>
           </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-7xl text-white leading-tight">
+          <div className="max-w-4xl space-y-3">
+            <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white leading-tight">
               Faisal Hills NOC Status
             </h1>
-            <p className="text-slate-200 text-base sm:text-lg leading-relaxed max-w-3xl font-light font-sans">
+            <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl font-sans">
               Legally secure, RDA approved, and clear title layouts. Discover the official regulatory status, approved LOP details, and verify your plot authorization.
             </p>
           </div>

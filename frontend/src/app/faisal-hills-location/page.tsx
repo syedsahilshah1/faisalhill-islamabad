@@ -64,26 +64,27 @@ export default function FHLocationPage() {
     <div className="bg-[#fff8f6] min-h-screen text-slate-900 font-sans selection:bg-[#7b002c] selection:text-white pb-16">
       
       {/* Hero Banner Section */}
-      <section className="relative bg-[#4c050d] text-white overflow-hidden py-20 lg:py-28 border-b border-[#7b002c]/40">
+      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-35 mix-blend-overlay"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80')` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#4c050d] via-transparent to-[#4c050d]/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-sm backdrop-blur-md">
+          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">
             <MapPin className="w-4 h-4 text-amber-400" />
-            <span className="label-caps text-xs text-white tracking-widest font-bold">
+            <span className="text-xs text-white tracking-widest font-bold font-mono uppercase">
               Main N-5 GT Road, Taxila
             </span>
           </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-7xl text-white leading-tight">
+          <div className="max-w-4xl space-y-3">
+            <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white leading-tight">
               Faisal Hills Location
             </h1>
-            <p className="text-slate-200 text-base sm:text-lg leading-relaxed max-w-3xl font-light font-sans">
+            <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl font-sans">
               Perfectly positioned on Main GT Road near Taxila Bypass. Outstanding regional accessibility with direct linkages to CPEC, Margalla Avenue, M-1, and M-2 Motorways.
             </p>
           </div>
@@ -161,9 +162,9 @@ export default function FHLocationPage() {
             <h3 className="font-serif text-lg font-bold text-slate-900">Official Location Map</h3>
             <div className="relative overflow-hidden rounded-xl border border-slate-150 aspect-[16/9] bg-slate-100 flex items-center justify-center">
               <img
-                src="https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80"
+                src="/images/faisal-hills-master-plan-map-preview.webp"
                 alt="Faisal Hills Map Location"
-                className="w-full h-full object-cover opacity-90"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-slate-900/10 flex items-center justify-center">
                 <a

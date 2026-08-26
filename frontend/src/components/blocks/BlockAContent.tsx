@@ -380,7 +380,7 @@ export default function BlockAContent() {
     '/images/faisalhillarc.jpg',
     '/images/faisal-park.jpg',
     '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
-    '/images/faisal-hills-aerial.jpg',
+    '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
     '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
     '/images/imgi_44_Executive-Block.webp',
     '/images/faisal-roots-school.jpg'

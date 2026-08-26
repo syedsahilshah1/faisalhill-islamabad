@@ -128,7 +128,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Prime Block – Official Prices, 4-Year Payment Plan & Map',
         description: 'Faisal Hills Prime Block: Official fixed launch rates on 48-month easy installment plan. 100% RDA approved with GT Road & Margalla views.',
-        images: [{ url: '/images/faisal-hills-aerial.jpg' }]
+        images: [{ url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' }]
       }
     };
   }
@@ -1872,7 +1872,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                     {/* Plot Image */}
                     <div className="relative h-48 w-full overflow-hidden bg-slate-900">
                       <img
-                        src={plot.image || '/images/faisal-hills-aerial.jpg'}
+                        src={plot.image || '/images/imgi_44_Executive-Block.webp'}
                         alt={`Plot ${plot.plotNumber} in ${block.name}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                         loading="lazy"

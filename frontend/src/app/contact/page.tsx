@@ -98,7 +98,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 font-sans text-slate-900 selection:bg-[#7b002c] selection:text-white">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-[#7b002c] selection:text-white">
 
       {/* JSON-LD Structured Data Schema */}
       <script
@@ -152,7 +152,7 @@ export default function ContactPage() {
       {/* ========================================================= */}
       {/* SECTION 1: HERO SECTION                                   */}
       {/* ========================================================= */}
-      <section className="relative bg-[#091522] text-white py-14 sm:py-24 px-4 sm:px-8 lg:px-12 overflow-hidden border-b border-slate-800">
+      <section className="relative bg-[#091522] text-white pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 px-4 sm:px-8 lg:px-12 overflow-hidden border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
           style={{ backgroundImage: "url('/images/faisalhillarc.jpg')" }}

@@ -9,6 +9,7 @@ import {
 
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const metadata: Metadata = {
   title: "Faisal Hills Commercial Plots for Sale 2026 | Prices & Payment Plan",
@@ -105,7 +106,7 @@ const faqs = [
 
 export default function FaisalHillsCommercialPage() {
   return (
-    <div className="min-h-screen bg-slate-50 pt-20">
+    <div className="min-h-screen bg-slate-50">
       {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
@@ -137,43 +138,59 @@ export default function FaisalHillsCommercialPage() {
       />
 
       {/* Hero Section */}
-      <section className="relative bg-slate-900 py-20 px-6 overflow-hidden text-center sm:text-left">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 opacity-90" />
+      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
         
         <div className="relative z-10 max-w-4xl mx-auto space-y-6">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c]/30 text-rose-300 border border-rose-500/20">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>High Yield Investment</span>
-          </span>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
-            Faisal Hills Commercial Plots for Sale in Taxila, Islamabad
-          </h1>
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
-            Own a business address on GT Road, minutes from Islamabad and the M-1 Motorway. Explore verified Faisal Hills commercial plots across the Executive Block, A, B, C and D Blocks — available on cash and easy installments.
-          </p>
+          <ScrollReveal direction="down" delay={0}>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c]/30 text-rose-300 border border-rose-500/20">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>High Yield Investment</span>
+            </span>
+          </ScrollReveal>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>Book Your Commercial Plot</span>
-            </Link>
+          <ScrollReveal direction="up" delay={80}>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+              Faisal Hills Commercial Plots for Sale in Taxila, Islamabad
+            </h1>
+          </ScrollReveal>
 
-            <Link
-              href="/payment-plan"
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
-            >
-              <span>Get the 2026 Payment Plan</span>
-            </Link>
-          </div>
+          <ScrollReveal direction="up" delay={140}>
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-3xl">
+              Own a business address on GT Road, minutes from Islamabad and the M-1 Motorway. Explore verified Faisal Hills commercial plots across the Executive Block, A, B, C and D Blocks — available on cash and easy installments.
+            </p>
+          </ScrollReveal>
 
-          <div className="pt-4 text-xs text-slate-400 flex flex-wrap items-center justify-center sm:justify-start gap-6 border-t border-slate-800">
-            <span>✔ Verified listings</span>
-            <span>✔ Direct booking support</span>
-            <span>✔ Transfer & documentation assistance</span>
-          </div>
+          <ScrollReveal direction="up" delay={200}>
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <span>Book Your Commercial Plot</span>
+              </Link>
+
+              <Link
+                href="/payment-plan"
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+              >
+                <span>Get the 2026 Payment Plan</span>
+              </Link>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={240}>
+            <div className="pt-4 text-xs text-slate-400 flex flex-wrap items-center justify-center sm:justify-start gap-6 border-t border-slate-800">
+              <span>✔ Verified listings</span>
+              <span>✔ Direct booking support</span>
+              <span>✔ Transfer & documentation assistance</span>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -263,126 +280,146 @@ export default function FaisalHillsCommercialPage() {
 
           {/* Left: main intro text */}
           <div className="lg:col-span-7 space-y-5">
-            <div className="space-y-2">
-              <span className="label-caps text-[#7b002c] font-bold block">About Commercial</span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-100 pb-2">
-                Faisal Hills Commercial: A Business Address Where the Traffic Already Is
-              </h2>
-            </div>
-            <p className="text-sm text-slate-600 leading-relaxed font-sans">
-              Most people buy a residential plot to live somewhere. People buy a commercial plot for a completely different reason — to sit where the footfall is, and to let time do the rest. That is the short argument for Faisal Hills Commercial.
-            </p>
-            <p className="text-sm text-slate-600 leading-relaxed font-sans">
-              Faisal Hills is developed by Faisal Town (Pvt) Ltd and sits on GT Road near Taxila, on the Islamabad–Rawalpindi corridor. The society's commercial pockets are placed where they should be: along the main boulevard, near the civic centre, and around the entrance zones where daily traffic naturally slows down and stops.
-            </p>
-            <p className="text-sm text-slate-600 leading-relaxed font-sans">
-              For a shop, an office floor, a clinic, a restaurant or a small retail outlet, that placement matters more than almost anything else on the brochure.
-            </p>
+            <ScrollReveal direction="left" delay={50}>
+              <div className="space-y-2">
+                <span className="label-caps text-[#7b002c] font-bold block">About Commercial</span>
+                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-100 pb-2">
+                  Faisal Hills Commercial: A Business Address Where the Traffic Already Is
+                </h2>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={100}>
+              <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-sans">
+                <p>
+                  Most people buy a residential plot to live somewhere. People buy a commercial plot for a completely different reason — to sit where the footfall is, and to let time do the rest. That is the short argument for Faisal Hills Commercial.
+                </p>
+                <p>
+                  Faisal Hills is developed by Faisal Town (Pvt) Ltd and sits on GT Road near Taxila, on the Islamabad–Rawalpindi corridor. The society's commercial pockets are placed where they should be: along the main boulevard, near the civic centre, and around the entrance zones where daily traffic naturally slows down and stops.
+                </p>
+                <p>
+                  For a shop, an office floor, a clinic, a restaurant or a small retail outlet, that placement matters more than almost anything else on the brochure.
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
 
           {/* Right: Key Considerations Card */}
-          <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-            <h3 className="font-serif font-bold text-base text-slate-900 border-b border-slate-100 pb-2">What Buyers Typically Weigh</h3>
-            <div className="space-y-3 text-xs font-sans text-slate-700 leading-relaxed">
-              <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">①</span>
-                <div>
-                  <strong className="block text-slate-900">Location within the society</strong>
-                  Is the plot boulevard-facing, corner, or tucked inside a lane?
+          <div className="lg:col-span-5">
+            <ScrollReveal direction="right" delay={120}>
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                <h3 className="font-serif font-bold text-base text-slate-900 border-b border-slate-100 pb-2">What Buyers Typically Weigh</h3>
+                <div className="space-y-3 text-xs font-sans text-slate-700 leading-relaxed">
+                  <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">①</span>
+                    <div>
+                      <strong className="block text-slate-900">Location within the society</strong>
+                      Is the plot boulevard-facing, corner, or tucked inside a lane?
+                    </div>
+                  </div>
+                  <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">②</span>
+                    <div>
+                      <strong className="block text-slate-900">Cost and terms</strong>
+                      What does it take in cash or on installments? See the <Link href="/faisal-hills-payment-plan" className="text-[#7b002c] font-bold hover:underline">payment plan</Link>.
+                    </div>
+                  </div>
+                  <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">③</span>
+                    <div>
+                      <strong className="block text-slate-900">Timing</strong>
+                      Is the block developed enough to open a business now, or is it a hold-and-appreciate play?
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">②</span>
-                <div>
-                  <strong className="block text-slate-900">Cost and terms</strong>
-                  What does it take in cash or on installments? See the <Link href="/faisal-hills-payment-plan" className="text-[#7b002c] font-bold hover:underline">payment plan</Link>.
-                </div>
-              </div>
-              <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[#7b002c] font-bold mt-0.5 shrink-0">③</span>
-                <div>
-                  <strong className="block text-slate-900">Timing</strong>
-                  Is the block developed enough to open a business now, or is it a hold-and-appreciate play?
-                </div>
-              </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Services Grid */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="label-caps text-[#7b002c] font-bold block">Services</span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            What We Handle for You
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600">
-            We work the file from the first phone call to the day the transfer letter is in your hand.
-          </p>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="label-caps text-[#7b002c] font-bold block">Services</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              What We Handle for You
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600">
+              We work the file from the first phone call to the day the transfer letter is in your hand.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <Building2 className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Commercial Plot Booking</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Fresh bookings in the blocks currently open for Faisal Hills commercial plots booking, with the form, dues and schedule explained line by line before you sign anything.
-            </p>
-          </div>
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <ShoppingBag className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Verified Resale Listings</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Live inventory of Faisal Hills commercial property for sale from existing owners — dealer-verified, with file status checked before we show it to you.
-            </p>
-          </div>
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <SlidersHorizontal className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Installment Plan Guidance</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              A clear walkthrough of Faisal Hills commercial plots on installments — down payment, quarterly amounts, possession-linked dues and what happens if a date slips.
-            </p>
-          </div>
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <LayoutGrid className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Block & Location Advisory</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Honest input on which block suits your plan. A restaurant needs different frontage than a corporate office. We will tell you when a cheaper plot is actually the wrong plot.
-            </p>
-          </div>
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <ShieldCheck className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Transfer & Documentation</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Society transfer, dues clearance, seller verification and file handover. This is the step where most deals go wrong, so we handle it ourselves.
-            </p>
-          </div>
-          <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3">
-            <TrendingUp className="w-5 h-5 text-[#7b002c]" />
-            <h3 className="font-serif font-bold text-base text-slate-900">Investment & Rental Consultancy</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Whether you are buying to build, buying to hold, or buying to lease — we map the realistic outcomes for each, including expected timelines.
-            </p>
-          </div>
+          {[
+            {
+              icon: Building2,
+              title: "Commercial Plot Booking",
+              desc: "Fresh bookings in the blocks currently open for Faisal Hills commercial plots booking, with the form, dues and schedule explained line by line before you sign anything."
+            },
+            {
+              icon: ShoppingBag,
+              title: "Verified Resale Listings",
+              desc: "Live inventory of Faisal Hills commercial property for sale from existing owners — dealer-verified, with file status checked before we show it to you."
+            },
+            {
+              icon: SlidersHorizontal,
+              title: "Installment Plan Guidance",
+              desc: "A clear walkthrough of Faisal Hills commercial plots on installments — down payment, quarterly amounts, possession-linked dues and what happens if a date slips."
+            },
+            {
+              icon: LayoutGrid,
+              title: "Block & Location Advisory",
+              desc: "Honest input on which block suits your plan. A restaurant needs different frontage than a corporate office. We will tell you when a cheaper plot is actually the wrong plot."
+            },
+            {
+              icon: ShieldCheck,
+              title: "Transfer & Documentation",
+              desc: "Society transfer, dues clearance, seller verification and file handover. This is the step where most deals go wrong, so we handle it ourselves."
+            },
+            {
+              icon: TrendingUp,
+              title: "Investment & Rental Consultancy",
+              desc: "Whether you are buying to build, buying to hold, or buying to lease — we map the realistic outcomes for each, including expected timelines."
+            }
+          ].map((srv, sIdx) => {
+            const IconComp = srv.icon;
+            return (
+              <ScrollReveal key={sIdx} direction="pop" delay={sIdx * 60}>
+                <div className="p-6 bg-slate-50 border border-slate-200/60 rounded-2xl space-y-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+                  <IconComp className="w-5 h-5 text-[#7b002c]" />
+                  <h3 className="font-serif font-bold text-base text-slate-900">{srv.title}</h3>
+                  <p className="text-xs text-slate-600 font-sans leading-relaxed">
+                    {srv.desc}
+                  </p>
+                </div>
+              </ScrollReveal>
+            );
+          })}
         </div>
       </section>
 
       {/* Interactive Map Section */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
-        <div className="space-y-2 text-center max-w-2xl mx-auto">
-          <span className="label-caps text-[#7b002c] font-bold block">Commercial Master Plan</span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Interactive Commercial Hotspots & Plots Map
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600">
-            Select the "Commercial Hotspots" tab to locate Faisal Jewel, Civic Center, and other prime business locations.
-          </p>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2 text-center max-w-2xl mx-auto">
+            <span className="label-caps text-[#7b002c] font-bold block">Commercial Master Plan</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Interactive Commercial Hotspots & Plots Map
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600">
+              Select the "Commercial Hotspots" tab to locate Faisal Jewel, Civic Center, and other prime business locations.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="bg-white rounded-3xl p-4 shadow-xl border border-slate-200">
-          <InteractiveMasterPlan defaultViewMode="commercial" initialBlockSlug="all" />
-        </div>
+        <ScrollReveal direction="pop" delay={100}>
+          <div className="bg-white rounded-3xl p-4 shadow-xl border border-slate-200">
+            <InteractiveMasterPlan defaultViewMode="commercial" initialBlockSlug="all" />
+          </div>
+        </ScrollReveal>
         <p className="text-[10px] text-slate-500 italic text-center">
           Review the <Link href="/master-plan" className="text-[#7b002c] font-bold hover:underline">full Faisal Hills master plan</Link> for detailed layout grids.
         </p>
@@ -390,60 +427,64 @@ export default function FaisalHillsCommercialPage() {
 
       {/* Pricing Guide Table */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-8 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-4">
-          <span className="label-caps text-[#7b002c] font-bold block">Pricing Matrix 2026</span>
-          <h2 className="font-serif text-2xl font-bold text-slate-900">
-            Faisal Hills Commercial Plot Prices
-          </h2>
-          <p className="text-xs text-slate-600 font-sans">
-            Rates differ by block, size, road frontage and corner category, and they change with market conditions. Check the live pricing spreads:
-          </p>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2 border-b border-slate-200 pb-4">
+            <span className="label-caps text-[#7b002c] font-bold block">Pricing Matrix 2026</span>
+            <h2 className="font-serif text-2xl font-bold text-slate-900">
+              Faisal Hills Commercial Plot Prices
+            </h2>
+            <p className="text-xs text-slate-600 font-sans">
+              Rates differ by block, size, road frontage and corner category, and they change with market conditions. Check the live pricing spreads:
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-              <tr>
-                <th className="p-4">Plot Size</th>
-                <th className="p-4">Typical Use</th>
-                <th className="p-4">Approximate Price Range (PKR)</th>
-                <th className="p-4">Installment Option</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#7b002c]">5 Marla Commercial</td>
-                <td className="p-4 font-sans">Shops, retail clinics, service counters</td>
-                <td className="p-4 font-bold">1.2 Crore – 1.8 Crore</td>
-                <td className="p-4 text-emerald-600 font-semibold">Available on Resale Terms</td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#7b002c]">8 Marla Commercial</td>
-                <td className="p-4 font-sans">Multi-shop units, corporate branch, showrooms</td>
-                <td className="p-4 font-bold">2.2 Crore – 3.8 Crore</td>
-                <td className="p-4 text-emerald-600 font-semibold">Quarterly Installments Available</td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#7b002c]">10 Marla Commercial</td>
-                <td className="p-4 font-sans">Offices, restaurants, clinics, bank sites</td>
-                <td className="p-4 font-bold">3.5 Crore – 5.5 Crore</td>
-                <td className="p-4 text-emerald-600 font-semibold">Installments / Cash Resale</td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#7b002c]">12 Marla Commercial</td>
-                <td className="p-4 font-sans">High-rise corporate use, showrooms</td>
-                <td className="p-4 font-bold">4.5 Crore – 7.5 Crore</td>
-                <td className="p-4 text-emerald-600 font-semibold">Installments / Cash Resale</td>
-              </tr>
-              <tr className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#7b002c]">1 Kanal Commercial</td>
-                <td className="p-4 font-sans">High-rise shopping malls, commercial plazas</td>
-                <td className="p-4 font-bold">8.0 Crore – 15.0 Crore</td>
-                <td className="p-4 text-[#7b002c] font-semibold">Lump-sum Cash Resale</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <ScrollReveal direction="up" delay={100}>
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
+                <tr>
+                  <th className="p-4">Plot Size</th>
+                  <th className="p-4">Typical Use</th>
+                  <th className="p-4">Approximate Price Range (PKR)</th>
+                  <th className="p-4">Installment Option</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-[#7b002c]">5 Marla Commercial</td>
+                  <td className="p-4 font-sans">Shops, retail clinics, service counters</td>
+                  <td className="p-4 font-bold">1.2 Crore – 1.8 Crore</td>
+                  <td className="p-4 text-emerald-600 font-semibold">Available on Resale Terms</td>
+                </tr>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-[#7b002c]">8 Marla Commercial</td>
+                  <td className="p-4 font-sans">Multi-shop units, corporate branch, showrooms</td>
+                  <td className="p-4 font-bold">2.2 Crore – 3.8 Crore</td>
+                  <td className="p-4 text-emerald-600 font-semibold">Quarterly Installments Available</td>
+                </tr>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-[#7b002c]">10 Marla Commercial</td>
+                  <td className="p-4 font-sans">Offices, restaurants, clinics, bank sites</td>
+                  <td className="p-4 font-bold">3.5 Crore – 5.5 Crore</td>
+                  <td className="p-4 text-emerald-600 font-semibold">Installments / Cash Resale</td>
+                </tr>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-[#7b002c]">12 Marla Commercial</td>
+                  <td className="p-4 font-sans">High-rise corporate use, showrooms</td>
+                  <td className="p-4 font-bold">4.5 Crore – 7.5 Crore</td>
+                  <td className="p-4 text-emerald-600 font-semibold">Installments / Cash Resale</td>
+                </tr>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-[#7b002c]">1 Kanal Commercial</td>
+                  <td className="p-4 font-sans">High-rise shopping malls, commercial plazas</td>
+                  <td className="p-4 font-bold">8.0 Crore – 15.0 Crore</td>
+                  <td className="p-4 text-[#7b002c] font-semibold">Lump-sum Cash Resale</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ScrollReveal>
         <p className="text-[10px] text-slate-500 italic text-center">
           * Note: Prices move fast. You can also <a href="https://www.zameen.com/" target="_blank" rel="noopener noreferrer" className="text-[#7b002c] font-bold hover:underline">check live market listings</a> as an independent second reference point.
         </p>
@@ -451,26 +492,30 @@ export default function FaisalHillsCommercialPage() {
 
       {/* Commercial Pockets by Block */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-4">
-          <span className="label-caps text-[#7b002c] font-bold block">Location Mapping</span>
-          <h2 className="font-serif text-2xl font-bold text-slate-900">
-            Faisal Hills Commercial Pockets by Block
-          </h2>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2 border-b border-slate-200 pb-4">
+            <span className="label-caps text-[#7b002c] font-bold block">Location Mapping</span>
+            <h2 className="font-serif text-2xl font-bold text-slate-900">
+              Faisal Hills Commercial Pockets by Block
+            </h2>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blockCommercials.map((block, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
-              <div className="space-y-2">
-                <h3 className="font-serif font-bold text-base text-[#7b002c]">{block.name}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  {block.description}
-                </p>
+            <ScrollReveal key={idx} direction="pop" delay={(idx % 3) * 60}>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+                <div className="space-y-2">
+                  <h3 className="font-serif font-bold text-base text-[#7b002c]">{block.name}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                    {block.description}
+                  </p>
+                </div>
+                <div className="pt-2 text-[11px] font-semibold text-slate-500 border-t border-slate-50">
+                  <span className="text-[#7b002c] font-bold">Best suited for:</span> {block.suitability}
+                </div>
               </div>
-              <div className="pt-2 text-[11px] font-semibold text-slate-500 border-t border-slate-50">
-                <span className="text-[#7b002c] font-bold">Best suited for:</span> {block.suitability}
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -479,166 +524,173 @@ export default function FaisalHillsCommercialPage() {
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           <div className="lg:col-span-8 space-y-4">
-            <span className="label-caps text-[#7b002c] font-bold block">Payment Structure</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Commercial Payment Plan & Installments
-            </h2>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              The reason installment buying works well for commercial land is simple: you lock today's rate and pay it out of tomorrow's income, while the asset appreciates in your name the whole time.
-            </p>
+            <ScrollReveal direction="left" delay={50}>
+              <div className="space-y-2">
+                <span className="label-caps text-[#7b002c] font-bold block">Payment Structure</span>
+                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+                  Commercial Payment Plan & Installments
+                </h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  The reason installment buying works well for commercial land is simple: you lock today's rate and pay it out of tomorrow's income, while the asset appreciates in your name the whole time.
+                </p>
+              </div>
+            </ScrollReveal>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-sans">
-              <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">DP</span>
-                <div><strong className="text-slate-900 block">Down payment</strong><span className="text-slate-500">The booking amount that reserves your plot and starts the file.</span></div>
-              </div>
-              <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">CI</span>
-                <div><strong className="text-slate-900 block">Confirmation instalment</strong><span className="text-slate-500">Payable within a set window after booking.</span></div>
-              </div>
-              <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">QI</span>
-                <div><strong className="text-slate-900 block">Quarterly instalments</strong><span className="text-slate-500">Spread over a fixed number of quarters.</span></div>
-              </div>
-              <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">PD</span>
-                <div><strong className="text-slate-900 block">Possession dues</strong><span className="text-slate-500">Payable at handover stage.</span></div>
-              </div>
+              <ScrollReveal direction="up" delay={80}>
+                <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">DP</span>
+                  <div><strong className="text-slate-900 block">Down payment</strong><span className="text-slate-500">The booking amount that reserves your plot and starts the file.</span></div>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal direction="up" delay={120}>
+                <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">CI</span>
+                  <div><strong className="text-slate-900 block">Confirmation instalment</strong><span className="text-slate-500">Payable within a set window after booking.</span></div>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal direction="up" delay={160}>
+                <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">QI</span>
+                  <div><strong className="text-slate-900 block">Quarterly instalments</strong><span className="text-slate-500">Spread over a fixed number of quarters.</span></div>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal direction="up" delay={200}>
+                <div className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="w-7 h-7 rounded-lg bg-[#7b002c] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">PD</span>
+                  <div><strong className="text-slate-900 block">Possession dues</strong><span className="text-slate-500">Payable at handover stage.</span></div>
+                </div>
+              </ScrollReveal>
             </div>
           </div>
-          <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <div className="space-y-3">
-              <strong className="text-slate-900 font-serif text-base block border-b border-slate-100 pb-2">Plan Summary Snapshot</strong>
-              <div className="space-y-2 text-xs font-sans text-slate-600">
-                <div className="flex justify-between"><span>Down Payment</span><span className="font-bold">20% - 30%</span></div>
-                <div className="flex justify-between"><span>Confirmation</span><span className="font-bold">30 Days</span></div>
-                <div className="flex justify-between"><span>Tenure</span><span className="font-bold">12 - 16 Quarters</span></div>
-                <div className="flex justify-between"><span>Possession Dues</span><span className="font-bold">Linked to Handover</span></div>
+          <div className="lg:col-span-4">
+            <ScrollReveal direction="right" delay={100} className="h-full">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                <div className="space-y-3">
+                  <strong className="text-slate-900 font-serif text-base block border-b border-slate-100 pb-2">Plan Summary Snapshot</strong>
+                  <div className="space-y-2 text-xs font-sans text-slate-600">
+                    <div className="flex justify-between"><span>Down Payment</span><span className="font-bold">20% - 30%</span></div>
+                    <div className="flex justify-between"><span>Confirmation</span><span className="font-bold">30 Days</span></div>
+                    <div className="flex justify-between"><span>Tenure</span><span className="font-bold">12 - 16 Quarters</span></div>
+                    <div className="flex justify-between"><span>Possession Dues</span><span className="font-bold">Linked to Handover</span></div>
+                  </div>
+                </div>
+                <Link
+                  href="/faisal-hills-payment-plan"
+                  className="mt-6 w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl text-center shadow-sm transition-all duration-300 block"
+                >
+                  Request Full Payment Schedule
+                </Link>
               </div>
-            </div>
-            <Link
-              href="/payment-plan"
-              className="mt-6 w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl text-center shadow-sm transition-all duration-300 block"
-            >
-              Request Full Payment Schedule
-            </Link>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Benefits */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-slate-900 text-white rounded-3xl my-8">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-slate-900 text-white rounded-3xl my-8 shadow-xl">
         <div className="space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white">
-              Why Invest in Faisal Hills Commercial Property?
-            </h2>
-            <p className="text-xs text-slate-400">
-              Key investment drivers that support long-term capital appreciation and rental yield:
-            </p>
-          </div>
+          <ScrollReveal direction="up" delay={50}>
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                Why Invest in Faisal Hills Commercial Property?
+              </h2>
+              <p className="text-xs text-slate-400">
+                Key investment drivers that support long-term capital appreciation and rental yield:
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs">
-              <h4 className="text-sm font-bold text-rose-300 font-serif">Dual Access Traffic</h4>
-              <p className="text-slate-400 leading-relaxed font-sans">
-                Positioned directly off GT Road with upcoming interchange link to M-1 Motorway. Captures local and pass-through customers.
-              </p>
-            </div>
-            <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs">
-              <h4 className="text-sm font-bold text-rose-300 font-serif">Captive Local Footfall</h4>
-              <p className="text-slate-400 leading-relaxed font-sans">
-                Serves thousands of resident families inside the gated community who utilize these central commercial zones daily.
-              </p>
-            </div>
-            <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs">
-              <h4 className="text-sm font-bold text-rose-300 font-serif">Built-in Scarcity</h4>
-              <p className="text-slate-400 leading-relaxed font-sans">
-                Only a minor percentage of society land is allocated to commercial sectors, ensuring natural supply constraints. Compare with <Link href="/commercial-plots-islamabad" className="text-rose-300 font-bold hover:underline">commercial plots in Islamabad</Link> allocations.
-              </p>
-            </div>
+            <ScrollReveal direction="pop" delay={0}>
+              <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs h-full hover:border-[#7b002c]/50 transition-colors">
+                <h4 className="text-sm font-bold text-rose-300 font-serif">Dual Access Traffic</h4>
+                <p className="text-slate-400 leading-relaxed font-sans">
+                  Positioned directly off GT Road with upcoming interchange link to M-1 Motorway. Captures local and pass-through customers.
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="pop" delay={80}>
+              <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs h-full hover:border-[#7b002c]/50 transition-colors">
+                <h4 className="text-sm font-bold text-rose-300 font-serif">Captive Local Footfall</h4>
+                <p className="text-slate-400 leading-relaxed font-sans">
+                  Serves thousands of resident families inside the gated community who utilize these central commercial zones daily.
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="pop" delay={160}>
+              <div className="bg-slate-850 p-6 rounded-xl border border-slate-800 space-y-2 text-xs h-full hover:border-[#7b002c]/50 transition-colors">
+                <h4 className="text-sm font-bold text-rose-300 font-serif">Built-in Scarcity</h4>
+                <p className="text-slate-400 leading-relaxed font-sans">
+                  Only a minor percentage of society land is allocated to commercial sectors, ensuring natural supply constraints. Compare with <Link href="/commercial-plots-islamabad" className="text-rose-300 font-bold hover:underline">commercial plots in Islamabad</Link> allocations.
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Booking Process stepper */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-white rounded-3xl border border-slate-200 space-y-6">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="label-caps text-[#7b002c] font-bold block">Booking Steps</span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            How to Book a Faisal Hills Commercial Plot
-          </h2>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="label-caps text-[#7b002c] font-bold block">Booking Steps</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              How to Book a Faisal Hills Commercial Plot
+            </h2>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 pt-4">
-
-          <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-sm">01</span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans">Step 1</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-serif font-bold text-sm text-slate-900">Identify Plot Purpose</h3>
-              <p className="text-xs text-slate-500 font-sans leading-relaxed">Select size and block based on whether you plan shops, offices, or mixed-use.</p>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-sm">02</span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans">Step 2</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-serif font-bold text-sm text-slate-900">Review Inventory</h3>
-              <p className="text-xs text-slate-500 font-sans leading-relaxed">Review live availabilities, road width premiums, and sector corner locations.</p>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-sm">03</span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans">Step 3</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-serif font-bold text-sm text-slate-900">Site Inspection</h3>
-              <p className="text-xs text-slate-500 font-sans leading-relaxed">Walk the ground, locate the block boundary, and check neighboring structures.</p>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-sm">04</span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans">Step 4</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-serif font-bold text-sm text-slate-900">Select Terms</h3>
-              <p className="text-xs text-slate-500 font-sans leading-relaxed">Choose between cash payment discount or standard quarterly installment plan.</p>
-            </div>
-          </div>
-
-          <div className="bg-[#7b002c] p-5 rounded-2xl hover:bg-[#9e1245] transition-all duration-300 flex flex-col space-y-4 text-white">
-            <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-sm">05</span>
-              <span className="text-[10px] text-rose-200 font-bold uppercase tracking-wider font-sans">Final Step</span>
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-serif font-bold text-sm text-white">Execute Booking</h3>
-              <p className="text-xs text-rose-100 font-sans leading-relaxed">Complete documentation, submit down payment draft, and receive allotment letter.</p>
-            </div>
-          </div>
-
+          {[
+            { step: '01', label: 'Step 1', title: 'Identify Plot Purpose', desc: 'Select size and block based on whether you plan shops, offices, or mixed-use.' },
+            { step: '02', label: 'Step 2', title: 'Review Inventory', desc: 'Review live availabilities, road width premiums, and sector corner locations.' },
+            { step: '03', label: 'Step 3', title: 'Site Inspection', desc: 'Walk the ground, locate the block boundary, and check neighboring structures.' },
+            { step: '04', label: 'Step 4', title: 'Select Terms', desc: 'Choose between cash payment discount or standard quarterly installment plan.' },
+            { step: '05', label: 'Final Step', title: 'Execute Booking', desc: 'Complete documentation, submit down payment draft, and receive allotment letter.', highlight: true }
+          ].map((st, sIdx) => (
+            <ScrollReveal key={sIdx} direction="pop" delay={sIdx * 60}>
+              <div className={`p-5 rounded-2xl transition-all duration-300 flex flex-col space-y-4 h-full ${
+                st.highlight
+                  ? 'bg-[#7b002c] hover:bg-[#9e1245] text-white shadow-lg'
+                  : 'bg-slate-50 border border-slate-200/80 hover:shadow-md hover:-translate-y-0.5'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm ${
+                    st.highlight ? 'bg-white/10 text-white' : 'bg-[#7b002c]/10 text-[#7b002c]'
+                  }`}>
+                    {st.step}
+                  </span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider font-sans ${
+                    st.highlight ? 'text-rose-200' : 'text-slate-400'
+                  }`}>
+                    {st.label}
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className={`font-serif font-bold text-sm ${st.highlight ? 'text-white' : 'text-slate-900'}`}>{st.title}</h3>
+                  <p className={`text-xs font-sans leading-relaxed ${st.highlight ? 'text-rose-100' : 'text-slate-500'}`}>{st.desc}</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </section>
 
       {/* Accordion FAQ Section */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
-        <div className="space-y-1">
-          <span className="label-caps text-[#7b002c] font-bold block">Knowledge Base</span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Frequently Asked Questions
-          </h2>
-        </div>
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-1">
+            <span className="label-caps text-[#7b002c] font-bold block">Knowledge Base</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Frequently Asked Questions
+            </h2>
+          </div>
+        </ScrollReveal>
 
-        <FaqAccordion faqs={faqs.map(f => ({ question: f.q, answer: f.a }))} blockName="Faisal Hills Commercial" />
+        <ScrollReveal direction="up" delay={100}>
+          <FaqAccordion faqs={faqs.map(f => ({ question: f.q, answer: f.a }))} blockName="Faisal Hills Commercial" />
+        </ScrollReveal>
         <p className="text-[10px] text-slate-500 italic text-center">
           Read more about approvals in our <Link href="/faisal-hills-location" className="text-[#7b002c] font-bold hover:underline">Faisal Hills location and accessibility guide</Link> page.
         </p>
@@ -646,37 +698,40 @@ export default function FaisalHillsCommercialPage() {
 
       {/* Closing CTA */}
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 pb-16">
-        <div className="rounded-3xl bg-[#4c050d] text-white p-8 lg:p-12 border border-[#7b002c] shadow-2xl flex flex-col items-center justify-center text-center space-y-6">
-          <div className="space-y-3 max-w-2xl">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">Consultation</span>
-            <h2 className="font-serif text-2xl sm:text-3xl text-white">
-              Let's Find the Right Commercial Plot
-            </h2>
-            <p className="text-slate-200 text-xs sm:text-sm leading-relaxed">
-              We check file status, dues, and transfer clearances before presenting any commercial options. Get in touch with our commercial desk or contact our property consultants.
-            </p>
-          </div>
+        <ScrollReveal direction="pop" delay={50}>
+          <div className="rounded-3xl bg-slate-950 text-white p-8 lg:p-12 border border-slate-800 shadow-2xl flex flex-col items-center justify-center text-center space-y-6 relative overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#7b002c]/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="space-y-3 max-w-2xl relative z-10">
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block">Consultation</span>
+              <h2 className="font-serif text-2xl sm:text-3xl text-white">
+                Let's Find the Right Commercial Plot
+              </h2>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                We check file status, dues, and transfer clearances before presenting any commercial options. Get in touch with our commercial desk or contact our property consultants.
+              </p>
+            </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-            <a
-              href="https://wa.me/923044811717"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <MessageSquare className="w-4 h-4 text-[#7b002c]" />
-              <span>CHAT VIA WHATSAPP</span>
-            </a>
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 relative z-10">
+              <a
+                href="https://wa.me/923044811717"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 text-[#7b002c]" />
+                <span>CHAT VIA WHATSAPP</span>
+              </a>
 
-            <Link
-              href="/contact"
-              className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
-            >
-              <PhoneCall className="w-4 h-4 text-white" />
-              <span>BOOK A PLOT</span>
-            </Link>
+              <Link
+                href="/contact"
+                className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
+              >
+                <PhoneCall className="w-4 h-4 text-white" />
+                <span>BOOK A PLOT</span>
+              </Link>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
     </div>
   );

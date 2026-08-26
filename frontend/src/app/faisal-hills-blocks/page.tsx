@@ -186,27 +186,28 @@ export default function FaisalHillsBlocksPage() {
     <div className="bg-[#fff8f6] min-h-screen text-slate-900 font-sans space-y-16 pb-16 selection:bg-[#7b002c] selection:text-white font-sans">
       
       {/* 1. HERO BANNER */}
-      <section className="relative bg-[#4c050d] text-white overflow-hidden py-24 lg:py-32 border-b border-[#7b002c]/40">
+      <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-45 mix-blend-overlay"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80')` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#4c050d] via-transparent to-[#4c050d]/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-sm backdrop-blur-md">
-            <Award className="w-3.5 h-3.5 text-amber-400" />
-            <span className="label-caps text-xs text-white tracking-widest font-bold">
+          <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">
+            <Award className="w-4 h-4 text-amber-400" />
+            <span className="text-xs text-white tracking-widest font-bold font-mono uppercase">
               RDA Approved Society
             </span>
           </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-7xl text-white leading-tight">
-              Faisal Hills Blocks Every Sector in This Premier Housing Society
+          <div className="max-w-4xl space-y-3">
+            <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white leading-tight">
+              Faisal Hills Blocks Overview
             </h1>
-            <p className="text-slate-200 text-base sm:text-lg leading-relaxed max-w-3xl font-normal font-sans">
-              If you are exploring plot options in one of Islamabad's fastest-growing residential projects, you need a clear picture of how the society is laid out. Faisal Hills Blocks divide the entire master-planned community into distinct residential and commercial sectors — each with its own character, price point, and advantages.
+            <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl font-sans">
+              Discover every residential and commercial sector in Faisal Hills Islamabad — including Executive Block, Prime Block, Block A, Block B, B Extension, Block C, and Block D.
             </p>
           </div>
         </div>
