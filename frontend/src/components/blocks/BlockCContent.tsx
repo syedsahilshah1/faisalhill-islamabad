@@ -1885,7 +1885,7 @@ export default function BlockCContent() {
       {/* 14. FAQS ACCORDION SECTION                                */}
       {/* ========================================================= */}
       <section id="faqs" className="scroll-mt-28 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-5">
+        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Frequently Asked Questions</span>
@@ -1893,7 +1893,7 @@ export default function BlockCContent() {
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
             Faisal Hills Block C Buying & Allotment FAQs
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm font-sans">
+          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
             Clear answers regarding Block C possession, RDA NOC approvals, plot transfer process, and investment upside.
           </p>
         </div>

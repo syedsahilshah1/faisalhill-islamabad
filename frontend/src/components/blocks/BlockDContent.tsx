@@ -137,7 +137,7 @@ const blockDPriceSchedule: BlockDPriceRow[] = [
 // Fallback seed plots for Block D with authentic local photography
 const defaultBlockDPlots: PlotItem[] = [
   {
-    id: 'blockd-5m-1',
+    id: 'plot-d-01',
     plotNumber: 'D-108',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -155,7 +155,7 @@ const defaultBlockDPlots: PlotItem[] = [
     image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png'
   },
   {
-    id: 'blockd-8m-1',
+    id: 'plot-d-02',
     plotNumber: 'D-230',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -173,7 +173,7 @@ const defaultBlockDPlots: PlotItem[] = [
     image: '/images/imgi_27_Rectangle-1-scaled.png'
   },
   {
-    id: 'blockd-10m-1',
+    id: 'plot-d-03',
     plotNumber: 'D-365',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -191,7 +191,7 @@ const defaultBlockDPlots: PlotItem[] = [
     image: '/images/imgi_44_Executive-Block.webp'
   },
   {
-    id: 'blockd-14m-1',
+    id: 'plot-d-04',
     plotNumber: 'D-480',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -209,7 +209,7 @@ const defaultBlockDPlots: PlotItem[] = [
     image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
   },
   {
-    id: 'blockd-1k-1',
+    id: 'plot-d-05',
     plotNumber: 'D-590',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -227,7 +227,7 @@ const defaultBlockDPlots: PlotItem[] = [
     image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
   },
   {
-    id: 'blockd-comm-1',
+    id: 'plot-d-06',
     plotNumber: 'D-COMM-12',
     blockSlug: 'block-d',
     blockName: 'Block D',
@@ -713,8 +713,8 @@ export default function BlockDContent() {
       <section className="space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-1.5 text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Activity className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider shadow-2xs">
+              <Activity className="w-3.5 h-3.5 animate-pulse text-[#7b002c]" />
               <span>Block D Key Metrics</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
@@ -727,42 +727,46 @@ export default function BlockDContent() {
         </ScrollReveal>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <ScrollReveal direction="up" delay={50}>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
-              <span className="text-3xl sm:text-4xl font-serif font-bold text-[#7b002c]">
-                <CountUpNumber end={85} duration={1.5} suffix="%+" />
+          <ScrollReveal direction="up" delay={100}>
+            <div className="group p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 text-center space-y-2 h-full flex flex-col justify-center relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7b002c] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-[#7b002c] group-hover:scale-105 transition-transform duration-300 inline-block">
+                <CountUpNumber end={85} duration={2000} suffix="%+" />
               </span>
-              <span className="text-xs font-bold text-slate-900 block">Development Work Done</span>
+              <span className="text-xs font-bold text-slate-900 block group-hover:text-[#7b002c] transition-colors">Development Work Done</span>
               <p className="text-[11px] text-slate-500 font-sans">Asphalt roads, conduit trenches, and tube wells</p>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={100}>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
-              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">
-                <CountUpNumber end={2100} duration={1.5} suffix="+" />
+          <ScrollReveal direction="up" delay={200}>
+            <div className="group p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 text-center space-y-2 h-full flex flex-col justify-center relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7b002c] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 group-hover:text-[#7b002c] group-hover:scale-105 transition-all duration-300 inline-block">
+                <CountUpNumber end={2100} duration={2200} suffix="+" />
               </span>
-              <span className="text-xs font-bold text-slate-900 block">Planned Plot Cuts</span>
+              <span className="text-xs font-bold text-slate-900 block group-hover:text-[#7b002c] transition-colors">Planned Plot Cuts</span>
               <p className="text-[11px] text-slate-500 font-sans">5 Marla, 8 Marla, 10 Marla, 14 Marla & 1 Kanal</p>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={150}>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
-              <span className="text-3xl sm:text-4xl font-serif font-bold text-emerald-700">
-                100%
+          <ScrollReveal direction="up" delay={300}>
+            <div className="group p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-emerald-500/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 text-center space-y-2 h-full flex flex-col justify-center relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-600 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-emerald-700 group-hover:scale-105 transition-transform duration-300 inline-block">
+                <CountUpNumber end={100} duration={1800} suffix="%" />
               </span>
-              <span className="text-xs font-bold text-slate-900 block">RDA Approved NOC</span>
+              <span className="text-xs font-bold text-slate-900 block group-hover:text-emerald-700 transition-colors">RDA Approved NOC</span>
               <p className="text-[11px] text-slate-500 font-sans">Fully sanctioned master plan with clear title</p>
             </div>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={200}>
-            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all text-center space-y-2 h-full flex flex-col justify-center">
-              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">
-                50<span className="text-lg">ft+</span>
+          <ScrollReveal direction="up" delay={400}>
+            <div className="group p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 text-center space-y-2 h-full flex flex-col justify-center relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7b002c] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 group-hover:text-[#7b002c] group-hover:scale-105 transition-all duration-300 inline-block">
+                <CountUpNumber end={50} duration={1800} suffix="ft+" />
               </span>
-              <span className="text-xs font-bold text-slate-900 block">Wide Street Grid</span>
+              <span className="text-xs font-bold text-slate-900 block group-hover:text-[#7b002c] transition-colors">Wide Street Grid</span>
               <p className="text-[11px] text-slate-500 font-sans">Tree-lined avenues with underground cabling</p>
             </div>
           </ScrollReveal>
@@ -911,72 +915,123 @@ export default function BlockDContent() {
 
         {/* Plot Inventory Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPlots.map((plot) => (
-            <div
-              key={plot.id}
-              className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all space-y-4 flex flex-col justify-between group"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 bg-rose-50 border border-rose-100 text-[#7b002c] rounded-full font-mono text-xs font-bold">
-                    Plot #{plot.plotNumber}
-                  </span>
-                  <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
-                    {plot.status}
-                  </span>
-                </div>
-
+          {filteredPlots.map((plot, idx) => (
+            <ScrollReveal key={plot.id} direction="up" delay={(idx % 3) * 80}>
+              <div
+                className="rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full"
+              >
                 <div>
-                  <h3 className="font-serif font-bold text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    {plot.size} {plot.category} Plot
-                  </h3>
-                  <p className="text-xs text-slate-500 font-sans mt-0.5">
-                    Facing: <strong>{plot.facing || 'Main Avenue'}</strong> • Dimensions: <strong>{plot.dimensions}</strong>
-                  </p>
-                </div>
+                  {/* Top Image Banner - Clickable, Navigates to Plot Inventory */}
+                  <Link
+                    href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-d`}
+                    className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                    title={`Browse all ${plot.size} plots in inventory`}
+                  >
+                    <img
+                      src={plot.image || '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'}
+                      alt={`Plot #${plot.plotNumber} - ${plot.size}`}
+                      className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
 
-                <div className="p-3 bg-slate-50 rounded-xl space-y-1 border border-slate-100">
-                  <div className="text-[11px] text-slate-500 uppercase tracking-wider">Demand Price</div>
-                  <div className="text-xl font-bold font-serif text-[#7b002c]">
-                    {plot.priceFormatted}
-                  </div>
-                  <div className="text-[11px] text-emerald-600 font-semibold">
-                    {plot.priceHistoryTrend || '+18.5% annual ROI trend'}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  {plot.features?.slice(0, 3).map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5 text-xs text-slate-600">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>{feat}</span>
+                    {/* Top Floating Badges */}
+                    <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
+                      <span className="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-white rounded-full font-mono text-xs font-bold">
+                        Plot #{plot.plotNumber}
+                      </span>
+                      <span className="px-3 py-1 bg-emerald-600/90 backdrop-blur-md text-white text-xs font-bold rounded-full border border-emerald-400/40 shadow-xs">
+                        {plot.status || 'Available'}
+                      </span>
                     </div>
-                  ))}
+
+                    {/* Bottom Image Overlay Details & Hover Prompt */}
+                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-end justify-between gap-2 text-white z-10">
+                      <div>
+                        <span className="text-[10px] font-bold text-rose-300 uppercase tracking-wider block font-mono">
+                          {plot.category} Property
+                        </span>
+                        <div className="font-serif font-bold text-lg text-white group-hover/img:text-amber-300 transition-colors">
+                          {plot.size} Cut
+                        </div>
+                      </div>
+                      <span className="text-[11px] font-bold text-amber-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-300/30 opacity-90 group-hover/img:opacity-100 group-hover/img:bg-[#7b002c]/90 transition-all flex items-center gap-1">
+                        <span>Inventory</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Body Content */}
+                  <div className="p-5 sm:p-6 space-y-4">
+                    <div>
+                      <Link
+                        href={`/plots/${plot.id}`}
+                        className="font-serif font-bold text-lg text-slate-900 hover:text-[#7b002c] transition-colors block"
+                        title="View plot details"
+                      >
+                        {plot.size} {plot.category} Plot
+                      </Link>
+                      <p className="text-xs text-slate-500 font-sans mt-1">
+                        Facing: <strong className="text-slate-700">{plot.facing || 'Main Avenue'}</strong> • Dimensions: <strong className="text-slate-700">{plot.dimensions}</strong>
+                      </p>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-50 rounded-2xl space-y-1 border border-slate-100">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Demand Price</div>
+                      <div className="text-xl font-bold font-serif text-[#7b002c]">
+                        {plot.priceFormatted}
+                      </div>
+                      <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        <span>{plot.priceHistoryTrend || '+18.5% annual ROI trend'}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      {plot.features?.slice(0, 3).map((feat, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs text-slate-600">
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Actions: View Detail, Contact Us, and WhatsApp */}
+                <div className="p-5 sm:p-6 pt-0 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/plots/${plot.id}`}
+                      className="flex-1 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer hover:shadow-md"
+                    >
+                      <span>View Details</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlotForInquiry(plot);
+                        setIsLeadModalOpen(true);
+                      }}
+                      className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-rose-300" />
+                      <span>Contact</span>
+                    </button>
+                    <a
+                      href={`https://wa.me/923044811717?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20D%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
+                      title="Chat on WhatsApp"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </a>
+                  </div>
                 </div>
               </div>
-
-              <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedPlotForInquiry(plot);
-                    setIsLeadModalOpen(true);
-                  }}
-                  className="flex-1 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center cursor-pointer"
-                >
-                  Inquire Now
-                </button>
-                <a
-                  href={`https://wa.me/923044811717?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20D%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1 cursor-pointer shrink-0"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
-                </a>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
@@ -1617,7 +1672,7 @@ export default function BlockDContent() {
       {/* 14. FAQS ACCORDION SECTION                                */}
       {/* ========================================================= */}
       <section id="faqs" className="scroll-mt-28 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-5">
+        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Frequently Asked Questions</span>
@@ -1625,7 +1680,7 @@ export default function BlockDContent() {
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
             Faisal Hills Block D Buying & Allotment FAQs
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm font-sans">
+          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
             Clear answers regarding Block D development status, RDA NOC approvals, plot transfer process, and investment upside.
           </p>
         </div>

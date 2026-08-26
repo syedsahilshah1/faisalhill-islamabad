@@ -71,7 +71,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const isDarkHeroPage = pathname === '/' || pathname?.startsWith('/blocks/');
+  const isKnownBlockPage = Boolean(
+    pathname?.startsWith('/blocks/') && blocksData.some((b) => `/blocks/${b.slug}` === pathname)
+  );
+  const isDarkHeroPage = pathname === '/' || isKnownBlockPage;
   const isSolidNav = isScrolled || !isDarkHeroPage;
 
   // Hide main website navbar on Admin / Dashboard routes

@@ -21,7 +21,7 @@ export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAc
   };
 
   return (
-    <div className="space-y-3 max-w-4xl w-full">
+    <div className="space-y-3 max-w-4xl w-full mx-auto">
       {faqs.map((faq, idx) => {
         const isOpen = openIndex === idx;
         return (
