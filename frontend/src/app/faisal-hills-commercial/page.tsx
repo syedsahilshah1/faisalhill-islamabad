@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import FaqAccordion from '@/components/ui/FaqAccordion';
-import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { CommercialPlotsExplorer } from '@/components/commercial/CommercialPlotsExplorer';
 import { CommercialAboutSection } from '@/components/commercial/CommercialAboutSection';
@@ -336,27 +336,26 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Interactive Map Section */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
+      {/* Interactive Master Plan Section */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 text-center max-w-2xl mx-auto">
             <span className="label-caps text-[#7b002c] font-bold block">Commercial Master Plan</span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Interactive Commercial Hotspots & Plots Map
+              Interactive Commercial Hotspots & Plots Blueprint
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Locate Faisal Jewel, Block C Civic Center, Executive Boulevard, and commercial zones directly on the interactive master layout.
+              Locate Faisal Jewel, Block C Civic Center, Executive Boulevard, and commercial sectors up to 1200% zoom:
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal direction="pop" delay={100}>
-          <div className="bg-white rounded-3xl p-4 shadow-xl border border-slate-200">
-            <InteractiveMasterPlan defaultViewMode="commercial" initialBlockSlug="all" />
-          </div>
+          <MasterPlanViewer />
         </ScrollReveal>
+        
         <p className="text-[10px] text-slate-500 italic text-center">
-          Review the <Link href="/master-plan" className="text-[#7b002c] font-bold hover:underline">full Faisal Hills master plan</Link> for detailed high-resolution sector layout grids.
+          Review the <Link href="/master-plan" className="text-[#7b002c] font-bold hover:underline">full Faisal Hills master plan page</Link> for detailed high-resolution sector layout grids and PDF downloads.
         </p>
       </section>
 

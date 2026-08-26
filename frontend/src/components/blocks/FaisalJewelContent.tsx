@@ -36,7 +36,13 @@ import {
   HelpCircle,
   FileText,
   SlidersHorizontal,
-  Home
+  Home,
+  Search,
+  Grid,
+  List,
+  X,
+  Store,
+  BadgeCheck
 } from 'lucide-react';
 import {
   faisalJewelsSpecs,
@@ -56,10 +62,10 @@ import LeadModal from '@/components/ui/LeadModal';
 import ExpandingProjectsShowcase from '@/components/ui/ExpandingProjectsShowcase';
 
 // Dedicated Faisal Jewel Inventory Units
-interface JewelUnitItem {
+export interface JewelUnitItem {
   id: string;
   unitNumber: string;
-  category: 'Commercial Shop' | 'Food Court' | 'Corporate Office' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | '4-Star Hotel Suite';
+  category: 'Commercial Plot / Showroom' | 'Commercial Shop' | 'Food Court' | 'Corporate Office' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | '4-Star Hotel Suite';
   floorLevel: string;
   dimensions: string;
   areaSqFt: number;
@@ -74,6 +80,40 @@ interface JewelUnitItem {
 }
 
 const defaultJewelUnits: JewelUnitItem[] = [
+  // 0. Flagship Boulevard Commercial Plot Showroom
+  {
+    id: 'fj-com-showroom-01',
+    unitNumber: 'FJ-COM-G01',
+    category: 'Commercial Plot / Showroom',
+    floorLevel: 'Ground Floor Grand Boulevard',
+    dimensions: '35 x 42',
+    areaSqFt: 1470,
+    priceFormatted: 'PKR 8.35 Crore',
+    downPaymentFormatted: 'PKR 2.08 Crore',
+    quarterlyInstallmentFormatted: 'PKR 39.1 Lacs',
+    status: 'Hot Investment',
+    facing: '225ft Grand Entrance Boulevard',
+    features: ['Main Boulevard Direct Frontage', '16ft Double Height Ceiling', 'Drive-thru Option', 'Flagship Corporate Showroom'],
+    description: 'Premier ground-floor commercial plot showroom with direct 225ft Grand Boulevard access. Unrivaled visibility for automotive showrooms, multinational banks, or flagship retail anchors.',
+    image: '/images/commercial/flagship-store.jpg'
+  },
+  // 00. Atrium Corner Executive Commercial Unit
+  {
+    id: 'fj-com-plot-02',
+    unitNumber: 'FJ-COM-G12',
+    category: 'Commercial Plot / Showroom',
+    floorLevel: 'Ground Floor Central Atrium',
+    dimensions: '30 x 35',
+    areaSqFt: 1050,
+    priceFormatted: 'PKR 5.98 Crore',
+    downPaymentFormatted: 'PKR 1.49 Crore',
+    quarterlyInstallmentFormatted: 'PKR 28.0 Lacs',
+    status: 'Fast Selling',
+    facing: 'Central Atrium & Escalator Corner',
+    features: ['Corner Dual Frontage', 'Double Height Glazing', '350+ Brand Footfall', 'High Capital Growth'],
+    description: 'High-visibility commercial cut inside the central atrium corridor with continuous customer footfall from all 6 mall floors.',
+    image: '/images/commercial/food-court.jpg'
+  },
   // 1. Ground Floor Flagship Shop
   {
     id: 'fj-shop-g04',
@@ -315,7 +355,14 @@ const defaultJewelUnits: JewelUnitItem[] = [
 ];
 
 export function FaisalJewelContent() {
-  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('All');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
+  const [selectedFloorFilter, setSelectedFloorFilter] = useState<string>('all');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('featured');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [activeUnitForModal, setActiveUnitForModal] = useState<JewelUnitItem | null>(null);
+
   const [isSeeMoreOpen, setIsSeeMoreOpen] = useState<boolean>(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState<boolean>(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState<boolean>(false);
@@ -364,11 +411,64 @@ export function FaisalJewelContent() {
     return () => clearInterval(timer);
   }, [galleryImages.length]);
 
-  // Filtered unit listings
+  // Filtered and sorted unit listings
   const filteredUnits = useMemo(() => {
-    if (selectedCategoryFilter === 'All') return defaultJewelUnits;
-    return defaultJewelUnits.filter((u) => u.category.toLowerCase().includes(selectedCategoryFilter.toLowerCase()));
-  }, [selectedCategoryFilter]);
+    return defaultJewelUnits.filter((u) => {
+      if (selectedCategoryFilter !== 'all') {
+        if (selectedCategoryFilter === 'plot' && !u.category.includes('Plot')) return false;
+        if (selectedCategoryFilter === 'shop' && !u.category.includes('Shop')) return false;
+        if (selectedCategoryFilter === 'food' && !u.category.includes('Food')) return false;
+        if (selectedCategoryFilter === 'office' && !u.category.includes('Office')) return false;
+        if (selectedCategoryFilter === 'apt' && !u.category.includes('Apartment') && !u.category.includes('Penthouse')) return false;
+        if (selectedCategoryFilter === 'hotel' && !u.category.includes('Hotel')) return false;
+      }
+      if (selectedFloorFilter !== 'all') {
+        const fl = u.floorLevel.toLowerCase();
+        if (selectedFloorFilter === 'ground' && !fl.includes('ground')) return false;
+        if (selectedFloorFilter === 'lower' && !fl.includes('lower')) return false;
+        if (selectedFloorFilter === 'corporate' && !fl.includes('5th') && !fl.includes('corporate')) return false;
+        if (selectedFloorFilter === 'residential' && !fl.includes('11th') && !fl.includes('16th') && !fl.includes('20th')) return false;
+        if (selectedFloorFilter === 'hotel' && !fl.includes('24th') && !fl.includes('hotel') && !fl.includes('rooftop')) return false;
+      }
+      if (selectedStatusFilter !== 'all') {
+        if (selectedStatusFilter === 'available' && u.status !== 'Available') return false;
+        if (selectedStatusFilter === 'hot' && u.status !== 'Hot Investment') return false;
+        if (selectedStatusFilter === 'fast' && u.status !== 'Fast Selling') return false;
+        if (selectedStatusFilter === 'limited' && u.status !== 'Limited Units') return false;
+      }
+      if (searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          u.unitNumber.toLowerCase().includes(q) ||
+          u.category.toLowerCase().includes(q) ||
+          u.floorLevel.toLowerCase().includes(q) ||
+          u.description.toLowerCase().includes(q) ||
+          u.facing.toLowerCase().includes(q) ||
+          u.features.some((f) => f.toLowerCase().includes(q));
+        if (!matches) return false;
+      }
+      return true;
+    }).sort((a, b) => {
+      if (sortBy === 'area-asc') return a.areaSqFt - b.areaSqFt;
+      if (sortBy === 'area-desc') return b.areaSqFt - a.areaSqFt;
+      if (sortBy === 'name-asc') return a.unitNumber.localeCompare(b.unitNumber);
+      return 0;
+    });
+  }, [selectedCategoryFilter, selectedFloorFilter, selectedStatusFilter, searchQuery, sortBy]);
+
+  const resetFilters = () => {
+    setSelectedCategoryFilter('all');
+    setSelectedFloorFilter('all');
+    setSelectedStatusFilter('all');
+    setSearchQuery('');
+    setSortBy('featured');
+  };
+
+  const hasActiveFilters =
+    selectedCategoryFilter !== 'all' ||
+    selectedFloorFilter !== 'all' ||
+    selectedStatusFilter !== 'all' ||
+    searchQuery !== '';
 
   // Block FAQs
   const jewelBlockData = blocksData.find((b) => b.slug === 'faisal-jewel-islamabad');
@@ -717,13 +817,13 @@ export function FaisalJewelContent() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
                   <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider shadow">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
                       <Dumbbell className="w-3 h-3" />
                       <span>Sky Gym</span>
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-amber-300 uppercase block font-mono">Margalla View Fitness</span>
+                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">Margalla View Fitness</span>
                     <h4 className="font-serif font-bold text-base text-white">Health & Wellness Club</h4>
                   </div>
                 </div>
@@ -739,8 +839,8 @@ export function FaisalJewelContent() {
               </div>
 
               <div className="p-5 pt-0">
-                <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-100 text-[11px] text-amber-800 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
                   <span>Certified trainers, spa & recovery lounge</span>
                 </div>
               </div>
@@ -759,13 +859,13 @@ export function FaisalJewelContent() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
                   <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider shadow">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
                       <Car className="w-3 h-3" />
                       <span>1,000+ Cars</span>
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-sky-300 uppercase block font-mono">B1, B2 & B3 Levels</span>
+                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">B1, B2 & B3 Levels</span>
                     <h4 className="font-serif font-bold text-base text-white">Smart Basement Parking</h4>
                   </div>
                 </div>
@@ -781,8 +881,8 @@ export function FaisalJewelContent() {
               </div>
 
               <div className="p-5 pt-0">
-                <div className="p-2.5 bg-blue-50/50 rounded-xl border border-blue-100 text-[11px] text-blue-800 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
                   <span>Direct elevator access to all apartment & retail floors</span>
                 </div>
               </div>
@@ -801,13 +901,13 @@ export function FaisalJewelContent() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
                   <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider shadow">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
                       <Hotel className="w-3 h-3" />
                       <span>4-Star Hotel</span>
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-emerald-300 uppercase block font-mono">Floors 22–27</span>
+                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">Floors 22–27</span>
                     <h4 className="font-serif font-bold text-base text-white">Hotel & Rooftop Lounge</h4>
                   </div>
                 </div>
@@ -823,8 +923,8 @@ export function FaisalJewelContent() {
               </div>
 
               <div className="p-5 pt-0">
-                <div className="p-2.5 bg-emerald-50/50 rounded-xl border border-emerald-100 text-[11px] text-emerald-800 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
                   <span>Managed rental pool with high cash returns</span>
                 </div>
               </div>
@@ -922,148 +1022,515 @@ export function FaisalJewelContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 6. FILTERABLE UNIT INVENTORY & PRICING                    */}
+      {/* 6. PLOTS, SHOPS & APARTMENTS FOR SALE IN FAISAL JEWEL     */}
       {/* ========================================================= */}
       <section id="inventory" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Flame className="w-3.5 h-3.5" />
-                <span>Verified Inventory</span>
+                <Store className="w-3.5 h-3.5" />
+                <span>Verified Tower & Plot Inventory</span>
               </div>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-                Faisal Jewel Commercial Shops & Apartments
+                Plots, Commercial Shops & Luxury Apartments for Sale in Faisal Jewel
               </h2>
-              <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
-                Browse official unit cuts in Faisal Jewel. Click image or details to view specifications, floor plans, and installment schedules.
+              <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+                Explore verified commercial plot showrooms, retail mall shops, corporate office suites, and luxury serviced residences for sale in Faisal Jewel Islamabad.
               </p>
             </div>
 
-            {/* Filter Pills */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {['All', 'Commercial Shop', 'Food Court', 'Corporate Office', '1-Bed', '2-Bed', '3-Bed', 'Hotel'].map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategoryFilter(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedCategoryFilter === cat
-                      ? 'bg-[#7b002c] text-white shadow-md'
-                      : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  {cat === 'Commercial Shop' ? 'Shops for Sale' : cat === 'Hotel' ? '4-Star Hotel Suites' : cat}
-                </button>
-              ))}
+            {/* Quick Stats Pill */}
+            <div className="flex items-center gap-2.5 bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs shrink-0">
+              <div className="px-3.5 py-1.5 bg-slate-50 rounded-xl text-center">
+                <span className="block text-xs font-bold text-[#7b002c]">{defaultJewelUnits.length}+ Units</span>
+                <span className="text-[9px] text-slate-500 font-semibold uppercase">Tower Inventory</span>
+              </div>
+              <div className="px-3.5 py-1.5 bg-slate-50 rounded-xl text-center">
+                <span className="block text-xs font-bold text-emerald-700">4 Years</span>
+                <span className="text-[9px] text-slate-500 font-semibold uppercase">16 Installments</span>
+              </div>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Unit Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUnits.map((unit) => (
-            <div
-              key={unit.id}
-              className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
-            >
-              <div>
-                {/* Photo Banner with Zoom on Hover */}
-                <div className="relative h-52 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={unit.image}
-                    alt={`${unit.category} - ${unit.unitNumber}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out cursor-pointer"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(unit);
-                      setIsLeadModalOpen(true);
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20 pointer-events-none" />
+        {/* UNIFIED MODERN FILTER BAR */}
+        <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            {/* Search Input */}
+            <div className="relative md:col-span-4">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by unit #, plot, shop, floor, or size..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
 
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      {unit.category}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      {unit.status}
-                    </span>
+            {/* Category Dropdown */}
+            <div className="md:col-span-3">
+              <select
+                value={selectedCategoryFilter}
+                onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                aria-label="Select Category"
+                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+              >
+                <option value="all">Select Property Type</option>
+                <option value="plot">Commercial Plots & Showrooms</option>
+                <option value="shop">Commercial Retail Shops</option>
+                <option value="food">Food Court & Restaurants</option>
+                <option value="office">Corporate Offices</option>
+                <option value="apt">Luxury Apartments & Penthouses</option>
+                <option value="hotel">4-Star Hotel Suites</option>
+              </select>
+            </div>
+
+            {/* Floor Level Dropdown */}
+            <div className="md:col-span-2">
+              <select
+                value={selectedFloorFilter}
+                onChange={(e) => setSelectedFloorFilter(e.target.value)}
+                aria-label="Select Floor Level"
+                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+              >
+                <option value="all">Select Floor Level</option>
+                <option value="ground">Ground Floor Boulevard</option>
+                <option value="lower">Lower Ground Floor</option>
+                <option value="corporate">5th–6th Floor Corporate</option>
+                <option value="residential">7th–21st Residential</option>
+                <option value="hotel">22nd–27th Hotel & Penthouse</option>
+              </select>
+            </div>
+
+            {/* Status Dropdown */}
+            <div className="md:col-span-2">
+              <select
+                value={selectedStatusFilter}
+                onChange={(e) => setSelectedStatusFilter(e.target.value)}
+                aria-label="Select Status"
+                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
+              >
+                <option value="all">Select Status</option>
+                <option value="hot">Hot Investment</option>
+                <option value="fast">Fast Selling</option>
+                <option value="limited">Limited Units</option>
+                <option value="available">Available Units</option>
+              </select>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="md:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-[#7b002c] shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Grid View"
+              >
+                <Grid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-white text-[#7b002c] shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title="Table View"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* RESULTS HEADER & SORT */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
+          <div className="flex items-center gap-3">
+            <span>
+              Showing <strong className="text-slate-900 font-bold">{filteredUnits.length}</strong> of{' '}
+              <strong>{defaultJewelUnits.length}</strong> verified properties for sale
+            </span>
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer ml-2"
+              >
+                <X className="w-3.5 h-3.5" />
+                Reset filters
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-semibold">Sort by:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort units"
+              className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
+            >
+              <option value="featured">Featured / Recommended</option>
+              <option value="area-desc">Area: Largest First</option>
+              <option value="area-asc">Area: Smallest First</option>
+              <option value="name-asc">Unit Number</option>
+            </select>
+          </div>
+        </div>
+
+        {/* GRID VIEW */}
+        {viewMode === 'grid' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredUnits.map((unit) => (
+              <div
+                key={unit.id}
+                className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+              >
+                <div>
+                  {/* Photo Banner with Zoom on Hover */}
+                  <div
+                    onClick={() => setActiveUnitForModal(unit)}
+                    className="relative h-52 w-full overflow-hidden bg-slate-950 cursor-pointer"
+                    title={`Click to view full specs for ${unit.unitNumber}`}
+                  >
+                    <img
+                      src={unit.image}
+                      alt={`${unit.category} - ${unit.unitNumber}`}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                    {/* Badges */}
+                    <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
+                      <span className="px-3 py-1 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+                        {unit.category}
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+                        {unit.status}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white z-10 flex items-end justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">
+                          {unit.floorLevel}
+                        </span>
+                        <h4 className="font-serif font-bold text-base text-white group-hover:text-amber-300 transition-colors">
+                          {unit.unitNumber} ({unit.areaSqFt} Sq.Ft.)
+                        </h4>
+                      </div>
+                      <span className="text-xs font-mono text-slate-200 bg-white/10 px-2 py-0.5 rounded backdrop-blur-xs">
+                        {unit.dimensions}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="absolute bottom-3 left-3 right-3 text-white z-10 flex items-end justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold text-amber-300 uppercase block font-mono">
-                        {unit.floorLevel}
-                      </span>
-                      <h4 className="font-serif font-bold text-base text-white">
-                        {unit.unitNumber} ({unit.areaSqFt} Sq.Ft.)
-                      </h4>
+                  {/* Details Body */}
+                  <div className="p-5 space-y-3.5">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Demand</span>
+                        <span className="font-serif font-bold text-lg text-[#7b002c]">{unit.priceFormatted}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">25% Booking</span>
+                        <span className="font-sans font-bold text-xs text-slate-800">{unit.downPaymentFormatted}</span>
+                      </div>
                     </div>
-                    <span className="text-xs font-mono text-slate-200 bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">
-                      {unit.dimensions}
-                    </span>
+
+                    <p className="text-xs text-slate-600 font-sans leading-relaxed line-clamp-2">
+                      {unit.description}
+                    </p>
+
+                    {/* Feature Tags */}
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Specs</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {unit.features.slice(0, 2).map((feat, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-0.5 rounded-md bg-rose-50 border border-rose-100 text-[10px] text-[#7b002c] font-medium"
+                          >
+                            ✓ {feat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Details Body */}
-                <div className="p-5 space-y-3.5">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                    <div>
-                      <span className="text-[10px] text-slate-650 uppercase font-semibold block">Total Price</span>
-                      <span className="font-serif font-bold text-lg text-[#7b002c]">{unit.priceFormatted}</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-slate-650 uppercase font-semibold block">25% Booking</span>
-                      <span className="font-sans font-bold text-xs text-slate-800">{unit.downPaymentFormatted}</span>
+                {/* Action Buttons */}
+                <div className="p-5 pt-0 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveUnitForModal(unit)}
+                    className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-[#7b002c]" />
+                    <span>Full Specs</span>
+                  </button>
+                  <a
+                    href={`https://wa.me/923044811717?text=Hello%20Faisal%20Jewel%20Desk,%20I%20am%20interested%20in%20${encodeURIComponent(unit.category)}%20${unit.unitNumber}%20(${unit.areaSqFt}%20sqft)%20priced%20at%20${unit.priceFormatted}.%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-white" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* TABLE VIEW */}
+        {viewMode === 'table' && (
+          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
+                  <tr>
+                    <th className="p-4">Unit / Plot #</th>
+                    <th className="p-4">Category</th>
+                    <th className="p-4">Floor Level</th>
+                    <th className="p-4">Area & Dims</th>
+                    <th className="p-4">Total Price</th>
+                    <th className="p-4">25% Booking</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {filteredUnits.map((unit) => (
+                    <tr key={unit.id} className="hover:bg-rose-50/40 transition-colors">
+                      <td className="p-4">
+                        <div
+                          onClick={() => setActiveUnitForModal(unit)}
+                          className="flex items-center gap-3 cursor-pointer group/item"
+                          title={`Click to view full specs for ${unit.unitNumber}`}
+                        >
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
+                            <img src={unit.image} alt={unit.unitNumber} className="w-full h-full object-cover" />
+                          </div>
+                          <div>
+                            <span className="font-mono font-bold text-xs text-[#7b002c]">#{unit.unitNumber}</span>
+                            <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[180px] group-hover/item:text-[#7b002c] transition-colors">
+                              {unit.category}
+                            </strong>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 font-semibold text-slate-800">{unit.category}</td>
+                      <td className="p-4 font-sans text-slate-600">{unit.floorLevel}</td>
+                      <td className="p-4 font-sans">
+                        <strong className="block text-slate-900">{unit.areaSqFt} Sq.Ft.</strong>
+                        <span className="text-[10px] text-slate-400">{unit.dimensions}</span>
+                      </td>
+                      <td className="p-4 font-serif font-bold text-[#7b002c] text-sm whitespace-nowrap">
+                        {unit.priceFormatted}
+                      </td>
+                      <td className="p-4 font-sans text-slate-800 font-bold whitespace-nowrap">
+                        {unit.downPaymentFormatted}
+                      </td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full whitespace-nowrap">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          {unit.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <button
+                          onClick={() => setActiveUnitForModal(unit)}
+                          className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                        >
+                          View Specs
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {filteredUnits.length === 0 && (
+          <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center space-y-3">
+            <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
+            <h3 className="font-serif font-bold text-lg text-slate-800">No Units Found</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              No Faisal Jewel units matched your filter criteria. Try clearing search or resetting filters.
+            </p>
+            <button
+              onClick={resetFilters}
+              className="px-5 py-2 bg-[#7b002c] text-white text-xs font-bold rounded-full uppercase tracking-wider hover:bg-[#9e1245] transition-colors cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* FULL SPECS MODAL FOR FAISAL JEWEL */}
+      {activeUnitForModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div
+            className="bg-white w-full max-w-3xl max-h-[92vh] rounded-3xl shadow-2xl overflow-y-auto border border-slate-200 relative flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between z-20">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c] text-white">
+                  #{activeUnitForModal.unitNumber}
+                </span>
+                <div>
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900">
+                    {activeUnitForModal.category} ({activeUnitForModal.areaSqFt} Sq.Ft.)
+                  </h3>
+                  <p className="text-xs text-slate-500 font-sans">
+                    {activeUnitForModal.floorLevel} • {activeUnitForModal.facing}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveUnitForModal(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Image & Price Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div className="md:col-span-7 relative h-64 rounded-2xl overflow-hidden bg-slate-900">
+                  <img
+                    src={activeUnitForModal.image}
+                    alt={activeUnitForModal.unitNumber}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded-full font-bold">
+                    {activeUnitForModal.category}
+                  </div>
+                </div>
+
+                <div className="md:col-span-5 flex flex-col justify-between space-y-3">
+                  <div className="bg-rose-50 border border-rose-200/80 p-4 rounded-2xl space-y-2">
+                    <span className="text-[10px] text-[#7b002c] font-bold uppercase tracking-wider block">Total Demand</span>
+                    <div className="text-xl font-serif font-bold text-[#7b002c]">{activeUnitForModal.priceFormatted}</div>
+                    <div className="pt-2 border-t border-rose-200/60 space-y-1 text-xs text-slate-700">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">25% Booking:</span>
+                        <strong className="text-slate-900 font-bold">{activeUnitForModal.downPaymentFormatted}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Quarterly (16x):</span>
+                        <strong className="text-emerald-700 font-bold">{activeUnitForModal.quarterlyInstallmentFormatted}</strong>
+                      </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-600 font-sans leading-relaxed">
-                    {unit.description}
-                  </p>
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-1 text-xs">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Handover & Approval</span>
+                    <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>RDA Approved High-Rise Tower</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Direct Zedem Allotment Letter</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  {/* Feature Tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {unit.features.map((feat, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-[10px] text-slate-700 font-medium"
-                      >
-                        {feat}
-                      </span>
+              {/* Specs Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-sans">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Covered Area</span>
+                  <strong className="text-slate-800 text-sm block">{activeUnitForModal.areaSqFt} Sq.Ft.</strong>
+                  <span className="text-slate-500">{activeUnitForModal.dimensions}</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Floor Level</span>
+                  <strong className="text-slate-800 text-sm block truncate">{activeUnitForModal.floorLevel}</strong>
+                  <span className="text-slate-500">Faisal Jewel Tower</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Facing</span>
+                  <strong className="text-slate-800 text-sm block truncate">{activeUnitForModal.facing}</strong>
+                  <span className="text-slate-500">High Visibility</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Payment Schedule</span>
+                  <strong className="text-[#7b002c] text-sm block">48 Months</strong>
+                  <span className="text-slate-500">Easy Installments</span>
+                </div>
+              </div>
+
+              {/* Description & Features */}
+              <div className="space-y-3 text-xs font-sans">
+                <h4 className="font-serif font-bold text-sm text-slate-900">Property Overview</h4>
+                <p className="text-slate-600 leading-relaxed">{activeUnitForModal.description}</p>
+
+                <div className="space-y-2 pt-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Amenities</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {activeUnitForModal.features.map((feat, idx) => (
+                      <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200/60">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-slate-800 font-semibold">{feat}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="p-5 pt-0 grid grid-cols-2 gap-2">
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3 z-20">
+              <span className="text-xs text-slate-500 hidden sm:inline">
+                Official booking managed via Zedem Properties & Faisal Hills Desk.
+              </span>
+
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
                 <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUnitForInquiry(unit);
-                    setIsLeadModalOpen(true);
-                  }}
-                  className="py-2.5 px-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1"
+                  onClick={() => setActiveUnitForModal(null)}
+                  className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl cursor-pointer"
                 >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Inquire Now</span>
+                  Close
                 </button>
                 <a
-                  href={`https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%20${encodeURIComponent(unit.category)}%20${unit.unitNumber}%20(${unit.areaSqFt}%20sqft)%20in%20Faisal%20Jewel%20Islamabad.%20Please%20share%20payment%20plan%20and%20floor%20layout.`}
+                  href={`https://wa.me/923044811717?text=Hello%20Faisal%20Jewel%20Desk,%20I%20am%20interested%20in%20booking%20${encodeURIComponent(activeUnitForModal.category)}%20${activeUnitForModal.unitNumber}%20(${activeUnitForModal.areaSqFt}%20sqft)%20priced%20at%20${activeUnitForModal.priceFormatted}.%20Please%20share%20allotment%20details.`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1"
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
+                  <MessageCircle className="w-3.5 h-3.5 text-white" />
+                  <span>WhatsApp Booking</span>
                 </a>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      </section>
+      )}
 
       {/* ========================================================= */}
       {/* 7. COMMERCIAL SHOPS FOR SALE FLOOR DIRECTORY & SPECS      */}
