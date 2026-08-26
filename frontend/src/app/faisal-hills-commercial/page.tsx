@@ -13,6 +13,7 @@ import FaqAccordion from '@/components/ui/FaqAccordion';
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { CommercialPlotsExplorer } from '@/components/commercial/CommercialPlotsExplorer';
+import { CommercialAboutSection } from '@/components/commercial/CommercialAboutSection';
 
 export const metadata: Metadata = {
   title: "Faisal Hills Commercial Plots for Sale 2026 | Prices & Payment Plan",
@@ -33,37 +34,43 @@ const blockCommercials = [
     name: "Faisal Hills Executive Block Commercial",
     description: "The Executive Block is the most prestigious business zone in the project, sitting closest to the main GT Road entrance. Features ready shops, multi-storey corporate plazas, and open boulevard plots on the 225ft Grand Boulevard.",
     suitability: "Retail outlets, branded shops, corporate offices, banks, multi-brand fashion stores, mixed-use buildings",
-    tag: "High Footfall Gateway"
+    tag: "High Footfall Gateway",
+    image: "/images/commercial/flagship-store.jpg"
   },
   {
     name: "Faisal Hills A Block Commercial",
     description: "Block A is among the most populated sectors of Faisal Hills with 1,200+ settled families. Commercial plots here provide immediate daily customer traffic for neighborhood grocery marts, pharmacies, and clinics.",
     suitability: "Daily-need retail, super marts, bakeries, clinical laboratories, salons, service businesses",
-    tag: "Immediate Cash Flow"
+    tag: "Immediate Cash Flow",
+    image: "/images/commercial/hypermarket.jpg"
   },
   {
     name: "Faisal Hills B Block Commercial",
     description: "Block B offers an upscale, serene business setting against the panoramic backdrop of the Margalla Hills. Ideal for lifestyle cafes, luxury jewelry studios, and aesthetic clinics facing wide 120ft boulevards.",
     suitability: "Mid-range retail, professional offices, jewelry souk, fine-dining bistros, tuition centers",
-    tag: "Margalla Views"
+    tag: "Margalla Views",
+    image: "/images/commercial/lifestyle-boutique.jpg"
   },
   {
     name: "Faisal Hills C Block Commercial",
     description: "The largest commercial hub in Faisal Hills with 800+ commercial plots surrounding the Civic Center, Central Monument, and Mega Mosque. Approved for B+G+9 high-rise shopping malls and business centers.",
     suitability: "Medium & long-term investors, mega shopping malls, food courts, corporate headquarters",
-    tag: "800+ Plot Mega Hub"
+    tag: "800+ Plot Mega Hub",
+    image: "/images/commercial/food-court.jpg"
   },
   {
     name: "Faisal Hills D Block Commercial",
     description: "Block D commercial plots sit at the most accessible price point with official on-ground possession granted. Rapid home construction ensures quick rise in commercial tenant demand.",
     suitability: "Affordable commercial entry, hardware & sanitary supply, retail mart, long-horizon appreciation",
-    tag: "Best Entry Value"
+    tag: "Best Entry Value",
+    image: "/images/commercial/auto-hardware.jpg"
   },
   {
     name: "Faisal Hills Prime Block Commercial",
     description: "The newest premium launch in Faisal Hills offering attractive 4-year installment plans with lower upfront down payments. Strategically linked to the upcoming direct M-1 Motorway interchange.",
     suitability: "4-year installment buyers, high-yield file investors, corporate franchises",
-    tag: "4-Year Installments"
+    tag: "4-Year Installments",
+    image: "/images/commercial/tech-gadgets.jpg"
   }
 ];
 
@@ -200,33 +207,40 @@ export default function FaisalHillsCommercialPage() {
         }}
       />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-12 lg:pb-16 bg-transparent text-slate-900 border-b border-slate-200">
+      {/* Hero Section with Luxury Commercial Background Image & Crisp White Typography */}
+      <section className="relative overflow-hidden pt-28 sm:pt-36 lg:pt-40 pb-16 lg:pb-24 text-white border-b border-slate-200">
+        {/* Crisp Commercial Background Image with Dark Contrast Overlay */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <Image
+            src="/images/commercial/flagship-store.jpg"
+            alt="Faisal Hills Commercial"
+            fill
+            priority
+            className="object-cover object-center scale-105"
+          />
+          {/* Balanced Dark Luxury Overlay so background is visible and white text is 100% crystal clear */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/65 to-slate-950/75" />
+        </div>
+
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 space-y-5 text-center flex flex-col items-center justify-center">
           <ScrollReveal direction="down" delay={0}>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-[#7b002c] border border-rose-200 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-[#7b002c] shadow-lg">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>High Yield Commercial Real Estate • 12% - 16% Rental ROI</span>
             </span>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={80}>
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight max-w-3xl mx-auto text-center">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight max-w-3xl mx-auto text-center drop-shadow-md">
               Faisal Hills Commercial Plots for Sale in Taxila, Islamabad
             </h1>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={140}>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto text-center font-sans">
-              Own a premier business address on GT Road, minutes from the M-1 Motorway and Margalla Avenue. Explore verified on-ground commercial plots, multi-storey plaza plots, and flexible installment plans across Executive Block, Block A, B, C, D, Prime Block, and Faisal Jewel.
-            </p>
-          </ScrollReveal>
-
           <ScrollReveal direction="up" delay={200}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3 w-full">
               <Link
                 href="/plots?category=Commercial"
-                className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-xl flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <Store className="w-4 h-4 text-white" />
                 <span>Explore Commercial Inventory</span>
@@ -234,7 +248,7 @@ export default function FaisalHillsCommercialPage() {
 
               <Link
                 href="/faisal-hills-payment-plan"
-                className="w-full sm:w-auto px-8 py-3.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs uppercase tracking-wider rounded-full shadow-xs flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-full shadow-xl flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <Coins className="w-4 h-4 text-[#7b002c]" />
                 <span>Commercial Payment Plans</span>
@@ -244,138 +258,8 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Animated Block Ticker Strip */}
-      <div className="bg-slate-950 border-y border-slate-800 py-3 overflow-hidden relative">
-        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
-
-        <div className="ticker-track gap-0">
-          {[...Array(2)].map((_, setIdx) => (
-            <div key={setIdx} className="flex items-center gap-0 shrink-0">
-              <a href="/blocks/executive-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Executive Block</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans">225ft Boulevard</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/block-c" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Block C Civic Center</span>
-                <span className="text-[10px] text-amber-400 font-semibold font-sans">800+ Commercial Plots</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/prime-block" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Prime Block</span>
-                <span className="text-[10px] text-rose-400 font-semibold font-sans">4-Year Installments</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/block-a" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Block A</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans">1200+ Families Settled</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/block-b" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Block B</span>
-                <span className="text-[10px] text-sky-400 font-semibold font-sans">Margalla Views</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/block-d" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Block D</span>
-                <span className="text-[10px] text-emerald-400 font-semibold font-sans">Possession Granted</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-
-              <a href="/blocks/faisal-jewel-islamabad" className="flex items-center gap-2.5 px-6 py-1 group cursor-pointer">
-                <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 group-hover:scale-125 transition-transform" />
-                <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 whitespace-nowrap font-sans tracking-wide transition-colors">Faisal Jewel Tower</span>
-                <span className="text-[10px] text-rose-400 font-semibold font-sans">27-Storey Skyscraper</span>
-              </a>
-
-              <span className="text-slate-700 text-lg select-none">|</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Introduction */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div className="lg:col-span-7 space-y-5">
-            <ScrollReveal direction="left" delay={50}>
-              <div className="space-y-2">
-                <span className="label-caps text-[#7b002c] font-bold block">About Faisal Hills Commercial</span>
-                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-100 pb-2">
-                  Prime Commercial Real Estate Engineered for High Footfall & Capital Growth
-                </h2>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={100}>
-              <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-sans">
-                <p>
-                  While residential plots offer peaceful family living, commercial property in Faisal Hills is purchased for one definitive advantage: <strong>commanding position along high-traffic corridors to generate predictable, passive rental income</strong> and exceptional capital appreciation.
-                </p>
-                <p>
-                  Developed by Zedem International under the leadership of Chaudhry Abdul Majeed, Faisal Hills spans over 12,000+ Kanals on the main Grand Trunk (GT) Road corridor near Taxila. Commercial sectors are located on key arterial arteries: the 225ft Grand Entrance Boulevard, the 150ft Central Expressway, and the designated Block C Mega Civic Center.
-                </p>
-                <p>
-                  Whether you are planning a multi-storey shopping plaza, a corporate banking branch, a retail grocery mart, or holding an installment file for capital growth, our commercial inventory covers all sizes with verified RDA title clearances.
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Right: Key Considerations Card */}
-          <div className="lg:col-span-5">
-            <ScrollReveal direction="right" delay={120}>
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
-                <h3 className="font-serif font-bold text-base text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
-                  <BadgeCheck className="w-5 h-5 text-[#7b002c]" />
-                  <span>Commercial Buyer Advantages</span>
-                </h3>
-                <div className="space-y-3 text-xs font-sans text-slate-700 leading-relaxed">
-                  <div className="flex gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0 text-sm">①</span>
-                    <div>
-                      <strong className="block text-slate-900">Arterial GT Road & M-1 Access</strong>
-                      Positioned directly off GT Road with direct upcoming link to M-1 Motorway interchange.
-                    </div>
-                  </div>
-                  <div className="flex gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0 text-sm">②</span>
-                    <div>
-                      <strong className="block text-slate-900">B+G+4 to B+G+9 Approved Height</strong>
-                      RDA bylaws allow multiple commercial floors plus basement parking to maximize rental area.
-                    </div>
-                  </div>
-                  <div className="flex gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                    <span className="text-[#7b002c] font-bold mt-0.5 shrink-0 text-sm">③</span>
-                    <div>
-                      <strong className="block text-slate-900">High Yield Installments</strong>
-                      Lock in current prices via quarterly installments while property values escalate.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
+      {/* Introduction with See More & Right-Side Images */}
+      <CommercialAboutSection />
 
       {/* FULL COMMERCIAL PLOTS CATALOG & EXPLORER (CORE REQUEST) */}
       <CommercialPlotsExplorer />
@@ -493,21 +377,34 @@ export default function FaisalHillsCommercialPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blockCommercials.map((block, idx) => (
             <ScrollReveal key={idx} direction="pop" delay={(idx % 3) * 60}>
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
-                      {block.tag}
-                    </span>
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 h-full group">
+                {/* Commercial Block Image Banner */}
+                <div className="relative h-44 w-full overflow-hidden bg-slate-900">
+                  <Image
+                    src={block.image}
+                    alt={block.name}
+                    fill
+                    className="object-cover group-hover:scale-108 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent" />
+                  <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-white bg-[#7b002c] px-3 py-1 rounded-full shadow-md">
+                    {block.tag}
+                  </span>
+                  <div className="absolute bottom-3 left-3 right-3 text-white">
+                    <h3 className="font-serif font-bold text-base text-white group-hover:text-amber-300 transition-colors">
+                      {block.name}
+                    </h3>
                   </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900">{block.name}</h3>
+                </div>
+
+                <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
                   <p className="text-xs text-slate-600 leading-relaxed font-sans">
                     {block.description}
                   </p>
-                </div>
-                <div className="pt-3 text-[11px] text-slate-600 border-t border-slate-100 space-y-1">
-                  <span className="text-[#7b002c] font-bold block">Best Suited For:</span>
-                  <p className="text-slate-500">{block.suitability}</p>
+                  <div className="pt-3 text-[11px] text-slate-600 border-t border-slate-100 space-y-1">
+                    <span className="text-[#7b002c] font-bold block">Best Suited For:</span>
+                    <p className="text-slate-500">{block.suitability}</p>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
