@@ -1,13 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Phone, Mail, MapPin, Facebook, Instagram, MessageSquare, Linkedin, Youtube, ShieldCheck, ArrowUpRight
 } from 'lucide-react';
+import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey } from '@/data/faisalHillsData';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
+  const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+
+  useEffect(() => {
+    fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
+      if (data) setSocials(data);
+    }).catch(console.error);
+
+    fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
+      if (data) setContact(data);
+    }).catch(console.error);
+  }, []);
 
   return (
     <footer className="bg-[#4c0215] text-white border-t border-[#7b002c]">
@@ -41,13 +54,21 @@ export default function Footer() {
             <div className="flex items-start gap-3">
               <Phone className="w-4 h-4 text-white shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p><strong className="text-white font-semibold">Head Office:</strong> 051-111-324-725</p>
-                <p><strong className="text-white font-semibold">Faisal Town:</strong> 051-2720504-5</p>
-                <p><strong className="text-white font-semibold">Faisal Hills:</strong> 051-450000-2</p>
-                <p><strong className="text-white font-semibold">Faisal Margalla City:</strong> 051-5443746-7</p>
+                {contact.phoneNumbers && contact.phoneNumbers.length > 0 ? (
+                  contact.phoneNumbers.map((num, i) => (
+                    <p key={i}><strong className="text-white font-semibold">Official Line {i + 1}:</strong> {num}</p>
+                  ))
+                ) : (
+                  <>
+                    <p><strong className="text-white font-semibold">Head Office:</strong> 051-111-324-725</p>
+                    <p><strong className="text-white font-semibold">Faisal Hills:</strong> 051-450000-2</p>
+                  </>
+                )}
                 <p className="pt-1">
                   <strong className="text-white font-semibold">Sales Hotline & WhatsApp:</strong>{' '}
-                  <a href="tel:+923044811717" className="underline font-bold text-white hover:text-amber-300">+92 304 4811 717</a>
+                  <a href={`tel:${(contact.salesHotline || '+923044811717').replace(/\s+/g, '')}`} className="underline font-bold text-white hover:text-amber-300">
+                    {contact.salesHotline || '+92 304 4811 717'}
+                  </a>
                 </p>
               </div>
             </div>
@@ -57,8 +78,8 @@ export default function Footer() {
               <Mail className="w-4 h-4 text-white shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p>
-                  <a href="mailto:info@faisalhillsislamabadfh.com" className="hover:underline text-white/80 font-medium">
-                    info@faisalhillsislamabadfh.com
+                  <a href={`mailto:${contact.email || 'info@faisalhillsislamabadfh.com'}`} className="hover:underline text-white/80 font-medium">
+                    {contact.email || 'info@faisalhillsislamabadfh.com'}
                   </a>
                 </p>
               </div>
@@ -70,15 +91,15 @@ export default function Footer() {
               <div className="space-y-1.5 text-white/80">
                 <p>
                   <strong className="text-white font-semibold block">Site Entrance:</strong>
-                  Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad
+                  {contact.siteOffice || 'Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad'}
                 </p>
                 <p>
                   <strong className="text-white font-semibold block">Head Office:</strong>
-                  Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.
+                  {contact.headOffice || 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.'}
                 </p>
                 <p>
                   <strong className="text-white font-semibold block">Rawalpindi Sales Desk:</strong>
-                  Office #401 Noor Mall 6th Road Rawalpindi.
+                  {contact.salesDesk || 'Office #401 Noor Mall 6th Road Rawalpindi.'}
                 </p>
               </div>
             </div>
@@ -93,12 +114,6 @@ export default function Footer() {
           </h4>
 
           <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
-            <li>
-              <Link href="/" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Home Page</span>
-              </Link>
-            </li>
             <li>
               <Link href="/about-us" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
@@ -163,6 +178,12 @@ export default function Footer() {
           </h4>
 
           <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
+            <li>
+              <Link href="/blocks/block-b1-extension" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Block B1 Extension</span>
+              </Link>
+            </li>
             <li>
               <Link href="/blocks/gandahara-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />

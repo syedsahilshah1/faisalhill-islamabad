@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // Seed additional Faisal Hills data items
+        // Seed additional Faisal Hills data items & legal/contact settings
         $settingKeys = [
             'payment_plans_data' => 'paymentPlansData',
             'faisal_jewels_specs' => 'faisalJewelsSpecs',
@@ -60,7 +60,12 @@ class DatabaseSeeder extends Seeder
             'faisal_jewels_apartment_details' => 'faisalJewelsApartmentDetails',
             'faisal_jewels_hotel_experience' => 'faisalJewelsHotelExperience',
             'faisal_jewel_residential_plan' => 'faisalJewelResidentialPlan',
-            'faisal_jewel_commercial_plans' => 'faisalJewelCommercialPlans'
+            'faisal_jewel_commercial_plans' => 'faisalJewelCommercialPlans',
+            'terms_of_service' => 'termsOfService',
+            'privacy_policy' => 'privacyPolicy',
+            'bank_accounts' => 'bankAccounts',
+            'social_links' => 'socialLinks',
+            'contact_info' => 'contactInfo'
         ];
 
         foreach ($settingKeys as $dbKey => $jsonKey) {
@@ -70,6 +75,123 @@ class DatabaseSeeder extends Seeder
                     ['value' => $data[$jsonKey]]
                 );
             }
+        }
+
+        // Default Terms of Service if not present
+        if (!SiteSetting::where('key', 'terms_of_service')->exists()) {
+            SiteSetting::create([
+                'key' => 'terms_of_service',
+                'value' => [
+                    'title' => 'Terms of Service',
+                    'lastUpdated' => 'August 2026',
+                    'sections' => [
+                        [
+                            'title' => '1. Terms & Conditions of Use',
+                            'content' => 'By accessing this website, you agree to comply with and be bound by these Terms of Service, all applicable laws, and regional real estate regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.'
+                        ],
+                        [
+                            'title' => '2. Sales Partner Disclaimer',
+                            'content' => 'This portal is operated by an authorized real estate sales agency and marketing partner. It is not the direct official website of the society developer (Zedem International or Faisal Town Group). All plot availability status, pricing charts, payment schedules, and installment rates are indicative of market values and are subject to correction or revision by the developer without prior notice.'
+                        ],
+                        [
+                            'title' => '3. Revisions and Errata',
+                            'content' => 'The materials appearing on this website could include technical, typographical, or photographic errors. While we make every effort to verify information with on-ground mapping and the official developer ledger, we do not warrant that any of the materials on this website are completely accurate, complete, or current.'
+                        ],
+                        [
+                            'title' => '4. Verification Prior to Payment',
+                            'content' => 'All buyers are advised to perform due diligence before making payments. Never transfer funds directly to individual sales agents; all bookings and installments must be paid via formal banking instruments (Pay Order, Demand Draft) in the name of the official society developer.'
+                        ]
+                    ]
+                ]
+            ]);
+        }
+
+        // Default Privacy Policy if not present
+        if (!SiteSetting::where('key', 'privacy_policy')->exists()) {
+            SiteSetting::create([
+                'key' => 'privacy_policy',
+                'value' => [
+                    'title' => 'Privacy Policy',
+                    'lastUpdated' => 'August 2026',
+                    'sections' => [
+                        [
+                            'title' => '1. Information We Collect',
+                            'content' => 'When you use our website or contact form, we collect the personal information you submit to us, which includes: your name, phone number, email address, inquiry interest, and device browser metadata.'
+                        ],
+                        [
+                            'title' => '2. How We Use Your Information',
+                            'content' => 'Your personal information is used exclusively to facilitate your real estate transactions and customer requests: to answer your specific inquiries about Faisal Hills plots, NOC status, prices, or payment plans, and to schedule site visits. We do not sell, rent, or trade your personal information with third parties.'
+                        ],
+                        [
+                            'title' => '3. Cookies and Analytics',
+                            'content' => 'We use temporary and persistent cookies to record site visits and improve page speeds. Cookies help us understand which blocks and articles get the most attention. You can disable cookies in your browser settings at any time.'
+                        ],
+                        [
+                            'title' => '4. Consent Acceptance',
+                            'content' => 'By submitting your details on our contact forms, you consent to our privacy policy and authorize our verified sales desk to reach out to you via call, WhatsApp, or email to assist with your inquiry.'
+                        ]
+                    ]
+                ]
+            ]);
+        }
+
+        // Default Bank Accounts for Booking
+        if (!SiteSetting::where('key', 'bank_accounts')->exists()) {
+            SiteSetting::create([
+                'key' => 'bank_accounts',
+                'value' => [
+                    [
+                        'id' => 'bank-1',
+                        'bankName' => 'Habib Bank Limited (HBL)',
+                        'accountTitle' => 'Zedem International (Pvt) Ltd',
+                        'accountNumber' => '00427991827403',
+                        'iban' => 'PK36HABB0000427991827403',
+                        'branchCode' => '0042',
+                        'branchName' => 'Blue Area Branch, Islamabad',
+                        'instructions' => 'Please mention your Registration / Booking Form Number or Plot File Number on the deposit receipt.'
+                    ],
+                    [
+                        'id' => 'bank-2',
+                        'bankName' => 'Meezan Bank Limited',
+                        'accountTitle' => 'Zedem International (Pvt) Ltd',
+                        'accountNumber' => '01028471928472',
+                        'iban' => 'PK55MEZN0001028471928472',
+                        'branchCode' => '0102',
+                        'branchName' => 'F-7 Markaz Branch, Islamabad',
+                        'instructions' => 'Islamic banking mode for overseas and local client installment payments.'
+                    ]
+                ]
+            ]);
+        }
+
+        // Default Social Links
+        if (!SiteSetting::where('key', 'social_links')->exists()) {
+            SiteSetting::create([
+                'key' => 'social_links',
+                'value' => [
+                    'whatsapp' => '+923044811717',
+                    'facebook' => 'https://facebook.com',
+                    'instagram' => 'https://instagram.com',
+                    'youtube' => 'https://youtube.com',
+                    'linkedin' => 'https://linkedin.com',
+                    'twitter' => 'https://twitter.com'
+                ]
+            ]);
+        }
+
+        // Default Contact Info
+        if (!SiteSetting::where('key', 'contact_info')->exists()) {
+            SiteSetting::create([
+                'key' => 'contact_info',
+                'value' => [
+                    'headOffice' => 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.',
+                    'siteOffice' => 'Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad',
+                    'salesDesk' => 'Office #401 Noor Mall 6th Road Rawalpindi.',
+                    'phoneNumbers' => ['051-111-324-725', '051-2720504-5', '051-450000-2', '051-5443746-7'],
+                    'salesHotline' => '+92 304 4811 717',
+                    'email' => 'info@faisalhillsislamabadfh.com'
+                ]
+            ]);
         }
 
         // 3. Seed Blocks

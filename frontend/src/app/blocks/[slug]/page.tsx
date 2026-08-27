@@ -201,8 +201,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const allBlocks = await fetchBlocks();
   const otherBlocks = allBlocks.filter((b) => b.slug !== block.slug);
 
-  // Authentic Hero images and descriptions for custom blocks
-  const heroBg = (block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
+  // Authentic Hero images and descriptions for custom blocks with dynamic DB override
+  const heroBg = block.heroImage || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
     ? '/faisal-jewel.jpg'
     : block.slug === 'prime-block'
     ? '/images/faisalhillexecutive.webp'
@@ -218,13 +218,11 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
     : block.slug === 'block-d'
     ? '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
-    : block.heroImage;
+    : '/images/imgi_38_Faisal-Hills-site-home-page-header.webp');
 
-  const heroSubtitle = (block.slug === 'prime-block' || block.slug === 'block-a' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
-    ? null
-    : block.subtitle;
+  const heroSubtitle = block.subtitle;
 
-  const heroDesc = (block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
+  const heroDesc = block.description || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
     ? 'Faisal Jewel is a landmark 27-story mixed-use skyscraper featuring 6 commercial shopping mall floors, luxury serviced residences, a 4-star hotel, rooftop infinity dining, and 3-level underground parking at the grand GT Road entrance.'
     : block.slug === 'prime-block'
     ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
@@ -240,7 +238,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.'
     : block.slug === 'hills-walk'
     ? 'Faisal Hills Walk is the signature European-style open-air pedestrian commercial promenade, featuring luxury retail arcades, rooftop dining, amphitheater, and high-yield commercial plaza cuts.'
-    : block.description;
+    : 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.');
 
   return (
     <div className="space-y-8 lg:space-y-10 pb-20">

@@ -740,7 +740,7 @@ export const blocksData: BlockInfo[] = [
     name: "Prime Block",
     subtitle: "",
     category: "developed",
-    status: "Exclusive Possession Sector",
+    status: "Under Development",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
     description: "Faisal Hills Prime Block is a premium VIP residential enclave positioned on the highest crest of the society.",
@@ -916,7 +916,7 @@ export const blocksData: BlockInfo[] = [
     slug: "block-b1-extension",
     name: "Block B1 Extension",
     subtitle: "High-Growth Investment & Modern Living Sector",
-    category: "developed",
+    category: "upcoming",
     status: "Development 90% Complete",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
@@ -2043,21 +2043,23 @@ export async function apiDeleteGalleryItem(id: string, token: string): Promise<a
   return await res.json();
 }
 
-export async function apiUpdateBlock(id: string, block: Partial<BlockInfo>, token: string): Promise<BlockInfo> {
-  const payload: any = { ...block };
-  if (block.nocStatus !== undefined) payload.noc_status = block.nocStatus;
-  if (block.verificationDate !== undefined) payload.verification_date = block.verificationDate;
-  if (block.priceRange !== undefined) payload.price_range = block.priceRange;
-  if (block.masterPlanImage !== undefined) payload.master_plan_image = block.masterPlanImage;
-  if (block.heroImage !== undefined) payload.hero_image = block.heroImage;
-  if (block.developmentUpdates !== undefined) payload.development_updates = block.developmentUpdates;
-
-  delete payload.nocStatus;
-  delete payload.verificationDate;
-  delete payload.priceRange;
-  delete payload.masterPlanImage;
-  delete payload.heroImage;
-  delete payload.developmentUpdates;
+export async function apiUpdateBlock(id: string, blockData: Partial<BlockInfo>, token: string): Promise<BlockInfo> {
+  const payload: any = {};
+  if (blockData.name !== undefined) payload.name = blockData.name;
+  if (blockData.subtitle !== undefined) payload.subtitle = blockData.subtitle;
+  if (blockData.status !== undefined) payload.status = blockData.status;
+  if (blockData.nocStatus !== undefined) payload.noc_status = blockData.nocStatus;
+  if (blockData.verificationDate !== undefined) payload.verification_date = blockData.verificationDate;
+  if (blockData.description !== undefined) payload.description = blockData.description;
+  if (blockData.locationDetails !== undefined) payload.location_details = blockData.locationDetails;
+  if (blockData.highlights !== undefined) payload.highlights = blockData.highlights;
+  if (blockData.totalPlots !== undefined) payload.total_plots = blockData.totalPlots;
+  if (blockData.priceRange !== undefined) payload.price_range = blockData.priceRange;
+  if (blockData.masterPlanImage !== undefined) payload.master_plan_image = blockData.masterPlanImage;
+  if (blockData.heroImage !== undefined) payload.hero_image = blockData.heroImage;
+  if (blockData.amenities !== undefined) payload.amenities = blockData.amenities;
+  if (blockData.faqs !== undefined) payload.faqs = blockData.faqs;
+  if (blockData.developmentUpdates !== undefined) payload.development_updates = blockData.developmentUpdates;
 
   const res = await fetch(`${API_URL}/blocks/${id}`, {
     method: 'PUT',
@@ -2072,6 +2074,7 @@ export async function apiUpdateBlock(id: string, block: Partial<BlockInfo>, toke
   const data = await res.json();
   return mapBlockToCamel(data);
 }
+
 
 export async function apiUpdateSetting(key: string, value: any, token: string): Promise<any> {
   const res = await fetch(`${API_URL}/settings`, {
@@ -2222,5 +2225,151 @@ export async function apiDeleteBlog(id: string, token: string): Promise<any> {
   if (!res.ok) throw new Error('Failed to delete blog');
   return await res.json();
 }
+
+// -------------------------------------------------------------
+// Legal Policies, Bank Accounts & Social Contact Types & Defaults
+// -------------------------------------------------------------
+export interface PolicySection {
+  title: string;
+  content: string;
+}
+
+export interface LegalPolicyData {
+  title: string;
+  lastUpdated: string;
+  sections: PolicySection[];
+}
+
+export interface BankAccountItem {
+  id: string;
+  bankName: string;
+  accountTitle: string;
+  accountNumber: string;
+  iban: string;
+  branchCode: string;
+  branchName: string;
+  instructions: string;
+}
+
+export interface SocialLinksData {
+  whatsapp: string;
+  facebook: string;
+  instagram: string;
+  youtube: string;
+  linkedin: string;
+  twitter: string;
+}
+
+export interface ContactInfoData {
+  headOffice: string;
+  siteOffice: string;
+  salesDesk: string;
+  phoneNumbers: string[];
+  salesHotline: string;
+  email: string;
+}
+
+export const defaultTermsOfService: LegalPolicyData = {
+  title: 'Terms of Service',
+  lastUpdated: 'August 2026',
+  sections: [
+    {
+      title: '1. Terms & Conditions of Use',
+      content: 'By accessing this website, you agree to comply with and be bound by these Terms of Service, all applicable laws, and regional real estate regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.'
+    },
+    {
+      title: '2. Sales Partner Disclaimer',
+      content: 'This portal is operated by an authorized real estate sales agency and marketing partner. It is not the direct official website of the society developer (Zedem International or Faisal Town Group). All plot availability status, pricing charts, payment schedules, and installment rates are indicative of market values and are subject to correction or revision by the developer without prior notice.'
+    },
+    {
+      title: '3. Revisions and Errata',
+      content: 'The materials appearing on this website could include technical, typographical, or photographic errors. While we make every effort to verify information with on-ground mapping and the official developer ledger, we do not warrant that any of the materials on this website are completely accurate, complete, or current.'
+    },
+    {
+      title: '4. Verification Prior to Payment',
+      content: 'All buyers are advised to perform due diligence before making payments. Never transfer funds directly to individual sales agents; all bookings and installments must be paid via formal banking instruments (Pay Order, Demand Draft) in the name of the official society developer.'
+    }
+  ]
+};
+
+export const defaultPrivacyPolicy: LegalPolicyData = {
+  title: 'Privacy Policy',
+  lastUpdated: 'August 2026',
+  sections: [
+    {
+      title: '1. Information We Collect',
+      content: 'When you use our website or contact form, we collect the personal information you submit to us, which includes: your name, phone number, email address, inquiry interest, and device browser metadata.'
+    },
+    {
+      title: '2. How We Use Your Information',
+      content: 'Your personal information is used exclusively to facilitate your real estate transactions and customer requests: to answer your specific inquiries about Faisal Hills plots, NOC status, prices, or payment plans, and to schedule site visits. We do not sell, rent, or trade your personal information with third parties.'
+    },
+    {
+      title: '3. Cookies and Analytics',
+      content: 'We use temporary and persistent cookies to record site visits and improve page speeds. Cookies help us understand which blocks and articles get the most attention. You can disable cookies in your browser settings at any time.'
+    },
+    {
+      title: '4. Consent Acceptance',
+      content: 'By submitting your details on our contact forms, you consent to our privacy policy and authorize our verified sales desk to reach out to you via call, WhatsApp, or email to assist with your inquiry.'
+    }
+  ]
+};
+
+export const defaultBankAccounts: BankAccountItem[] = [
+  {
+    id: 'bank-1',
+    bankName: 'Habib Bank Limited (HBL)',
+    accountTitle: 'Zedem International (Pvt) Ltd',
+    accountNumber: '00427991827403',
+    iban: 'PK36HABB0000427991827403',
+    branchCode: '0042',
+    branchName: 'Blue Area Branch, Islamabad',
+    instructions: 'Please mention your Registration / Booking Form Number or Plot File Number on the deposit receipt.'
+  },
+  {
+    id: 'bank-2',
+    bankName: 'Meezan Bank Limited',
+    accountTitle: 'Zedem International (Pvt) Ltd',
+    accountNumber: '01028471928472',
+    iban: 'PK55MEZN0001028471928472',
+    branchCode: '0102',
+    branchName: 'F-7 Markaz Branch, Islamabad',
+    instructions: 'Islamic banking mode for overseas and local client installment payments.'
+  }
+];
+
+export const defaultSocialLinks: SocialLinksData = {
+  whatsapp: '+923044811717',
+  facebook: 'https://facebook.com',
+  instagram: 'https://instagram.com',
+  youtube: 'https://youtube.com',
+  linkedin: 'https://linkedin.com',
+  twitter: 'https://twitter.com'
+};
+
+export const defaultContactInfo: ContactInfoData = {
+  headOffice: 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.',
+  siteOffice: 'Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad',
+  salesDesk: 'Office #401 Noor Mall 6th Road Rawalpindi.',
+  phoneNumbers: ['051-111-324-725', '051-2720504-5', '051-450000-2', '051-5443746-7'],
+  salesHotline: '+92 304 4811 717',
+  email: 'info@faisalhillsislamabadfh.com'
+};
+
+// -------------------------------------------------------------
+// Settings API Helpers
+// -------------------------------------------------------------
+
+export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}/settings/${key}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error(`Failed to fetch setting ${key}:`, e);
+    return null;
+  }
+}
+
 
 

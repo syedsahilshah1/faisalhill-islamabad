@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
   Trash2, Plus, Users, DollarSign, Calendar, Eye, Layers, ArrowUpRight, ArrowLeft,
-  Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon
+  Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
+  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import {
@@ -23,6 +24,7 @@ import {
   adminLogin,
   adminLogout,
   fetchPlots,
+  fetchBlocks,
   fetchGallery,
   fetchSettings,
   fetchSeo,
@@ -30,8 +32,10 @@ import {
   apiDeleteLead,
   apiUpdatePlot,
   apiCreatePlot,
+  apiDeletePlot,
   apiAddGalleryItem,
   apiDeleteGalleryItem,
+  apiUpdateBlock,
   apiUpdateSetting,
   apiUpdateSeo,
   apiUpdateGlobalSeo,
@@ -40,7 +44,18 @@ import {
   apiFetchAllBlogs,
   apiCreateBlog,
   apiUpdateBlog,
-  apiDeleteBlog
+  apiDeleteBlog,
+  BlockInfo,
+  LegalPolicyData,
+  BankAccountItem,
+  SocialLinksData,
+  ContactInfoData,
+  defaultTermsOfService,
+  defaultPrivacyPolicy,
+  defaultBankAccounts,
+  defaultSocialLinks,
+  defaultContactInfo,
+  fetchSettingByKey
 } from '@/data/faisalHillsData';
 
 
@@ -52,11 +67,29 @@ export default function AdminLoginPage() {
   const [token, setToken] = useState<string | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'plots' | 'blocks' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('plots');
+  const [activeTab, setActiveTab] = useState<'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('plots');
   const [plots, setPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
+  const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
   const [verifiedDate, setVerifiedDate] = useState(societyStats.lastVerifiedDate);
   const [leadsList, setLeadsList] = useState<LeadItem[]>(initialLeadsData);
   const [saveNotification, setSaveNotification] = useState(false);
+  const [notificationMsg, setNotificationMsg] = useState('Changes successfully published to live database!');
+
+  // Blocks Manager State
+  const [blocksList, setBlocksList] = useState<BlockInfo[]>(blocksData);
+  const [selectedBlockSlug, setSelectedBlockSlug] = useState<string>('executive-block');
+  const [editingBlock, setEditingBlock] = useState<Partial<BlockInfo>>({ ...blocksData[0] });
+
+  // Legal Policies State
+  const [termsOfService, setTermsOfService] = useState<LegalPolicyData>(defaultTermsOfService);
+  const [privacyPolicy, setPrivacyPolicy] = useState<LegalPolicyData>(defaultPrivacyPolicy);
+  const [legalSubTab, setLegalSubTab] = useState<'terms' | 'privacy'>('terms');
+
+  // Bank Accounts & Social/Contact State
+  const [bankAccounts, setBankAccounts] = useState<BankAccountItem[]>(defaultBankAccounts);
+  const [socialLinks, setSocialLinks] = useState<SocialLinksData>(defaultSocialLinks);
+  const [contactInfo, setContactInfo] = useState<ContactInfoData>(defaultContactInfo);
 
   // Blogs state
   const [blogsList, setBlogsList] = useState<BlogItem[]>([]);
@@ -119,9 +152,31 @@ export default function AdminLoginPage() {
 
     // Load initial frontend data from API
     fetchPlots().then(data => setPlots(data)).catch(console.error);
+    fetchBlocks().then(data => {
+      if (data && data.length > 0) {
+        setBlocksList(data);
+        const match = data.find(b => b.slug === selectedBlockSlug) || data[0];
+        setEditingBlock({ ...match });
+      }
+    }).catch(console.error);
     fetchGallery().then(data => setGalleryList(data)).catch(console.error);
     fetchSettings().then(data => {
       if (data.last_verified_date) setVerifiedDate(data.last_verified_date);
+    }).catch(console.error);
+    fetchSettingByKey<LegalPolicyData>('terms_of_service').then(data => {
+      if (data && data.sections) setTermsOfService(data);
+    }).catch(console.error);
+    fetchSettingByKey<LegalPolicyData>('privacy_policy').then(data => {
+      if (data && data.sections) setPrivacyPolicy(data);
+    }).catch(console.error);
+    fetchSettingByKey<BankAccountItem[]>('bank_accounts').then(data => {
+      if (data && data.length > 0) setBankAccounts(data);
+    }).catch(console.error);
+    fetchSettingByKey<SocialLinksData>('social_links').then(data => {
+      if (data) setSocialLinks(data);
+    }).catch(console.error);
+    fetchSettingByKey<ContactInfoData>('contact_info').then(data => {
+      if (data) setContactInfo(data);
     }).catch(console.error);
     
     // Fetch all pages SEO
@@ -300,6 +355,151 @@ export default function AdminLoginPage() {
       price: newPrice,
       priceFormatted: `PKR ${(newPrice / 100000).toFixed(1)} Lacs`
     } : p));
+  };
+
+  const handleDeletePlot = async (id: string) => {
+    if (!confirm('Are you sure you want to remove this plot listing?')) return;
+    try {
+      if (token) {
+        await apiDeletePlot(id, token);
+      }
+      setPlots(prev => prev.filter(p => p.id !== id));
+      setNotificationMsg('Plot listing removed successfully.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3000);
+    } catch (e) {
+      console.error(e);
+      alert('Failed to delete plot.');
+    }
+  };
+
+  const handleSelectBlockToEdit = (slug: string) => {
+    setSelectedBlockSlug(slug);
+    const found = blocksList.find(b => b.slug === slug) || blocksData.find(b => b.slug === slug);
+    if (found) {
+      setEditingBlock({ ...found });
+    }
+  };
+
+  const handleSaveBlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token || !editingBlock || !editingBlock.id) return;
+    try {
+      const updated = await apiUpdateBlock(editingBlock.id, editingBlock, token);
+      setBlocksList(prev => prev.map(b => b.id === updated.id ? updated : b));
+      setEditingBlock(updated);
+      setNotificationMsg(`Block "${updated.name}" updated successfully in database!`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } catch (e) {
+      console.error(e);
+      alert('Failed to update block in database.');
+    }
+  };
+
+  const handleSaveLegalPolicies = async () => {
+    if (!token) return;
+    try {
+      if (legalSubTab === 'terms') {
+        await apiUpdateSetting('terms_of_service', termsOfService, token);
+        setNotificationMsg('Terms of Service policy updated and published live in database!');
+      } else {
+        await apiUpdateSetting('privacy_policy', privacyPolicy, token);
+        setNotificationMsg('Privacy Policy updated and published live in database!');
+      }
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } catch (e) {
+      console.error(e);
+      alert('Failed to save legal policy to database.');
+    }
+  };
+
+  const handleAddPolicySection = () => {
+    if (legalSubTab === 'terms') {
+      setTermsOfService(prev => ({
+        ...prev,
+        sections: [
+          ...prev.sections,
+          { title: `${prev.sections.length + 1}. New Policy Clause`, content: 'Enter policy terms details here...' }
+        ]
+      }));
+    } else {
+      setPrivacyPolicy(prev => ({
+        ...prev,
+        sections: [
+          ...prev.sections,
+          { title: `${prev.sections.length + 1}. Privacy Clause`, content: 'Enter privacy statement details here...' }
+        ]
+      }));
+    }
+  };
+
+  const handleRemovePolicySection = (index: number) => {
+    if (legalSubTab === 'terms') {
+      setTermsOfService(prev => ({
+        ...prev,
+        sections: prev.sections.filter((_, i) => i !== index)
+      }));
+    } else {
+      setPrivacyPolicy(prev => ({
+        ...prev,
+        sections: prev.sections.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handlePolicySectionChange = (index: number, field: 'title' | 'content', val: string) => {
+    if (legalSubTab === 'terms') {
+      setTermsOfService(prev => ({
+        ...prev,
+        sections: prev.sections.map((sec, i) => i === index ? { ...sec, [field]: val } : sec)
+      }));
+    } else {
+      setPrivacyPolicy(prev => ({
+        ...prev,
+        sections: prev.sections.map((sec, i) => i === index ? { ...sec, [field]: val } : sec)
+      }));
+    }
+  };
+
+  const handleSaveBankAndContact = async () => {
+    if (!token) return;
+    try {
+      await apiUpdateSetting('bank_accounts', bankAccounts, token);
+      await apiUpdateSetting('social_links', socialLinks, token);
+      await apiUpdateSetting('contact_info', contactInfo, token);
+      setNotificationMsg('Bank accounts, official numbers, and social links saved to database!');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } catch (e) {
+      console.error(e);
+      alert('Failed to save bank and contact settings.');
+    }
+  };
+
+  const handleAddBankAccount = () => {
+    setBankAccounts(prev => [
+      ...prev,
+      {
+        id: `bank-${Date.now()}`,
+        bankName: 'New Bank Limited',
+        accountTitle: 'Zedem International (Pvt) Ltd',
+        accountNumber: '00000000000000',
+        iban: 'PK00XXXX0000000000000000',
+        branchCode: '0000',
+        branchName: 'Main Branch Islamabad',
+        instructions: 'Please mention your Registration / Plot File Number on the deposit slip.'
+      }
+    ]);
+  };
+
+  const handleRemoveBankAccount = (id: string) => {
+    setBankAccounts(prev => prev.filter(b => b.id !== id));
+  };
+
+  const handleBankAccountChange = (id: string, field: keyof BankAccountItem, val: string) => {
+    setBankAccounts(prev => prev.map(b => b.id === id ? { ...b, [field]: val } : b));
   };
 
   const triggerSave = () => {
@@ -674,6 +874,36 @@ export default function AdminLoginPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab('blocks')}
+          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+            activeTab === 'blocks' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Building2 className="w-4 h-4 text-[#7b002c]" />
+          <span>Blocks & BG Images ({blocksList.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('legal')}
+          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+            activeTab === 'legal' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 text-[#7b002c]" />
+          <span>Legal Policies (Terms & Privacy)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('accounts')}
+          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+            activeTab === 'accounts' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <CreditCard className="w-4 h-4 text-[#7b002c]" />
+          <span>Bank Accounts & Contacts</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('gallery')}
           className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
             activeTab === 'gallery' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
@@ -691,16 +921,6 @@ export default function AdminLoginPage() {
         >
           <Globe className="w-4 h-4 text-[#7b002c]" />
           <span>SEO & Meta Tags ({seoSettings.pages.length} Pages)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('blocks')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'blocks' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Building2 className="w-4 h-4 text-[#7b002c]" />
-          <span>Blocks & NOC ({blocksData.length})</span>
         </button>
 
         <button
@@ -735,46 +955,95 @@ export default function AdminLoginPage() {
       </div>
 
 
-      {/* TAB 1: PLOTS INVENTORY */}
+      {/* TAB 1: PLOTS INVENTORY & FOR SALE */}
       {activeTab === 'plots' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-            <span className="text-slate-600 font-medium">Manage plot availability, pricing & inventory listings</span>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+            {/* Search & Filter bar */}
+            <div className="flex flex-wrap items-center gap-2.5 flex-1">
+              <div className="relative min-w-[200px] flex-1 max-w-xs">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={plotSearchQuery}
+                  onChange={(e) => setPlotSearchQuery(e.target.value)}
+                  placeholder="Search plot #, size, facing..."
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <select
+                value={plotFilterBlock}
+                onChange={(e) => setPlotFilterBlock(e.target.value)}
+                className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+              >
+                <option value="all">All Blocks & Sectors</option>
+                {blocksList.map((b) => (
+                  <option key={b.slug} value={b.slug}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button 
               onClick={() => setIsAddPlotModalOpen(true)}
-              className="px-4 py-2 bg-[#7b002c] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#9e1245] transition shadow self-start sm:self-auto cursor-pointer"
+              className="px-4 py-2 bg-[#7b002c] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#9e1245] transition shadow self-start md:self-auto cursor-pointer shrink-0"
             >
-              <Plus className="w-3.5 h-3.5 text-white" /> Add New Listing
+              <Plus className="w-3.5 h-3.5 text-white" /> Add New Plot Listing
             </button>
           </div>
 
           {/* Desktop Table Layout */}
           <div className="hidden md:block bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs min-w-[700px]">
+              <table className="w-full text-left text-xs min-w-[760px]">
                 <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider border-b border-[#7b002c]">
                   <tr>
-                    <th className="p-4">Plot / Flat No.</th>
-                    <th className="p-4">Block Sector</th>
-                    <th className="p-4">Category</th>
-                    <th className="p-4">Size</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Demand Price (PKR)</th>
-                    <th className="p-4">Actions</th>
+                    <th className="p-3.5">Plot Image</th>
+                    <th className="p-3.5">Plot / Unit #</th>
+                    <th className="p-3.5">Block Sector</th>
+                    <th className="p-3.5">Category</th>
+                    <th className="p-3.5">Size & Facing</th>
+                    <th className="p-3.5">Status</th>
+                    <th className="p-3.5">Demand Price (PKR)</th>
+                    <th className="p-3.5">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
-                  {plots.map((plot) => (
+                  {plots
+                    .filter((plot) => {
+                      const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
+                      const matchesQuery = !plotSearchQuery || 
+                        plot.plotNumber.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
+                        plot.size.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
+                        (plot.facing && plot.facing.toLowerCase().includes(plotSearchQuery.toLowerCase())) ||
+                        plot.blockName.toLowerCase().includes(plotSearchQuery.toLowerCase());
+                      return matchesBlock && matchesQuery;
+                    })
+                    .map((plot) => (
                     <tr key={plot.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold font-serif text-[#7b002c] text-sm">{plot.plotNumber}</td>
-                      <td className="p-4 font-medium">{plot.blockName}</td>
-                      <td className="p-4">
+                      <td className="p-3.5">
+                        <div className="w-12 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                          <img
+                            src={plot.image || '/faisal-jewel.jpg'}
+                            alt={plot.plotNumber}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </td>
+                      <td className="p-3.5 font-bold font-serif text-[#7b002c] text-sm">{plot.plotNumber}</td>
+                      <td className="p-3.5 font-medium">{plot.blockName}</td>
+                      <td className="p-3.5">
                         <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300`}>
                           {plot.category === 'Apartment' ? 'Luxury Flat' : plot.category}
                         </span>
                       </td>
-                      <td className="p-4 font-medium">{plot.size}</td>
-                      <td className="p-4">
+                      <td className="p-3.5 font-medium">
+                        <div>{plot.size}</div>
+                        <span className="text-[10px] text-slate-500 font-semibold">{plot.facing || 'Standard'}</span>
+                      </td>
+                      <td className="p-3.5">
                         <select
                           value={plot.status}
                           onChange={(e) => handleStatusChange(plot.id, e.target.value as any)}
@@ -787,18 +1056,23 @@ export default function AdminLoginPage() {
                           <option value="Sold">Sold</option>
                         </select>
                       </td>
-                      <td className="p-4">
+                      <td className="p-3.5">
                         <input
                           type="number"
                           value={plot.price}
                           onChange={(e) => handlePriceChange(plot.id, Number(e.target.value))}
-                          className="w-36 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg font-serif font-bold text-xs text-[#7b002c] focus:outline-none focus:border-[#7b002c]"
+                          className="w-32 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg font-serif font-bold text-xs text-[#7b002c] focus:outline-none focus:border-[#7b002c]"
                         />
                       </td>
-                      <td className="p-4">
-                        <button onClick={triggerSave} className="text-[#7b002c] hover:text-[#9e1245] font-bold text-xs flex items-center gap-1 cursor-pointer">
-                          <Save className="w-3.5 h-3.5" /> Save
-                        </button>
+                      <td className="p-3.5">
+                        <div className="flex items-center gap-2">
+                          <button onClick={triggerSave} className="text-[#7b002c] hover:text-[#9e1245] font-bold text-xs flex items-center gap-1 cursor-pointer" title="Save">
+                            <Save className="w-3.5 h-3.5" /> Save
+                          </button>
+                          <button onClick={() => handleDeletePlot(plot.id)} className="text-slate-400 hover:text-red-600 transition p-1 cursor-pointer" title="Delete Plot">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -809,17 +1083,33 @@ export default function AdminLoginPage() {
 
           {/* Mobile Cards View */}
           <div className="block md:hidden space-y-3">
-            {plots.map((plot) => (
+            {plots
+              .filter((plot) => {
+                const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
+                const matchesQuery = !plotSearchQuery || 
+                  plot.plotNumber.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
+                  plot.size.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
+                  plot.blockName.toLowerCase().includes(plotSearchQuery.toLowerCase());
+                return matchesBlock && matchesQuery;
+              })
+              .map((plot) => (
               <div key={plot.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <span className="font-serif font-bold text-lg text-[#7b002c] block">{plot.plotNumber}</span>
-                    <span className="text-xs font-medium text-slate-500">{plot.blockName} • {plot.size}</span>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={plot.image || '/faisal-jewel.jpg'}
+                      alt={plot.plotNumber}
+                      className="w-12 h-12 rounded-lg object-cover border border-slate-200"
+                    />
+                    <div>
+                      <span className="font-serif font-bold text-base text-[#7b002c] block">{plot.plotNumber}</span>
+                      <span className="text-xs font-medium text-slate-500">{plot.blockName} • {plot.size}</span>
+                    </div>
                   </div>
                   <select
                     value={plot.status}
                     onChange={(e) => handleStatusChange(plot.id, e.target.value as any)}
-                    className={`text-xs font-bold px-2.5 py-1 rounded-lg border focus:outline-none ${
+                    className={`text-xs font-bold px-2 py-1 rounded-lg border focus:outline-none ${
                       plot.status === 'Available' ? 'bg-[#7b002c] text-white border-[#7b002c]' : 'bg-slate-100 text-slate-700 border-slate-300'
                     }`}
                   >
@@ -840,12 +1130,20 @@ export default function AdminLoginPage() {
                     />
                   </div>
 
-                  <button 
-                    onClick={triggerSave} 
-                    className="px-3 py-1.5 bg-[#7b002c] text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow shrink-0 cursor-pointer"
-                  >
-                    <Save className="w-3.5 h-3.5" /> Save
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={triggerSave} 
+                      className="px-3 py-1.5 bg-[#7b002c] text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow shrink-0 cursor-pointer"
+                    >
+                      <Save className="w-3.5 h-3.5" /> Save
+                    </button>
+                    <button 
+                      onClick={() => handleDeletePlot(plot.id)} 
+                      className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg border border-slate-200 hover:border-red-300 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -1460,28 +1758,684 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* TAB 3: BLOCKS MANAGEMENT */}
+      {/* TAB 2: BLOCKS & HERO BACKGROUND IMAGES MANAGER */}
       {activeTab === 'blocks' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {blocksData.map((b) => (
-            <div key={b.id} className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3 gap-2">
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-[#7b002c]">{b.name}</h3>
-                <span className="text-[11px] font-bold text-[#7b002c] bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200 shrink-0">{b.nocStatus}</span>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
+                <Building2 className="w-4 h-4 text-[#7b002c]" />
+                <span>Society Blocks & Sectors Management</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">{b.subtitle}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200/80">
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Residential Rates:</span>
-                  <strong className="text-[#7b002c] font-serif text-sm">{b.priceRange.residential}</strong>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Edit Block Hero Background Images, NOC Status & Price Rates
+              </h2>
+            </div>
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+              {blocksList.length} Society Blocks Configured
+            </span>
+          </div>
+
+          {/* Block Selection Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+            {blocksList.map((b) => (
+              <button
+                key={b.id || b.slug}
+                onClick={() => handleSelectBlockToEdit(b.slug)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
+                  selectedBlockSlug === b.slug
+                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Active Block Edit Form */}
+          {editingBlock && (
+            <form onSubmit={handleSaveBlock} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold font-serif text-lg">
+                    {editingBlock.name?.replace('Block ', '').charAt(0) || 'B'}
+                  </div>
+                  <div>
+                    <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                      Editing: {editingBlock.name}
+                    </h3>
+                    <span className="text-xs text-slate-500 font-medium">
+                      Slug: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono">{editingBlock.slug}</code>
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Commercial Rates:</span>
-                  <strong className="text-[#7b002c] font-serif text-sm">{b.priceRange.commercial}</strong>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                >
+                  <Save className="w-4 h-4 text-white" />
+                  <span>Save & Publish Block</span>
+                </button>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* Hero Background Image URL */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <span>Hero Background Image URL</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Displayed at top of block page</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editingBlock.heroImage || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, heroImage: e.target.value }))}
+                    placeholder="e.g. /images/hero-bg.jpg or https://images.unsplash.com/..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                  {editingBlock.heroImage && (
+                    <div className="h-32 rounded-xl overflow-hidden border border-slate-200 relative bg-slate-900">
+                      <img
+                        src={editingBlock.heroImage}
+                        alt="Hero Background Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Hero Background Preview
+                      </span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Master Plan Map Image URL */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <span>Master Plan / Layout Map Image URL</span>
+                    <span className="text-[10px] text-slate-400 font-normal">High-res layout map</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editingBlock.masterPlanImage || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, masterPlanImage: e.target.value }))}
+                    placeholder="e.g. /images/block-a-map.jpg"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                  {editingBlock.masterPlanImage && (
+                    <div className="h-32 rounded-xl overflow-hidden border border-slate-200 relative bg-slate-900">
+                      <img
+                        src={editingBlock.masterPlanImage}
+                        alt="Master Plan Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Master Plan Map Preview
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Block Name */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Block Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingBlock.name || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Subtitle */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Tagline / Subtitle</label>
+                  <input
+                    type="text"
+                    value={editingBlock.subtitle || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, subtitle: e.target.value }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* NOC Approval Status */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">NOC Approval Status</label>
+                  <input
+                    type="text"
+                    value={editingBlock.nocStatus || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, nocStatus: e.target.value }))}
+                    placeholder="e.g. RDA Approved (Rawalpindi Development Authority)"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Verification Date */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Last Verified Date</label>
+                  <input
+                    type="text"
+                    value={editingBlock.verificationDate || 'August 2026'}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, verificationDate: e.target.value }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Residential Rates */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Residential Price Range</label>
+                  <input
+                    type="text"
+                    value={editingBlock.priceRange?.residential || ''}
+                    onChange={(e) => setEditingBlock(prev => ({
+                      ...prev,
+                      priceRange: { ...prev.priceRange, residential: e.target.value, commercial: prev.priceRange?.commercial || '' }
+                    }))}
+                    placeholder="e.g. PKR 48 Lacs - 1.85 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Commercial Rates */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Commercial Price Range</label>
+                  <input
+                    type="text"
+                    value={editingBlock.priceRange?.commercial || ''}
+                    onChange={(e) => setEditingBlock(prev => ({
+                      ...prev,
+                      priceRange: { ...prev.priceRange, commercial: e.target.value, residential: prev.priceRange?.residential || '' }
+                    }))}
+                    placeholder="e.g. PKR 1.2 Crore - 4.5 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Total Plots Count */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Total Plots Count</label>
+                  <input
+                    type="number"
+                    value={editingBlock.totalPlots || 1200}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, totalPlots: Number(e.target.value) }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Category */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Category</label>
+                  <select
+                    value={editingBlock.category || 'developed'}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, category: e.target.value as any }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                  >
+                    <option value="developed">Developed (Possession Ready)</option>
+                    <option value="upcoming">Upcoming (Fast-Paced Development)</option>
+                    <option value="commercial">Commercial Hub</option>
+                  </select>
+                </div>
+
+                {/* Detailed Description */}
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Block Overview & Description</label>
+                  <textarea
+                    rows={4}
+                    value={editingBlock.description || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Enter detailed description of this sector/block..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                >
+                  <Save className="w-4 h-4 text-white" />
+                  <span>Save & Publish Block Updates</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+        </div>
+      )}
+
+
+      {/* TAB 3: LEGAL POLICIES (TERMS & PRIVACY POLICY) */}
+      {activeTab === 'legal' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
+                <BookOpen className="w-4 h-4 text-[#7b002c]" />
+                <span>Legal Content & Compliance Management</span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Edit Terms of Service & Privacy Policy Clauses
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setLegalSubTab('terms')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  legalSubTab === 'terms' ? 'bg-[#7b002c] text-white shadow' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Terms of Service ({termsOfService.sections.length} Clauses)
+              </button>
+              <button
+                type="button"
+                onClick={() => setLegalSubTab('privacy')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  legalSubTab === 'privacy' ? 'bg-[#7b002c] text-white shadow' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Privacy Policy ({privacyPolicy.sections.length} Clauses)
+              </button>
+            </div>
+          </div>
+
+          {/* Active Policy Editor */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <h3 className="font-serif font-bold text-lg text-slate-900">
+                  {legalSubTab === 'terms' ? 'Terms of Service Page' : 'Privacy Policy Page'}
+                </h3>
+                <span className="text-xs text-slate-500">Live URL: <code className="text-[#7b002c] font-mono">/{legalSubTab === 'terms' ? 'terms-of-service' : 'privacy-policy'}</code></span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleAddPolicySection}
+                  className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-[#7b002c]" /> Add New Clause
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveLegalPolicies}
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                >
+                  <Save className="w-4 h-4 text-white" />
+                  <span>Save Policy</span>
+                </button>
               </div>
             </div>
-          ))}
+
+            {/* Title & Last Updated Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-800">Page Headline</label>
+                <input
+                  type="text"
+                  value={legalSubTab === 'terms' ? termsOfService.title : privacyPolicy.title}
+                  onChange={(e) => {
+                    if (legalSubTab === 'terms') {
+                      setTermsOfService(prev => ({ ...prev, title: e.target.value }));
+                    } else {
+                      setPrivacyPolicy(prev => ({ ...prev, title: e.target.value }));
+                    }
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-800">Last Updated Timestamp</label>
+                <input
+                  type="text"
+                  value={legalSubTab === 'terms' ? termsOfService.lastUpdated : privacyPolicy.lastUpdated}
+                  onChange={(e) => {
+                    if (legalSubTab === 'terms') {
+                      setTermsOfService(prev => ({ ...prev, lastUpdated: e.target.value }));
+                    } else {
+                      setPrivacyPolicy(prev => ({ ...prev, lastUpdated: e.target.value }));
+                    }
+                  }}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+            </div>
+
+            {/* Sections Repeater */}
+            <div className="space-y-4">
+              <span className="text-xs font-bold text-slate-700 block uppercase tracking-wider">Policy Clauses & Sections</span>
+              {(legalSubTab === 'terms' ? termsOfService.sections : privacyPolicy.sections).map((sec, idx) => (
+                <div key={idx} className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <input
+                      type="text"
+                      value={sec.title}
+                      onChange={(e) => handlePolicySectionChange(idx, 'title', e.target.value)}
+                      placeholder="e.g. 1. Terms of Use"
+                      className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-bold focus:outline-none focus:border-[#7b002c]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePolicySection(idx)}
+                      className="text-slate-400 hover:text-red-600 p-1.5 rounded transition cursor-pointer"
+                      title="Remove Clause"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    value={sec.content}
+                    onChange={(e) => handlePolicySectionChange(idx, 'content', e.target.value)}
+                    placeholder="Enter detailed clause statement..."
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={handleSaveLegalPolicies}
+                className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+              >
+                <Save className="w-4 h-4 text-white" />
+                <span>Save & Publish Legal Policies</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* TAB 4: BANK ACCOUNTS & SOCIAL/CONTACT LINKS */}
+      {activeTab === 'accounts' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
+                <CreditCard className="w-4 h-4 text-[#7b002c]" />
+                <span>Financial & Official Contact Management</span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Bank Accounts for Bookings, Social Links & Helpline Numbers
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSaveBankAndContact}
+              className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer self-start md:self-auto"
+            >
+              <Save className="w-4 h-4 text-white" />
+              <span>Save & Publish All</span>
+            </button>
+          </div>
+
+          {/* Section 1: Bank Accounts for Booking */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-[#7b002c]">
+                <CreditCard className="w-5 h-5" />
+                <h3 className="font-serif font-bold text-lg text-slate-900">Official Society Bank Accounts (Booking & Installments)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddBankAccount}
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 flex items-center gap-1.5 transition cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 text-[#7b002c]" /> Add Bank Account
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {bankAccounts.map((b) => (
+                <div key={b.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <input
+                      type="text"
+                      value={b.bankName}
+                      onChange={(e) => handleBankAccountChange(b.id, 'bankName', e.target.value)}
+                      placeholder="Bank Name"
+                      className="font-serif font-bold text-sm text-[#7b002c] bg-transparent border-b border-transparent hover:border-slate-300 focus:border-[#7b002c] focus:outline-none flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveBankAccount(b.id)}
+                      className="text-slate-400 hover:text-red-600 p-1 transition cursor-pointer"
+                      title="Delete Bank"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Account Title</label>
+                      <input
+                        type="text"
+                        value={b.accountTitle}
+                        onChange={(e) => handleBankAccountChange(b.id, 'accountTitle', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Account Number</label>
+                      <input
+                        type="text"
+                        value={b.accountNumber}
+                        onChange={(e) => handleBankAccountChange(b.id, 'accountNumber', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono font-bold"
+                      />
+                    </div>
+
+                    <div className="space-y-1 sm:col-span-2">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">IBAN Number</label>
+                      <input
+                        type="text"
+                        value={b.iban}
+                        onChange={(e) => handleBankAccountChange(b.id, 'iban', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono font-bold"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Branch Name</label>
+                      <input
+                        type="text"
+                        value={b.branchName}
+                        onChange={(e) => handleBankAccountChange(b.id, 'branchName', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Branch Code</label>
+                      <input
+                        type="text"
+                        value={b.branchCode}
+                        onChange={(e) => handleBankAccountChange(b.id, 'branchCode', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1 sm:col-span-2">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Payment Instructions</label>
+                      <input
+                        type="text"
+                        value={b.instructions}
+                        onChange={(e) => handleBankAccountChange(b.id, 'instructions', e.target.value)}
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Social Media Links */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+            <div className="flex items-center gap-2 text-[#7b002c] border-b border-slate-100 pb-3">
+              <Share2 className="w-5 h-5" />
+              <h3 className="font-serif font-bold text-lg text-slate-900">Official Social Media Links & Channels</h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">WhatsApp Number</label>
+                <input
+                  type="text"
+                  value={socialLinks.whatsapp || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, whatsapp: e.target.value }))}
+                  placeholder="+923044811717"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Facebook URL</label>
+                <input
+                  type="text"
+                  value={socialLinks.facebook || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, facebook: e.target.value }))}
+                  placeholder="https://facebook.com/..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Instagram URL</label>
+                <input
+                  type="text"
+                  value={socialLinks.instagram || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, instagram: e.target.value }))}
+                  placeholder="https://instagram.com/..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">YouTube Channel URL</label>
+                <input
+                  type="text"
+                  value={socialLinks.youtube || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, youtube: e.target.value }))}
+                  placeholder="https://youtube.com/@..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">LinkedIn URL</label>
+                <input
+                  type="text"
+                  value={socialLinks.linkedin || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, linkedin: e.target.value }))}
+                  placeholder="https://linkedin.com/company/..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Twitter / X URL</label>
+                <input
+                  type="text"
+                  value={socialLinks.twitter || ''}
+                  onChange={(e) => setSocialLinks(prev => ({ ...prev, twitter: e.target.value }))}
+                  placeholder="https://twitter.com/..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Official Contact Details */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+            <div className="flex items-center gap-2 text-[#7b002c] border-b border-slate-100 pb-3">
+              <PhoneCall className="w-5 h-5" />
+              <h3 className="font-serif font-bold text-lg text-slate-900">Official Society Contact Numbers & Office Addresses</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Sales Hotline (Navbar & Footer)</label>
+                <input
+                  type="text"
+                  value={contactInfo.salesHotline || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, salesHotline: e.target.value }))}
+                  placeholder="+92 304 4811 717"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Official Support Email</label>
+                <input
+                  type="email"
+                  value={contactInfo.email || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="info@faisalhillsislamabadfh.com"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-1.5">
+                <label className="block font-bold text-slate-800">Head Office Address</label>
+                <input
+                  type="text"
+                  value={contactInfo.headOffice || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, headOffice: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Site Office Address</label>
+                <input
+                  type="text"
+                  value={contactInfo.siteOffice || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, siteOffice: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block font-bold text-slate-800">Sales Desk Address</label>
+                <input
+                  type="text"
+                  value={contactInfo.salesDesk || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, salesDesk: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={handleSaveBankAndContact}
+                className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+              >
+                <Save className="w-4 h-4 text-white" />
+                <span>Save All Financial & Contact Settings</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

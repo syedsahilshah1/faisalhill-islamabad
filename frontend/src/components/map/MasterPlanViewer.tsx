@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Layers, ZoomIn, ZoomOut, RefreshCw, Maximize2, Download, ShieldCheck, Move } from 'lucide-react';
+import { ZoomIn, ZoomOut, RefreshCw, Maximize2, Move, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 
 interface MasterPlanViewerProps {
   onDownloadClick?: () => void;
+  heightClass?: string;
 }
 
-export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerProps) {
+export default function MasterPlanViewer({ 
+  onDownloadClick,
+  heightClass = 'h-[220px] sm:h-[340px] lg:h-[440px]'
+}: MasterPlanViewerProps) {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -45,6 +49,19 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
     setPan({ x: 0, y: 0 });
   };
 
+  const handlePan = (direction: 'up' | 'down' | 'left' | 'right') => {
+    const step = 80;
+    setPan((prev) => {
+      switch (direction) {
+        case 'up': return { ...prev, y: prev.y + step };
+        case 'down': return { ...prev, y: prev.y - step };
+        case 'left': return { ...prev, x: prev.x + step };
+        case 'right': return { ...prev, x: prev.x - step };
+        default: return prev;
+      }
+    });
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (zoomLevel <= 1) return;
     setIsDragging(true);
@@ -55,26 +72,20 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
     if (!isDragging || zoomLevel <= 1) return;
     setPan({
       x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
+      y: e.clientY - dragStart.y
     });
   };
 
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   const handleWheel = (e: React.WheelEvent) => {
-    // Don't intercept normal page scroll when map is at 100% zoom unless Ctrl key is pressed or already zoomed in
-    if (zoomLevel === 1 && !e.ctrlKey) {
-      return;
-    }
     e.preventDefault();
     if (e.deltaY < 0) {
-      setZoomLevel((prev) => Math.min(prev + 0.6, 12.0));
+      handleZoomIn();
     } else {
-      setZoomLevel((prev) => {
-        const next = Math.max(prev - 0.6, 1.0);
-        if (next === 1.0) setPan({ x: 0, y: 0 });
-        return next;
-      });
+      handleZoomOut();
     }
   };
 
@@ -89,62 +100,51 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
   return (
     <>
       <div 
-        className={`w-full bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col transition-all duration-300 ${
+        className={`w-full bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl flex flex-col transition-all duration-300 ring-1 ring-white/5 ${
           isFullscreen ? 'fixed inset-0 z-[9999] rounded-none border-0' : ''
         }`}
         onContextMenu={(e) => e.preventDefault()}
       >
         {/* Header Toolbar */}
-        <div className="bg-slate-950 text-white px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80">
-          
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-300 bg-[#7b002c]/50 border border-[#7b002c]/70 px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
-              <Layers className="w-4 h-4 text-rose-300" />
-              Official Master Plan Blueprint
-            </span>
-            <span className="hidden lg:inline-flex items-center gap-1.5 text-[11px] text-slate-400 font-medium bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
-              <Move className="w-3.5 h-3.5 text-amber-400" />
-              Drag or hold Ctrl + scroll to zoom up to 1200%
-            </span>
-          </div>
+        <div className="bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 sm:px-6 flex items-center justify-end gap-3 border-b border-slate-800/80">
 
-          {/* Interactive Controls & Download CTA */}
+          {/* Interactive Controls & Zoom Indicator */}
           <div className="flex items-center gap-2 sm:gap-3 ml-auto">
             
             {/* Zoom Percentage Badge */}
-            <span className="text-xs font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg">
+            <span className="text-[11px] sm:text-xs font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg">
               {Math.round(zoomLevel * 100)}%
             </span>
 
             {/* Zoom Controls */}
-            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 shadow-inner">
+            <div className="flex items-center bg-slate-800/90 border border-slate-700/80 rounded-xl p-0.5 sm:p-1 shadow-inner backdrop-blur-sm">
               <button
                 onClick={handleZoomIn}
-                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg transition cursor-pointer"
+                className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg transition cursor-pointer"
                 title="Zoom In (up to 1200%)"
               >
-                <ZoomIn className="w-4 h-4" />
+                <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 onClick={handleZoomOut}
-                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border-l border-slate-800 transition cursor-pointer"
+                className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer"
                 title="Zoom Out"
               >
-                <ZoomOut className="w-4 h-4" />
+                <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 onClick={handleResetZoom}
-                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border-l border-slate-800 transition cursor-pointer"
+                className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer"
                 title="Reset View"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="p-1.5 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg border-l border-slate-800 transition cursor-pointer hidden sm:block"
+                className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer hidden sm:block"
                 title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
               >
-                <Maximize2 className="w-4 h-4" />
+                <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
@@ -159,10 +159,10 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className={`relative w-full bg-slate-950 overflow-hidden flex items-center justify-center p-2 sm:p-4 select-none ${
+          className={`relative w-full bg-slate-950 overflow-hidden flex items-center justify-center select-none ${
             isDragging ? 'cursor-grabbing' : zoomLevel > 1 ? 'cursor-grab' : 'cursor-default'
           } ${
-            isFullscreen ? 'h-[calc(100vh-60px)]' : 'h-[500px] sm:h-[650px] lg:h-[780px]'
+            isFullscreen ? 'h-[calc(100vh-60px)]' : heightClass
           }`}
         >
           <div 
@@ -183,11 +183,65 @@ export default function MasterPlanViewer({ onDownloadClick }: MasterPlanViewerPr
             />
           </div>
 
+          {/* Floating On-Canvas Pan / Scroll & Navigation Controls */}
+          <div className="absolute bottom-3.5 right-3.5 z-20 flex flex-col items-end gap-1.5 pointer-events-auto">
+            {/* Directional Scroll Controls */}
+            <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-1 shadow-2xl flex flex-col items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => handlePan('up')}
+                className="w-7 h-7 bg-slate-800 hover:bg-[#7b002c] text-slate-200 hover:text-white rounded-lg flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-xs"
+                title="Scroll Map Up"
+                aria-label="Scroll Map Up"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => handlePan('left')}
+                  className="w-7 h-7 bg-slate-800 hover:bg-[#7b002c] text-slate-200 hover:text-white rounded-lg flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-xs"
+                  title="Scroll Map Left"
+                  aria-label="Scroll Map Left"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetZoom}
+                  className="w-7 h-7 bg-slate-800 hover:bg-[#7b002c] text-amber-300 hover:text-white rounded-lg flex items-center justify-center transition-all active:scale-90 cursor-pointer text-[10px] font-bold shadow-xs"
+                  title="Reset View / Recenter"
+                  aria-label="Recenter Map"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePan('right')}
+                  className="w-7 h-7 bg-slate-800 hover:bg-[#7b002c] text-slate-200 hover:text-white rounded-lg flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-xs"
+                  title="Scroll Map Right"
+                  aria-label="Scroll Map Right"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => handlePan('down')}
+                className="w-7 h-7 bg-slate-800 hover:bg-[#7b002c] text-slate-200 hover:text-white rounded-lg flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-xs"
+                title="Scroll Map Down"
+                aria-label="Scroll Map Down"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
           {/* Quick Helper Overlay on Zoom */}
           {zoomLevel > 1 && (
             <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md text-slate-300 text-[11px] font-medium px-3 py-1.5 rounded-full border border-white/10 pointer-events-none flex items-center gap-1.5 shadow-lg">
               <Move className="w-3.5 h-3.5 text-amber-400" />
-              <span>Click & Drag to pan map • Scroll wheel to zoom</span>
+              <span>Click & Drag or use buttons to scroll map</span>
             </div>
           )}
         </div>
