@@ -19,12 +19,15 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import PaymentPlanModal from '@/components/ui/PaymentPlanModal';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isMapDownloadModalOpen, setIsMapDownloadModalOpen] = useState(false);
+  const [isPaymentPlanLightboxOpen, setIsPaymentPlanLightboxOpen] = useState(false);
+  const [isPaymentPlanDownloadOpen, setIsPaymentPlanDownloadOpen] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const [isWhyChooseExpanded, setIsWhyChooseExpanded] = useState(false);
   const [isInvestmentBenefitsExpanded, setIsInvestmentBenefitsExpanded] = useState(false);
@@ -1207,79 +1210,56 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Schedule Table (Desktop & Tablet) */}
-        <div className="hidden md:block">
-          <ScrollReveal direction="up" delay={200}>
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-bold">
-                    <tr>
-                      <th className="p-4">Block Sector</th>
-                      <th className="p-4">Plot Size</th>
-                      <th className="p-4">Total Price</th>
-                      <th className="p-4">20% Booking Down Payment</th>
-                      <th className="p-4">Monthly Installment</th>
-                      <th className="p-4 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800">
-                    {paymentPlansData.map((plan) => (
-                      <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="p-4 font-bold text-[#7b002c] font-serif text-sm">{plan.blockName}</td>
-                        <td className="p-4 font-semibold">{plan.plotSize}</td>
-                        <td className="p-4 font-bold text-slate-900">PKR {(plan.totalPrice / 100000).toFixed(1)} Lacs</td>
-                        <td className="p-4 text-[#7b002c] font-bold">PKR {(plan.downPayment / 100000).toFixed(2)} Lacs</td>
-                        <td className="p-4 font-semibold text-slate-700">PKR {plan.monthlyInstallment.toLocaleString()} / mo</td>
-                        <td className="p-4 text-right">
-                          <button
-                            onClick={() => setIsLeadModalOpen(true)}
-                            className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg transition-all cursor-pointer"
-                          >
-                            Book Schedule
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* Official Faisal Hills Payment Plan Image Showcase (Clickable Fullscreen & Lead-Gated Download) */}
+        <ScrollReveal direction="up" delay={200}>
+          <div className="bg-white p-3 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md space-y-4">
+            <div
+              onClick={() => setIsPaymentPlanLightboxOpen(true)}
+              className="relative w-full rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-950 group cursor-pointer"
+              title="Click to Open Fullscreen & Zoom Payment Plan"
+            >
+              <img
+                src="/images/faisal-hill-payment-plan.jpg"
+                alt="Faisal Hills Islamabad Official Payment Plan Schedule & Rates"
+                className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"
+              />
+              <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                <span className="bg-black/80 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-full border border-white/20 flex items-center gap-2 shadow-2xl">
+                  <Maximize2 className="w-4 h-4 text-rose-300" />
+                  <span>Click to View Fullscreen & Zoom Plan</span>
+                </span>
               </div>
             </div>
-          </ScrollReveal>
-        </div>
 
-        {/* Schedule Cards for Mobile View (Clean 3-metric row cards) */}
-        <div className="block md:hidden space-y-3">
-          {paymentPlansData.map((plan) => (
-            <div key={plan.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <span className="font-serif font-bold text-base text-[#7b002c]">{plan.blockName}</span>
-                <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg">{plan.plotSize}</span>
+            {/* Actions Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <div className="flex items-center gap-2 text-slate-600 text-xs font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>100% RDA Approved Official Payment Schedule & Installment Breakdown</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-500 block uppercase font-medium">Total</span>
-                  <strong className="text-slate-900 font-bold block text-xs">PKR {(plan.totalPrice / 100000).toFixed(1)}L</strong>
-                </div>
-                <div className="bg-rose-50/70 p-2 rounded-xl border border-rose-100">
-                  <span className="text-[10px] text-[#7b002c] block uppercase font-medium">20% Down</span>
-                  <strong className="text-[#7b002c] font-bold block text-xs">PKR {(plan.downPayment / 100000).toFixed(1)}L</strong>
-                </div>
-                <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-500 block uppercase font-medium">Monthly</span>
-                  <strong className="text-slate-800 font-bold block text-xs">PKR {(plan.monthlyInstallment / 1000).toFixed(0)}k</strong>
-                </div>
+
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsPaymentPlanDownloadOpen(true)}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl border border-slate-300 transition-all cursor-pointer text-center"
+                >
+                  <FileText className="w-4 h-4 text-[#7b002c]" />
+                  <span>Download Plan</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer text-center"
+                >
+                  <Sparkles className="w-4 h-4 text-rose-300" />
+                  <span>Book Plot On This Plan</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsLeadModalOpen(true)}
-                className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer text-center"
-              >
-                Book This Payment Schedule
-              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        </ScrollReveal>
 
       </section>
 
@@ -2152,6 +2132,16 @@ export default function HomePage() {
 
       {/* Map Download Lead Form Modal */}
       <MapDownloadModal isOpen={isMapDownloadModalOpen} onClose={() => setIsMapDownloadModalOpen(false)} />
+
+      {/* Payment Plan Lightbox & Lead-Gated Download Modal */}
+      <PaymentPlanModal
+        isLightboxOpen={isPaymentPlanLightboxOpen}
+        onCloseLightbox={() => setIsPaymentPlanLightboxOpen(false)}
+        isDownloadOpen={isPaymentPlanDownloadOpen}
+        onCloseDownload={() => setIsPaymentPlanDownloadOpen(false)}
+        onOpenDownload={() => setIsPaymentPlanDownloadOpen(true)}
+        imageSrc="/images/faisal-hill-payment-plan.jpg"
+      />
 
       {/* Floating Luxury Quick Contact Widget (As in reference screenshot) */}
       <div className="fixed bottom-6 right-6 z-[990] flex items-center gap-3">

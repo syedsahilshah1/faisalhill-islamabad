@@ -229,13 +229,6 @@ export default function AboutUsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/80 to-slate-950/85" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-white tracking-widest font-bold uppercase font-mono">
-              About Zedem International • Faisal Hills Islamabad
-            </span>
-          </div>
-
           <div className="max-w-3xl space-y-3">
             <TextReveal
               as="h1"
@@ -244,9 +237,6 @@ export default function AboutUsPage() {
               staggerDelay={50}
               direction="left"
             />
-            <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed font-sans max-w-2xl">
-              Since 2012, Zedem International has established a new benchmark for Pakistani real estate: 100% legal title compliance, progressive infrastructure delivery, and investor-first transparency.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
