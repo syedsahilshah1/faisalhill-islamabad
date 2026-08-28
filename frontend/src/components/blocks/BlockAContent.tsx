@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import {
   PlotItem,
@@ -20,6 +20,8 @@ import {
   MessageSquare,
   FileText,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Sparkles,
   Award,
   Check,
@@ -28,7 +30,6 @@ import {
   Compass,
   Activity,
   Layers,
-  ChevronRight,
   BadgeCheck,
   Navigation,
   ExternalLink,
@@ -41,7 +42,8 @@ import {
   Tag,
   Filter,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  X
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -127,6 +129,7 @@ const blockAPriceSchedule: BlockAPriceRow[] = [
 ];
 
 const defaultBlockASellingPlots = [
+  // 4 Residential Plots
   {
     id: 'blocka-plot-5m-1',
     plotNumber: 'A-112',
@@ -173,21 +176,6 @@ const defaultBlockASellingPlots = [
     features: ['Double Side Corner', 'Direct Park Panorama', 'Populated Street with Villas']
   },
   {
-    id: 'blocka-plot-14m-1',
-    plotNumber: 'A-310',
-    blockName: 'Block A',
-    category: 'Residential',
-    size: '14 Marla',
-    dimensions: '40 × 80',
-    facing: 'West Open',
-    priceFormatted: 'PKR 1.48 Crore',
-    downPayment: 'Full Cash / Possession',
-    status: 'Executive Ready',
-    badge: 'Wide Street',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-    features: ['50ft Wide Boulevard Street', 'Ideal for Multi-Floor Villa', 'Immediate Allotment Transfer']
-  },
-  {
     id: 'blocka-plot-1k-1',
     plotNumber: 'A-042',
     blockName: 'Block A',
@@ -202,21 +190,8 @@ const defaultBlockASellingPlots = [
     image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
     features: ['Margalla Foothill Vista', 'Established Community Vibe', 'High Rental Demand Zone']
   },
-  {
-    id: 'blocka-plot-2k-1',
-    plotNumber: 'A-008',
-    blockName: 'Block A',
-    category: 'Residential',
-    size: '2 Kanal',
-    dimensions: '75 × 120',
-    facing: 'Grand Boulevard',
-    priceFormatted: 'PKR 4.25 Crore',
-    downPayment: 'Full Cash / Possession',
-    status: 'Signature Estate',
-    badge: 'Mansion Plot',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
-    features: ['225ft Grand Boulevard Frontage', 'Unobstructed Panoramic Views', 'VIP Security Gate']
-  },
+
+  // 4 Commercial Plots
   {
     id: 'blocka-plot-com-1',
     plotNumber: 'A-COM-04',
@@ -246,6 +221,36 @@ const defaultBlockASellingPlots = [
     badge: 'Commercial Hub',
     image: '/images/faisal-roots-school.jpg',
     features: ['225ft Boulevard Front', 'Corner Commercial Plot', 'Heavy Commuter Visibility']
+  },
+  {
+    id: 'blocka-plot-com-3',
+    plotNumber: 'A-COM-18',
+    blockName: 'Block A',
+    category: 'Commercial',
+    size: '8 Marla Plaza Plot',
+    dimensions: '40 × 45',
+    facing: 'Main Market Square',
+    priceFormatted: 'PKR 5.20 Crore',
+    downPayment: 'Full Cash / Ready',
+    status: 'High Capital Gain',
+    badge: 'Commercial Plaza',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    features: ['Approved Multi-Storey Retail', 'Dedicated Customer Parking', 'Direct Quaid Ave Access']
+  },
+  {
+    id: 'blocka-plot-com-4',
+    plotNumber: 'A-COM-24',
+    blockName: 'Block A',
+    category: 'Commercial',
+    size: '10 Marla Plaza Plot',
+    dimensions: '50 × 45',
+    facing: 'Grand Commercial Hub',
+    priceFormatted: 'PKR 6.80 Crore',
+    downPayment: 'Full Cash / Ready',
+    status: 'Corporate Plaza',
+    badge: 'Corner Plaza Plot',
+    image: '/images/faisalhillarc.jpg',
+    features: ['3-Side Open Boulevard Corner', 'Corporate Office Hub Ready', 'Massive Daily Footfall']
   }
 ];
 
@@ -356,11 +361,13 @@ const blockAFaqs = [
 export default function BlockAContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
+  const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const [isMasterPlanExpanded, setIsMasterPlanExpanded] = useState(false);
   const [isDevStatusExpanded, setIsDevStatusExpanded] = useState(false);
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'infrastructure' | 'nature' | 'amenities'>('all');
   const [selectedGalleryImage, setSelectedGalleryImage] = useState<typeof blockAGalleryItems[0] | null>(null);
-  const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
+  const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('residential');
 
   // Dynamic live plot inventory sync from Laravel Backend Dashboard / LocalStorage / API
   const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
@@ -374,6 +381,39 @@ export default function BlockAContent() {
     window.addEventListener('faisal_plots_updated', handleSync);
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
   }, []);
+
+  // Amenities Auto-Scroll Carousel State (1 second interval)
+  const amenitiesScrollRef = useRef<HTMLDivElement>(null);
+  const [isAmenitiesHovered, setIsAmenitiesHovered] = useState(false);
+
+  useEffect(() => {
+    if (isAmenitiesHovered) return;
+    const interval = setInterval(() => {
+      if (amenitiesScrollRef.current) {
+        const container = amenitiesScrollRef.current;
+        const itemWidth = container.firstElementChild?.clientWidth || 280;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        if (container.scrollLeft >= maxScroll - 15) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isAmenitiesHovered, galleryFilter]);
+
+  const handleScrollAmenities = (direction: 'left' | 'right') => {
+    if (amenitiesScrollRef.current) {
+      const container = amenitiesScrollRef.current;
+      const itemWidth = container.firstElementChild?.clientWidth || 280;
+      container.scrollBy({
+        left: direction === 'left' ? -(itemWidth + 16) : (itemWidth + 16),
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const defaultBlockAPlotImages = [
     '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
@@ -417,8 +457,18 @@ export default function BlockAContent() {
       }
     });
 
-    return combined.slice(0, 8);
+    return combined;
   }, [allPlots]);
+
+  const displayedPlots = useMemo(() => {
+    if (plotCategoryFilter === 'residential') {
+      return blockAPlots.filter(p => p.category.toLowerCase() === 'residential').slice(0, 4);
+    }
+    if (plotCategoryFilter === 'commercial') {
+      return blockAPlots.filter(p => p.category.toLowerCase() === 'commercial').slice(0, 4);
+    }
+    return blockAPlots.slice(0, 8);
+  }, [blockAPlots, plotCategoryFilter]);
 
   // Lead Form state
   const [leadName, setLeadName] = useState('');
@@ -432,78 +482,80 @@ export default function BlockAContent() {
     setSubmitted(true);
   };
 
+  const [activeLandmarkIndex, setActiveLandmarkIndex] = useState<number | null>(null);
+
+  const otherBlocks = useMemo(() => {
+    return defaultFaisalHillsBlocks.filter(
+      item => item.id !== 'block-a' && !item.title.toLowerCase().includes('block a')
+    );
+  }, []);
+
   const filteredGallery = blockAGalleryItems.filter(
     item => galleryFilter === 'all' || item.category === galleryFilter
   );
 
   return (
-    <div className="space-y-12 lg:space-y-16">
+    <div className="space-y-12 lg:space-y-16 pt-2 font-sans text-slate-800">
 
       {/* ========================================================= */}
-      {/* 1. ABOUT SECTOR A & STRATEGIC ADVANTAGE                  */}
+      {/* 1. SECTOR A OVERVIEW & VISION                             */}
       {/* ========================================================= */}
-      <section className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+      <section id="overview" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Text & 3 Pillars */}
+          {/* Left Column: Text */}
           <div className="lg:col-span-7 space-y-6">
-            <ScrollReveal direction="up" delay={50}>
+            <ScrollReveal direction="left" delay={50}>
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                  <Landmark className="w-3.5 h-3.5" />
-                  <span>Civic Heart of Faisal Hills</span>
-                </div>
-
                 <TextReveal
-                  as="h2"
-                  text="Faisal Hills Block A — The Most Developed & Populated Residential Hub"
-                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                  as="h1"
+                  text="Faisal Hills Block A Overview"
+                  className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
 
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans">
-                  Positioned directly adjacent to the Faisal Hills Grand Main Gate off GT Road, <strong>Block A</strong> stands as the flagship delivered sector of the society. Holding full <strong>RDA approval</strong>, this mature neighbourhood hosts hundreds of thriving family villas, the iconic <strong>Grand Jamia Mosque</strong>, a 12-Kanal central family park, and fully operational commercial markets.
-                </p>
+                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                  <p>
+                    Positioned directly adjacent to the Faisal Hills Grand Main Gate off GT Road, <strong>Block A</strong> stands as the flagship delivered sector of the society. Holding full <strong>RDA approval</strong>, this mature neighbourhood hosts hundreds of thriving family villas, the iconic <strong>Grand Jamia Mosque</strong>, a 12-Kanal central family park, and fully operational commercial markets.{!isOverviewExpanded && (
+                      <>
+                        {' '}
+                        <button
+                          type="button"
+                          onClick={() => setIsOverviewExpanded(true)}
+                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
+                        >
+                          See more
+                        </button>
+                      </>
+                    )}
+                  </p>
+
+                  {isOverviewExpanded && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <p>
+                        With 100% underground electricity, Sui gas, continuous filtered water supply, and wide carpeted boulevards, Block A is the gold standard for immediate home construction and family living.
+                      </p>
+                      <p>
+                        Its established infrastructure also makes it the highest-demand rental sector in the entire scheme, delivering secure, inflation-hedged yields for property investors.{' '}
+                        <button
+                          type="button"
+                          onClick={() => setIsOverviewExpanded(false)}
+                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
+                        >
+                          See less
+                        </button>
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </ScrollReveal>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
-              <ScrollReveal direction="up" delay={100}>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 h-full">
-                  <div className="flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider">
-                    <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
-                    <span>Immediate Possession</span>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">100% on-ground land ready for immediate house construction and instant living.</p>
-                </div>
-              </ScrollReveal>
-
-              <ScrollReveal direction="up" delay={150}>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 h-full">
-                  <div className="flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider">
-                    <Building2 className="w-4 h-4 text-[#7b002c] shrink-0" />
-                    <span>Fully Operational Core</span>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">Grand Mosque, grocery marts, schools, water filtration, and underground electricity.</p>
-                </div>
-              </ScrollReveal>
-
-              <ScrollReveal direction="up" delay={200}>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 h-full">
-                  <div className="flex items-center gap-2 text-[#7b002c] font-bold text-xs uppercase tracking-wider">
-                    <TrendingUp className="w-4 h-4 text-[#7b002c] shrink-0" />
-                    <span>Proven Rental Yield</span>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">Consistently high rental occupancy with strong demand from professionals and families.</p>
-                </div>
-              </ScrollReveal>
-            </div>
           </div>
 
           {/* Right Column: Visual Showcase Card */}
           <div className="lg:col-span-5 w-full">
             <ScrollReveal direction="right" delay={100}>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-950 min-h-[380px] sm:min-h-[440px] flex flex-col justify-between group">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-950 min-h-[340px] sm:min-h-[380px] flex flex-col justify-between group">
                 <img
                   src="/images/imgi_46_Mosques.webp"
                   alt="Block A Grand Jamia Mosque"
@@ -536,16 +588,433 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 3. VERIFIED PRICING SCHEDULE MATRIX                       */}
+      {/* 2. STRATEGIC LOCATION & CONNECTIVITY                      */}
+      {/* ========================================================= */}
+      <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+
+          {/* Left Column: Narrative Content */}
+          <div className="lg:col-span-7 space-y-6">
+            <ScrollReveal direction="left" delay={50}>
+              <div className="space-y-3">
+                <TextReveal
+                  as="h2"
+                  text="Faisal Hills Block A Location & Commute Accessibility"
+                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                  staggerDelay={65}
+                  direction="left"
+                />
+                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                  <p>
+                    Block A benefits from the most privileged entrance position in Faisal Hills, eliminating society internal traffic delays and providing effortless access to the National Highway (GT Road N-5).{!isLocationExpanded && (
+                      <>
+                        {' '}
+                        <button
+                          type="button"
+                          onClick={() => setIsLocationExpanded(true)}
+                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
+                        >
+                          See more
+                        </button>
+                      </>
+                    )}
+                  </p>
+
+                  {isLocationExpanded && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <p>
+                        Directly linked with Quaid Avenue, Wah Cantt, and the M-1 Motorway corridor, Sector A ensures rapid commuting to Islamabad Zero Point and Rawalpindi City.
+                      </p>
+                      <p>
+                        The sector sits in close proximity to major educational institutions, hospitals, and the upcoming commercial centers of Faisal Hills.{' '}
+                        <button
+                          type="button"
+                          onClick={() => setIsLocationExpanded(false)}
+                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
+                        >
+                          See less
+                        </button>
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Small Master Plan Quick Preview Card */}
+                <div
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="mt-4 p-3.5 bg-slate-50 hover:bg-slate-100/90 rounded-2xl border border-slate-200/90 transition-all duration-300 cursor-pointer group flex items-center gap-3.5 shadow-2xs hover:shadow-sm"
+                >
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-950 shrink-0 border border-slate-200">
+                    <img
+                      src="/images/faisal-hills-master-plan-map.jpg"
+                      alt="Faisal Hills Block A Master Plan Thumbnail"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <Maximize2 className="w-4 h-4 text-white drop-shadow" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                        Block A Master Plan
+                      </span>
+                      <span className="text-[9px] text-emerald-700 font-semibold">HD Layout</span>
+                    </div>
+                    <h4 className="font-serif font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors truncate">
+                      Official Sector A Layout Blueprint
+                    </h4>
+                    <p className="text-[11px] text-slate-500 line-clamp-1">
+                      Click to view full HD master plan and download official PDF.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right Column: Google Map Embed */}
+          <div className="lg:col-span-5 space-y-3">
+            <div className="relative w-full h-[300px] sm:h-[340px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+              <iframe
+                title="Faisal Hills Block A Exact Location Google Map"
+                src="https://maps.google.com/maps?q=Faisal+Hills+Block+A+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 3. NEARBY LANDMARKS & COMMUTE DISTANCES                   */}
+      {/* ========================================================= */}
+      <section id="nearby-landmarks" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-5 sm:space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Nearby Landmarks & Commute Distances from Block A"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
+              Verified drive times and connectivity distances to major universities, hospitals, airports, and city centers from Sector A.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Mobile View: Compact Options Accordion List */}
+        <div className="block sm:hidden space-y-2">
+          {blockATravelTimes.map((dest, idx) => {
+            const isSelected = activeLandmarkIndex === idx;
+            return (
+              <div
+                key={idx}
+                onClick={() => setActiveLandmarkIndex(isSelected ? null : idx)}
+                className={`rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
+                  isSelected
+                    ? 'bg-rose-50/60 border-[#7b002c]/40 shadow-xs'
+                    : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/70'
+                }`}
+              >
+                <div className="p-3 flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors ${
+                      isSelected ? 'bg-[#7b002c] text-white' : 'bg-slate-200 text-slate-700'
+                    }`}>
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-serif font-bold text-xs text-slate-900 truncate">
+                      {dest.destination}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[10px] font-bold text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                      {dest.time}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${
+                        isSelected ? 'rotate-180 text-[#7b002c]' : ''
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {isSelected && (
+                  <div className="px-3.5 pb-3 pt-1 text-[11px] text-slate-600 border-t border-rose-100/80 flex items-center justify-between animate-fadeIn bg-white/60">
+                    <span>Distance: <strong className="text-slate-900 font-semibold">{dest.distance}</strong></span>
+                    <span className="italic text-slate-500">{dest.note}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop & Tablet View: Grid Cards */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+          {blockATravelTimes.map((dest, idx) => (
+            <ScrollReveal key={idx} direction="up" delay={idx * 40}>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-rose-300 transition-all space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-serif font-bold text-sm text-slate-900">{dest.destination}</h4>
+                  <span className="text-xs font-bold text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                    {dest.time}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>Distance: <strong>{dest.distance}</strong></span>
+                  <span className="italic">{dest.note}</span>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 4. MASTER PLAN & LAYOUT BLUEPRINT                         */}
+      {/* ========================================================= */}
+      <section id="master-plan" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Faisal Hills Block A Master Plan"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={100}>
+          <div
+            onClick={() => setIsMapModalOpen(true)}
+            className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[460px] p-2 sm:p-4"
+          >
+            <img
+              src="/images/faisal-hills-master-plan-map.jpg"
+              alt="Faisal Hills Block A Master Plan Layout"
+              className="w-full h-auto max-h-[560px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+              <span className="px-4 py-2 rounded-xl bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-2">
+                <Maximize2 className="w-4 h-4 text-[#7b002c]" />
+                <span>Click to Enlarge & Download</span>
+              </span>
+            </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 5. VERIFIED AVAILABLE PLOTS FOR SALE                      */}
+      {/* ========================================================= */}
+      <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <TextReveal
+                as="h2"
+                text="Faisal Hills Block A Plots for Sale & Resale Desk"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+                Browse verified on-ground possession plots and commercial plots in Sector A ready for immediate construction and transfer.
+              </p>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+              <button
+                type="button"
+                onClick={() => setPlotCategoryFilter('all')}
+                className={`hidden sm:inline-block px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  plotCategoryFilter === 'all'
+                    ? 'bg-[#7b002c] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                All (8)
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlotCategoryFilter('residential')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  plotCategoryFilter === 'residential'
+                    ? 'bg-[#7b002c] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Residential
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlotCategoryFilter('commercial')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  plotCategoryFilter === 'commercial'
+                    ? 'bg-[#7b002c] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Commercial
+              </button>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Plot Cards Grid (2 in line on mobile, 4 in line on desktop) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+          {displayedPlots.map((plot, idx) => (
+            <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                  <div>
+                    {/* Plot Image Container -> Links to /plots filtered */}
+                    <Link
+                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-a`}
+                      className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                    >
+                      <img
+                        src={plot.image}
+                        alt={plot.plotNumber}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                      {/* Plot Number & Block */}
+                      <div className="absolute bottom-1.5 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 text-white">
+                        <span className="text-[8px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
+                        <h4 className="font-serif font-bold text-sm sm:text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
+                      </div>
+                    </Link>
+
+                    {/* Specs Details -> Links to /plots filtered */}
+                    <Link
+                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-a`}
+                      className="p-2.5 sm:p-5 space-y-2 sm:space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                    >
+                      <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs text-slate-600">
+                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Plot Size:</span>
+                          <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
+                        </div>
+                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Dimensions:</span>
+                          <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
+                        </div>
+                        <div className="hidden sm:flex justify-between items-center pb-1.5 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Orientation:</span>
+                          <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-500 font-medium">Possession:</span>
+                          <span className="text-emerald-700 font-bold text-[9px] sm:text-xs">100% Ready</span>
+                        </div>
+                      </div>
+
+                      {/* Feature Pills */}
+                      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
+                        {Array.isArray(plot.features) && plot.features.slice(0, 2).map((feat: string, fIdx: number) => (
+                          <span
+                            key={fIdx}
+                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
+                          >
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Price & Action Buttons Footer */}
+                  <div className="p-2.5 sm:p-4 pt-2 border-t border-slate-100 space-y-2">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[8px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Demand</span>
+                      <span className="font-serif font-bold text-xs sm:text-base text-[#7b002c]">{plot.priceFormatted}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <Link
+                        href={`/plots/${plot.id}`}
+                        className="px-1.5 sm:px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 text-center"
+                      >
+                        <span>Details</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </Link>
+
+                      <a
+                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in Block A Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share details.`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-1.5 sm:px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>Book</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+        </div>
+
+        {/* Sell Your Block A Plot Banner */}
+        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Owner Resale & Liquidation Desk</span>
+            </div>
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+              Want to Sell or Rent Out Your Block A Property?
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Connect with genuine cash buyers and qualified tenants for immediate plot liquidation or villa renting in Sector A.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+            <a
+              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20sell%2Frent%20my%20property%20in%20Faisal%20Hills%20Block%20A."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg hover:scale-105"
+            >
+              <Phone className="w-4 h-4" />
+              <span>WhatsApp Resale Desk</span>
+            </a>
+            <a
+              href="tel:+923313339997"
+              className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
+            >
+              <span>Call Direct Line</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 6. VERIFIED PRICING SCHEDULE MATRIX                       */}
       {/* ========================================================= */}
       <section id="pricing-matrix" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <DollarSign className="w-3.5 h-3.5" />
-                <span>Market Price Index 2026</span>
-              </div>
               <TextReveal
                 as="h2"
                 text="Faisal Hills Block A Plot Prices & Schedule"
@@ -553,7 +1022,7 @@ export default function BlockAContent() {
                 staggerDelay={65}
                 direction="left"
               />
-              <p className="text-slate-600 text-sm leading-relaxed max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
                 Verified on-ground price valuations for residential and commercial plots in Sector A with ready possession.
               </p>
             </div>
@@ -570,9 +1039,55 @@ export default function BlockAContent() {
           </div>
         </ScrollReveal>
 
-        {/* Pricing Table */}
+        {/* Mobile View: Clean Responsive Cards */}
+        <div className="block sm:hidden space-y-3">
+          {blockAPriceSchedule.map((row, idx) => (
+            <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
+                  <span className="font-bold text-sm text-slate-900">{row.size}</span>
+                </div>
+                <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium ${
+                  row.category === 'Commercial' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'
+                }`}>
+                  {row.category}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Dimensions</span>
+                  <strong className="text-slate-800 font-mono">{row.dimensions}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Area</span>
+                  <strong className="text-slate-800">{row.sqYards}</strong>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Price Range</span>
+                  <span className="font-serif font-bold text-sm text-[#7b002c]">{row.priceRange}</span>
+                </div>
+                <a
+                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#7b002c] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#9e1245] transition-all"
+                >
+                  <span>Inquire</span>
+                  <ChevronRight className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Full Table */}
         <ScrollReveal direction="up" delay={100}>
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="hidden sm:block bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm">
                 <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
@@ -627,66 +1142,19 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 4. DYNAMIC PLOT SERIES EXPLORER                          */}
+      {/* 7. DYNAMIC PLOT SERIES EXPLORER                          */}
       {/* ========================================================= */}
       <section id="series-explorer" className="scroll-mt-28">
         <DynamicPlotSeriesExplorer blockSlug="block-a" blockName="Block A" />
       </section>
 
       {/* ========================================================= */}
-      {/* 5. LOCATION & CONNECTIVITY MATRIX                         */}
+      {/* 8. ON-GROUND FACILITIES & AMENITIES GALLERY               */}
       {/* ========================================================= */}
-      <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Compass className="w-3.5 h-3.5" />
-              <span>Direct Gate Connectivity</span>
-            </div>
-            <TextReveal
-              as="h2"
-              text="Strategic Accessibility & Commute Distances"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-              staggerDelay={65}
-              direction="left"
-            />
-            <p className="text-slate-600 text-sm leading-relaxed max-w-2xl">
-              Block A benefits from the most privileged entrance position in Faisal Hills, eliminating society internal traffic delays.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {blockATravelTimes.map((dest, idx) => (
-            <ScrollReveal key={idx} direction="up" delay={idx * 40}>
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-rose-300 transition-all space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-serif font-bold text-sm text-slate-900">{dest.destination}</h4>
-                  <span className="text-xs font-bold text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
-                    {dest.time}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>Distance: <strong>{dest.distance}</strong></span>
-                  <span className="italic">{dest.note}</span>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 6. ON-GROUND FACILITIES & AMENITIES GALLERY               */}
-      {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+      <section id="amenities" className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Trees className="w-3.5 h-3.5" />
-                <span>On-Ground Infrastructure</span>
-              </div>
               <TextReveal
                 as="h2"
                 text="Live Amenities & Community Landmarks in Sector A"
@@ -694,378 +1162,91 @@ export default function BlockAContent() {
                 staggerDelay={65}
                 direction="left"
               />
-              <p className="text-slate-600 text-sm leading-relaxed max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
                 Experience real delivered infrastructure: active Grand Jamia Mosque, family parks, paved boulevards, and commercial plazas.
               </p>
             </div>
 
-            {/* Gallery Category Filter */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
-              {(['all', 'infrastructure', 'nature', 'amenities'] as const).map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setGalleryFilter(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
-                    galleryFilter === cat
-                      ? 'bg-[#7b002c] text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGallery.map((item, idx) => (
-            <ScrollReveal key={item.id} direction="up" delay={idx * 60}>
-              <div
-                onClick={() => setSelectedGalleryImage(item)}
-                className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200 bg-slate-950 flex flex-col justify-end min-h-[300px] cursor-pointer transition-all duration-300"
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-
-                <div className="relative z-10 p-6 space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-200 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15">
-                    {item.tag}
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-slate-300 leading-relaxed font-sans line-clamp-2">
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 7. VERIFIED AVAILABLE PLOTS FOR SALE (SELLING PLOT SECTION)*/}
-      {/* ========================================================= */}
-      <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Tag className="w-3.5 h-3.5" />
-                <span>Verified Available Listings</span>
-              </div>
-              <TextReveal
-                as="h2"
-                text="Faisal Hills Block A Plots for Sale & Resale Desk"
-                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                staggerDelay={65}
-                direction="left"
-              />
-              <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-                Browse verified on-ground possession plots and commercial plots in Sector A ready for immediate construction and transfer.
-              </p>
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
-              <button
-                type="button"
-                onClick={() => setPlotCategoryFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  plotCategoryFilter === 'all'
-                    ? 'bg-[#7b002c] text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                All ({blockAPlots.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setPlotCategoryFilter('residential')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  plotCategoryFilter === 'residential'
-                    ? 'bg-[#7b002c] text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Residential
-              </button>
-              <button
-                type="button"
-                onClick={() => setPlotCategoryFilter('commercial')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  plotCategoryFilter === 'commercial'
-                    ? 'bg-[#7b002c] text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Commercial
-              </button>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Plot Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {blockAPlots
-            .filter(plot => plotCategoryFilter === 'all' || plot.category.toLowerCase() === plotCategoryFilter)
-            .map((plot, idx) => (
-              <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
-                  <div>
-                    {/* Plot Image Container -> Links to /plots filtered */}
-                    <Link
-                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-a`}
-                      className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
-                    >
-                      <img
-                        src={plot.image}
-                        alt={plot.plotNumber}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
-
-                      {/* Plot Number & Block */}
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
-                        <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
-                        <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
-                      </div>
-                    </Link>
-
-                    {/* Specs Details -> Links to /plots filtered */}
-                    <Link
-                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-a`}
-                      className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
-                    >
-                      <div className="space-y-2 text-xs text-slate-600">
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Plot Size:</span>
-                          <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
-                        </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Dimensions:</span>
-                          <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
-                        </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Orientation:</span>
-                          <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Possession:</span>
-                          <span className="text-emerald-700 font-bold">100% Ready</span>
-                        </div>
-                      </div>
-
-                      {/* Feature Pills */}
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat: string, fIdx: number) => (
-                          <span
-                            key={fIdx}
-                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
-                          >
-                            {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </Link>
-                  </div>
-
-                  {/* Price & Action Buttons Footer */}
-                  <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Demand Price</span>
-                      <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        href={`/plots/${plot.id}`}
-                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
-                      >
-                        <span>Details</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
-
-                      <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in Block A Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share details.`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
-                      >
-                        <Phone className="w-3 h-3" />
-                        <span>Book</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-        </div>
-
-        {/* Sell Your Block A Plot Banner */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Owner Resale & Liquidation Desk</span>
-            </div>
-            <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
-              Want to Sell or Rent Out Your Block A Property?
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Connect with genuine cash buyers and qualified tenants for immediate plot liquidation or villa renting in Sector A.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
-            <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20sell%2Frent%20my%20property%20in%20Faisal%20Hills%20Block%20A."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg hover:scale-105"
-            >
-              <Phone className="w-4 h-4" />
-              <span>WhatsApp Resale Desk</span>
-            </a>
-            <a
-              href="tel:+923313339997"
-              className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
-            >
-              <span>Call Direct Line</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 8. COMPARE OTHER SECTORS & EXPANDING PANORAMIC CARDS     */}
-      {/* ========================================================= */}
-      <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Layers className="w-3.5 h-3.5" />
-              <span>Faisal Hills Sectors</span>
-            </div>
-            <TextReveal
-              as="h2"
-              text="Explore Other Faisal Hills Blocks & Landmarks"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-              staggerDelay={65}
-              direction="left"
-            />
-            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-              Hover across the sector columns to view each block's location advantages, development progress, and direct links:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Panoramic Expanding Cards Showcase */}
-        <ScrollReveal direction="up" delay={100}>
-          <ExpandingProjectsShowcase
-            items={defaultFaisalHillsBlocks}
-            defaultActiveIndex={1}
-            containerHeightClass="h-[460px] sm:h-[500px] lg:h-[540px]"
-            roundedClass="rounded-2xl sm:rounded-3xl"
-          />
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 9. MASTER PLAN SECTION                                   */}
-      {/* ========================================================= */}
-      <section id="master-plan" className="scroll-mt-28 space-y-6 pt-2">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-          <div className="lg:col-span-6 flex flex-col">
-            <ScrollReveal direction="left" delay={50}>
-              <div
-                onClick={() => setIsMapModalOpen(true)}
-                className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[320px] sm:min-h-[400px] lg:min-h-[460px] p-2"
-              >
-                <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl">
-                  <img
-                    src="/images/faisal-hills-master-plan-map.jpg"
-                    alt="Faisal Hills Block A Master Plan Layout"
-                    className="w-full h-auto max-h-[420px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
-                  <span className="text-xs font-bold text-white bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
-                    🔍 Click to Enlarge Map
-                  </span>
-                  <span className="text-xs font-semibold text-emerald-400 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-emerald-400/30">
-                    HD Resolution
-                  </span>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          <div className="lg:col-span-6 space-y-6">
-            <ScrollReveal direction="right" delay={50}>
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                  <Navigation className="w-3.5 h-3.5" />
-                  <span>Sector Geography</span>
-                </div>
-                <TextReveal
-                  as="h2"
-                  text="Faisal Hills Block A Master Plan & Sector Layout"
-                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                  staggerDelay={65}
-                  direction="left"
-                />
-                <p className="text-slate-600 text-sm leading-relaxed font-sans">
-                  The master plan of Block A features wide 40ft internal streets connected seamlessly to 150ft and 225ft Grand Boulevards. Dedicated civic zones, park belts, and commercial squares are strategically distributed to ensure zero congestion.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
-                  <span className="text-xs text-slate-400 font-bold uppercase block">Street Hierarchy</span>
-                  <span className="font-serif font-bold text-sm text-slate-900">40ft to 225ft Roads</span>
-                </div>
-                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
-                  <span className="text-xs text-slate-400 font-bold uppercase block">Central Park</span>
-                  <span className="font-serif font-bold text-sm text-slate-900">12-Kanal Green Belt</span>
-                </div>
-              </div>
-
-              <div className="pt-2">
+            {/* Navigation Arrows & Category Filter */}
+            <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => setIsMapModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:scale-105"
+                  onClick={() => handleScrollAmenities('left')}
+                  className="w-9 h-9 rounded-full bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
+                  aria-label="Previous Amenities"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Download High-Res PDF Map</span>
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScrollAmenities('right')}
+                  className="w-9 h-9 rounded-full bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
+                  aria-label="Next Amenities"
+                >
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-            </ScrollReveal>
+
+              {/* Category Filter on Desktop */}
+              <div className="hidden sm:flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200">
+                {(['all', 'infrastructure', 'nature', 'amenities'] as const).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setGalleryFilter(cat)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
+                      galleryFilter === cat
+                        ? 'bg-[#7b002c] text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
+        </ScrollReveal>
+
+        {/* Carousel Slider with Auto-Scroll Every 1 Second */}
+        <div
+          ref={amenitiesScrollRef}
+          onMouseEnter={() => setIsAmenitiesHovered(true)}
+          onMouseLeave={() => setIsAmenitiesHovered(false)}
+          onTouchStart={() => setIsAmenitiesHovered(true)}
+          onTouchEnd={() => setIsAmenitiesHovered(false)}
+          className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none pb-2 pt-1 scroll-smooth snap-x snap-mandatory"
+        >
+          {filteredGallery.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => setSelectedGalleryImage(item)}
+              className="snap-start shrink-0 w-[240px] sm:w-[300px] lg:w-[340px] group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200 bg-slate-950 flex flex-col justify-end h-[280px] sm:h-[340px] cursor-pointer transition-all duration-300"
+            >
+              <img
+                src={item.image}
+                alt={item.title}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+
+              <div className="relative z-10 p-4 sm:p-5">
+                <h4 className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-amber-300 transition-colors line-clamp-2">
+                  {item.title}
+                </h4>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ========================================================= */}
       {/* 9. SECTOR A VERIFIED BENCHMARKS & STATS HIGHLIGHT         */}
       {/* ========================================================= */}
-      <section className="bg-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-slate-200 shadow-sm relative space-y-8">
+      <section id="benchmarks" className="bg-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-slate-200 shadow-sm relative space-y-8">
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-6">
             <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#7b002c]" />
-                <span>Sector A Verified Milestones</span>
-              </div>
               <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
                 Key Development & Living Benchmarks
               </h2>
@@ -1144,9 +1325,39 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 10. FREQUENTLY ASKED QUESTIONS (OPEN THEME STYLE)         */}
+      {/* 10. COMPARE OTHER SECTORS & EXPANDING PANORAMIC CARDS     */}
       {/* ========================================================= */}
-      <section className="py-12 lg:py-16 border-t border-slate-200">
+      <section id="other-blocks" className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Explore Other Faisal Hills Blocks & Landmarks"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+              Hover across the sector columns to view each block's location advantages, development progress, and direct links:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Panoramic Expanding Cards Showcase */}
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={otherBlocks}
+            defaultActiveIndex={0}
+            containerHeightClass="h-[460px] sm:h-[500px] lg:h-[540px]"
+            roundedClass="rounded-2xl sm:rounded-3xl"
+          />
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 11. FREQUENTLY ASKED QUESTIONS (OPEN THEME STYLE)         */}
+      {/* ========================================================= */}
+      <section id="faqs" className="py-12 lg:py-16 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start relative">
 
           {/* Left Column: Sticky FAQ'S Title */}
@@ -1197,7 +1408,7 @@ export default function BlockAContent() {
       {/* ========================================================= */}
       {/* 11. LEAD INQUIRY & BOOKING DESK CTA                      */}
       {/* ========================================================= */}
-      <section className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
+      <section id="contact" className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
         <div className="relative z-10 max-w-3xl space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-rose-200 bg-white/10 px-3 py-1 rounded-full border border-white/20">
             Official Sales Facilitation
@@ -1229,7 +1440,7 @@ export default function BlockAContent() {
           />
           <button
             type="submit"
-            className="p-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105 flex items-center justify-center gap-2"
+            className="p-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all shadow-lg hover:scale-105 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Send className="w-4 h-4" />
             <span>{submitted ? 'Inquiry Sent ✓' : 'Submit Consultation Request'}</span>
@@ -1245,6 +1456,40 @@ export default function BlockAContent() {
           blockName="Faisal Hills Block A"
           mapImageUrl="/images/faisal-hills-master-plan-map.jpg"
         />
+      )}
+
+      {/* Gallery Photo Lightbox Modal */}
+      {selectedGalleryImage && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md transition-opacity">
+          <div className="fixed inset-0" onClick={() => setSelectedGalleryImage(null)} />
+          <div className="bg-slate-900 rounded-3xl border border-slate-800 max-w-3xl w-full overflow-hidden relative z-10 shadow-2xl animate-fade-up">
+            <button
+              onClick={() => setSelectedGalleryImage(null)}
+              className="absolute top-4 right-4 text-white/80 hover:text-white p-2 rounded-full bg-black/60 hover:bg-black/80 transition-colors z-20 cursor-pointer"
+              aria-label="Close image modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="relative aspect-[16/10] w-full bg-black">
+              <img
+                src={selectedGalleryImage.image}
+                alt={selectedGalleryImage.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-6 space-y-2 bg-slate-900 text-white">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-rose-300 bg-rose-950/80 px-2.5 py-1 rounded-full border border-rose-800">
+                {selectedGalleryImage.tag}
+              </span>
+              <h3 className="font-serif font-bold text-xl text-white">
+                {selectedGalleryImage.title}
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                {selectedGalleryImage.desc}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
