@@ -47,7 +47,8 @@ import {
   plotInventoryData,
   PlotItem,
   fetchPlots,
-  submitLead
+  submitLead,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -382,13 +383,20 @@ const blockCFaqs = [
   }
 ];
 
+
+
 export default function BlockCContent() {
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla' | '14 Marla' | '1 Kanal' | 'Commercial'>('all');
   const [selectedAmenityFilter, setSelectedAmenityFilter] = useState('all');
   const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+
+  const filteredPriceSchedule = useMemo(() => {
+    if (selectedPriceCategory === 'All') return blockCPriceSchedule;
+    return blockCPriceSchedule.filter((r) => r.category === selectedPriceCategory);
+  }, [selectedPriceCategory]);
 
   // Gallery slider state
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -497,10 +505,7 @@ export default function BlockCContent() {
     return blockCAmenities.filter((a) => a.category === selectedAmenityFilter);
   }, [selectedAmenityFilter]);
 
-  const filteredPriceSchedule = useMemo(() => {
-    if (selectedPriceCategory === 'All') return blockCPriceSchedule;
-    return blockCPriceSchedule.filter((r) => r.category === selectedPriceCategory);
-  }, [selectedPriceCategory]);
+
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

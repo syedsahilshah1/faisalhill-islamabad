@@ -5,7 +5,8 @@ import Link from 'next/link';
 import {
   PlotItem,
   plotInventoryData,
-  fetchPlots
+  fetchPlots,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import {
   ShieldCheck,
@@ -247,26 +248,47 @@ export default function BlockBContent() {
   const [selectedBlockBPlotFilter, setSelectedBlockBPlotFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla' | '14 Marla' | '1 Kanal' | 'Commercial'>('all');
 
   // Live plots sync
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
 
   useEffect(() => {
-    fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+    fetchPlots().then(data => setAllPlots(data || [])).catch(console.error);
 
     const handleSync = () => {
-      fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+      fetchPlots().then(data => setAllPlots(data || [])).catch(console.error);
     };
     window.addEventListener('faisal_plots_updated', handleSync);
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
   }, []);
 
   const blockBPlots = useMemo(() => {
-    const filtered = allPlots.filter(
+    return allPlots.filter(
       p => p.blockSlug === 'block-b' || (p.blockName && p.blockName.toLowerCase() === 'block b')
     );
-    if (filtered.length > 0) return filtered;
-    return plotInventoryData.filter(
-      p => p.blockSlug === 'block-b' || (p.blockName && p.blockName.toLowerCase() === 'block b')
-    );
+  }, [allPlots]);
+
+  const dynamicPriceSchedule = useMemo(() => {
+    const blockPlots = allPlots.filter(p => p.blockSlug === 'block-b');
+    if (blockPlots.length === 0) return blockBPriceSchedule;
+
+    return blockPlots.map(plot => {
+      let priceText = 'Contact for Price';
+      if (plot.price && plot.price > 0) {
+        priceText = formatPlotPrice(plot.price, plot.priceFormatted);
+      }
+      return {
+        size: plot.size,
+        dimensions: plot.dimensions || '25 × 50',
+        sqYards: plot.size.includes('5 Marla') ? '139 Sq. Yds' :
+                 plot.size.includes('8 Marla') ? '200 Sq. Yds' :
+                 plot.size.includes('10 Marla') ? '272 Sq. Yds' :
+                 plot.size.includes('14 Marla') ? '355 Sq. Yds' :
+                 plot.size.includes('1 Kanal') ? '500 Sq. Yds' : 'Standard Area',
+        category: (plot.propertyType || plot.category || 'Residential') as 'Residential' | 'Commercial',
+        priceRange: priceText,
+        possession: '100% Possession Ready',
+        highlight: plot.status || 'Ready for Construction'
+      };
+    });
   }, [allPlots]);
 
   const displayedBlockBPlots = useMemo(() => {
@@ -800,7 +822,7 @@ export default function BlockBContent() {
         <ScrollReveal direction="up" delay={80}>
           {/* Mobile Card Layout */}
           <div className="block md:hidden space-y-4">
-            {blockBPriceSchedule.map((row, idx) => (
+            {dynamicPriceSchedule.map((row, idx) => (
               <div key={idx} className="bg-slate-50/80 rounded-2xl border border-slate-200 p-4 space-y-3.5 shadow-2xs">
                 <div className="flex items-start justify-between gap-2 border-b border-slate-200/80 pb-3">
                   <div>
@@ -857,7 +879,7 @@ export default function BlockBContent() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {blockBPriceSchedule.map((row, idx) => (
+                {dynamicPriceSchedule.map((row, idx) => (
                   <tr key={idx} className="hover:bg-rose-50/30 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-2">

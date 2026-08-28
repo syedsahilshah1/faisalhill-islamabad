@@ -10,14 +10,17 @@ class Plot extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'plot_number', 'block_slug', 'block_name', 'category', 'size',
-        'dimensions', 'price', 'price_formatted', 'price_history_trend',
-        'status', 'facing', 'map_coords', 'features', 'description', 'image'
+        'id', 'plot_number', 'block_slug', 'block_name', 'property_type', 'category', 'size',
+        'dimensions', 'price', 'price_unit', 'price_formatted', 'price_history_trend',
+        'status', 'facing', 'street', 'location', 'map_coords', 'features', 'description', 'image',
+        'featured', 'display_order'
     ];
 
     protected $casts = [
         'map_coords' => 'array',
         'features' => 'array',
-        'price' => 'float'
+        'price' => 'float',
+        'featured' => 'boolean',
+        'display_order' => 'integer'
     ];
 }

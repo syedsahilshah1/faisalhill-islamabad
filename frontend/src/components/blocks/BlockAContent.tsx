@@ -5,7 +5,8 @@ import Link from 'next/link';
 import {
   PlotItem,
   plotInventoryData,
-  fetchPlots
+  fetchPlots,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import {
   ShieldCheck,
@@ -370,7 +371,7 @@ export default function BlockAContent() {
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('residential');
 
   // Dynamic live plot inventory sync from Laravel Backend Dashboard / LocalStorage / API
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
 
   useEffect(() => {
     fetchPlots().then(data => setAllPlots(data)).catch(console.error);
@@ -441,7 +442,7 @@ export default function BlockAContent() {
       size: plot.size,
       dimensions: plot.dimensions || '25 × 50',
       facing: plot.facing || 'Park Facing',
-      priceFormatted: plot.priceFormatted || (plot.price ? `PKR ${(plot.price / 100000).toFixed(1)} Lacs` : 'Call for Price'),
+      priceFormatted: plot.priceFormatted || (plot.price ? formatPlotPrice(plot.price) : 'Contact for Price'),
       downPayment: (plot as any).downPayment || 'Full Cash / Possession',
       status: plot.status || 'Immediate Possession',
       badge: (plot as any).badge || (plot.facing?.toLowerCase().includes('park') ? 'Park Facing' : plot.category === 'Commercial' ? 'Commercial Plaza' : 'Prime Location'),
@@ -458,6 +459,32 @@ export default function BlockAContent() {
     });
 
     return combined;
+  }, [allPlots]);
+
+  const dynamicPriceSchedule = useMemo(() => {
+    const blockPlots = allPlots.filter(p => p.blockSlug === 'block-a');
+    if (blockPlots.length === 0) return blockAPriceSchedule;
+
+    return blockPlots.map(plot => {
+      let priceText = 'Contact for Price';
+      if (plot.price && plot.price > 0) {
+        priceText = formatPlotPrice(plot.price, plot.priceFormatted);
+      }
+      return {
+        size: plot.size,
+        dimensions: plot.dimensions || '25 × 50',
+        sqYards: plot.size.includes('5 Marla') ? '139 Sq. Yds' :
+                 plot.size.includes('8 Marla') ? '200 Sq. Yds' :
+                 plot.size.includes('10 Marla') ? '272 Sq. Yds' :
+                 plot.size.includes('14 Marla') ? '356 Sq. Yds' :
+                 plot.size.includes('1 Kanal') ? '500 Sq. Yds' :
+                 plot.size.includes('2 Kanal') ? '1000 Sq. Yds' : 'Standard Area',
+        priceRange: priceText,
+        possession: 'Immediate (100% Ready)',
+        category: plot.propertyType || plot.category || 'Residential',
+        status: plot.status || 'Ready for Construction'
+      };
+    });
   }, [allPlots]);
 
   const displayedPlots = useMemo(() => {
@@ -637,38 +664,6 @@ export default function BlockAContent() {
                       </p>
                     </div>
                   )}
-                </div>
-
-                {/* Small Master Plan Quick Preview Card */}
-                <div
-                  onClick={() => setIsMapModalOpen(true)}
-                  className="mt-4 p-3.5 bg-slate-50 hover:bg-slate-100/90 rounded-2xl border border-slate-200/90 transition-all duration-300 cursor-pointer group flex items-center gap-3.5 shadow-2xs hover:shadow-sm"
-                >
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-950 shrink-0 border border-slate-200">
-                    <img
-                      src="/images/faisal-hills-master-plan-map.jpg"
-                      alt="Faisal Hills Block A Master Plan Thumbnail"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <Maximize2 className="w-4 h-4 text-white drop-shadow" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1 flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
-                        Block A Master Plan
-                      </span>
-                      <span className="text-[9px] text-emerald-700 font-semibold">HD Layout</span>
-                    </div>
-                    <h4 className="font-serif font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors truncate">
-                      Official Sector A Layout Blueprint
-                    </h4>
-                    <p className="text-[11px] text-slate-500 line-clamp-1">
-                      Click to view full HD master plan and download official PDF.
-                    </p>
-                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -1041,7 +1036,7 @@ export default function BlockAContent() {
 
         {/* Mobile View: Clean Responsive Cards */}
         <div className="block sm:hidden space-y-3">
-          {blockAPriceSchedule.map((row, idx) => (
+          {dynamicPriceSchedule.map((row, idx) => (
             <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1101,7 +1096,7 @@ export default function BlockAContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-sans">
-                  {blockAPriceSchedule.map((row, idx) => (
+                  {dynamicPriceSchedule.map((row, idx) => (
                     <tr key={idx} className="hover:bg-rose-50/40 transition-colors">
                       <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-[#7b002c]" />

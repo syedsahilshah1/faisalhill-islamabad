@@ -6,7 +6,7 @@ import {
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
   Trash2, Plus, Users, DollarSign, Calendar, Eye, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
-  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles
+  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import {
@@ -54,6 +54,7 @@ import {
   defaultPrivacyPolicy,
   defaultBankAccounts,
   defaultSocialLinks,
+  formatPlotPrice,
   defaultContactInfo,
   fetchSettingByKey
 } from '@/data/faisalHillsData';
@@ -68,7 +69,7 @@ export default function AdminLoginPage() {
 
   // Dashboard states
   const [activeTab, setActiveTab] = useState<'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('plots');
-  const [plots, setPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
   const [verifiedDate, setVerifiedDate] = useState(societyStats.lastVerifiedDate);
@@ -112,18 +113,31 @@ export default function AdminLoginPage() {
   const [blogFaqs, setBlogFaqs] = useState<{ question: string; answer: string }[]>([]);
 
 
-  // Add Plot Modal state
+  // Plot Filters & Modals
+  const [plotFilterType, setPlotFilterType] = useState<string>('all');
   const [isAddPlotModalOpen, setIsAddPlotModalOpen] = useState(false);
-  const [newPlotNumber, setNewPlotNumber] = useState('');
-  const [newPlotBlockSlug, setNewPlotBlockSlug] = useState('executive-block');
-  const [newPlotCategory, setNewPlotCategory] = useState<'Residential' | 'Commercial' | 'Apartment'>('Residential');
-  const [newPlotSize, setNewPlotSize] = useState('5 Marla');
-  const [newPlotDimensions, setNewPlotDimensions] = useState('25 x 50');
-  const [newPlotPrice, setNewPlotPrice] = useState<number>(5500000);
-  const [newPlotFacing, setNewPlotFacing] = useState<'Park Facing' | 'Corner' | 'Main Boulevard' | 'Standard' | 'Hill View'>('Standard');
-  const [newPlotDescription, setNewPlotDescription] = useState('');
-  const [newPlotImage, setNewPlotImage] = useState('');
-  const [newPlotFeatures, setNewPlotFeatures] = useState('');
+  const [isEditPlotModalOpen, setIsEditPlotModalOpen] = useState(false);
+  const [editingPlot, setEditingPlot] = useState<PlotItem | null>(null);
+  const [plotToDelete, setPlotToDelete] = useState<PlotItem | null>(null);
+
+  // Form states for Add / Edit
+  const [plotForm, setPlotForm] = useState({
+    plotNumber: '',
+    blockSlug: 'block-a',
+    propertyType: 'Residential' as 'Residential' | 'Commercial',
+    category: 'Residential',
+    size: '5 Marla',
+    dimensions: '25 × 50 ft',
+    price: '',
+    priceUnit: 'Total Price',
+    status: 'Available',
+    facing: 'Standard',
+    street: '',
+    description: '',
+    featured: false,
+    displayOrder: 0,
+    image: ''
+  });
 
 
   // Photo Gallery State
@@ -243,44 +257,172 @@ export default function AdminLoginPage() {
       });
   };
 
-  const handleCreatePlot = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPlotNumber || !newPlotPrice || !token) return;
+  const handleOpenAddPlot = () => {
+    setPlotForm({
+      plotNumber: '',
+      blockSlug: 'block-a',
+      propertyType: 'Residential',
+      category: 'Residential',
+      size: '5 Marla',
+      dimensions: '25 × 50 ft',
+      price: '',
+      priceUnit: 'Total Price',
+      status: 'Available',
+      facing: 'Standard',
+      street: '',
+      description: '',
+      featured: false,
+      displayOrder: 0,
+      image: ''
+    });
+    setIsAddPlotModalOpen(true);
+  };
 
-    const block = blocksData.find(b => b.slug === newPlotBlockSlug) || blocksData[0];
+  const handleCreatePlotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) {
+      alert('Please log in as admin to add a plot.');
+      return;
+    }
+
+    const block = blocksList.find(b => b.slug === plotForm.blockSlug) || blocksData.find(b => b.slug === plotForm.blockSlug) || blocksData[0];
+    let numericPrice: number | null = null;
+    if (plotForm.price.trim() !== '') {
+      const val = Number(plotForm.price);
+      if (!isNaN(val) && val > 0) {
+        if (val < 1000) {
+          if (val <= 20 && !Number.isInteger(val)) {
+            numericPrice = val * 10000000;
+          } else {
+            numericPrice = val * 100000;
+          }
+        } else {
+          numericPrice = val;
+        }
+      }
+    }
 
     const plotData: Partial<PlotItem> = {
-      plotNumber: newPlotNumber,
-      blockSlug: newPlotBlockSlug,
+      plotNumber: plotForm.plotNumber.trim() || undefined,
+      blockSlug: plotForm.blockSlug,
       blockName: block.name,
-      category: newPlotCategory,
-      size: newPlotSize,
-      dimensions: newPlotDimensions,
-      price: Number(newPlotPrice),
-      facing: newPlotFacing,
-      description: newPlotDescription,
-      image: newPlotImage || undefined,
-      features: newPlotFeatures ? newPlotFeatures.split(',').map(f => f.trim()).filter(Boolean) : [],
-      mapCoords: { x: 50, y: 50 } // default map coords
+      propertyType: plotForm.propertyType,
+      category: plotForm.propertyType,
+      size: plotForm.size.trim(),
+      dimensions: plotForm.dimensions.trim() || 'Dimension not provided',
+      price: numericPrice,
+      priceUnit: plotForm.priceUnit,
+      status: plotForm.status,
+      facing: plotForm.facing,
+      street: plotForm.street.trim() || undefined,
+      description: plotForm.description.trim() || undefined,
+      image: plotForm.image.trim() || undefined,
+      featured: plotForm.featured,
+      displayOrder: Number(plotForm.displayOrder) || 0
     };
 
-    apiCreatePlot(plotData, token)
-      .then(newPlot => {
-        setPlots(prev => [newPlot, ...prev]);
-        setIsAddPlotModalOpen(false);
-        // Reset form
-        setNewPlotNumber('');
-        setNewPlotPrice(5500000);
-        setNewPlotDescription('');
-        setNewPlotImage('');
-        setNewPlotFeatures('');
-        setSaveNotification(true);
-        setTimeout(() => setSaveNotification(false), 3000);
-      })
-      .catch(err => {
-        console.error("Failed to add listing:", err);
-        alert("Failed to add listing. Please check required fields or permissions.");
-      });
+    try {
+      const newPlot = await apiCreatePlot(plotData, token);
+      setPlots(prev => [newPlot, ...prev]);
+      setIsAddPlotModalOpen(false);
+      setNotificationMsg('New plot listing added successfully.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3000);
+    } catch (err) {
+      console.error('Failed to add plot:', err);
+      alert('Failed to create plot listing. Please verify inputs.');
+    }
+  };
+
+  const handleOpenEditPlot = (plot: PlotItem) => {
+    setEditingPlot(plot);
+    setPlotForm({
+      plotNumber: plot.plotNumber || '',
+      blockSlug: plot.blockSlug || 'block-a',
+      propertyType: (plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential')) as 'Residential' | 'Commercial',
+      category: plot.category || 'Residential',
+      size: plot.size || '',
+      dimensions: plot.dimensions || 'Dimension not provided',
+      price: plot.price !== null && plot.price !== undefined ? plot.price.toString() : '',
+      priceUnit: plot.priceUnit || 'Total Price',
+      status: plot.status || 'Available',
+      facing: plot.facing || 'Standard',
+      street: plot.street || '',
+      description: plot.description || '',
+      featured: !!plot.featured,
+      displayOrder: plot.displayOrder || 0,
+      image: plot.image || ''
+    });
+    setIsEditPlotModalOpen(true);
+  };
+
+  const handleUpdatePlotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPlot || !token) return;
+
+    const block = blocksList.find(b => b.slug === plotForm.blockSlug) || blocksData.find(b => b.slug === plotForm.blockSlug) || blocksData[0];
+    let numericPrice: number | null = null;
+    if (plotForm.price.trim() !== '') {
+      const val = Number(plotForm.price);
+      if (!isNaN(val) && val > 0) {
+        if (val < 1000) {
+          if (val <= 20 && !Number.isInteger(val)) {
+            numericPrice = val * 10000000;
+          } else {
+            numericPrice = val * 100000;
+          }
+        } else {
+          numericPrice = val;
+        }
+      }
+    }
+
+    const updatedData: Partial<PlotItem> = {
+      plotNumber: plotForm.plotNumber.trim() || undefined,
+      blockSlug: plotForm.blockSlug,
+      blockName: block.name,
+      propertyType: plotForm.propertyType,
+      category: plotForm.propertyType,
+      size: plotForm.size.trim(),
+      dimensions: plotForm.dimensions.trim() || 'Dimension not provided',
+      price: numericPrice,
+      priceUnit: plotForm.priceUnit,
+      status: plotForm.status,
+      facing: plotForm.facing,
+      street: plotForm.street.trim() || undefined,
+      description: plotForm.description.trim() || undefined,
+      image: plotForm.image.trim() || undefined,
+      featured: plotForm.featured,
+      displayOrder: Number(plotForm.displayOrder) || 0
+    };
+
+    try {
+      const savedPlot = await apiUpdatePlot(editingPlot.id, updatedData, token);
+      setPlots(prev => prev.map(p => p.id === editingPlot.id ? savedPlot : p));
+      setIsEditPlotModalOpen(false);
+      setEditingPlot(null);
+      setNotificationMsg('Plot listing updated successfully.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3000);
+    } catch (err) {
+      console.error('Failed to update plot:', err);
+      alert('Failed to update plot. Please check inputs.');
+    }
+  };
+
+  const handleConfirmDeletePlot = async () => {
+    if (!plotToDelete || !token) return;
+    try {
+      await apiDeletePlot(plotToDelete.id, token);
+      setPlots(prev => prev.filter(p => p.id !== plotToDelete.id));
+      setPlotToDelete(null);
+      setNotificationMsg('Plot removed successfully.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3000);
+    } catch (err) {
+      console.error('Failed to delete plot:', err);
+      alert('Failed to delete plot.');
+    }
   };
 
   const handleDeletePhoto = (id: string) => {
@@ -959,7 +1101,7 @@ export default function AdminLoginPage() {
       {activeTab === 'plots' && (
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-            {/* Search & Filter bar */}
+            {/* Search & Filter bar (Explicitly removed Status Filter as requested) */}
             <div className="flex flex-wrap items-center gap-2.5 flex-1">
               <div className="relative min-w-[200px] flex-1 max-w-xs">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -967,27 +1109,45 @@ export default function AdminLoginPage() {
                   type="text"
                   value={plotSearchQuery}
                   onChange={(e) => setPlotSearchQuery(e.target.value)}
-                  placeholder="Search plot #, size, facing..."
+                  placeholder="Search plot #, size, facing, street..."
                   className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                 />
               </div>
 
+              {/* Block Filter */}
               <select
                 value={plotFilterBlock}
                 onChange={(e) => setPlotFilterBlock(e.target.value)}
                 className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
               >
                 <option value="all">All Blocks & Sectors</option>
-                {blocksList.map((b) => (
+                <option value="block-a">Block A</option>
+                <option value="block-b">Block B</option>
+                <option value="block-c">Block C</option>
+                <option value="block-d">Block D</option>
+                <option value="executive-block">Executive Block</option>
+                <option value="prime-block">Prime Block</option>
+                {blocksList.filter(b => !['block-a', 'block-b', 'block-c', 'block-d', 'executive-block', 'prime-block'].includes(b.slug)).map((b) => (
                   <option key={b.slug} value={b.slug}>
                     {b.name}
                   </option>
                 ))}
               </select>
+
+              {/* Property Type Filter */}
+              <select
+                value={plotFilterType}
+                onChange={(e) => setPlotFilterType(e.target.value)}
+                className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+              >
+                <option value="all">All Property Types</option>
+                <option value="Residential">Residential Plots</option>
+                <option value="Commercial">Commercial Plots</option>
+              </select>
             </div>
 
             <button 
-              onClick={() => setIsAddPlotModalOpen(true)}
+              onClick={handleOpenAddPlot}
               className="px-4 py-2 bg-[#7b002c] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#9e1245] transition shadow self-start md:self-auto cursor-pointer shrink-0"
             >
               <Plus className="w-3.5 h-3.5 text-white" /> Add New Plot Listing
@@ -997,79 +1157,113 @@ export default function AdminLoginPage() {
           {/* Desktop Table Layout */}
           <div className="hidden md:block bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs min-w-[760px]">
+              <table className="w-full text-left text-xs min-w-[850px]">
                 <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider border-b border-[#7b002c]">
                   <tr>
-                    <th className="p-3.5">Plot Image</th>
                     <th className="p-3.5">Plot / Unit #</th>
                     <th className="p-3.5">Block Sector</th>
-                    <th className="p-3.5">Category</th>
-                    <th className="p-3.5">Size & Facing</th>
+                    <th className="p-3.5">Type</th>
+                    <th className="p-3.5">Plot Size & Dimensions</th>
+                    <th className="p-3.5">Facing / View</th>
                     <th className="p-3.5">Status</th>
-                    <th className="p-3.5">Demand Price (PKR)</th>
-                    <th className="p-3.5">Actions</th>
+                    <th className="p-3.5">Price (PKR)</th>
+                    <th className="p-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
                   {plots
                     .filter((plot) => {
                       const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
-                      const matchesQuery = !plotSearchQuery || 
-                        plot.plotNumber.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
-                        plot.size.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
-                        (plot.facing && plot.facing.toLowerCase().includes(plotSearchQuery.toLowerCase())) ||
-                        plot.blockName.toLowerCase().includes(plotSearchQuery.toLowerCase());
-                      return matchesBlock && matchesQuery;
+                      const plotType = plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential');
+                      const matchesType = plotFilterType === 'all' || plotType === plotFilterType;
+                      const q = plotSearchQuery.toLowerCase().trim();
+                      const matchesQuery = !q || 
+                        (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
+                        (plot.size && plot.size.toLowerCase().includes(q)) ||
+                        (plot.dimensions && plot.dimensions.toLowerCase().includes(q)) ||
+                        (plot.facing && plot.facing.toLowerCase().includes(q)) ||
+                        (plot.street && plot.street.toLowerCase().includes(q)) ||
+                        (plot.blockName && plot.blockName.toLowerCase().includes(q));
+                      return matchesBlock && matchesType && matchesQuery;
                     })
                     .map((plot) => (
                     <tr key={plot.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-3.5">
-                        <div className="w-12 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                          <img
-                            src={plot.image || '/faisal-jewel.jpg'}
-                            alt={plot.plotNumber}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                      <td className="p-3.5 font-bold font-serif text-[#7b002c] text-sm">
+                        {plot.plotNumber || plot.id}
+                        {plot.featured && (
+                          <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold uppercase">
+                            Featured
+                          </span>
+                        )}
                       </td>
-                      <td className="p-3.5 font-bold font-serif text-[#7b002c] text-sm">{plot.plotNumber}</td>
                       <td className="p-3.5 font-medium">{plot.blockName}</td>
                       <td className="p-3.5">
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300`}>
-                          {plot.category === 'Apartment' ? 'Luxury Flat' : plot.category}
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          plot.propertyType === 'Commercial' || plot.category === 'Commercial'
+                            ? 'bg-amber-50 text-amber-800 border border-amber-200' 
+                            : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        }`}>
+                          {plot.propertyType || plot.category || 'Residential'}
                         </span>
                       </td>
                       <td className="p-3.5 font-medium">
-                        <div>{plot.size}</div>
-                        <span className="text-[10px] text-slate-500 font-semibold">{plot.facing || 'Standard'}</span>
+                        <div className="font-bold text-slate-900">{plot.size}</div>
+                        <span className="text-[11px] text-slate-500 font-mono">{plot.dimensions || 'Dimension not provided'}</span>
+                      </td>
+                      <td className="p-3.5 text-slate-600">
+                        {plot.facing || 'Standard'}
+                        {plot.street && <div className="text-[10px] text-slate-400">St: {plot.street}</div>}
                       </td>
                       <td className="p-3.5">
                         <select
                           value={plot.status}
-                          onChange={(e) => handleStatusChange(plot.id, e.target.value as any)}
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
+                            setPlots(prev => prev.map(p => p.id === plot.id ? { ...p, status: newStatus } : p));
+                            if (token) {
+                              apiUpdatePlot(plot.id, { status: newStatus }, token).catch(console.error);
+                            }
+                          }}
                           className={`text-xs font-bold px-2.5 py-1 rounded-lg border focus:outline-none cursor-pointer ${
-                            plot.status === 'Available' ? 'bg-[#7b002c] text-white border-[#7b002c]' : 'bg-slate-100 text-slate-700 border-slate-300'
+                            plot.status === 'Available' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 
+                            plot.status === 'Reserved' ? 'bg-amber-50 text-amber-800 border-amber-300' : 
+                            plot.status === 'Sold' ? 'bg-slate-100 text-slate-700 border-slate-300' :
+                            'bg-blue-50 text-blue-800 border-blue-200'
                           }`}
                         >
                           <option value="Available">Available</option>
                           <option value="Reserved">Reserved</option>
                           <option value="Sold">Sold</option>
+                          <option value="Coming Soon">Coming Soon</option>
+                          <option value="Unavailable">Unavailable</option>
                         </select>
                       </td>
                       <td className="p-3.5">
-                        <input
-                          type="number"
-                          value={plot.price}
-                          onChange={(e) => handlePriceChange(plot.id, Number(e.target.value))}
-                          className="w-32 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg font-serif font-bold text-xs text-[#7b002c] focus:outline-none focus:border-[#7b002c]"
-                        />
+                        {plot.price !== null && plot.price !== undefined && plot.price > 0 ? (
+                          <div>
+                            <div className="font-bold text-[#7b002c] font-serif">
+                              {formatPlotPrice(plot.price, plot.priceFormatted)}
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-medium">({plot.priceUnit || 'Total Price'})</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 font-semibold italic text-[11px]">Contact for Price</span>
+                        )}
                       </td>
-                      <td className="p-3.5">
-                        <div className="flex items-center gap-2">
-                          <button onClick={triggerSave} className="text-[#7b002c] hover:text-[#9e1245] font-bold text-xs flex items-center gap-1 cursor-pointer" title="Save">
-                            <Save className="w-3.5 h-3.5" /> Save
+                      <td className="p-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button 
+                            onClick={() => handleOpenEditPlot(plot)}
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                            title="Edit Plot"
+                          >
+                            <Edit3 className="w-3 h-3" /> Edit
                           </button>
-                          <button onClick={() => handleDeletePlot(plot.id)} className="text-slate-400 hover:text-red-600 transition p-1 cursor-pointer" title="Delete Plot">
+                          <button 
+                            onClick={() => setPlotToDelete(plot)} 
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer" 
+                            title="Delete Plot"
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
@@ -1086,59 +1280,73 @@ export default function AdminLoginPage() {
             {plots
               .filter((plot) => {
                 const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
-                const matchesQuery = !plotSearchQuery || 
-                  plot.plotNumber.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
-                  plot.size.toLowerCase().includes(plotSearchQuery.toLowerCase()) ||
-                  plot.blockName.toLowerCase().includes(plotSearchQuery.toLowerCase());
-                return matchesBlock && matchesQuery;
+                const plotType = plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential');
+                const matchesType = plotFilterType === 'all' || plotType === plotFilterType;
+                const q = plotSearchQuery.toLowerCase().trim();
+                const matchesQuery = !q || 
+                  (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
+                  (plot.size && plot.size.toLowerCase().includes(q)) ||
+                  (plot.dimensions && plot.dimensions.toLowerCase().includes(q)) ||
+                  (plot.blockName && plot.blockName.toLowerCase().includes(q));
+                return matchesBlock && matchesType && matchesQuery;
               })
               .map((plot) => (
               <div key={plot.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                 <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={plot.image || '/faisal-jewel.jpg'}
-                      alt={plot.plotNumber}
-                      className="w-12 h-12 rounded-lg object-cover border border-slate-200"
-                    />
-                    <div>
-                      <span className="font-serif font-bold text-base text-[#7b002c] block">{plot.plotNumber}</span>
-                      <span className="text-xs font-medium text-slate-500">{plot.blockName} • {plot.size}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-serif font-bold text-base text-[#7b002c]">{plot.plotNumber || plot.id}</span>
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                        plot.propertyType === 'Commercial' || plot.category === 'Commercial'
+                          ? 'bg-amber-50 text-amber-800' 
+                          : 'bg-emerald-50 text-emerald-800'
+                      }`}>
+                        {plot.propertyType || plot.category || 'Residential'}
+                      </span>
                     </div>
+                    <span className="text-xs font-medium text-slate-500">{plot.blockName} • {plot.size}</span>
+                    <div className="text-[11px] text-slate-600 font-mono mt-0.5">{plot.dimensions || 'Dimension not provided'}</div>
                   </div>
                   <select
                     value={plot.status}
-                    onChange={(e) => handleStatusChange(plot.id, e.target.value as any)}
+                    onChange={(e) => {
+                      const newStatus = e.target.value;
+                      setPlots(prev => prev.map(p => p.id === plot.id ? { ...p, status: newStatus } : p));
+                      if (token) {
+                        apiUpdatePlot(plot.id, { status: newStatus }, token).catch(console.error);
+                      }
+                    }}
                     className={`text-xs font-bold px-2 py-1 rounded-lg border focus:outline-none ${
-                      plot.status === 'Available' ? 'bg-[#7b002c] text-white border-[#7b002c]' : 'bg-slate-100 text-slate-700 border-slate-300'
+                      plot.status === 'Available' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-700 border-slate-300'
                     }`}
                   >
                     <option value="Available">Available</option>
                     <option value="Reserved">Reserved</option>
                     <option value="Sold">Sold</option>
+                    <option value="Coming Soon">Coming Soon</option>
+                    <option value="Unavailable">Unavailable</option>
                   </select>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 gap-3">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Demand Price</span>
-                    <input
-                      type="number"
-                      value={plot.price}
-                      onChange={(e) => handlePriceChange(plot.id, Number(e.target.value))}
-                      className="w-32 px-2.5 py-1 bg-slate-50 border border-slate-300 rounded font-serif font-bold text-xs text-[#7b002c]"
-                    />
+                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Price</span>
+                    <span className="font-bold text-[#7b002c] text-xs">
+                      {plot.price !== null && plot.price !== undefined && plot.price > 0 
+                        ? formatPlotPrice(plot.price, plot.priceFormatted)
+                        : 'Contact for Price'}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={triggerSave} 
-                      className="px-3 py-1.5 bg-[#7b002c] text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow shrink-0 cursor-pointer"
+                      onClick={() => handleOpenEditPlot(plot)} 
+                      className="px-3 py-1.5 bg-slate-100 text-slate-800 hover:bg-[#7b002c] hover:text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm shrink-0 cursor-pointer"
                     >
-                      <Save className="w-3.5 h-3.5" /> Save
+                      <Edit3 className="w-3.5 h-3.5" /> Edit
                     </button>
                     <button 
-                      onClick={() => handleDeletePlot(plot.id)} 
+                      onClick={() => setPlotToDelete(plot)} 
                       className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg border border-slate-200 hover:border-red-300 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1149,14 +1357,12 @@ export default function AdminLoginPage() {
             ))}
           </div>
 
-          {/* Add New Listing Modal */}
+          {/* Add Plot Modal */}
           {isAddPlotModalOpen && (
             <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden my-auto animate-fade-up">
-                
-                {/* Header */}
                 <div className="bg-[#7b002c] text-white p-5 flex items-center justify-between">
-                  <h3 className="font-serif font-bold text-lg">Add New Property Listing</h3>
+                  <h3 className="font-serif font-bold text-lg">Add New Plot / Property Listing</h3>
                   <button 
                     onClick={() => setIsAddPlotModalOpen(false)}
                     className="text-white/80 hover:text-white text-xs font-semibold px-2.5 py-1 rounded bg-black/10 hover:bg-black/20 transition cursor-pointer"
@@ -1165,63 +1371,48 @@ export default function AdminLoginPage() {
                   </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleCreatePlot} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <form onSubmit={handleCreatePlotSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    {/* Plot Number */}
-                    <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Plot / Flat Number</label>
-                      <input 
-                        type="text" 
-                        required
-                        value={newPlotNumber}
-                        onChange={(e) => setNewPlotNumber(e.target.value)}
-                        placeholder="e.g. A-125 or FJ-402"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                      />
-                    </div>
-
                     {/* Block Name */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Select Block</label>
+                      <label className="block text-xs font-bold text-slate-800">Block / Sector *</label>
                       <select
-                        value={newPlotBlockSlug}
-                        onChange={(e) => setNewPlotBlockSlug(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                        value={plotForm.blockSlug}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, blockSlug: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
                       >
-                        {blocksData.map((b) => (
-                          <option key={b.slug} value={b.slug}>
-                            {b.name}
-                          </option>
-                        ))}
+                        <option value="block-a">Block A</option>
+                        <option value="block-b">Block B</option>
+                        <option value="block-c">Block C</option>
+                        <option value="block-d">Block D</option>
+                        <option value="executive-block">Executive Block</option>
+                        <option value="prime-block">Prime Block</option>
                       </select>
                     </div>
 
-                    {/* Category */}
+                    {/* Property Type */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Category</label>
+                      <label className="block text-xs font-bold text-slate-800">Property Type *</label>
                       <select
-                        value={newPlotCategory}
-                        onChange={(e) => setNewPlotCategory(e.target.value as any)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                        value={plotForm.propertyType}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, propertyType: e.target.value as any }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
                       >
                         <option value="Residential">Residential Plot</option>
                         <option value="Commercial">Commercial Plot</option>
-                        <option value="Apartment">Luxury Flat / Apartment</option>
                       </select>
                     </div>
 
-                    {/* Size */}
+                    {/* Plot Size */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Size</label>
+                      <label className="block text-xs font-bold text-slate-800">Plot Size *</label>
                       <input 
                         type="text" 
                         required
-                        value={newPlotSize}
-                        onChange={(e) => setNewPlotSize(e.target.value)}
+                        value={plotForm.size}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, size: e.target.value }))}
                         placeholder="e.g. 5 Marla, 10 Marla, 1 Kanal"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                       />
                     </div>
 
@@ -1230,34 +1421,73 @@ export default function AdminLoginPage() {
                       <label className="block text-xs font-bold text-slate-800">Dimensions</label>
                       <input 
                         type="text" 
-                        required
-                        value={newPlotDimensions}
-                        onChange={(e) => setNewPlotDimensions(e.target.value)}
-                        placeholder="e.g. 25 x 50 or 1,150 Sq Ft"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                        value={plotForm.dimensions}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, dimensions: e.target.value }))}
+                        placeholder="e.g. 25 × 50 ft or leave empty if not provided"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                       />
                     </div>
 
-                    {/* Price */}
+                    {/* Price (Numeric) */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Demand Price (PKR)</label>
+                      <label className="block text-xs font-bold text-slate-800">
+                        Demand Price <span className="text-slate-500 font-normal">(e.g. 55 for 55 Lacs, 1.25 for 1.25 Crore, or 5500000 PKR)</span>
+                      </label>
                       <input 
                         type="number" 
-                        required
-                        value={newPlotPrice}
-                        onChange={(e) => setNewPlotPrice(Number(e.target.value))}
-                        placeholder="e.g. 5500000"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                        step="any"
+                        value={plotForm.price}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, price: e.target.value }))}
+                        placeholder="e.g. 55 for 55 Lacs or 5500000"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                       />
+                      {plotForm.price && !isNaN(Number(plotForm.price)) && Number(plotForm.price) > 0 && (
+                        <div className="mt-1 p-2 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs">
+                          <span className="text-slate-600 font-medium">Live Calculated Price:</span>
+                          <span className="font-bold text-[#7b002c] font-serif">
+                            {formatPlotPrice(Number(plotForm.price))}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Price Unit */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Price Unit</label>
+                      <select
+                        value={plotForm.priceUnit}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, priceUnit: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Total Price">Total Price</option>
+                        <option value="Per Marla">Per Marla</option>
+                        <option value="Per Kanal">Per Kanal</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Status *</label>
+                      <select
+                        value={plotForm.status}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, status: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Available">Available</option>
+                        <option value="Reserved">Reserved</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Coming Soon">Coming Soon</option>
+                        <option value="Unavailable">Unavailable</option>
+                      </select>
                     </div>
 
                     {/* Facing */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Facing / Location View</label>
+                      <label className="block text-xs font-bold text-slate-800">Facing / Orientation</label>
                       <select
-                        value={newPlotFacing}
-                        onChange={(e) => setNewPlotFacing(e.target.value as any)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                        value={plotForm.facing}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, facing: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
                       >
                         <option value="Standard">Standard</option>
                         <option value="Corner">Corner</option>
@@ -1267,45 +1497,129 @@ export default function AdminLoginPage() {
                       </select>
                     </div>
 
-                    {/* Image URL */}
+                    {/* Plot Number */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-800">Image URL (Optional)</label>
+                      <label className="block text-xs font-bold text-slate-800">Plot / Unit Number (Optional)</label>
                       <input 
                         type="text" 
-                        value={newPlotImage}
-                        onChange={(e) => setNewPlotImage(e.target.value)}
-                        placeholder="e.g. /faisal-jewel.jpg"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                        value={plotForm.plotNumber}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, plotNumber: e.target.value }))}
+                        placeholder="e.g. A-102"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                       />
                     </div>
 
-                  </div>
-
-                  {/* Features */}
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-800">Key Features (comma-separated)</label>
-                    <input 
-                      type="text" 
-                      value={newPlotFeatures}
-                      onChange={(e) => setNewPlotFeatures(e.target.value)}
-                      placeholder="e.g. Solid Land Ground, Near Mosque, Corner Plot"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                    />
+                    {/* Street */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Street / Road (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={plotForm.street}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, street: e.target.value }))}
+                        placeholder="e.g. Street 14, 60ft Boulevard"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
                   </div>
 
                   {/* Description */}
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-800">Description</label>
+                    <label className="block text-xs font-bold text-slate-800">Description (Optional)</label>
                     <textarea 
-                      rows={3}
-                      value={newPlotDescription}
-                      onChange={(e) => setNewPlotDescription(e.target.value)}
-                      placeholder="Enter detailed property description..."
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-350 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                      rows={2}
+                      value={plotForm.description}
+                      onChange={(e) => setPlotForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Enter details, location highlights, possession info..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
 
-                  {/* Submit button */}
+                  {/* Plot Image Section */}
+                  <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-[#7b002c]" />
+                        <span>Plot Photo / Site Image</span>
+                      </label>
+                      {plotForm.image && (
+                        <button
+                          type="button"
+                          onClick={() => setPlotForm(prev => ({ ...prev, image: '' }))}
+                          className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                        >
+                          Remove Photo
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <input 
+                        type="text" 
+                        value={plotForm.image}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, image: e.target.value }))}
+                        placeholder="Paste image URL (e.g. /images/... or https://...)"
+                        className="flex-1 w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                      
+                      <label className="w-full sm:w-auto px-3 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shrink-0 transition">
+                        <Camera className="w-3.5 h-3.5 text-white" />
+                        <span>Upload File</span>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                setPlotForm(prev => ({ ...prev, image: reader.result as string }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Quick Preset Selector */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
+                      {[
+                        { label: 'Drone Aerial', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
+                        { label: 'Boulevard Road', url: '/images/imgi_1_DJI_20250818122014_0054_D-scaled.jpg' },
+                        { label: 'Executive Block', url: '/images/executive.jpg' },
+                        { label: 'Modern Villa', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+                      ].map((preset, pIdx) => (
+                        <button
+                          key={pIdx}
+                          type="button"
+                          onClick={() => setPlotForm(prev => ({ ...prev, image: preset.url }))}
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition cursor-pointer"
+                        >
+                          + {preset.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Live Image Preview */}
+                    {plotForm.image && (
+                      <div className="relative mt-2 w-full h-32 rounded-lg overflow-hidden border border-slate-300 bg-slate-900 shadow-inner">
+                        <img 
+                          src={plotForm.image} 
+                          alt="Plot Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold">
+                          Live Photo Preview
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
                     <button
                       type="button"
@@ -1319,12 +1633,327 @@ export default function AdminLoginPage() {
                       className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5 text-white" />
-                      <span>Add Listing</span>
+                      <span>Save Plot</span>
                     </button>
                   </div>
-
                 </form>
+              </div>
+            </div>
+          )}
 
+          {/* Edit Plot Modal */}
+          {isEditPlotModalOpen && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden my-auto animate-fade-up">
+                <div className="bg-[#7b002c] text-white p-5 flex items-center justify-between">
+                  <h3 className="font-serif font-bold text-lg">Edit Plot / Property Details</h3>
+                  <button 
+                    onClick={() => { setIsEditPlotModalOpen(false); setEditingPlot(null); }}
+                    className="text-white/80 hover:text-white text-xs font-semibold px-2.5 py-1 rounded bg-black/10 hover:bg-black/20 transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <form onSubmit={handleUpdatePlotSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Block Name */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Block / Sector *</label>
+                      <select
+                        value={plotForm.blockSlug}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, blockSlug: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="block-a">Block A</option>
+                        <option value="block-b">Block B</option>
+                        <option value="block-c">Block C</option>
+                        <option value="block-d">Block D</option>
+                        <option value="executive-block">Executive Block</option>
+                        <option value="prime-block">Prime Block</option>
+                      </select>
+                    </div>
+
+                    {/* Property Type */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Property Type *</label>
+                      <select
+                        value={plotForm.propertyType}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, propertyType: e.target.value as any }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Residential">Residential Plot</option>
+                        <option value="Commercial">Commercial Plot</option>
+                      </select>
+                    </div>
+
+                    {/* Plot Size */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Plot Size *</label>
+                      <input 
+                        type="text" 
+                        required
+                        value={plotForm.size}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, size: e.target.value }))}
+                        placeholder="e.g. 5 Marla, 10 Marla, 1 Kanal"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+
+                    {/* Dimensions */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Dimensions</label>
+                      <input 
+                        type="text" 
+                        value={plotForm.dimensions}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, dimensions: e.target.value }))}
+                        placeholder="e.g. 25 × 50 ft"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+
+                    {/* Price (Numeric) */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">
+                        Demand Price <span className="text-slate-500 font-normal">(e.g. 55 for 55 Lacs, 1.25 for 1.25 Crore, or 5500000 PKR)</span>
+                      </label>
+                      <input 
+                        type="number" 
+                        step="any"
+                        value={plotForm.price}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, price: e.target.value }))}
+                        placeholder="e.g. 55 for 55 Lacs or 5500000"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                      {plotForm.price && !isNaN(Number(plotForm.price)) && Number(plotForm.price) > 0 && (
+                        <div className="mt-1 p-2 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs">
+                          <span className="text-slate-600 font-medium">Live Calculated Price:</span>
+                          <span className="font-bold text-[#7b002c] font-serif">
+                            {formatPlotPrice(Number(plotForm.price))}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Price Unit */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Price Unit</label>
+                      <select
+                        value={plotForm.priceUnit}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, priceUnit: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Total Price">Total Price</option>
+                        <option value="Per Marla">Per Marla</option>
+                        <option value="Per Kanal">Per Kanal</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Status *</label>
+                      <select
+                        value={plotForm.status}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, status: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Available">Available</option>
+                        <option value="Reserved">Reserved</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Coming Soon">Coming Soon</option>
+                        <option value="Unavailable">Unavailable</option>
+                      </select>
+                    </div>
+
+                    {/* Facing */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Facing / Orientation</label>
+                      <select
+                        value={plotForm.facing}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, facing: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="Standard">Standard</option>
+                        <option value="Corner">Corner</option>
+                        <option value="Park Facing">Park Facing</option>
+                        <option value="Main Boulevard">Main Boulevard</option>
+                        <option value="Hill View">Hill View</option>
+                      </select>
+                    </div>
+
+                    {/* Plot Number */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Plot / Unit Number (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={plotForm.plotNumber}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, plotNumber: e.target.value }))}
+                        placeholder="e.g. A-102"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+
+                    {/* Street */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">Street / Road (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={plotForm.street}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, street: e.target.value }))}
+                        placeholder="e.g. Street 14"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-800">Description (Optional)</label>
+                    <textarea 
+                      rows={2}
+                      value={plotForm.description}
+                      onChange={(e) => setPlotForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Enter details, location highlights, possession info..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+
+                  {/* Plot Image Section */}
+                  <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-[#7b002c]" />
+                        <span>Plot Photo / Site Image</span>
+                      </label>
+                      {plotForm.image && (
+                        <button
+                          type="button"
+                          onClick={() => setPlotForm(prev => ({ ...prev, image: '' }))}
+                          className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                        >
+                          Remove Photo
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <input 
+                        type="text" 
+                        value={plotForm.image}
+                        onChange={(e) => setPlotForm(prev => ({ ...prev, image: e.target.value }))}
+                        placeholder="Paste image URL (e.g. /images/... or https://...)"
+                        className="flex-1 w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                      />
+                      
+                      <label className="w-full sm:w-auto px-3 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center justify-center gap-1.5 shrink-0 transition">
+                        <Camera className="w-3.5 h-3.5 text-white" />
+                        <span>Upload File</span>
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                setPlotForm(prev => ({ ...prev, image: reader.result as string }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Quick Preset Selector */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
+                      {[
+                        { label: 'Drone Aerial', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
+                        { label: 'Boulevard Road', url: '/images/imgi_1_DJI_20250818122014_0054_D-scaled.jpg' },
+                        { label: 'Executive Block', url: '/images/executive.jpg' },
+                        { label: 'Modern Villa', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
+                      ].map((preset, pIdx) => (
+                        <button
+                          key={pIdx}
+                          type="button"
+                          onClick={() => setPlotForm(prev => ({ ...prev, image: preset.url }))}
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition cursor-pointer"
+                        >
+                          + {preset.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Live Image Preview */}
+                    {plotForm.image && (
+                      <div className="relative mt-2 w-full h-32 rounded-lg overflow-hidden border border-slate-300 bg-slate-900 shadow-inner">
+                        <img 
+                          src={plotForm.image} 
+                          alt="Plot Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold">
+                          Live Photo Preview
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setIsEditPlotModalOpen(false); setEditingPlot(null); }}
+                      className="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition cursor-pointer"
+                    >
+                      <Save className="w-3.5 h-3.5 text-white" />
+                      <span>Update Plot</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {plotToDelete && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 animate-fade-up">
+                <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div className="text-center space-y-1">
+                  <h3 className="font-serif font-bold text-lg text-slate-900">Delete Plot Listing?</h3>
+                  <p className="text-xs text-slate-600">
+                    Are you sure you want to delete <span className="font-bold text-[#7b002c]">{plotToDelete.plotNumber || plotToDelete.id}</span> ({plotToDelete.blockName} - {plotToDelete.size})? This action cannot be undone.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setPlotToDelete(null)}
+                    className="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDeletePlot}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer flex-1"
+                  >
+                    Delete Plot
+                  </button>
+                </div>
               </div>
             </div>
           )}

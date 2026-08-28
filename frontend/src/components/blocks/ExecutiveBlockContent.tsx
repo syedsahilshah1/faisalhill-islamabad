@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { plotInventoryData, PlotItem, fetchPlots } from '@/data/faisalHillsData';
+import { plotInventoryData, PlotItem, fetchPlots, formatPlotPrice } from '@/data/faisalHillsData';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -265,7 +265,7 @@ export default function ExecutiveBlockContent() {
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
 
   // Dynamic live plot inventory sync
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
 
   useEffect(() => {
     fetchPlots().then(data => setAllPlots(data)).catch(console.error);
@@ -327,8 +327,8 @@ export default function ExecutiveBlockContent() {
       size: plot.size,
       dimensions: plot.dimensions || '25 × 50',
       facing: plot.facing || 'Boulevard Facing',
-      priceFormatted: plot.priceFormatted || (plot.price ? `PKR ${(plot.price / 100000).toFixed(1)} Lacs` : 'Call for Price'),
-      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : '20% Down'),
+      priceFormatted: plot.priceFormatted || (plot.price ? formatPlotPrice(plot.price) : 'Contact for Price'),
+      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : 'Contact for Plan'),
       status: plot.status || 'Possession Ready',
       badge: (plot as any).badge || 'Possession Ready',
       image: plot.image || '/images/imgi_44_Executive-Block.webp',

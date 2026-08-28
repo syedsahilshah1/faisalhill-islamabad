@@ -5,7 +5,8 @@ import Link from 'next/link';
 import {
   PlotItem,
   plotInventoryData,
-  fetchPlots
+  fetchPlots,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import {
   ShieldCheck,
@@ -364,7 +365,17 @@ export default function PrimeBlockContent() {
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
 
   // Dynamic live plot inventory sync from Laravel Backend Dashboard / LocalStorage / API
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+
+  useEffect(() => {
+    fetchPlots().then(data => setAllPlots(data || [])).catch(console.error);
+
+    const handleSync = () => {
+      fetchPlots().then(data => setAllPlots(data || [])).catch(console.error);
+    };
+    window.addEventListener('faisal_plots_updated', handleSync);
+    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+  }, []);
 
   const amenitiesScrollRef = useRef<HTMLDivElement>(null);
   const [isAmenitiesAutoScrolling, setIsAmenitiesAutoScrolling] = useState(true);
@@ -428,7 +439,7 @@ export default function PrimeBlockContent() {
       size: plot.size,
       dimensions: plot.dimensions || '25 × 50',
       facing: plot.facing || 'Park Facing',
-      priceFormatted: plot.priceFormatted || (plot.price ? `PKR ${(plot.price / 100000).toFixed(1)} Lacs` : 'Call for Price'),
+      priceFormatted: plot.priceFormatted || (plot.price ? formatPlotPrice(plot.price) : 'Contact for Price'),
       downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : '20% Down Payment'),
       status: plot.status || 'Ready to Book',
       badge: (plot as any).badge || (plot.facing?.toLowerCase().includes('park') ? 'Park Facing' : '4-Year Plan'),

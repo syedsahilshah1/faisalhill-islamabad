@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, MessageSquare, CheckCircle, ShieldCheck } from 'lucide-react';
-import { blocksData } from '@/data/faisalHillsData';
+import { X, MessageSquare, CheckCircle, ShieldCheck, Loader2 } from 'lucide-react';
+import { blocksData, submitLead } from '@/data/faisalHillsData';
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -20,24 +20,45 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
   const [plotSize, setPlotSize] = useState('5 Marla');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
+    const leadInterest = interest || `${selectedBlock} (${plotSize}) ${defaultPlot ? `- Plot ${defaultPlot}` : ''}`;
+    const leadMessage = message || `Interested in ${selectedBlock} (${plotSize})${defaultPlot ? ` - Plot ${defaultPlot}` : ''}`;
+
+    // 1. Save to LocalStorage for Admin Panel
     if (typeof window !== 'undefined') {
       const existingLeads = JSON.parse(localStorage.getItem('faisal_leads_data') || '[]');
       const newLead = {
         id: `lead-${Date.now()}`,
         name: name || 'Interested Buyer',
         phone: phone || 'N/A',
-        interest: interest || `${selectedBlock} (${plotSize}) ${defaultPlot ? `- Plot ${defaultPlot}` : ''}`,
-        message: message,
+        interest: leadInterest,
+        message: leadMessage,
         submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
       window.dispatchEvent(new Event('faisal_leads_updated'));
     }
+
+    // 2. Submit to Backend API
+    try {
+      await submitLead({
+        name: name || 'Interested Buyer',
+        phone: phone || 'N/A',
+        interest: leadInterest,
+        message: leadMessage,
+      });
+    } catch (err) {
+      console.warn('API lead submission fallback to WhatsApp:', err);
+    }
+
+    setIsSubmitting(false);
     setSubmitted(true);
 
     const waText = encodeURIComponent(
@@ -46,7 +67,7 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
     
     // Open WhatsApp after brief delay
     setTimeout(() => {
-      window.open(`https://wa.me/923001234567?text=${waText}`, '_blank');
+      window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
     }, 600);
   };
 
@@ -174,10 +195,20 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
 
               <button
                 type="submit"
-                className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-sm font-semibold shadow-md flex items-center justify-center gap-2 transition cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-75 text-white rounded-xl text-sm font-semibold shadow-md flex items-center justify-center gap-2 transition cursor-pointer"
               >
-                <MessageSquare className="w-4 h-4 text-white" />
-                <span>Connect via WhatsApp Sales Team</span>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 text-white animate-spin" />
+                    <span>Submitting Inquiry...</span>
+                  </>
+                ) : (
+                  <>
+                    <MessageSquare className="w-4 h-4 text-white" />
+                    <span>Connect via WhatsApp Sales Team</span>
+                  </>
+                )}
               </button>
             </form>
           )}

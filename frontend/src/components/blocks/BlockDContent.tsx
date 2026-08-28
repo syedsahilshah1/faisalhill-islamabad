@@ -49,7 +49,8 @@ import {
   plotInventoryData,
   PlotItem,
   fetchPlots,
-  submitLead
+  submitLead,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -459,17 +460,74 @@ export default function BlockDContent() {
     return () => clearInterval(timer);
   }, [galleryImages.length]);
 
+  // Live plots sync
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+
+  useEffect(() => {
+    fetchPlots()
+      .then((data) => {
+        if (data && data.length > 0) setAllPlots(data);
+      })
+      .catch(console.error);
+
+    const handleSync = () => {
+      fetchPlots()
+        .then((data) => {
+          if (data && data.length > 0) setAllPlots(data);
+        })
+        .catch(console.error);
+    };
+    window.addEventListener('faisal_plots_updated', handleSync);
+    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+  }, []);
+
   // Filtered Plots
+  const blockDPlots = useMemo(() => {
+    return allPlots.filter(
+      (p) => p.blockSlug === 'block-d' || (p.blockName && p.blockName.toLowerCase().includes('block d'))
+    );
+  }, [allPlots]);
+
   const filteredPlots = useMemo(() => {
-    if (selectedSizeFilter === 'All') return defaultBlockDPlots;
-    return defaultBlockDPlots.filter((p) => p.size.toLowerCase().includes(selectedSizeFilter.toLowerCase()));
-  }, [selectedSizeFilter]);
+    if (selectedSizeFilter === 'All') return blockDPlots;
+    return blockDPlots.filter((p) => p.size.toLowerCase().includes(selectedSizeFilter.toLowerCase()));
+  }, [blockDPlots, selectedSizeFilter]);
 
   // Filtered Price Schedule
   const filteredPriceSchedule = useMemo(() => {
-    if (selectedPriceCategory === 'All') return blockDPriceSchedule;
-    return blockDPriceSchedule.filter((p) => p.category === selectedPriceCategory);
-  }, [selectedPriceCategory]);
+    const blockPlots = allPlots.filter((p) => p.blockSlug === 'block-d');
+    let schedule = blockDPriceSchedule;
+    if (blockPlots.length > 0) {
+      schedule = blockPlots.map((plot) => {
+        let priceText = 'Contact for Price';
+        if (plot.price && plot.price > 0) {
+          priceText = formatPlotPrice(plot.price, plot.priceFormatted);
+        }
+        return {
+          size: plot.size,
+          dimensions: plot.dimensions || 'Dimension not provided',
+          sqYards: plot.size.includes('5 Marla') ? '139 Sq. Yds' :
+                   plot.size.includes('8 Marla') ? '200 Sq. Yds' :
+                   plot.size.includes('10 Marla') ? '272 Sq. Yds' :
+                   plot.size.includes('14 Marla') ? '355 Sq. Yds' :
+                   plot.size.includes('1 Kanal') ? '500 Sq. Yds' : 'Standard Area',
+          sqFeet: plot.size.includes('5 Marla') ? '1,125 Sq. Ft' :
+                  plot.size.includes('8 Marla') ? '1,800 Sq. Ft' :
+                  plot.size.includes('10 Marla') ? '2,250 Sq. Ft' :
+                  plot.size.includes('14 Marla') ? '3,150 Sq. Ft' :
+                  plot.size.includes('1 Kanal') ? '4,500 Sq. Ft' :
+                  plot.size.includes('4 Marla') ? '900 Sq. Ft' : 'Standard Area',
+          category: (plot.propertyType || plot.category || 'Residential') as 'Residential' | 'Commercial',
+          priceRange: priceText,
+          possession: 'Fast-Track Earthwork in Progress',
+          highlight: plot.status || 'Affordable High Appreciation Sector'
+        };
+      });
+    }
+
+    if (selectedPriceCategory === 'All') return schedule;
+    return schedule.filter((p) => p.category === selectedPriceCategory);
+  }, [allPlots, selectedPriceCategory]);
 
   // Filtered Amenities
   const filteredAmenities = useMemo(() => {

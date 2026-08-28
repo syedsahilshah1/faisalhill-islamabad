@@ -24,21 +24,27 @@ export interface BlockInfo {
 
 export interface PlotItem {
   id: string;
-  plotNumber: string;
+  plotNumber?: string;
   blockSlug: string;
   blockName: string;
-  category: 'Residential' | 'Commercial' | 'Apartment';
+  propertyType?: 'Residential' | 'Commercial';
+  category: 'Residential' | 'Commercial' | 'Apartment' | string;
   size: string;
   dimensions: string;
-  price: number;
-  priceFormatted: string;
-  priceHistoryTrend: string;
-  status: 'Available' | 'Reserved' | 'Sold';
-  facing: 'Park Facing' | 'Corner' | 'Main Boulevard' | 'Standard' | 'Hill View' | string;
-  mapCoords: { x: number; y: number }; // percentage coords on interactive master map
-  features: string[];
-  description: string;
-  image: string;
+  price: number | null;
+  priceUnit?: string;
+  priceFormatted?: string;
+  priceHistoryTrend?: string;
+  status: 'Available' | 'Reserved' | 'Sold' | 'Coming Soon' | 'Unavailable' | string;
+  facing?: 'Park Facing' | 'Corner' | 'Main Boulevard' | 'Standard' | 'Hill View' | string;
+  street?: string;
+  location?: string;
+  mapCoords?: { x: number; y: number }; // percentage coords on interactive master map
+  features?: string[];
+  description?: string;
+  image?: string;
+  featured?: boolean;
+  displayOrder?: number;
 }
 
 export interface PaymentPlanItem {
@@ -93,657 +99,19 @@ export const societyStats: SocietyStats = {
   activePlots: 14500,
   lastVerifiedDate: "August 2026"
 };
-
-export const plotInventoryData: PlotItem[] = [
-  // 1. 5 Marla - Block A
-  {
-    id: "plot-101",
-    plotNumber: "A-204",
-    blockSlug: "block-a",
-    blockName: "Block A",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 5600000,
-    priceFormatted: "PKR 56 Lacs",
-    priceHistoryTrend: "+11.2% in last 6 months",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 42, y: 46 },
-    features: ["Fronting 60ft Boulevard", "Solid Land Ground", "Close to Jamia Mosque"],
-    description: "Highly demanded 5 Marla plot situated on 60ft road near Mosque & Commercial Market.",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
-  },
-  // 2. 5 Marla - Block B
-  {
-    id: "plot-102",
-    plotNumber: "B-145",
-    blockSlug: "block-b",
-    blockName: "Block B",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 4800000,
-    priceFormatted: "PKR 48 Lacs",
-    priceHistoryTrend: "+8.5% in last 6 months",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 60, y: 34 },
-    features: ["Park Facing", "60ft Road Access", "Underground Electricity", "Peaceful Residential Area"],
-    description: "Affordable 5 Marla residential plot in Block B directly facing the neighborhood park. Ideal for a modern compact home.",
-    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
-  },
-  // 3. 8 Marla - Executive Block
-  {
-    id: "plot-103",
-    plotNumber: "EXE-082",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "8 Marla",
-    dimensions: "30 x 60",
-    price: 7800000,
-    priceFormatted: "PKR 78 Lacs",
-    priceHistoryTrend: "+13.5% capital growth",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 20, y: 30 },
-    features: ["Main Entrance Boulevard", "Close to Executive Club", "Underground Electricity"],
-    description: "Prestigious 8 Marla plot on Main Boulevard in Executive Block. Ideal for an upscale family home.",
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
-  },
-  // 4. 8 Marla - Block B
-  {
-    id: "plot-104",
-    plotNumber: "B-078",
-    blockSlug: "block-b",
-    blockName: "Block B",
-    category: "Residential",
-    size: "8 Marla",
-    dimensions: "30 x 60",
-    price: 6900000,
-    priceFormatted: "PKR 69 Lacs",
-    priceHistoryTrend: "+9.1% stable growth",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 56, y: 38 },
-    features: ["Main Boulevard Frontage", "Full Utility Connection", "Near Community Mosque"],
-    description: "Well-positioned 8 Marla plot on Block B's main internal boulevard. Excellent connectivity to the society entrance gate.",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-  },
-  // 5. 10 Marla - Block A
-  {
-    id: "plot-105",
-    plotNumber: "A-125",
-    blockSlug: "block-a",
-    blockName: "Block A",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 9800000,
-    priceFormatted: "PKR 98 Lacs",
-    priceHistoryTrend: "+8.5% in last 3 months",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 38, y: 42 },
-    features: ["Corner Plot", "Fronting 12-Kanal Park", "Underground Electricity", "Immediate Possession"],
-    description: "Prime 10 Marla residential plot directly facing Sector A central park. Ideal for modern villa construction.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-  },
-  // 6. 10 Marla - Block B
-  {
-    id: "plot-106",
-    plotNumber: "B-089",
-    blockSlug: "block-b",
-    blockName: "Block B",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 8400000,
-    priceFormatted: "PKR 84 Lacs",
-    priceHistoryTrend: "+6.8% stable",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 58, y: 30 },
-    features: ["Margalla Mountain Backdrop", "Quiet Cul-de-Sac Street", "Full Utilities"],
-    description: "Scenic 10 Marla hill-view plot in elevated Block B.",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-  },
-  // 7. 1 Kanal - Executive Block
-  {
-    id: "plot-107",
-    plotNumber: "EXE-048",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 18500000,
-    priceFormatted: "PKR 1.85 Crore",
-    priceHistoryTrend: "+14% high demand",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 18, y: 28 },
-    features: ["Double Side Corner", "225ft Boulevard Proximity", "Executive Club View"],
-    description: "Luxurious 1 Kanal Corner Plot near GT Road Entrance Gate.",
-    image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80"
-  },
-  // 8. 1 Kanal - Prime Block
-  {
-    id: "plot-108",
-    plotNumber: "PR-014",
-    blockSlug: "prime-block",
-    blockName: "Prime Block",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 24500000,
-    priceFormatted: "PKR 2.45 Crore",
-    priceHistoryTrend: "+21% prestige demand",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 74, y: 22 },
-    features: ["Private Gated Sector", "Exclusive Height Elevation", "Underground Fiber Optics"],
-    description: "Ultra-luxury 1 Kanal plot in VIP Prime Block with Margalla panorama.",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
-  },
-  // 9. Luxury Apartment - Faisal Jewel
-  {
-    id: "plot-109",
-    plotNumber: "FJ-402",
-    blockSlug: "faisal-jewel-islamabad",
-    blockName: "Faisal Jewel",
-    category: "Apartment",
-    size: "2-Bed Luxury Flat",
-    dimensions: "1,150 Sq Ft",
-    price: 13500000,
-    priceFormatted: "PKR 1.35 Crore",
-    priceHistoryTrend: "+15.4% high demand",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 15, y: 22 },
-    features: ["26th Floor Sky View", "Serviced Hotel Suite", "Revolving Restaurant Access", "High Rental Yield"],
-    description: "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
-    image: "/faisal-jewel.jpg"
-  },
-  // 10. Executive Suite - Faisal Jewel
-  {
-    id: "plot-110",
-    plotNumber: "FJ-709",
-    blockSlug: "faisal-jewel-islamabad",
-    blockName: "Faisal Jewel",
-    category: "Apartment",
-    size: "1-Bed Executive Suite",
-    dimensions: "650 Sq Ft",
-    price: 8500000,
-    priceFormatted: "PKR 85 Lacs",
-    priceHistoryTrend: "+12.8% pre-launch ROI",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 16, y: 24 },
-    features: ["Smart Automation Suite", "Furnished Interior Option", "Infinity Pool Access"],
-    description: "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
-    image: "/faisal-jewel.jpg"
-  },
-  // 11. Commercial Plaza - Executive Block
-  {
-    id: "plot-111",
-    plotNumber: "EXE-112",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Commercial",
-    size: "4 Marla Plaza Plot",
-    dimensions: "30 x 30",
-    price: 32000000,
-    priceFormatted: "PKR 3.2 Crore",
-    priceHistoryTrend: "+18% commercial yield",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 22, y: 32 },
-    features: ["Ground + 5 Approval", "225ft Main GT Entrance Road", "Ideal for Bank Plaza"],
-    description: "Hot commercial plot on Executive Main Boulevard.",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
-  },
-  // 12. Commercial Plot - Block B
-  {
-    id: "plot-112",
-    plotNumber: "B-302",
-    blockSlug: "block-b",
-    blockName: "Block B",
-    category: "Commercial",
-    size: "4 Marla",
-    dimensions: "30 x 30",
-    price: 9200000,
-    priceFormatted: "PKR 92 Lacs",
-    priceHistoryTrend: "+14.6% commercial demand",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 64, y: 32 },
-    features: ["Ground + 4 Story Approval", "High Foot Traffic Area", "Near Sector Entrance", "Rental Income Potential"],
-    description: "Prime 4 Marla commercial plot in Block B on the sector's main internal road. Perfect for a shop plaza, clinic, or business outlet.",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
-  },
-  // 13. 5 Marla - Executive Block
-  {
-    id: "plot-113",
-    plotNumber: "EXE-105",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 6800000,
-    priceFormatted: "PKR 68 Lacs",
-    priceHistoryTrend: "+11.5% high demand",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 24, y: 34 },
-    features: ["Facing Central Park", "Solid Ground", "Near Roots International Campus"],
-    description: "Affordable 5 Marla residential plot in Executive Block directly facing the family park.",
-    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
-  },
-  // 14. 10 Marla - Executive Block
-  {
-    id: "plot-114",
-    plotNumber: "EXE-214",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 13500000,
-    priceFormatted: "PKR 1.35 Crore",
-    priceHistoryTrend: "+15.2% high capital growth",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 26, y: 36 },
-    features: ["Direct 225ft Boulevard Access", "Underground Electricity", "Immediate Construction"],
-    description: "Prime 10 Marla villa plot on Executive Sector main boulevard with high capital appreciation.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-  },
-  // 15. 14 Marla - Executive Block
-  {
-    id: "plot-115",
-    plotNumber: "EXE-308",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "14 Marla",
-    dimensions: "40 x 80",
-    price: 16500000,
-    priceFormatted: "PKR 1.65 Crore",
-    priceHistoryTrend: "+12.8% capital growth",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 28, y: 38 },
-    features: ["Corner Boulevard Unit", "Wide 40ft Frontage", "Executive Club Proximity"],
-    description: "Exclusive 14 Marla executive plot with dual frontage in prestigious Executive Block.",
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
-  },
-  // 16. 5.8 Marla Commercial - Executive Block
-  {
-    id: "plot-116",
-    plotNumber: "EXE-019",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Commercial",
-    size: "5.8 Marla Plaza Plot",
-    dimensions: "40 x 40",
-    price: 48000000,
-    priceFormatted: "PKR 4.8 Crore",
-    priceHistoryTrend: "+22% high ROI",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 21, y: 29 },
-    features: ["Multi-Storey Plaza NOC", "Near Faisal Jewel Entrance", "High Footfall Hub"],
-    description: "High-yield 5.8 Marla commercial plot on Executive Main Civic Boulevard.",
-    image: "https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80"
-  },
-  // 17. 1 Kanal Executive Villa Plot - Executive Block
-  {
-    id: "plot-117",
-    plotNumber: "EXE-420",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 21000000,
-    priceFormatted: "PKR 2.10 Crore",
-    priceHistoryTrend: "+16.8% high capital growth",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 30, y: 40 },
-    features: ["Margalla Foothill Vista", "50ft Frontage", "Gated Security Enclave"],
-    description: "Flagship 1 Kanal residential villa plot with panoramic Margalla hill views.",
-    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-  },
-  // 18. 5 Marla - Block B1 Extension
-  {
-    id: "plot-b1-01",
-    plotNumber: "B1-045",
-    blockSlug: "block-b1-extension",
-    blockName: "Block B-1 Extension",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 4100000,
-    priceFormatted: "PKR 41 Lacs",
-    priceHistoryTrend: "+18% capital growth",
-    status: "Available",
-    facing: "Standard",
-    mapCoords: { x: 62, y: 38 },
-    features: ["Solid Ground", "Level Demarcation", "Near Sector Main Road"],
-    description: "Affordable 5 Marla residential plot in B1 Extension. Ideal for high capital appreciation and first-time home construction.",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
-  },
-  // 19. 5 Marla Corner - Block B1 Extension
-  {
-    id: "plot-b1-02",
-    plotNumber: "B1-112",
-    blockSlug: "block-b1-extension",
-    blockName: "Block B-1 Extension",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 4500000,
-    priceFormatted: "PKR 45 Lacs",
-    priceHistoryTrend: "+22% high yield",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 64, y: 40 },
-    features: ["Corner Plot", "Wide 40ft Street", "Fast-Track Development Zone"],
-    description: "Prime 5 Marla Corner plot in Block B1 Extension with dual road frontage.",
-    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
-  },
-  // 20. 5 Marla Park Facing - Block B1 Extension
-  {
-    id: "plot-b1-03",
-    plotNumber: "B1-185",
-    blockSlug: "block-b1-extension",
-    blockName: "Block B-1 Extension",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 4700000,
-    priceFormatted: "PKR 47 Lacs",
-    priceHistoryTrend: "+20% high demand",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 66, y: 42 },
-    features: ["Direct Community Park View", "Walking to Mosque", "Level Ground"],
-    description: "Scenic 5 Marla park-facing plot in B1 Extension. Premium location within the sector.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-  },
-  // 21. 8 Marla - Block B1 Extension
-  {
-    id: "plot-b1-04",
-    plotNumber: "B1-055",
-    blockSlug: "block-b1-extension",
-    blockName: "Block B-1 Extension",
-    category: "Residential",
-    size: "8 Marla",
-    dimensions: "30 x 60",
-    price: 6400000,
-    priceFormatted: "PKR 64 Lacs",
-    priceHistoryTrend: "+16% steady growth",
-    status: "Available",
-    facing: "Standard",
-    mapCoords: { x: 68, y: 36 },
-    features: ["Double Unit Ready", "30ft Frontage", "Boulevard Link"],
-    description: "Spacious 8 Marla family plot in Block B1 Extension. Excellent value for 4-bedroom dual living.",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-  },
-  // 22. 10 Marla - Block B1 Extension
-  {
-    id: "plot-b1-05",
-    plotNumber: "B1-030",
-    blockSlug: "block-b1-extension",
-    blockName: "Block B-1 Extension",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 7900000,
-    priceFormatted: "PKR 79 Lacs",
-    priceHistoryTrend: "+24% executive demand",
-    status: "Available",
-    facing: "Hill View",
-    mapCoords: { x: 70, y: 34 },
-    features: ["Margalla View Elevation", "Wide Frontage", "High Executive Appeal"],
-    description: "Prestigious 10 Marla executive villa plot in B1 Extension with panoramic hill views.",
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
-  },
-  // Block C Starter Listings
-  {
-    id: "plot-c-01",
-    plotNumber: "C-112",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 5200000,
-    priceFormatted: "PKR 52 Lacs",
-    priceHistoryTrend: "+14.8% annual capital ROI",
-    status: "Available",
-    facing: "40ft Wide Street",
-    mapCoords: { x: 55, y: 48 },
-    features: ["Solid Ground", "Near Hills Walk Promenade", "Possession Ready"],
-    description: "Prime 5 Marla residential plot in Block C close to central park, RO water plant, and commercial market.",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-c-02",
-    plotNumber: "C-245",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Residential",
-    size: "8 Marla",
-    dimensions: "30 x 60",
-    price: 7800000,
-    priceFormatted: "PKR 78 Lacs",
-    priceHistoryTrend: "+18.2% annual capital ROI",
-    status: "Available",
-    facing: "Boulevard Facing",
-    mapCoords: { x: 58, y: 52 },
-    features: ["Park Proximity", "Main Internal Avenue", "Direct Allotment File"],
-    description: "Family-size 8 Marla plot in developed sector of Block C with complete utilities and underground electricity.",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-c-03",
-    plotNumber: "C-390",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 12500000,
-    priceFormatted: "PKR 1.25 Crore",
-    priceHistoryTrend: "+22.5% annual capital ROI",
-    status: "Available",
-    facing: "Margalla Hill View",
-    mapCoords: { x: 62, y: 55 },
-    features: ["Corner Plot", "Panoramic Mountain Views", "Fast Construction Zone"],
-    description: "Luxury 10 Marla corner plot ideal for double-unit villa with open vistas of the Margalla foothills.",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-c-04",
-    plotNumber: "C-510",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Residential",
-    size: "14 Marla",
-    dimensions: "40 x 80",
-    price: 16500000,
-    priceFormatted: "PKR 1.65 Crore",
-    priceHistoryTrend: "+19.0% annual capital ROI",
-    status: "Available",
-    facing: "60ft Boulevard",
-    mapCoords: { x: 65, y: 58 },
-    features: ["Executive Double Width", "Near Jamia Mosque", "Immediate Registry"],
-    description: "Expansive 14 Marla executive plot cut on a 60ft avenue, seconds from the main sector Jamia Mosque.",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-c-05",
-    plotNumber: "C-620",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 21000000,
-    priceFormatted: "PKR 2.10 Crore",
-    priceHistoryTrend: "+26.4% annual capital ROI",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 68, y: 60 },
-    features: ["Direct Park Facing", "Mansion Zoning", "Zero Litigation"],
-    description: "Prestigious 1 Kanal luxury estate plot fronting a 12-Kanal central park in the heart of Faisal Hills Block C.",
-    image: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "plot-c-06",
-    plotNumber: "C-COMM-18",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Commercial",
-    size: "4 Marla",
-    dimensions: "30 x 30",
-    price: 24000000,
-    priceFormatted: "PKR 2.40 Crore",
-    priceHistoryTrend: "+31.0% commercial rental upside",
-    status: "Available",
-    facing: "Main Commercial Promenade",
-    mapCoords: { x: 72, y: 62 },
-    features: ["Hills Walk Access", "Ground + 4 Approval", "High Retail Footfall"],
-    description: "High-yield commercial plot approved for plaza development, retail arcade, brand outlets, and corporate offices.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
-  },
-  // Block D Starter Listings
-  {
-    id: "plot-d-01",
-    plotNumber: "D-108",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Residential",
-    size: "5 Marla",
-    dimensions: "25 x 50",
-    price: 4450000,
-    priceFormatted: "PKR 44.5 Lacs",
-    priceHistoryTrend: "+16.5% annual capital ROI",
-    status: "Available",
-    facing: "40ft Wide Street",
-    mapCoords: { x: 78, y: 55 },
-    features: ["Solid Ground Land", "Near Central Park", "Fast Developing Sector"],
-    description: "Affordable 5 Marla residential plot in Faisal Hills Block D, offering excellent value near community green spaces.",
-    image: "/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png"
-  },
-  {
-    id: "plot-d-02",
-    plotNumber: "D-230",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Residential",
-    size: "8 Marla",
-    dimensions: "30 x 60",
-    price: 6850000,
-    priceFormatted: "PKR 68.5 Lacs",
-    priceHistoryTrend: "+18.0% annual capital ROI",
-    status: "Available",
-    facing: "Boulevard Facing",
-    mapCoords: { x: 80, y: 58 },
-    features: ["50ft Sector Boulevard", "Near Sector Jamia Mosque", "Underground Electricity"],
-    description: "Family-size 8 Marla plot along the 50ft wide avenue in Block D with completed utilities and open mountain air.",
-    image: "/images/imgi_27_Rectangle-1-scaled.png"
-  },
-  {
-    id: "plot-d-03",
-    plotNumber: "D-365",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Residential",
-    size: "10 Marla",
-    dimensions: "35 x 70",
-    price: 9800000,
-    priceFormatted: "PKR 98 Lacs",
-    priceHistoryTrend: "+21.2% annual capital ROI",
-    status: "Available",
-    facing: "Margalla Mountain View",
-    mapCoords: { x: 82, y: 62 },
-    features: ["Corner Plot", "Scenic Mountain Backdrop", "Direct Allotment File"],
-    description: "Scenic 10 Marla corner plot ideal for double-unit luxury construction, with open views of Margalla range.",
-    image: "/images/imgi_44_Executive-Block.webp"
-  },
-  {
-    id: "plot-d-04",
-    plotNumber: "D-480",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Residential",
-    size: "14 Marla",
-    dimensions: "40 x 80",
-    price: 13800000,
-    priceFormatted: "PKR 1.38 Crore",
-    priceHistoryTrend: "+19.8% annual capital ROI",
-    status: "Available",
-    facing: "60ft Main Avenue",
-    mapCoords: { x: 84, y: 65 },
-    features: ["Executive Estate Cut", "Near Healthcare Zone", "Immediate Transfer"],
-    description: "Spacious 14 Marla executive plot cut on a 60ft avenue, minutes from the proposed medical and education complex.",
-    image: "/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg"
-  },
-  {
-    id: "plot-d-05",
-    plotNumber: "D-590",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Residential",
-    size: "1 Kanal",
-    dimensions: "50 x 90",
-    price: 18500000,
-    priceFormatted: "PKR 1.85 Crore",
-    priceHistoryTrend: "+24.5% annual capital ROI",
-    status: "Available",
-    facing: "Park Facing",
-    mapCoords: { x: 86, y: 68 },
-    features: ["Direct Park Facing", "Mansion Zoning", "Zero Litigation Risk"],
-    description: "Premium 1 Kanal mansion plot directly overlooking central green reservations in Faisal Hills Block D.",
-    image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
-  },
-  {
-    id: "plot-d-06",
-    plotNumber: "D-COMM-12",
-    blockSlug: "block-d",
-    blockName: "Block D",
-    category: "Commercial",
-    size: "4 Marla",
-    dimensions: "30 x 30",
-    price: 19500000,
-    priceFormatted: "PKR 1.95 Crore",
-    priceHistoryTrend: "+28.0% commercial appreciation",
-    status: "Available",
-    facing: "Main Commercial Strip",
-    mapCoords: { x: 88, y: 70 },
-    features: ["Sector Commercial Strip", "Ground + 4 Storey Approval", "High ROI Catchment"],
-    description: "Prime 4 Marla commercial plot in Sector D commercial zone, approved for multi-storey retail, grocery, and clinic development.",
-    image: "/images/faisalarc (3).jpg"
-  }
-];
+export const plotInventoryData: PlotItem[] = [];
 
 export const blocksData: BlockInfo[] = [
   {
     id: "prime-block",
     slug: "prime-block",
     name: "Prime Block",
-    subtitle: "",
+    subtitle: "Exclusive Luxury Villa Enclave with Panoramic Margalla Ridge Views",
     category: "developed",
     status: "Under Development",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
-    description: "",
+    description: "Faisal Hills Prime Block is an exclusive luxury sector perched on the highest crest of the society with panoramic Margalla Ridge vistas, private gated biometrics, luxury country club facilities, and premium residential estate plots.",
     locationDetails: "Situated on the highest crest of Faisal Hills with uninterrupted views of the Margalla Hills range.",
     highlights: [
       "VIP Enclave with Gated Entry & Biometrics",
@@ -780,14 +148,12 @@ export const blocksData: BlockInfo[] = [
     id: "executive-block",
     slug: "executive-block",
     name: "Executive Block",
-    subtitle: "",
-    
+    subtitle: "Prestigious Gateway Sector with Faisal Jewel & Grand Boulevards",
     category: "developed",
     status: "Possession Ready",
     nocStatus: "RDA Approved & Clear",
     verificationDate: "August 2026",
-    //added later
-    description: "",
+    description: "Faisal Hills Executive Block is the society's premier gateway sector located directly at the Main N-5 GT Road entrance. Featuring 225ft grand boulevards, Roots International School, Civic Center, and the iconic 27-storey Faisal Jewel high-rise.",
     locationDetails: "Located directly at the Main Entrance Gate on N-5 National Highway, 5 minutes from Taxila Bypass and 12 minutes from CPEC Interchange.",
     highlights: [
       "Main GT Road Entrance & 225ft Boulevard Roadways",
@@ -826,12 +192,12 @@ export const blocksData: BlockInfo[] = [
     id: "block-a",
     slug: "block-a",
     name: "Block A",
-    subtitle: "",
+    subtitle: "Fully Developed & Populated Community Sector",
     category: "developed",
     status: "Fully Developed & Populated",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
-    description: "",
+    description: "Faisal Hills Block A is the most mature, fully populated sector of the society. Featuring an operational 3,000-capacity Grand Jamia Mosque, commercial banks, retail markets, immediate possession, and thriving residential neighborhoods.",
     locationDetails: "Adjoining Executive Block, connected via the 150ft Central Avenue.",
     highlights: [
       "RDA-Approved & Fully Populated Neighborhood",
@@ -1736,16 +1102,67 @@ export function mapBlockToCamel(block: any): BlockInfo {
 
 export function mapPlotToCamel(plot: any): PlotItem {
   if (!plot) return plot;
+  const price = plot.price !== null && plot.price !== undefined ? Number(plot.price) : null;
   return {
     ...plot,
-    plotNumber: plot.plot_number || plot.plotNumber,
-    blockSlug: plot.block_slug || plot.blockSlug,
-    blockName: plot.block_name || plot.blockName,
-    priceFormatted: plot.price_formatted || plot.priceFormatted,
-    priceHistoryTrend: plot.price_history_trend || plot.priceHistoryTrend,
-    mapCoords: typeof plot.map_coords === 'string' ? JSON.parse(plot.map_coords) : (plot.map_coords || plot.mapCoords),
-    features: typeof plot.features === 'string' ? JSON.parse(plot.features) : (plot.features || plot.features)
+    id: plot.id?.toString() || `plot-${Date.now()}`,
+    plotNumber: plot.plot_number || plot.plotNumber || '',
+    blockSlug: plot.block_slug || plot.blockSlug || '',
+    blockName: plot.block_name || plot.blockName || '',
+    propertyType: plot.property_type || plot.propertyType || 'Residential',
+    category: plot.category || 'Residential',
+    size: plot.size || '',
+    dimensions: plot.dimensions || 'Dimension not provided',
+    price: price,
+    priceUnit: plot.price_unit || plot.priceUnit || 'Total Price',
+    priceFormatted: plot.price_formatted || plot.priceFormatted || (price ? formatPlotPrice(price) : 'Contact for Price'),
+    priceHistoryTrend: plot.price_history_trend || plot.priceHistoryTrend || '',
+    status: plot.status || 'Available',
+    facing: plot.facing || 'Standard',
+    street: plot.street || '',
+    location: plot.location || '',
+    featured: plot.featured !== undefined ? !!plot.featured : false,
+    displayOrder: plot.display_order !== undefined ? Number(plot.display_order) : (plot.displayOrder || 0),
+    mapCoords: typeof plot.map_coords === 'string' ? JSON.parse(plot.map_coords) : (plot.map_coords || plot.mapCoords || { x: 50, y: 50 }),
+    features: typeof plot.features === 'string' ? JSON.parse(plot.features) : (plot.features || plot.features || [])
   };
+}
+
+export function formatPlotPrice(price: number | null | undefined, priceFormatted?: string): string {
+  // If priceFormatted is valid and not a zero-formatted placeholder
+  if (
+    priceFormatted &&
+    priceFormatted !== 'Call for Price' &&
+    priceFormatted !== 'null' &&
+    !priceFormatted.includes('PKR 0.0') &&
+    !priceFormatted.includes('PKR 0 Lacs') &&
+    !priceFormatted.includes('PKR 0 Crore') &&
+    !priceFormatted.includes('null')
+  ) {
+    return priceFormatted;
+  }
+
+  if (price === null || price === undefined || price <= 0) {
+    return 'Contact for Price';
+  }
+
+  // Normalize if admin entered a small number (e.g. 55 Lacs or 1.25 Crore)
+  let normPrice = Number(price);
+  if (normPrice < 1000) {
+    if (normPrice <= 20 && !Number.isInteger(normPrice)) {
+      normPrice = normPrice * 10000000; // e.g. 1.25 Crore = 12,500,000
+    } else {
+      normPrice = normPrice * 100000; // e.g. 55 Lacs = 5,500,000
+    }
+  }
+
+  if (normPrice >= 10000000) {
+    return `PKR ${(normPrice / 10000000).toFixed(2)} Crore`;
+  }
+  if (normPrice >= 100000) {
+    return `PKR ${(normPrice / 100000).toFixed(1)} Lacs`;
+  }
+  return `PKR ${normPrice.toLocaleString('en-PK')}`;
 }
 
 export function mapGalleryToCamel(item: any): GalleryItem {
@@ -1810,15 +1227,30 @@ export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
   }
 }
 
-export async function fetchPlots(): Promise<PlotItem[]> {
+let _cachedPlots: PlotItem[] = [];
+
+export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
+  if (!forceRefresh && _cachedPlots.length > 0) {
+    fetch(`${API_URL}/plots`, { cache: 'no-store' })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data)) {
+          _cachedPlots = data.map(mapPlotToCamel);
+        }
+      })
+      .catch(() => {});
+    return _cachedPlots;
+  }
+
   try {
     const res = await fetch(`${API_URL}/plots`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch plots');
     const data = await res.json();
-    return data.map(mapPlotToCamel);
+    _cachedPlots = Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : []);
+    return _cachedPlots;
   } catch (e) {
     console.error(e);
-    return plotInventoryData; // fallback
+    return _cachedPlots || [];
   }
 }
 
@@ -1916,16 +1348,22 @@ export async function apiUpdatePlot(id: string, plot: Partial<PlotItem>, token: 
   if (plot.plotNumber !== undefined) payload.plot_number = plot.plotNumber;
   if (plot.blockSlug !== undefined) payload.block_slug = plot.blockSlug;
   if (plot.blockName !== undefined) payload.block_name = plot.blockName;
+  if (plot.propertyType !== undefined) payload.property_type = plot.propertyType;
+  if (plot.priceUnit !== undefined) payload.price_unit = plot.priceUnit;
   if (plot.priceFormatted !== undefined) payload.price_formatted = plot.priceFormatted;
   if (plot.priceHistoryTrend !== undefined) payload.price_history_trend = plot.priceHistoryTrend;
+  if (plot.displayOrder !== undefined) payload.display_order = plot.displayOrder;
   if (plot.mapCoords !== undefined) payload.map_coords = plot.mapCoords;
   if (plot.features !== undefined) payload.features = plot.features;
 
   delete payload.plotNumber;
   delete payload.blockSlug;
   delete payload.blockName;
+  delete payload.propertyType;
+  delete payload.priceUnit;
   delete payload.priceFormatted;
   delete payload.priceHistoryTrend;
+  delete payload.displayOrder;
   delete payload.mapCoords;
 
   const res = await fetch(`${API_URL}/plots/${id}`, {
@@ -1939,7 +1377,11 @@ export async function apiUpdatePlot(id: string, plot: Partial<PlotItem>, token: 
   });
   if (!res.ok) throw new Error('Failed to update plot');
   const data = await res.json();
-  return mapPlotToCamel(data);
+  const updated = mapPlotToCamel(data);
+  if (_cachedPlots) {
+    _cachedPlots = _cachedPlots.map(p => p.id === id ? updated : p);
+  }
+  return updated;
 }
 
 export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Promise<PlotItem> {
@@ -1947,16 +1389,22 @@ export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Pro
   if (plot.plotNumber !== undefined) payload.plot_number = plot.plotNumber;
   if (plot.blockSlug !== undefined) payload.block_slug = plot.blockSlug;
   if (plot.blockName !== undefined) payload.block_name = plot.blockName;
+  if (plot.propertyType !== undefined) payload.property_type = plot.propertyType;
+  if (plot.priceUnit !== undefined) payload.price_unit = plot.priceUnit;
   if (plot.priceFormatted !== undefined) payload.price_formatted = plot.priceFormatted;
   if (plot.priceHistoryTrend !== undefined) payload.price_history_trend = plot.priceHistoryTrend;
+  if (plot.displayOrder !== undefined) payload.display_order = plot.displayOrder;
   if (plot.mapCoords !== undefined) payload.map_coords = plot.mapCoords;
   if (plot.features !== undefined) payload.features = plot.features;
 
   delete payload.plotNumber;
   delete payload.blockSlug;
   delete payload.blockName;
+  delete payload.propertyType;
+  delete payload.priceUnit;
   delete payload.priceFormatted;
   delete payload.priceHistoryTrend;
+  delete payload.displayOrder;
   delete payload.mapCoords;
 
   const res = await fetch(`${API_URL}/plots`, {
@@ -1970,7 +1418,11 @@ export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Pro
   });
   if (!res.ok) throw new Error('Failed to create plot');
   const data = await res.json();
-  return mapPlotToCamel(data);
+  const created = mapPlotToCamel(data);
+  if (_cachedPlots) {
+    _cachedPlots = [created, ..._cachedPlots];
+  }
+  return created;
 }
 
 export async function apiDeletePlot(id: string, token: string): Promise<any> {
@@ -1982,7 +1434,9 @@ export async function apiDeletePlot(id: string, token: string): Promise<any> {
     }
   });
   if (!res.ok) throw new Error('Failed to delete plot');
-  return await res.json();
+  if (_cachedPlots) {
+    _cachedPlots = _cachedPlots.filter(p => p.id !== id);
+  }
 }
 
 export async function apiFetchLeads(token: string): Promise<LeadItem[]> {

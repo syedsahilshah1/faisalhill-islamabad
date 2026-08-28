@@ -9,8 +9,9 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import {
-  blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem,
-  fetchBlocks, fetchPlots, fetchGallery, fetchSettings, submitLead
+  blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem, type PlotItem,
+  fetchBlocks, fetchPlots, fetchGallery, fetchSettings, submitLead,
+  formatPlotPrice
 } from '@/data/faisalHillsData';
 import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import LeadModal from '@/components/ui/LeadModal';
@@ -58,7 +59,7 @@ export default function HomePage() {
 
   // Dynamic API state loading
   const [blocks, setBlocks] = useState(blocksData);
-  const [plots, setPlots] = useState(plotInventoryData);
+  const [plots, setPlots] = useState<PlotItem[]>([]);
 
   React.useEffect(() => {
     fetchBlocks().then(data => setBlocks(data)).catch(console.error);
@@ -77,6 +78,8 @@ export default function HomePage() {
       window.removeEventListener('faisal_gallery_updated', syncGallery);
     };
   }, []);
+
+  const [selectedPlotForInquiry, setSelectedPlotForInquiry] = useState<{ block: string; plot: string; interest: string } | null>(null);
 
   // Lead Form State
   const [leadName, setLeadName] = useState('');
@@ -1069,6 +1072,182 @@ export default function HomePage() {
             containerHeightClass="h-[480px] sm:h-[520px] lg:h-[560px]"
           />
         </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 6.2 — VERIFIED PLOTS FOR SALE (LIVE INVENTORY)    */}
+      {/* ========================================================= */}
+      <section id="plots-for-sale" className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
+
+          {/* Section Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-slate-200 pb-6 text-center lg:text-left">
+            <ScrollReveal direction="up" delay={50} className="space-y-2 max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100/80 text-[#7b002c] text-xs font-bold uppercase tracking-widest border border-rose-200">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#7b002c]" />
+                <span>Verified Legal Inventory & Resale Files</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight leading-tight">
+                Plots for Sale in Faisal Hills
+              </h2>
+              <p className="text-slate-600 text-xs sm:text-sm font-sans leading-relaxed">
+                Explore authentic available residential & commercial plots across all sectors. Inspect real-time market valuations, dimensions, facing views, and connect directly with verified sales desks.
+              </p>
+            </ScrollReveal>
+
+            {/* Top Right Action Link */}
+            <ScrollReveal direction="up" delay={150} className="flex flex-wrap items-center justify-center lg:justify-end gap-3 shrink-0">
+              <Link
+                href="/plots"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 group"
+              >
+                <span>View Complete Plot Directory</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </ScrollReveal>
+          </div>
+
+          {/* Plot Inventory Card Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {plots.slice(0, 8).map((plot, idx) => (
+              <ScrollReveal key={plot.id || idx} direction="up" delay={idx * 60} className="h-full">
+                <div className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full hover:-translate-y-1">
+                  
+                  {/* Plot Image / Map Preview (Clickable to navigate to Plot Inventory Page) */}
+                  <Link href="/plots" className="relative w-full h-44 overflow-hidden bg-slate-900 block cursor-pointer group/img">
+                    <img
+                      src={plot.image || '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'}
+                      alt={`${plot.size} Plot in ${plot.blockName} Faisal Hills`}
+                      className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                    {/* Plot Number Badge if available */}
+                    {plot.plotNumber && (
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-xs text-white text-[11px] font-bold border border-white/20">
+                          #{plot.plotNumber}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Bottom Info on Image: Price & Trend */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
+                          Market Price
+                        </span>
+                        <span className="font-serif text-lg font-bold text-white tracking-tight">
+                          {formatPlotPrice(plot.price, plot.priceFormatted)}
+                        </span>
+                      </div>
+                      {plot.priceHistoryTrend && (
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/60 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                          <TrendingUp className="w-3 h-3" />
+                          <span>{plot.priceHistoryTrend.split(' ')[0]}</span>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Card Content Body */}
+                  <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
+                        <span className="font-semibold text-slate-800">{plot.blockName}</span>
+                        {plot.facing && (
+                          <>
+                            <span>•</span>
+                            <span className="text-slate-600 truncate">{plot.facing}</span>
+                          </>
+                        )}
+                      </div>
+
+                      <Link href={`/plots/${plot.id}`} className="block group/title">
+                        <h3 className="font-serif font-bold text-base text-slate-900 group-hover/title:text-[#7b002c] transition-colors leading-tight">
+                          {plot.size} Plot
+                        </h3>
+                      </Link>
+
+                      {/* Dimensions Badge */}
+                      {plot.dimensions && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                            📏 {plot.dimensions}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch gap-2">
+                      <Link
+                        href={`/plots/${plot.id}`}
+                        className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 group/btn"
+                      >
+                        <span>View Details</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover/btn:translate-x-0.5 transition-transform" />
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedPlotForInquiry({
+                            block: plot.blockName,
+                            plot: plot.plotNumber || plot.size,
+                            interest: `${plot.blockName} - ${plot.size} (${plot.plotNumber || 'General'})`
+                          });
+                          setIsLeadModalOpen(true);
+                        }}
+                        className="flex-1 py-2 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 text-white" />
+                        <span>Inquire / Book</span>
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Bottom Banner with Consultation Prompt */}
+          <div className="bg-gradient-to-r from-[#4c0215] to-[#7b002c] rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center md:text-left">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold">
+                Looking for a Specific Plot Number or Corner Position?
+              </h3>
+              <p className="text-white/80 text-xs sm:text-sm font-sans max-w-xl">
+                Our sales desk maintains exclusive direct-owner resale files and official developer allocation plots across all blocks.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+              <a
+                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20looking%20for%20available%20plots%20for%20sale%20in%20Faisal%20Hills."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>WhatsApp Sales Desk</span>
+              </a>
+
+              <Link
+                href="/plots"
+                className="px-6 py-3 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              >
+                <span>All Plots Directory</span>
+                <ArrowRight className="w-4 h-4 text-[#7b002c]" />
+              </Link>
+            </div>
+          </div>
+
+        </div>
       </section>
 
       {/* ========================================================= */}
@@ -2128,7 +2307,16 @@ export default function HomePage() {
       </section>
 
       {/* Booking Lead Modal */}
-      <LeadModal isOpen={isLeadModalOpen} onClose={() => setIsLeadModalOpen(false)} />
+      <LeadModal
+        isOpen={isLeadModalOpen}
+        onClose={() => {
+          setIsLeadModalOpen(false);
+          setSelectedPlotForInquiry(null);
+        }}
+        defaultBlock={selectedPlotForInquiry?.block || ''}
+        defaultPlot={selectedPlotForInquiry?.plot || ''}
+        interest={selectedPlotForInquiry?.interest || ''}
+      />
 
       {/* Map Download Lead Form Modal */}
       <MapDownloadModal isOpen={isMapDownloadModalOpen} onClose={() => setIsMapDownloadModalOpen(false)} />

@@ -222,27 +222,101 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 4. Seed Plots
+        // 4. Seed Plots (Comprehensive standard inventory across all 6 blocks + existing listings)
+        $standardResidentialInventory = [
+            // Block A
+            ['id' => 'plot-a-5m', 'plot_number' => 'A-5M', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => '25 × 50 ft', 'price' => null, 'display_order' => 1],
+            ['id' => 'plot-a-8m', 'plot_number' => 'A-8M', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => '30 × 60 ft', 'price' => null, 'display_order' => 2],
+            ['id' => 'plot-a-10m', 'plot_number' => 'A-10M', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => '35 × 70 ft', 'price' => null, 'display_order' => 3],
+            ['id' => 'plot-a-14m', 'plot_number' => 'A-14M', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => '40 × 80 ft', 'price' => null, 'display_order' => 4],
+            ['id' => 'plot-a-1k', 'plot_number' => 'A-1K', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => '50 × 90 ft', 'price' => null, 'display_order' => 5],
+            ['id' => 'plot-a-2k-1', 'plot_number' => 'A-2K-75', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '2 Kanal', 'dimensions' => '75 × 120 ft', 'price' => null, 'display_order' => 6],
+            ['id' => 'plot-a-2k-2', 'plot_number' => 'A-2K-80', 'block_slug' => 'block-a', 'block_name' => 'Block A', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '2 Kanal', 'dimensions' => '80 × 120 ft', 'price' => null, 'display_order' => 7],
+
+            // Block B
+            ['id' => 'plot-b-5m', 'plot_number' => 'B-5M', 'block_slug' => 'block-b', 'block_name' => 'Block B', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => '25 × 50 ft', 'price' => null, 'display_order' => 8],
+            ['id' => 'plot-b-8m', 'plot_number' => 'B-8M', 'block_slug' => 'block-b', 'block_name' => 'Block B', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => '30 × 60 ft', 'price' => null, 'display_order' => 9],
+            ['id' => 'plot-b-10m', 'plot_number' => 'B-10M', 'block_slug' => 'block-b', 'block_name' => 'Block B', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => '35 × 70 ft', 'price' => null, 'display_order' => 10],
+            ['id' => 'plot-b-14m', 'plot_number' => 'B-14M', 'block_slug' => 'block-b', 'block_name' => 'Block B', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => '40 × 80 ft', 'price' => null, 'display_order' => 11],
+            ['id' => 'plot-b-1k', 'plot_number' => 'B-1K', 'block_slug' => 'block-b', 'block_name' => 'Block B', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => '50 × 90 ft', 'price' => null, 'display_order' => 12],
+
+            // Block C
+            ['id' => 'plot-c-5m', 'plot_number' => 'C-5M', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => '25 × 50 ft', 'price' => null, 'display_order' => 13],
+            ['id' => 'plot-c-8m-1', 'plot_number' => 'C-8M-30', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => '30 × 60 ft', 'price' => null, 'display_order' => 14],
+            ['id' => 'plot-c-8m-2', 'plot_number' => 'C-8M-40', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => '40 × 60 ft', 'price' => null, 'display_order' => 15],
+            ['id' => 'plot-c-10m-1', 'plot_number' => 'C-10M-35', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => '35 × 70 ft', 'price' => null, 'display_order' => 16],
+            ['id' => 'plot-c-10m-2', 'plot_number' => 'C-10M-40', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => '40 × 70 ft', 'price' => null, 'display_order' => 17],
+            ['id' => 'plot-c-14m', 'plot_number' => 'C-14M', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => '40 × 80 ft', 'price' => null, 'display_order' => 18],
+            ['id' => 'plot-c-1k', 'plot_number' => 'C-1K', 'block_slug' => 'block-c', 'block_name' => 'Block C', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => '50 × 90 ft', 'price' => null, 'display_order' => 19],
+
+            // Block D
+            ['id' => 'plot-d-5m', 'plot_number' => 'D-5M', 'block_slug' => 'block-d', 'block_name' => 'Block D', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 20],
+            ['id' => 'plot-d-8m', 'plot_number' => 'D-8M', 'block_slug' => 'block-d', 'block_name' => 'Block D', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 21],
+            ['id' => 'plot-d-10m', 'plot_number' => 'D-10M', 'block_slug' => 'block-d', 'block_name' => 'Block D', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 22],
+            ['id' => 'plot-d-14m', 'plot_number' => 'D-14M', 'block_slug' => 'block-d', 'block_name' => 'Block D', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 23],
+            ['id' => 'plot-d-1k', 'plot_number' => 'D-1K', 'block_slug' => 'block-d', 'block_name' => 'Block D', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 24],
+
+            // Executive Block
+            ['id' => 'plot-exe-5m', 'plot_number' => 'EXE-5M', 'block_slug' => 'executive-block', 'block_name' => 'Executive Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 25],
+            ['id' => 'plot-exe-8m', 'plot_number' => 'EXE-8M', 'block_slug' => 'executive-block', 'block_name' => 'Executive Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 26],
+            ['id' => 'plot-exe-10m', 'plot_number' => 'EXE-10M', 'block_slug' => 'executive-block', 'block_name' => 'Executive Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 27],
+            ['id' => 'plot-exe-14m', 'plot_number' => 'EXE-14M', 'block_slug' => 'executive-block', 'block_name' => 'Executive Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 28],
+            ['id' => 'plot-exe-1k', 'plot_number' => 'EXE-1K', 'block_slug' => 'executive-block', 'block_name' => 'Executive Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 29],
+
+            // Prime Block
+            ['id' => 'plot-prime-3.5m', 'plot_number' => 'PR-3.5M', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '3.5 Marla', 'dimensions' => '20 × 40 ft', 'price' => null, 'display_order' => 30],
+            ['id' => 'plot-prime-5m', 'plot_number' => 'PR-5M', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '5 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 31],
+            ['id' => 'plot-prime-8m', 'plot_number' => 'PR-8M', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '8 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 32],
+            ['id' => 'plot-prime-10m', 'plot_number' => 'PR-10M', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '10 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 33],
+            ['id' => 'plot-prime-14m', 'plot_number' => 'PR-14M', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '14 Marla', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 34],
+            ['id' => 'plot-prime-1k', 'plot_number' => 'PR-1K', 'block_slug' => 'prime-block', 'block_name' => 'Prime Block', 'property_type' => 'Residential', 'category' => 'Residential', 'size' => '1 Kanal', 'dimensions' => 'Dimension not provided', 'price' => null, 'display_order' => 35],
+        ];
+
+        foreach ($standardResidentialInventory as $item) {
+            Plot::updateOrCreate(
+                ['id' => $item['id']],
+                [
+                    'plot_number' => $item['plot_number'],
+                    'block_slug' => $item['block_slug'],
+                    'block_name' => $item['block_name'],
+                    'property_type' => $item['property_type'],
+                    'category' => $item['category'],
+                    'size' => $item['size'],
+                    'dimensions' => $item['dimensions'],
+                    'price' => $item['price'],
+                    'price_unit' => 'Total Price',
+                    'price_formatted' => $item['price'] ? 'PKR ' . $item['price'] : 'Contact for Price',
+                    'status' => 'Available',
+                    'facing' => 'Standard',
+                    'display_order' => $item['display_order']
+                ]
+            );
+        }
+
+        // Additional existing sample plot listings
         if (isset($data['plotInventoryData'])) {
-            foreach ($data['plotInventoryData'] as $plot) {
+            foreach ($data['plotInventoryData'] as $idx => $plot) {
                 Plot::updateOrCreate(
                     ['id' => $plot['id']],
                     [
                         'plot_number' => $plot['plotNumber'],
                         'block_slug' => $plot['blockSlug'],
                         'block_name' => $plot['blockName'],
+                        'property_type' => $plot['category'] === 'Commercial' ? 'Commercial' : 'Residential',
                         'category' => $plot['category'],
                         'size' => $plot['size'],
                         'dimensions' => $plot['dimensions'],
                         'price' => $plot['price'],
+                        'price_unit' => 'Total Price',
                         'price_formatted' => $plot['priceFormatted'] ?? null,
                         'price_history_trend' => $plot['priceHistoryTrend'] ?? null,
                         'status' => $plot['status'] ?? 'Available',
-                        'facing' => $plot['facing'],
+                        'facing' => $plot['facing'] ?? 'Standard',
                         'map_coords' => $plot['mapCoords'] ?? null,
                         'features' => $plot['features'] ?? [],
                         'description' => $plot['description'] ?? null,
                         'image' => $plot['image'] ?? null,
+                        'display_order' => 50 + $idx
                     ]
                 );
             }

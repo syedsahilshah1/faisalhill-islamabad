@@ -202,14 +202,7 @@ export default function BlockB1ExtensionContent() {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [b1Plots, setB1Plots] = useState<PlotItem[]>(() =>
-    plotInventoryData.filter(
-      (p) =>
-        p.blockSlug === 'block-b1-extension' ||
-        p.blockSlug === 'b-1-extension' ||
-        (p.blockName && (p.blockName.toLowerCase().includes('b1') || p.blockName.toLowerCase().includes('b-1')))
-    )
-  );
+  const [b1Plots, setB1Plots] = useState<PlotItem[]>([]);
   const [selectedPlotSizeFilter, setSelectedPlotSizeFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla'>('all');
   const [formData, setFormData] = useState({ name: '', phone: '', size: '5 Marla', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);

@@ -99,3 +99,12 @@ You can use the **Quick Demo Login** button on the screen for instant access.
 
 ### API Integration Client (`frontend/src/data/faisalHillsData.ts`)
 Contains the complete list of async functions calling Laravel API endpoints (e.g. `fetchBlocks`, `fetchPlots`, `submitLead`, `adminLogin`, `apiUpdatePlot`, `apiUpdateSeo`, etc.). Includes safe local fallback objects to ensure the site compiles cleanly even if the backend is temporarily offline.
+
+
+{price in square feet}
+sqFeet: plot.size.includes('5 Marla') ? '1,125 Sq. Ft' :
+        plot.size.includes('8 Marla') ? '1,800 Sq. Ft' :
+        plot.size.includes('10 Marla') ? '2,250 Sq. Ft' :
+        plot.size.includes('14 Marla') ? '3,150 Sq. Ft' :
+        plot.size.includes('1 Kanal') ? '4,500 Sq. Ft' :
+        plot.size.includes('4 Marla') ? '900 Sq. Ft' : 'Standard Area',

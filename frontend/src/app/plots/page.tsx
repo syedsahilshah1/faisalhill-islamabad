@@ -41,101 +41,6 @@ import {
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-// Additional commercial & residential mock plot items to ensure all blocks and sizes are richly represented
-const EXTENDED_PLOT_INVENTORY: PlotItem[] = [
-  ...plotInventoryData,
-  {
-    id: "plot-com-01",
-    plotNumber: "EXE-COM-014",
-    blockSlug: "executive-block",
-    blockName: "Executive Block",
-    category: "Commercial",
-    size: "8 Marla",
-    dimensions: "40 × 45 ft",
-    price: 68000000,
-    priceFormatted: "PKR 6.80 Crore",
-    priceHistoryTrend: "+22.4% capital growth",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 20, y: 30 },
-    features: ["225ft Grand Boulevard Frontage", "B+G+8 Storeys Approved", "Underground 3-Phase Utilities"],
-    description: "Prestigious 8 Marla commercial plaza plot on Executive Main Boulevard directly facing GT Road entrance.",
-    image: "/images/commercial/flagship-store.jpg"
-  },
-  {
-    id: "plot-com-02",
-    plotNumber: "C-COM-302",
-    blockSlug: "block-c",
-    blockName: "Block C",
-    category: "Commercial",
-    size: "10 Marla",
-    dimensions: "45 × 50 ft",
-    price: 85000000,
-    priceFormatted: "PKR 8.50 Crore",
-    priceHistoryTrend: "+25.0% rapid growth",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 50, y: 40 },
-    features: ["Block C Civic Center Hub", "B+G+9 Approved High-Rise", "80ft Wide Parking Apron"],
-    description: "Centrally located 10 Marla commercial plot inside Block C mega civic center.",
-    image: "/images/commercial/food-court.jpg"
-  },
-  {
-    id: "plot-com-03",
-    plotNumber: "A-COM-108",
-    blockSlug: "block-a",
-    blockName: "Block A",
-    category: "Commercial",
-    size: "5 Marla",
-    dimensions: "30 × 37.5 ft",
-    price: 28500000,
-    priceFormatted: "PKR 2.85 Crore",
-    priceHistoryTrend: "+16.5% rental yield",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 40, y: 45 },
-    features: ["1200+ Settled Families", "Immediate Construction", "Corner Dual Road Access"],
-    description: "Established 5 Marla commercial plot in settled Block A, perfect for supermarket or medical clinic.",
-    image: "/images/commercial/hypermarket.jpg"
-  },
-  {
-    id: "plot-com-04",
-    plotNumber: "PRM-COM-077",
-    blockSlug: "prime-block",
-    blockName: "Prime Block",
-    category: "Commercial",
-    size: "5.33 Marla",
-    dimensions: "40 × 30 ft",
-    price: 36000000,
-    priceFormatted: "PKR 3.60 Crore",
-    priceHistoryTrend: "+28.0% pre-launch ROI",
-    status: "Available",
-    facing: "Corner",
-    mapCoords: { x: 75, y: 25 },
-    features: ["4-Year Easy Installments", "Direct M-1 Motorway Link", "Corner 60ft Boulevard"],
-    description: "Exclusive 5.33 Marla commercial launch plot in VIP Prime Block on 4-year quarterly installments.",
-    image: "/images/commercial/tech-gadgets.jpg"
-  },
-  {
-    id: "plot-com-05",
-    plotNumber: "FJ-TOWER-G09",
-    blockSlug: "faisal-jewel-islamabad",
-    blockName: "Faisal Jewel",
-    category: "Commercial",
-    size: "12 Marla",
-    dimensions: "1,850 Sq Ft Showroom",
-    price: 115000000,
-    priceFormatted: "PKR 11.50 Crore",
-    priceHistoryTrend: "+32.0% landmark ROI",
-    status: "Available",
-    facing: "Main Boulevard",
-    mapCoords: { x: 15, y: 22 },
-    features: ["27-Storey Skyscraper Showroom", "Double Height Glass Facade", "5-Star Brand Management"],
-    description: "Iconic flagship showroom unit in 27-storey Faisal Jewel Tower at the gateway of Faisal Hills.",
-    image: "/faisal-jewel-tower.jpg"
-  }
-];
-
 function PlotSearchContent() {
   const searchParams = useSearchParams();
   const querySize = searchParams.get('size');
@@ -153,7 +58,8 @@ function PlotSearchContent() {
   const [activePlotForModal, setActivePlotForModal] = useState<PlotItem | null>(null);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(EXTENDED_PLOT_INVENTORY);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+  const [isLoadingPlots, setIsLoadingPlots] = useState(true);
 
   // Sync with URL query parameters when navigating from other pages
   useEffect(() => {
@@ -165,21 +71,17 @@ function PlotSearchContent() {
   useEffect(() => {
     fetchPlots()
       .then((data) => {
-        if (data && data.length > 0) {
-          const existingIds = new Set(data.map((p) => p.id));
-          const extraDefaults = EXTENDED_PLOT_INVENTORY.filter((p) => !existingIds.has(p.id));
-          setAllPlots([...data, ...extraDefaults]);
-        }
+        setAllPlots(data || []);
+        setIsLoadingPlots(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setIsLoadingPlots(false);
+      });
 
     const handlePlotsSync = () => {
       fetchPlots().then((data) => {
-        if (data && data.length > 0) {
-          const existingIds = new Set(data.map((p) => p.id));
-          const extraDefaults = EXTENDED_PLOT_INVENTORY.filter((p) => !existingIds.has(p.id));
-          setAllPlots([...data, ...extraDefaults]);
-        }
+        setAllPlots(data || []);
       }).catch(console.error);
     };
 
@@ -217,8 +119,8 @@ function PlotSearchContent() {
         if (selectedStatus !== 'all') {
           if (selectedStatus === 'available' && plot.status !== 'Available') return false;
           if (selectedStatus === 'commercial' && plot.category !== 'Commercial') return false;
-          if (selectedStatus === 'boulevard' && !plot.facing.toLowerCase().includes('boulevard')) return false;
-          if (selectedStatus === 'corner' && !plot.facing.toLowerCase().includes('corner')) return false;
+          if (selectedStatus === 'boulevard' && !plot.facing?.toLowerCase().includes('boulevard')) return false;
+          if (selectedStatus === 'corner' && !plot.facing?.toLowerCase().includes('corner')) return false;
         }
 
         // Search query
@@ -237,9 +139,11 @@ function PlotSearchContent() {
         return true;
       })
       .sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price;
-        if (sortBy === 'price-desc') return b.price - a.price;
-        if (sortBy === 'name-asc') return a.plotNumber.localeCompare(b.plotNumber);
+        const priceA = a.price || 0;
+        const priceB = b.price || 0;
+        if (sortBy === 'price-asc') return priceA - priceB;
+        if (sortBy === 'price-desc') return priceB - priceA;
+        if (sortBy === 'name-asc') return (a.plotNumber || '').localeCompare(b.plotNumber || '');
         return 0; // featured default
       });
   }, [allPlots, selectedBlock, selectedCategory, selectedSize, selectedStatus, searchQuery, sortBy]);
@@ -515,7 +419,7 @@ function PlotSearchContent() {
                 <div className="space-y-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Highlights</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {plot.features.slice(0, 2).map((feat, fIdx) => (
+                    {(plot.features || []).slice(0, 2).map((feat, fIdx) => (
                       <span
                         key={fIdx}
                         className="text-[11px] bg-rose-50 text-[#7b002c] border border-rose-100/80 px-2 py-0.5 rounded-md line-clamp-1"
@@ -774,7 +678,7 @@ function PlotSearchContent() {
                 <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                   <h4 className="font-serif font-bold text-sm text-slate-900">Key Plot Amenities</h4>
                   <div className="space-y-2">
-                    {activePlotForModal.features.map((feat, idx) => (
+                    {(activePlotForModal.features || []).map((feat, idx) => (
                       <div key={idx} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200/60 shadow-2xs">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span className="text-slate-800 font-semibold">{feat}</span>

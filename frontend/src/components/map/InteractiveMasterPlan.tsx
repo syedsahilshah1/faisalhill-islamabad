@@ -5,7 +5,7 @@ import {
   ZoomIn, ZoomOut, RefreshCw, Search, MapPin, 
   Eye, MessageSquare, ShieldCheck, Filter, ArrowRight, Star, FileText
 } from 'lucide-react';
-import { blocksData, plotInventoryData, PlotItem } from '@/data/faisalHillsData';
+import { blocksData, fetchPlots, plotInventoryData, PlotItem } from '@/data/faisalHillsData';
 import LeadModal from '../ui/LeadModal';
 import MapDownloadModal from '../ui/MapDownloadModal';
 
@@ -51,48 +51,26 @@ const commercialHotspots: CommercialHotspot[] = [
     suitability: 'Corporate branches, lifestyle showrooms, restaurants'
   },
   {
-    id: 'block-a-hub',
-    name: 'Block A Main Commercial Hub',
-    blockName: 'Block A',
-    blockSlug: 'block-a',
-    x: 35,
-    y: 25,
-    category: 'Retail Sector Hub',
-    description: 'Fully developed retail zone near the main gate. Features branch banks, family marts, pharmacies, and the Grand Mosque.',
-    suitability: 'Pharmacies, supermarkets, local clinics, retail shops'
-  },
-  {
-    id: 'hills-walk-strip',
-    name: 'Hills Walk Promenade',
-    blockName: 'Block B / C',
-    blockSlug: 'block-c',
-    x: 55,
-    y: 45,
-    category: 'Pedestrian Promenade',
-    description: 'European-style open-air pedestrian commercial corridor lined with retail brands, outdoor cafes, and central stream features.',
-    suitability: 'Boutiques, open-air cafes, dessert parlors, corporate suites'
-  },
-  {
-    id: 'block-c-motorway',
-    name: 'Block C Commercial Zone',
+    id: 'hills-walk-arcade',
+    name: 'Hills Walk Commercial Arcade',
     blockName: 'Block C',
     blockSlug: 'block-c',
-    x: 75,
-    y: 30,
-    category: 'Growth Sector Commercial',
-    description: 'High-growth commercial sector positioned near the M-1 Motorway corridor and central avenue junctions.',
-    suitability: 'Corporate offices, medium-scale retail, rental plazas'
+    x: 52,
+    y: 45,
+    category: 'Retail & Dining',
+    description: 'Pedestrian-friendly luxury shopping and dining strip featuring multinational brands, alfresco cafes, and rooftop dining spaces.',
+    suitability: 'Brand retail, cafes, corporate offices, restaurants'
   },
   {
-    id: 'block-d-commercial',
-    name: 'Block D Retail Pocket',
-    blockName: 'Block D',
-    blockSlug: 'block-d',
-    x: 88,
-    y: 70,
-    category: 'Suburban Retail',
-    description: 'Fresh plot layout serving the western wing residential blocks with essential daily shops and convenience retail.',
-    suitability: 'Grocery stores, laundry, local cafes, service shops'
+    id: 'prime-club-commercial',
+    name: 'Prime Block Country Club & Retail',
+    blockName: 'Prime Block',
+    blockSlug: 'prime-block',
+    x: 78,
+    y: 28,
+    category: 'Luxury Leisure & Retail',
+    description: 'High-elevation luxury country club featuring infinity pool, wellness spa, sports academy, and boutique retail stores.',
+    suitability: 'Golf facilities, luxury dining, boutique wellness'
   }
 ];
 
@@ -101,12 +79,13 @@ export default function InteractiveMasterPlan({
   isFullscreen = false,
   defaultViewMode = 'plots'
 }: InteractiveMasterPlanProps) {
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const [zoomLevel, setZoomLevel] = useState<number>(1.0);
   const [selectedBlockFilter, setSelectedBlockFilter] = useState<string>(initialBlockSlug || 'all');
   const [searchPlotNumber, setSearchPlotNumber] = useState<string>('');
   const [viewMode, setViewMode] = useState<'plots' | 'commercial'>(defaultViewMode);
   
-  const [activePlot, setActivePlot] = useState<PlotItem | null>(plotInventoryData[0] || null);
+  const [plots, setPlots] = useState<PlotItem[]>([]);
+  const [activePlot, setActivePlot] = useState<PlotItem | null>(null);
   const [activeHotspot, setActiveHotspot] = useState<CommercialHotspot | null>(commercialHotspots[0]);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -115,14 +94,31 @@ export default function InteractiveMasterPlan({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  React.useEffect(() => {
+    fetchPlots().then(data => {
+      if (data && data.length > 0) {
+        setPlots(data);
+        setActivePlot(data[0]);
+      }
+    }).catch(console.error);
+
+    const handleSync = () => {
+      fetchPlots().then(data => {
+        if (data && data.length > 0) setPlots(data);
+      }).catch(console.error);
+    };
+    window.addEventListener('faisal_plots_updated', handleSync);
+    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+  }, []);
+
   // Filter plots based on block filter and plot search query
   const filteredPlots = useMemo(() => {
-    return plotInventoryData.filter(plot => {
+    return plots.filter(plot => {
       const matchesBlock = selectedBlockFilter === 'all' || plot.blockSlug === selectedBlockFilter;
       const matchesNumber = searchPlotNumber === '' || (plot.plotNumber && plot.plotNumber.toLowerCase().includes(searchPlotNumber.toLowerCase()));
       return matchesBlock && matchesNumber;
     });
-  }, [selectedBlockFilter, searchPlotNumber]);
+  }, [plots, selectedBlockFilter, searchPlotNumber]);
 
   // Filter hotspots based on block filter
   const filteredHotspots = useMemo(() => {
@@ -341,28 +337,32 @@ export default function InteractiveMasterPlan({
             />
 
             {/* View Mode 1: Plot Markers Overlay */}
-            {viewMode === 'plots' && filteredPlots.map(plot => (
-              <button
-                key={plot.id}
-                onClick={() => setActivePlot(plot)}
-                style={{ left: `${plot.mapCoords.x}%`, top: `${plot.mapCoords.y}%` }}
-                className="absolute -translate-x-1/2 -translate-y-1/2 group pointer-events-auto cursor-pointer z-20 outline-none"
-              >
-                {/* Glowing Pulse Ring for active plot */}
-                {activePlot?.id === plot.id && (
-                  <div className="absolute inset-0 w-8 h-8 -left-3.5 -top-3.5 rounded-full bg-emerald-400/50 animate-ping" />
-                )}
-                
-                {/* Dot Marker */}
-                <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center border text-[6px] font-bold shadow-lg transition-transform ${
-                  activePlot?.id === plot.id 
-                    ? 'bg-emerald-400 border-white text-slate-950 scale-125' 
-                    : 'bg-[#7b002c] border-[#7b002c]/40 text-white hover:bg-emerald-500 hover:scale-110'
-                }`}>
-                  P
-                </div>
-              </button>
-            ))}
+            {viewMode === 'plots' && filteredPlots.map(plot => {
+              const x = plot.mapCoords?.x ?? 50;
+              const y = plot.mapCoords?.y ?? 50;
+              return (
+                <button
+                  key={plot.id}
+                  onClick={() => setActivePlot(plot)}
+                  style={{ left: `${x}%`, top: `${y}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 group pointer-events-auto cursor-pointer z-20 outline-none"
+                >
+                  {/* Glowing Pulse Ring for active plot */}
+                  {activePlot?.id === plot.id && (
+                    <div className="absolute inset-0 w-8 h-8 -left-3.5 -top-3.5 rounded-full bg-emerald-400/50 animate-ping" />
+                  )}
+                  
+                  {/* Dot Marker */}
+                  <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center border text-[6px] font-bold shadow-lg transition-transform ${
+                    activePlot?.id === plot.id 
+                      ? 'bg-emerald-400 border-white text-slate-950 scale-125' 
+                      : 'bg-[#7b002c] border-[#7b002c]/40 text-white hover:bg-emerald-500 hover:scale-110'
+                  }`}>
+                    P
+                  </div>
+                </button>
+              );
+            })}
 
             {/* View Mode 2: Commercial Hotspots Overlay */}
             {viewMode === 'commercial' && filteredHotspots.map(spot => (
@@ -430,7 +430,7 @@ export default function InteractiveMasterPlan({
                 <div className="space-y-1.5">
                   <span className="text-[10px] text-slate-400 uppercase font-bold block">Location Highlights:</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {activePlot.features.slice(0, 3).map((feat, idx) => (
+                    {(activePlot.features || []).slice(0, 3).map((feat, idx) => (
                       <span key={idx} className="bg-slate-800 border border-slate-700/50 px-2 py-0.5 rounded text-[10px] text-slate-300">
                         {feat}
                       </span>

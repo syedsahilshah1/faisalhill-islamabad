@@ -34,15 +34,24 @@ export default function PlotDetailPage() {
   const params = useParams();
   const plotId = params?.id as string;
 
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
-    fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+    fetchPlots()
+      .then(data => {
+        setAllPlots(data || []);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setIsLoading(false);
+      });
 
     const handleSync = () => {
-      fetchPlots().then(data => setAllPlots(data)).catch(console.error);
+      fetchPlots(true).then(data => setAllPlots(data || [])).catch(console.error);
     };
     window.addEventListener('faisal_plots_updated', handleSync);
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
@@ -50,16 +59,23 @@ export default function PlotDetailPage() {
 
   // Find the requested plot by id or slug or plot number
   const plot = allPlots.find(
-    p => p.id === plotId || p.plotNumber.toLowerCase() === plotId?.toLowerCase()
+    p => p.id === plotId || (p.plotNumber && p.plotNumber.toLowerCase() === plotId?.toLowerCase())
   );
 
-  if (!plot) {
-    // Fallback to first plot if not found or 404
-    const fallbackPlot = allPlots.find(p => p.id === 'plot-101') || allPlots[0];
-    if (!fallbackPlot) return notFound();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#7b002c] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-bold text-slate-600">Loading Plot Details...</span>
+        </div>
+      </div>
+    );
   }
 
   const currentPlot = plot || allPlots[0];
+  if (!currentPlot) return notFound();
+
   const blockInfo = blocksData.find(b => b.slug === currentPlot.blockSlug);
 
   // Similar plots in same block or category
