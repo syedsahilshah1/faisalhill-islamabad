@@ -252,7 +252,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         {/* Subtle Transparent Overlay for Maximum Image Visibility & Readable Text */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/50 to-slate-950/60" />
 
-        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pb-10 sm:pb-14">
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-24 sm:gap-16 lg:gap-12 items-center pb-10 sm:pb-14">
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
@@ -295,8 +295,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             </div>
 
 
-            {/* Quick Action CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            {/* Quick Action CTAs (Hidden on mobile, visible on desktop) */}
+            <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
               <a
                 href="tel:+923313339997"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
@@ -317,7 +317,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
           </div>
 
           {/* Right Column: Hero Quick Inquiry Form */}
-          <div className="lg:col-span-5 w-full">
+          <div className="lg:col-span-5 w-full pt-8 sm:pt-4 lg:pt-0">
             <BlockHeroInquiryForm blockName={block.name} blockSlug={block.slug} />
           </div>
 
@@ -1978,7 +1978,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                       
                       <div className="absolute top-3 left-3">
                         <span className="text-[8px] font-bold text-white bg-[#7b002c] border border-white/20 px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider">
-                          {ob.category === 'developed' ? 'Developed' : 'VIP Enclave'}
+                          {ob.category === 'developed' ? 'Developed' : '   Enclave'}
                         </span>
                       </div>
                     </div>

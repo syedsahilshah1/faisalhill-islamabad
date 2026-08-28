@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface ShowcaseItem {
   id: string;
@@ -88,6 +88,7 @@ interface ExpandingProjectsShowcaseProps {
   className?: string;
   roundedClass?: string;
   showPillsBar?: boolean;
+  autoPlayInterval?: number;
 }
 
 export default function ExpandingProjectsShowcase({
@@ -98,11 +99,14 @@ export default function ExpandingProjectsShowcase({
   containerHeightClass = 'h-[460px] sm:h-[500px] lg:h-[540px]',
   className = '',
   roundedClass = 'rounded-3xl',
-  showPillsBar = false
+  showPillsBar = false,
+  autoPlayInterval = 4000
 }: ExpandingProjectsShowcaseProps) {
   const [internalHoveredIndex, setInternalHoveredIndex] = useState<number | null>(defaultActiveIndex);
   const [internalMobileIndex, setInternalMobileIndex] = useState<number>(defaultActiveIndex);
+  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
 
+  const displayItems = Array.isArray(items) && items.length > 0 ? items : defaultFaisalHillsBlocks;
   const currentActive = activeIndex !== undefined ? activeIndex : (internalHoveredIndex ?? 0);
   const currentMobileIndex = activeIndex !== undefined ? activeIndex : internalMobileIndex;
 
@@ -112,11 +116,42 @@ export default function ExpandingProjectsShowcase({
     if (onActiveIndexChange) onActiveIndexChange(index);
   };
 
-  const displayItems = Array.isArray(items) && items.length > 0 ? items : defaultFaisalHillsBlocks;
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const nextIdx = (currentMobileIndex - 1 + displayItems.length) % displayItems.length;
+    handleSelectIndex(nextIdx);
+  };
+
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const nextIdx = (currentMobileIndex + 1) % displayItems.length;
+    handleSelectIndex(nextIdx);
+  };
+
+  // Auto-scroll Timer
+  useEffect(() => {
+    if (!isAutoPlaying || displayItems.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setInternalMobileIndex((prev) => {
+        const next = (prev + 1) % displayItems.length;
+        if (onActiveIndexChange) onActiveIndexChange(next);
+        return next;
+      });
+      setInternalHoveredIndex((prev) => ((prev ?? 0) + 1) % displayItems.length);
+    }, autoPlayInterval);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, displayItems.length, autoPlayInterval, onActiveIndexChange]);
+
   const currentMobileItem = displayItems[currentMobileIndex] || displayItems[0];
 
   return (
-    <div className={`w-full overflow-hidden ${roundedClass} border border-slate-200/80 shadow-xl bg-slate-950 ${className}`}>
+    <div
+      onMouseEnter={() => setIsAutoPlaying(false)}
+      onMouseLeave={() => setIsAutoPlaying(true)}
+      className={`w-full overflow-hidden ${roundedClass} border border-slate-200/80 shadow-xl bg-slate-950 ${className}`}
+    >
       
       {/* Optional In-Card Selector Pills Bar */}
       {showPillsBar && (
@@ -144,41 +179,89 @@ export default function ExpandingProjectsShowcase({
       )}
 
       {/* ========================================================= */}
-      {/* 1. MOBILE VIEW: Active Single Block Card                  */}
+      {/* 1. MOBILE VIEW: Auto-Cycling Active Block Card + Nav Arrows */}
       {/* ========================================================= */}
-      <div className="block md:hidden w-full p-4 select-none">
+      <div
+        className="block md:hidden w-full p-4 select-none relative"
+        onTouchStart={() => setIsAutoPlaying(false)}
+        onTouchEnd={() => setTimeout(() => setIsAutoPlaying(true), 5000)}
+      >
         {/* Selected Active Block Card */}
         {currentMobileItem && (
-          <Link
-            href={currentMobileItem.href || '#'}
-            className="relative w-full h-[360px] rounded-2xl overflow-hidden border border-white/20 shadow-xl group block transition-all duration-300 active:scale-[0.99]"
-          >
+          <div className="relative w-full h-[380px] rounded-2xl overflow-hidden border border-white/20 shadow-xl group">
             {/* Background Image */}
-            <div className="absolute inset-0 bg-slate-950">
+            <Link href={currentMobileItem.href || '#'} className="absolute inset-0 bg-slate-950 block">
               <img
                 key={currentMobileItem.id || currentMobileIndex}
                 src={currentMobileItem.image}
                 alt={currentMobileItem.title}
-                className="w-full h-full object-cover group-active:scale-105 transition-all duration-500"
+                className="w-full h-full object-cover transition-all duration-700"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
+            </Link>
+
+            {/* Top Bar: Sector Counter & Prev/Next Scrolling Buttons */}
+            <div className="absolute top-3.5 inset-x-3.5 z-20 flex items-center justify-between pointer-events-none">
+              <span className="px-3 py-1 bg-black/65 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/20 shadow-sm pointer-events-auto">
+                {currentMobileIndex + 1} / {displayItems.length} Sectors
+              </span>
+
+              {/* Scrolling Buttons */}
+              <div className="flex items-center gap-2 pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="w-8 h-8 rounded-full bg-black/70 backdrop-blur-md text-white border border-white/25 flex items-center justify-center shadow-md active:bg-[#7b002c] active:scale-90 transition-all cursor-pointer"
+                  aria-label="Previous Sector"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-8 h-8 rounded-full bg-black/70 backdrop-blur-md text-white border border-white/25 flex items-center justify-center shadow-md active:bg-[#7b002c] active:scale-90 transition-all cursor-pointer"
+                  aria-label="Next Sector"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Bottom Content */}
-            <div className="absolute inset-x-0 bottom-0 p-5 z-10 space-y-3">
-              <h3 className="font-serif font-bold text-2xl sm:text-3xl text-white tracking-normal drop-shadow-md">
+            {/* Bottom Content Area */}
+            <div className="absolute inset-x-0 bottom-0 p-5 z-10 space-y-3 pointer-events-none">
+              <h3 className="font-serif font-bold text-2xl text-white tracking-normal drop-shadow-md">
                 {currentMobileItem.title}
               </h3>
 
-              <div>
-                <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white bg-[#7b002c] hover:bg-[#9e1245] px-4 py-2.5 rounded-xl shadow-md border border-white/20 transition-all">
+              <div className="pointer-events-auto flex items-center justify-between gap-2 pt-1">
+                <Link
+                  href={currentMobileItem.href || '#'}
+                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white bg-[#7b002c] hover:bg-[#9e1245] px-4 py-2.5 rounded-xl shadow-md border border-white/20 transition-all active:scale-95"
+                >
                   <span>Explore {currentMobileItem.title}</span>
                   <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                {/* Dots Indicator */}
+                <div className="flex items-center gap-1.5">
+                  {displayItems.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      type="button"
+                      onClick={() => handleSelectIndex(dotIdx)}
+                      className={`h-2 rounded-full transition-all cursor-pointer ${
+                        currentMobileIndex === dotIdx
+                          ? 'w-5 bg-[#7b002c] shadow'
+                          : 'w-2 bg-white/40 hover:bg-white/70'
+                      }`}
+                      aria-label={`Slide ${dotIdx + 1}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         )}
       </div>
 

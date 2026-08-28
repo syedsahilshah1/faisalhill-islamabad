@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Send, CheckCircle2, MessageSquare, Sparkles, Phone, ShieldCheck } from 'lucide-react';
+import { Send, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { submitLead } from '@/data/faisalHillsData';
 
 interface BlockHeroInquiryFormProps {
@@ -69,10 +69,6 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
     <div className="bg-transparent p-0 sm:p-2 space-y-4 text-white relative">
 
       <div className="space-y-1 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider">
-          <Sparkles className="w-3 h-3 text-amber-400" />
-          <span>VIP Desk Inquiry</span>
-        </div>
         <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
           Get {blockName} Plot Rates
         </h3>
