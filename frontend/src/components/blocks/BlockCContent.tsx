@@ -383,9 +383,59 @@ const blockCFaqs = [
   }
 ];
 
-
+const blockCWhyInvestReasons = [
+  {
+    icon: Car,
+    title: 'Nearest M-1 Motorway Gateway',
+    desc: 'Block C enjoys direct proximity to the dedicated M-1 Motorway interchange, enabling swift 20-minute commutes to Islamabad Zero Point and the airport.',
+    bg: 'bg-rose-50',
+    text: 'text-[#7b002c]',
+    border: 'border-rose-100'
+  },
+  {
+    icon: ShoppingBag,
+    title: 'Hills Walk Commercial Hub',
+    desc: 'Walking-distance access to the premier Hills Walk lifestyle promenade ensures high tenant desirability, strong rental yields, and retail vibrancy.',
+    bg: 'bg-amber-50',
+    text: 'text-amber-700',
+    border: 'border-amber-100'
+  },
+  {
+    icon: Droplets,
+    title: 'Active RO Water Plant',
+    desc: 'Unlike many competing developments, Block C has fully delivered reverse-osmosis filtration plants providing continuous, pristine potable drinking water.',
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    border: 'border-emerald-100'
+  },
+  {
+    icon: Compass,
+    title: 'Elevated Margalla Vistas',
+    desc: 'Natural valley breezes and unblocked views of the Margalla mountain range make Block C homes prime candidates for luxury double-unit villas.',
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    border: 'border-purple-100'
+  },
+  {
+    icon: ShieldCheck,
+    title: '100% RDA Approved & Clear NOC',
+    desc: 'Full Rawalpindi Development Authority planning permission with zero litigation risk and transparent biometric deed transfers at the Zedem head office.',
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    border: 'border-blue-100'
+  },
+  {
+    icon: TrendingUp,
+    title: 'High Liquidity & Fast Resale',
+    desc: 'The 5 Marla and 8 Marla cuts in Block C represent the most actively traded residential files in Faisal Hills with rapid turnaround and solid gains.',
+    bg: 'bg-rose-50',
+    text: 'text-[#7b002c]',
+    border: 'border-rose-100'
+  }
+];
 
 export default function BlockCContent() {
+  const [activeWhyInvestOption, setActiveWhyInvestOption] = useState<number | null>(0);
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla' | '14 Marla' | '1 Kanal' | 'Commercial'>('all');
@@ -1577,66 +1627,80 @@ export default function BlockCContent() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center border border-rose-100">
-              <Car className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Nearest M-1 Motorway Gateway</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Block C enjoys direct proximity to the dedicated M-1 Motorway interchange, enabling swift 20-minute commutes to Islamabad Zero Point and the airport.
-            </p>
-          </div>
+        {/* Mobile View: Sleek, Compact Interactive Accordion List */}
+        <div className="block sm:hidden space-y-2.5">
+          {blockCWhyInvestReasons.map((item, idx) => {
+            const isSelected = activeWhyInvestOption === idx;
+            const Icon = item.icon;
+            return (
+              <div
+                key={idx}
+                onClick={() => setActiveWhyInvestOption(isSelected ? null : idx)}
+                className={`rounded-2xl border transition-all cursor-pointer overflow-hidden ${
+                  isSelected
+                    ? 'bg-rose-50/50 border-[#7b002c]/40 shadow-xs'
+                    : 'bg-white border-slate-200/80 hover:bg-slate-50'
+                }`}
+              >
+                <div className="p-3.5 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 border ${
+                        isSelected
+                          ? 'bg-[#7b002c] text-white border-[#7b002c]'
+                          : `${item.bg} ${item.text} ${item.border}`
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <strong
+                      className={`font-semibold text-xs transition-colors truncate ${
+                        isSelected ? 'text-[#7b002c]' : 'text-slate-900'
+                      }`}
+                    >
+                      {item.title}
+                    </strong>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-slate-400 shrink-0 transform transition-transform duration-300 ${
+                      isSelected ? 'rotate-180 text-[#7b002c]' : ''
+                    }`}
+                  />
+                </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Hills Walk Commercial Hub</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Walking-distance access to the premier Hills Walk lifestyle promenade ensures high tenant desirability, strong rental yields, and retail vibrancy.
-            </p>
-          </div>
+                {isSelected && (
+                  <div className="px-3.5 pb-3.5 pt-0 text-xs text-slate-600 leading-relaxed font-sans border-t border-rose-100/70 mt-0.5 pt-2.5">
+                    {item.desc}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
-              <Droplets className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Active RO Water Plant</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Unlike many competing developments, Block C has fully delivered reverse-osmosis filtration plants providing continuous, pristine potable drinking water.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-100">
-              <Compass className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Elevated Margalla Vistas</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Natural valley breezes and unblocked views of the Margalla mountain range make Block C homes prime candidates for luxury double-unit villas.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">100% RDA Approved & Clear NOC</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              Full Rawalpindi Development Authority planning permission with zero litigation risk and transparent biometric deed transfers at the Zedem head office.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center border border-rose-100">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">High Liquidity & Fast Resale</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-sans">
-              The 5 Marla and 8 Marla cuts in Block C represent the most actively traded residential files in Faisal Hills with rapid turnaround and solid gains.
-            </p>
-          </div>
+        {/* Desktop/Tablet View: Clean 6-Card Grid */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blockCWhyInvestReasons.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={idx}
+                className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3"
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl ${item.bg} ${item.text} flex items-center justify-center border ${item.border}`}
+                >
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h3 className="font-serif font-bold text-lg text-slate-900">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  {item.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </section>
 

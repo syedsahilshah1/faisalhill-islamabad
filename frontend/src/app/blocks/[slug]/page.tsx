@@ -290,13 +290,13 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             )}
 
             <div className="space-y-3">
-              {heroSubtitle && (
+              {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && (
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl text-white leading-tight">
                 {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
               </h1>
-              {heroDesc && (
+              {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
                   {heroDesc}
                 </p>
@@ -305,24 +305,26 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
 
             {/* Quick Action CTAs (Hidden on mobile, visible on desktop) */}
-            <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
-              <a
-                href="tel:+923313339997"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
-              >
-                <PhoneCall className="w-4 h-4 text-white" />
-                <span>Call Sales Desk</span>
-              </a>
-              <a
-                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
-              >
-                <MessageSquare className="w-4 h-4 text-white" />
-                <span>Chat on WhatsApp</span>
-              </a>
-            </div>
+            {block.slug !== 'block-d' && block.slug !== 'block-b' && (
+              <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="tel:+923313339997"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+                >
+                  <PhoneCall className="w-4 h-4 text-white" />
+                  <span>Call Sales Desk</span>
+                </a>
+                <a
+                  href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
+                >
+                  <MessageSquare className="w-4 h-4 text-white" />
+                  <span>Chat on WhatsApp</span>
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Hero Quick Inquiry Form */}

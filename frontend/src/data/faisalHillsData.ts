@@ -237,7 +237,7 @@ export const blocksData: BlockInfo[] = [
     id: "block-b",
     slug: "block-b",
     name: "Block B",
-    subtitle: "Serene Residential Sector with Scenic Hill Views",
+    subtitle: "",
     category: "developed",
     status: "Possession Available",
     nocStatus: "RDA Approved",
@@ -365,17 +365,17 @@ export const blocksData: BlockInfo[] = [
     id: "block-d",
     slug: "block-d",
     name: "Block D",
-    subtitle: "Tranquil Residential Sanctuary with Natural Springs",
+    subtitle: "Tranquil Residential Sanctuary & Serene Suburban Living",
     category: "developed",
     status: "Development 85% Complete",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
-    description: "Faisal Hills Block D is a tranquil suburban sector situated on the western wing next to Block C. Designed around natural green topography and natural springs, Block D offers fresh plot inventory at entry-level prices with high appreciation upside near the proposed medical complex.",
+    description: "Faisal Hills Block D is a tranquil suburban sector situated on the western wing next to Block C. Designed around lush green topography and open landscapes, Block D offers fresh plot inventory at entry-level prices with high appreciation upside near the proposed medical complex.",
     locationDetails: "Located on the western wing of Faisal Hills society.",
     highlights: [
       "Quiet Western Wing Suburban Layout",
       "Fresh Plot Inventory with Easy Installment Potential",
-      "Lush Parks, Springs, & Proposed Medical Complex Site",
+      "Lush Parks, Green Belts, & Proposed Medical Complex Site",
       "Wide 50ft Internal Sector Road Grid"
     ],
     totalPlots: 2100,
@@ -1238,7 +1238,7 @@ export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
           _cachedPlots = data.map(mapPlotToCamel);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return _cachedPlots;
   }
 
