@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { plotInventoryData, PlotItem, fetchPlots } from '@/data/faisalHillsData';
 import {
@@ -16,235 +16,255 @@ import {
   MessageSquare,
   FileText,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ArrowRight,
   Sparkles,
   Award,
   Check,
   Send,
-  HelpCircle,
-  Car,
   Download,
   Compass,
-  TrendingUp,
-  Fuel,
   Activity,
   Layers,
-  ChevronRight,
   BadgeCheck,
   Navigation,
   ExternalLink,
-  PhoneCall,
   Calendar,
   Building,
-  Zap,
   Tag,
-  ArrowUpRight,
   Eye,
-  SlidersHorizontal,
-  Home,
-  ImageIcon,
-  X,
   Maximize2
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
+import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 
-interface PlotPriceRow {
-  size: string;
-  dimension: string;
-  price: string;
-  category: string;
-  suitability: string;
-  features: string[];
-  demandRange: string;
-}
-
-const residentialPlotDetails: PlotPriceRow[] = [
+const defaultExecutiveSellingPlots = [
   {
+    id: 'exec-plot-5m-1',
+    plotNumber: 'EX-104',
+    blockName: 'Executive Block',
+    category: 'Residential',
     size: '5 Marla',
-    dimension: '25 × 50 (139 Sq. Yds)',
-    price: 'PKR 65 Lac – 90 Lac',
-    category: 'Residential',
-    suitability: 'First-time buyers, compact luxury villas, smart investors',
-    features: ['Immediate Construction', 'Underground Electricity', 'Near Roots School & Park'],
-    demandRange: 'High Demand (Fast Moving)'
+    dimensions: '25 × 50',
+    facing: 'Park Facing',
+    priceFormatted: 'PKR 75.0 Lac',
+    downPayment: 'PKR 15.0 Lac',
+    status: 'Available',
+    badge: 'Near Roots School',
+    image: '/images/imgi_44_Executive-Block.webp',
+    features: ['Walking Distance to Roots School', '100% Level Ready to Build', 'Possession Ready']
   },
   {
+    id: 'exec-plot-8m-1',
+    plotNumber: 'EX-215',
+    blockName: 'Executive Block',
+    category: 'Residential',
     size: '8 Marla',
-    dimension: '30 × 60 (200 Sq. Yds)',
-    price: 'PKR 1.05 Cr – 1.20 Cr',
-    category: 'Residential',
-    suitability: 'Growing families wanting extra living space & double unit designs',
-    features: ['Wide Street Access', 'Park Facing Options', 'Immediate Possession'],
-    demandRange: 'Moderate-High Demand'
+    dimensions: '30 × 60',
+    facing: 'Main Boulevard 225ft',
+    priceFormatted: 'PKR 1.10 Crore',
+    downPayment: 'PKR 22.0 Lac',
+    status: 'Hot Deal',
+    badge: 'Boulevard Front',
+    image: '/images/faisalhillarc.jpg',
+    features: ['Wide 225ft Boulevard Front', 'Prime Commercial Walkability', 'Immediate Allotment']
   },
   {
+    id: 'exec-plot-10m-1',
+    plotNumber: 'EX-320',
+    blockName: 'Executive Block',
+    category: 'Residential',
     size: '10 Marla',
-    dimension: '35 × 70 (272 Sq. Yds)',
-    price: 'PKR 1.20 Cr – 1.50 Cr',
-    category: 'Residential',
-    suitability: 'Large families, executive living near parks, schools and mosques',
-    features: ['Near Jamia Masjid', 'Spacious Frontage', 'High Rental Yield Potential'],
-    demandRange: 'Top Choice for Builders'
-  },
-  {
-    size: '14 Marla',
-    dimension: '40 × 80 (355 Sq. Yds)',
-    price: 'PKR 1.45 Cr – 1.85 Cr',
-    category: 'Residential',
-    suitability: 'Premium residential villas, prime corner units & executive residences',
-    features: ['40ft Wide Frontage', 'Boulevard Proximity', 'Exclusive Street Enclave'],
-    demandRange: 'Limited Availability'
-  },
-  {
-    size: '1 Kanal',
-    dimension: '50 × 90 (500 Sq. Yds)',
-    price: 'PKR 1.80 Cr – 2.90 Cr',
-    category: 'Luxury Residential',
-    suitability: 'Spacious mansions, luxury villas & maximum long-term capital appreciation',
-    features: ['Margalla View Options', '50ft Frontage', 'Highest Capital Growth Velocity'],
-    demandRange: 'Flagship Luxury Tier'
-  },
-];
-
-const commercialPlotDetails = [
-  { size: '30 × 25', dimension: '2.5 Marla Plaza', price: 'Market On-Call', suitability: 'Boutique retail, pharmacy, fast-food takeaway', frontage: 'Executive Commercial Strip' },
-  { size: '30 × 30', dimension: '3.3 Marla Plaza', price: 'Market On-Call', suitability: 'Corner retail plaza, designer outlets & clinics', frontage: 'Civic Center Retail Strip' },
-  { size: '40 × 40', dimension: '5.8 Marla Plaza', price: 'Market On-Call', suitability: 'Multi-brand retail showroom, corporate office', frontage: 'Near Faisal Jewel & School' },
-  { size: '45 × 50', dimension: '8.0 Marla Plaza', price: 'Market On-Call', suitability: 'Corporate regional headquarters, bank branches', frontage: '225ft Main Boulevard' },
-  { size: '50 × 50', dimension: '9.2 Marla Plaza', price: 'Market On-Call', suitability: 'Commercial banking plazas, luxury dining towers', frontage: 'Prime Boulevard Corner' },
-  { size: '65 × 50', dimension: '12.0 Marla Plaza', price: 'Market On-Call', suitability: 'Megastructure commercial mall, multi-storey suites', frontage: 'Grand Entrance Axis' },
-];
-
-const travelTimes = [
-  { destination: 'Taxila Bypass', time: '2 mins', distance: '1.2 km', note: 'Direct GT Road exit' },
-  { destination: 'Multi Gardens B-17', time: '5 mins', distance: '4.5 km', note: 'Direct inter-city road link' },
-  { destination: 'HITEC University Taxila', time: '9 mins', distance: '6.0 km', note: 'Premier engineering campus' },
-  { destination: 'Taxila Cantt', time: '10 mins', distance: '7.5 km', note: 'Administrative cantonment zone' },
-  { destination: 'Taxila Museum', time: '12 mins', distance: '8.2 km', note: 'World heritage landmark' },
-  { destination: 'AWT-Sangjani Toll Plaza (M-1)', time: '20 mins', distance: '14 km', note: 'Direct M-1 connection' },
-  { destination: 'Central Islamabad (Blue Area)', time: '25 mins', distance: '24 km', note: 'Via Margalla Ave & N-5' },
-  { destination: 'Islamabad International Airport', time: '35 mins', distance: '32 km', note: 'Via Airport Cargo & M-1' },
-  { destination: 'Saddar, Rawalpindi', time: '40 mins', distance: '28 km', note: 'Via N-5 National Highway' },
-];
-
-const nearbyLandmarks = [
-  'Taxila Bypass',
-  'HITEC University, Taxila',
-  'Multi Gardens B-17',
-  'Sangjani, Islamabad',
-  'Tarnol',
-  'Faisal Town Phase 1',
-  'Margalla Avenue',
-  'Taxila City'
-];
-
-const galleryItems = [
-  {
-    title: 'Faisal Jewel 27-Storey High-Rise',
-    category: 'jewel',
-    tag: 'Architectural Megastructure',
-    image: '/faisal-jewel-1.png',
-    desc: 'The skyline centerpiece of Executive Block featuring retail shopping, luxury suites, and a five-star hotel.'
-  },
-  {
-    title: 'Faisal Jewel Architectural Sketch & Blueprint',
-    category: 'jewel',
-    tag: 'Master Engineering Sketch',
-    image: '/faisal-jewel-sketch.jpg',
-    desc: 'Original conceptual sketch and structural blueprint of the landmark tower.'
-  },
-  {
-    title: 'Faisal Jewel Commercial & Shopping Mall',
-    category: 'jewel',
-    tag: 'Commercial Mall',
-    image: '/images/imgi_175_faisal-jewel.jpg',
-    desc: 'Spacious retail floors and high-traffic commercial frontage designed for multinational brands.'
-  },
-  {
-    title: 'Executive Grand Entrance Arch',
-    category: 'infrastructure',
-    tag: 'Entrance Gateway',
-    image: '/faisalhillarc.jpg',
-    desc: 'The iconic monument gateway welcoming residents and visitors into the 225ft wide Main Boulevard.'
-  },
-  {
-    title: 'Roots International School Campus',
-    category: 'infrastructure',
-    tag: 'Operational Education',
-    image: '/images/faisal-roots-school.jpg',
-    desc: 'Fully operational school campus delivering an internationally benchmarked curriculum inside the block.'
-  },
-  {
-    title: 'Executive Community Parks & Recreation',
-    category: 'infrastructure',
-    tag: 'Parks & Recreation',
+    dimensions: '35 × 70',
+    facing: 'Corner + Green Belt',
+    priceFormatted: 'PKR 1.35 Crore',
+    downPayment: 'PKR 27.0 Lac',
+    status: 'Ready to Build',
+    badge: 'Corner Plot',
     image: '/images/faisal-park.jpg',
-    desc: 'Lush green landscaped parkways, walking tracks and family seating enclaves.'
+    features: ['Double Corner Extra Land', 'Lush Park View', 'Active Street Construction']
   },
   {
-    title: 'Executive Block On-Ground Aerial View',
-    category: 'infrastructure',
-    tag: 'Aerial Overview',
-    image: '/images/faisalhillexecutive.webp',
-    desc: 'Expansive on-ground aerial overview of developed residential sectors and wide carpeted roads.'
+    id: 'exec-plot-1k-1',
+    plotNumber: 'EX-450',
+    blockName: 'Executive Block',
+    category: 'Residential',
+    size: '1 Kanal',
+    dimensions: '50 × 90',
+    facing: 'Margalla Hill View',
+    priceFormatted: 'PKR 2.10 Crore',
+    downPayment: 'PKR 42.0 Lac',
+    status: 'Signature Plot',
+    badge: 'VIP Enclave',
+    image: '/images/faisal-jewel.jpg',
+    features: ['Top-Tier Margalla Panorama', 'Private Cul-de-Sac Street', 'Gated VIP Security']
   },
   {
-    title: 'Miyawaki Forest & Urban Greenery',
-    category: 'infrastructure',
-    tag: 'Eco Reserve',
-    image: '/images/faisal-forest.jpg',
-    desc: 'Dense Miyawaki urban forest providing fresh air and a scenic natural setting.'
+    id: 'exec-plot-com-1',
+    plotNumber: 'EX-COM-05',
+    blockName: 'Executive Block',
+    category: 'Commercial',
+    size: '4 Marla Plaza',
+    dimensions: '30 × 30',
+    facing: 'Civic Hub Boulevard',
+    priceFormatted: 'PKR 2.80 Crore',
+    downPayment: 'PKR 56.0 Lac',
+    status: 'High ROI',
+    badge: 'Commercial Core',
+    image: '/images/faisal-jewel.jpg',
+    features: ['Ground + 5 Approved Height', 'Direct GT Road Entrance', 'High Footfall Core']
+  },
+  {
+    id: 'exec-plot-com-2',
+    plotNumber: 'EX-COM-12',
+    blockName: 'Executive Block',
+    category: 'Commercial',
+    size: '5.33 Marla Plaza',
+    dimensions: '40 × 30',
+    facing: 'Main Boulevard Axis',
+    priceFormatted: 'PKR 3.65 Crore',
+    downPayment: 'PKR 73.0 Lac',
+    status: 'Prime Frontage',
+    badge: 'Faisal Jewel Axis',
+    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    features: ['Facing Faisal Jewel Tower', 'Dedicated Customer Parking', 'Ideal for Brand / Bank']
+  },
+  {
+    id: 'exec-plot-com-3',
+    plotNumber: 'EX-COM-18',
+    blockName: 'Executive Block',
+    category: 'Commercial',
+    size: '6 Marla Corner',
+    dimensions: '35 × 40',
+    facing: 'Double Boulevard Corner',
+    priceFormatted: 'PKR 4.20 Crore',
+    downPayment: 'PKR 84.0 Lac',
+    status: 'Corner Hub',
+    badge: 'Double Corner',
+    image: '/images/faisal-hills-site-home-page-header.webp',
+    features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
+  },
+  {
+    id: 'exec-plot-com-4',
+    plotNumber: 'EX-COM-28',
+    blockName: 'Executive Block',
+    category: 'Commercial',
+    size: '8 Marla Corporate',
+    dimensions: '40 × 45',
+    facing: 'Entrance Junction',
+    priceFormatted: 'PKR 5.50 Crore',
+    downPayment: 'PKR 1.10 Crore',
+    status: 'Corporate File',
+    badge: 'Flagship Site',
+    image: '/images/imgi_44_Executive-Block.webp',
+    features: ['Multi-Storey Corporate Approval', 'Maximum GT Road Visibility', 'Direct Site Office Access']
   }
 ];
 
-const seoFaqs = [
+const executiveAmenities = [
   {
-    q: 'Is Faisal Hills Executive Block in Islamabad or Rawalpindi?',
-    a: 'Faisal Hills sits on the main GT Road, just a few minutes from B-17 Islamabad, but it technically falls under the jurisdiction of the Rawalpindi Development Authority (RDA).'
+    id: 'civic-hub',
+    tag: 'Sector Core',
+    title: 'Civic Hub & Monument Gateway',
+    image: '/images/faisalhillarc.jpg',
+    icon: Building2
   },
   {
-    q: 'Is the Faisal Hills Executive Block NOC approved?',
-    a: 'Yes. The Executive Block has NOC approval from the RDA, meaning the development complies with regional housing regulations as an RDA approved housing society. We’d still recommend confirming the latest status directly with RDA before making a purchase.'
+    id: 'roots-school',
+    tag: 'Operational',
+    title: 'Roots International School Campus',
+    image: '/images/faisal-roots-school.jpg',
+    icon: GraduationCap
   },
   {
-    q: 'What plot sizes are available for sale in Faisal Hills Executive Block?',
-    a: 'Residential plots come in 5, 8, 10 and 14 Marla, plus 1 Kanal. Commercial plots are available in sizes ranging from 30×25 up to 65×50.'
+    id: 'faisal-jewel',
+    tag: '27-Storey Icon',
+    title: 'Faisal Jewel Tower',
+    image: '/images/faisal-jewel.jpg',
+    icon: Landmark
   },
   {
-    q: 'What is the current Faisal Hills Executive Block payment plan?',
-    a: 'Terms vary by sector — some plots are sold on a resale, full-cash basis, while others may be available under an instalment plan with a down payment and quarterly payments, sometimes with a discount for lump-sum payment. Contact our team for the latest details on a specific plot.'
+    id: 'mosques',
+    tag: 'Spiritual Center',
+    title: 'Jamia Masjid Fatima Tuz Zahra',
+    image: '/images/imgi_46_Mosques.webp',
+    icon: Building
   },
   {
-    q: 'What is the development status of Faisal Hills Executive Block?',
-    a: 'The main boulevard, roads, sewerage and underground electricity are largely complete. Roots International School is operational, and construction on the Faisal Jewel project is progressing steadily.'
+    id: 'community-parks',
+    tag: 'Lush Greenery',
+    title: 'Executive Parks & Jogging Tracks',
+    image: '/images/faisal-park.jpg',
+    icon: Trees
   },
   {
-    q: 'Is Faisal Hills Executive Block a good investment?',
-    a: 'Its GT Road location, RDA approval and ongoing development make it an appealing option for both end-users and investors — though, as with any real estate investment, returns aren’t guaranteed and depend on market conditions.'
+    id: 'sports-arena',
+    tag: 'Active Sports',
+    title: 'Sports Arena & Cricket Ground',
+    image: '/images/imgi_48_sports-arena.webp',
+    icon: Activity
   },
   {
-    q: 'Where can I find the Faisal Hills Executive Block map?',
-    a: 'You can request the latest master plan and zoning map directly from our team — we can also point out which sectors are closest to GT Road and which are quieter residential pockets.'
+    id: 'fuel-station',
+    tag: '24/7 Utility',
+    title: 'Boulevard Fuel Station',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    icon: FuelIcon
+  },
+  {
+    id: 'gated-security',
+    tag: 'VIP Enclave',
+    title: 'Gated 24/7 Security & CCTV',
+    image: '/images/imgi_44_Executive-Block.webp',
+    icon: ShieldCheck
+  }
+];
+
+function FuelIcon(props: any) {
+  return (
+    <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    </svg>
+  );
+}
+
+const executiveFaqs = [
+  {
+    q: 'Where is Executive Block located within Faisal Hills?',
+    a: 'Executive Block is located at the flagship front entrance of Faisal Hills, directly on Main GT Road (N-5) Taxila / Islamabad Zone 2, home to the iconic Grand Arc Gate and Faisal Jewel Tower.'
+  },
+  {
+    q: 'Is Faisal Hills Executive Block RDA approved and possession ready?',
+    a: 'Yes. Faisal Hills Executive Block has full NOC approval from the Rawalpindi Development Authority (RDA). Possession is fully delivered and families are actively constructing luxury villas and commercial plazas.'
+  },
+  {
+    q: 'What plot sizes are available in Executive Block?',
+    a: 'Executive Block features 5 Marla, 8 Marla, 10 Marla, and 1 Kanal residential plots, alongside prime 4 Marla, 5.33 Marla, and corporate commercial plots.'
+  },
+  {
+    q: 'Is Roots International School operational in Executive Block?',
+    a: 'Yes. Roots International School Campus is 100% operational on-site and actively educating students with world-class facilities.'
+  },
+  {
+    q: 'How can I buy or transfer a plot in Executive Block?',
+    a: 'Transfers are executed officially at the Zedem International Head Office located right at the Faisal Hills entrance with full document verification and zero dealer markup.'
   }
 ];
 
 export default function ExecutiveBlockContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [activePlotTab, setActivePlotTab] = useState<'residential' | 'commercial'>('residential');
-  const [selectedResPlotIndex, setSelectedResPlotIndex] = useState(0);
-  const [selectedComPlotIndex, setSelectedComPlotIndex] = useState(0);
-
-  // Gallery state
-  const [galleryFilter, setGalleryFilter] = useState<'all' | 'jewel' | 'infrastructure'>('all');
-  const [selectedGalleryImage, setSelectedGalleryImage] = useState<typeof galleryItems[0] | null>(null);
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
+  const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const [isMasterPlanExpanded, setIsMasterPlanExpanded] = useState(false);
   const [isDevStatusExpanded, setIsDevStatusExpanded] = useState(false);
+  const [activeWhyInvestOption, setActiveWhyInvestOption] = useState<number | null>(0);
+  const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
 
-  // Dynamic plot inventory sync from Laravel Backend Dashboard / LocalStorage
+  // Dynamic live plot inventory sync
   const [allPlots, setAllPlots] = useState<PlotItem[]>(plotInventoryData);
 
   useEffect(() => {
@@ -257,27 +277,83 @@ export default function ExecutiveBlockContent() {
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
   }, []);
 
+  // Amenities Horizontal Auto-Scroll
+  const amenitiesScrollRef = useRef<HTMLDivElement>(null);
+  const [isAmenitiesAutoScrolling, setIsAmenitiesAutoScrolling] = useState(true);
+
+  useEffect(() => {
+    if (!isAmenitiesAutoScrolling) return;
+
+    const interval = setInterval(() => {
+      if (amenitiesScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = amenitiesScrollRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const cardStep = 276;
+
+        if (scrollLeft >= maxScroll - 10) {
+          amenitiesScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          amenitiesScrollRef.current.scrollBy({ left: cardStep, behavior: 'smooth' });
+        }
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isAmenitiesAutoScrolling]);
+
+  const handleAmenitiesScrollLeft = () => {
+    if (amenitiesScrollRef.current) {
+      amenitiesScrollRef.current.scrollBy({ left: -276, behavior: 'smooth' });
+    }
+  };
+
+  const handleAmenitiesScrollRight = () => {
+    if (amenitiesScrollRef.current) {
+      amenitiesScrollRef.current.scrollBy({ left: 276, behavior: 'smooth' });
+    }
+  };
+
+  // Process and normalize executive plots
   const executivePlots = useMemo(() => {
-    const filtered = allPlots.filter(
-      p => p.blockSlug === 'executive-block' || p.blockName.toLowerCase().includes('executive')
+    const liveBlockPlots = allPlots.filter(
+      p => p.blockSlug === 'executive-block' || p.blockName?.toLowerCase().includes('executive') || p.plotNumber?.toUpperCase().startsWith('EX-')
     );
-    if (filtered.length >= 8) return filtered.slice(0, 8);
-    const fallback = plotInventoryData.filter(
-      p => p.blockSlug === 'executive-block' || p.blockName.toLowerCase().includes('executive')
-    );
-    const combined = [...filtered];
-    fallback.forEach(fb => {
-      if (!combined.some(c => c.id === fb.id || c.plotNumber === fb.plotNumber)) {
-        combined.push(fb);
+
+    const liveMapped = liveBlockPlots.map((plot, idx) => ({
+      id: plot.id,
+      plotNumber: plot.plotNumber || `EX-${idx + 100}`,
+      blockName: plot.blockName || 'Executive Block',
+      category: plot.category || 'Residential',
+      size: plot.size,
+      dimensions: plot.dimensions || '25 × 50',
+      facing: plot.facing || 'Boulevard Facing',
+      priceFormatted: plot.priceFormatted || (plot.price ? `PKR ${(plot.price / 100000).toFixed(1)} Lacs` : 'Call for Price'),
+      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : '20% Down'),
+      status: plot.status || 'Possession Ready',
+      badge: (plot as any).badge || 'Possession Ready',
+      image: plot.image || '/images/imgi_44_Executive-Block.webp',
+      features: plot.features && plot.features.length > 0 ? plot.features : ['GT Road Frontage', 'Immediate Construction', 'Underground Utilities']
+    }));
+
+    const combined: any[] = [...liveMapped];
+    defaultExecutiveSellingPlots.forEach(defPlot => {
+      if (!combined.some(c => c.id === defPlot.id || c.plotNumber.toUpperCase() === defPlot.plotNumber.toUpperCase())) {
+        combined.push(defPlot);
       }
     });
+
     return combined.slice(0, 8);
   }, [allPlots]);
-  const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
+
+  // Exclude Executive Block from other blocks showcase
+  const otherBlocks = useMemo(() => {
+    return defaultFaisalHillsBlocks.filter(b => b.id !== 'executive-block' && b.href !== '/blocks/executive-block');
+  }, []);
+
+  // Lead Form state
   const [leadName, setLeadName] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
   const [leadPlot, setLeadPlot] = useState('5 Marla (25x50)');
-  const [leadNote, setLeadNote] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   const handleInquirySubmit = (e: React.FormEvent) => {
@@ -285,117 +361,44 @@ export default function ExecutiveBlockContent() {
     setSubmitted(true);
   };
 
-  const selectedResPlot = residentialPlotDetails[selectedResPlotIndex];
-  const selectedComPlot = commercialPlotDetails[selectedComPlotIndex];
-
-  const filteredGallery = galleryItems.filter((item) => {
-    if (galleryFilter === 'all') return true;
-    return item.category === galleryFilter;
-  });
-
-  // Schema objects for SEO
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: seoFaqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.q,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.a
-      }
-    }))
-  };
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://faisalhillsislamabadfh.com' },
-      { '@type': 'ListItem', position: 2, name: 'Faisal Hills Blocks', item: 'https://faisalhillsislamabadfh.com/faisal-hills-blocks' },
-      { '@type': 'ListItem', position: 3, name: 'Executive Block', item: 'https://faisalhillsislamabadfh.com/blocks/executive-block' }
-    ]
-  };
-
-  const realEstateSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateListing',
-    name: 'Faisal Hills Executive Block Plots & Real Estate',
-    description: 'RDA-approved residential and commercial plots in Faisal Hills Executive Block on Main GT Road N-5.',
-    url: 'https://faisalhillsislamabadfh.com/blocks/executive-block',
-    geo: { '@type': 'GeoCoordinates', latitude: '33.7431', longitude: '72.8258' }
-  };
-
-  const organizationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Faisal Hills Official Advisory Portal',
-    url: 'https://faisalhillsislamabadfh.com',
-    logo: 'https://faisalhillsislamabadfh.com/images/logo.png',
-    telephone: '+92 304 4811 717',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+92 304 4811 717',
-      contactType: 'Sales & Customer Facilitation',
-      areaServed: 'PK',
-      availableLanguage: ['English', 'Urdu']
-    }
-  };
-
   return (
     <div className="space-y-12 lg:space-y-16 pt-2 font-sans text-slate-800">
 
-      {/* JSON-LD Schemas */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
-
       {/* ========================================================= */}
-      {/* 2. EXECUTIVE BLOCK COMPREHENSIVE OVERVIEW CONTAINER        */}
+      {/* 1. EXECUTIVE BLOCK OVERVIEW                               */}
       {/* ========================================================= */}
-      <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* 2-Column Grid: Left Narrative + Right Height-Matched Image */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+      <section className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
-          {/* Left Column: Title, Narrative, See More Toggle & Jump Chips Div */}
-          <div className="lg:col-span-7 flex flex-col justify-between space-y-6 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
-            <ScrollReveal direction="up" delay={50}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    <span>Civic & Commercial Center • Sector Masterplan</span>
-                  </div>
-                  <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight bg-gradient-to-r from-slate-900 via-[#7b002c] to-slate-900 bg-clip-text text-transparent">
-                    Executive Block Overview
-                  </h1>
+          {/* Left Column: Narrative Content */}
+          <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
+            <ScrollReveal direction="left" delay={50}>
+              <div className="space-y-3">
+                <TextReveal
+                  as="h1"
+                  text="Faisal Hills Executive Block Overview"
+                  className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
+                  staggerDelay={65}
+                  direction="left"
+                />
+                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                  <p>
+                    <strong>Faisal Hills Executive Block</strong> is the prestigious flagship sector developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group & Zedem International</Link>. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project.
+                  </p>
+
+                  {isOverviewExpanded && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <p>
+                        Home to the iconic 27-storey <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel Tower</Link>, Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities.
+                      </p>
+                      <p>
+                        Featuring 225ft wide carpeted boulevards, complete underground electrification, Jamia mosques, and lush green parks, Executive Block is possession-ready with hundreds of family villas under active construction.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                <p className="font-semibold text-slate-900 text-base sm:text-lg leading-relaxed">
-                  If you’ve been comparing housing options along Islamabad’s main GT Road, chances are Faisal Hills Executive Block has come up more than once. It sits right at the entrance of Faisal Hills, on the main G.T. Road (N-5), and acts as the civic and commercial center for the entire society.
-                </p>
-
-                <p>
-                  Faisal Hills Executive Block is the primary commercial and civic hub of Faisal Hills, positioned at the society’s main entrance on G.T. Road. It’s home to some of the project’s most prestigious landmarks — including the 27-storey <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel Tower</Link>, Faisal Mansion, and the fully operational Roots International School Campus.
-                </p>
-
-                {isOverviewExpanded && (
-                  <div className="space-y-4 animate-fadeIn">
-                    <p>
-                      What sets the Executive Block apart from the more purely residential sectors of Faisal Hills is its dual identity. On one hand, it’s a modern residential community with houses, parks and mosques going up across multiple sectors. On the other, its status as the civic and commercial center means shops, offices, a school and a hotel-and-apartment tower are all part of the same masterplan — giving it both lifestyle appeal and genuine commercial investment opportunity.
-                    </p>
-
-                    <div className="p-4 sm:p-5 bg-gradient-to-r from-rose-50/90 via-rose-50/50 to-amber-50/60 rounded-2xl border border-rose-200/80 text-xs sm:text-sm text-slate-800 font-medium flex items-start gap-3.5 shadow-2xs">
-                      <CheckCircle2 className="w-5 h-5 text-[#7b002c] shrink-0 mt-0.5" />
-                      <span>
-                        <strong>Key Takeaway:</strong> For end-users, that combination translates into a residential and commercial layout where daily errands, schooling and worship are all within a short drive. For investors, an active commercial core anchors surrounding plot values with verified high ROI.
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="pt-1">
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
@@ -407,178 +410,189 @@ export default function ExecutiveBlockContent() {
                 </div>
               </div>
             </ScrollReveal>
-
-            {/* Quick Directory Jump Chips Div below Overview Text */}
-            <ScrollReveal direction="up" delay={120}>
-              <div className="pt-4 border-t border-slate-100">
-                <div className="flex flex-wrap items-center gap-2">
-                  <a
-                    href="#location"
-                    className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-xs hover:scale-105"
-                  >
-                    📍 Location & Access
-                  </a>
-                  <a
-                    href="#master-plan"
-                    className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-xs hover:scale-105"
-                  >
-                    🗺️ Master Plan & Map
-                  </a>
-                  <a
-                    href="#plots-inventory"
-                    className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-xs hover:scale-105"
-                  >
-                    🏷️ Available Plots
-                  </a>
-                  <a
-                    href="#faisal-jewel"
-                    className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-xs hover:scale-105"
-                  >
-                    🏢 Faisal Jewel Tower
-                  </a>
-                  <a
-                    href="#egallery"
-                    className="px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 hover:border-[#7b002c] text-xs font-bold transition-all shadow-xs hover:scale-105"
-                  >
-                    📸 Visual eGallery
-                  </a>
-                </div>
-              </div>
-            </ScrollReveal>
-
           </div>
 
-          {/* Right Column: Overview Image Matching Height of Overview Container */}
+          {/* Right Column: Visual Photo Card */}
           <div className="lg:col-span-5 flex flex-col">
-            <ScrollReveal direction="pop" delay={150} className="w-full h-full flex flex-col flex-1">
-              <div className="relative w-full h-full min-h-[320px] sm:min-h-[400px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
+            <ScrollReveal direction="right" delay={100} className="w-full h-full flex flex-col flex-1">
+              <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                 <img
                   src="/images/faisalhillarc.jpg"
-                  alt="Faisal Hills Executive Block Main Monument Entrance & Overview"
+                  alt="Faisal Hills Executive Block Monument Entrance Arc Gate"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-
                 <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
-                    Executive Sector Landmark
+                    Grand Monument Gateway
                   </span>
-                  <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
-                    Grand Monument Entrance & 225ft Boulevard
-                  </h4>
-                  <p className="text-xs text-slate-300 line-clamp-2">
-                    Direct access on Main GT Road (N-5) with 24/7 illuminated security entrance.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 4. DEDICATED EGALLERY & PHOTO SHOWCASE (NEW)               */}
-      {/* ========================================================= */}
-      <section id="egallery" className="scroll-mt-28 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-5">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <ImageIcon className="w-3.5 h-3.5" />
-                <span>Visual Showcase</span>
-              </div>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-                Executive Block eGallery & On-Ground Views
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-2xl">
-                Explore high-resolution architectural renders of Faisal Jewel, monument arch gateways, and operational infrastructure:
-              </p>
-            </div>
-
-            {/* Filter Pills */}
-            <div className="flex flex-wrap gap-2 shrink-0">
-              <button
-                onClick={() => setGalleryFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'all'
-                  ? 'bg-[#7b002c] text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-              >
-                All Views ({galleryItems.length})
-              </button>
-              <button
-                onClick={() => setGalleryFilter('jewel')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'jewel'
-                  ? 'bg-[#7b002c] text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-              >
-                Faisal Jewel (3)
-              </button>
-              <button
-                onClick={() => setGalleryFilter('infrastructure')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${galleryFilter === 'infrastructure'
-                  ? 'bg-[#7b002c] text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-              >
-                Infrastructure & Parks (3)
-              </button>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredGallery.map((item, idx) => (
-            <ScrollReveal key={idx} direction="pop" delay={(idx % 3) * 70}>
-              <div
-                onClick={() => setSelectedGalleryImage(item)}
-                className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-sm hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 cursor-pointer flex flex-col justify-between"
-              >
-                <div className="relative h-56 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30" />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-amber-300 text-[10px] font-bold uppercase tracking-wider rounded-full border border-white/20">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white/90 text-[#7b002c] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <Eye className="w-4 h-4" />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-white space-y-1">
-                  <h3 className="font-serif font-bold text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    {item.title}
+                  <h3 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
+                    Main GT Road N-5 Entrance
                   </h3>
-                  <p className="text-xs text-slate-500 line-clamp-2">
-                    {item.desc}
-                  </p>
                 </div>
               </div>
             </ScrollReveal>
-          ))}
+          </div>
+
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 5. VERIFIED PLOTS LISTED FOR SALE (EXECUTIVE BLOCK)       */}
+      {/* 2. LOCATION & ACCESSIBILITY SECTION                       */}
+      {/* ========================================================= */}
+      <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+
+          {/* Left Column: Narrative Content */}
+          <div className="lg:col-span-7 space-y-6">
+            <ScrollReveal direction="left" delay={50}>
+              <div className="space-y-3">
+                <TextReveal
+                  as="h2"
+                  text="Faisal Hills Executive Block Location & Map"
+                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
+                  staggerDelay={65}
+                  direction="left"
+                />
+                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                  <p>
+                    Executive Block enjoys an unmatched strategic advantage by fronting directly on the National Highway (GT Road N-5). It is situated directly adjacent to Taxila, Multi Gardens B-17, and Islamabad Zone 2.
+                  </p>
+
+                  {isLocationExpanded && (
+                    <div className="space-y-3 animate-fadeIn">
+                      <p>
+                        With immediate access to both Islamabad and Rawalpindi via the N-5 corridor and the upcoming direct M-1 Motorway link, Executive Block ensures effortless daily commuting for residents, business professionals, and overseas investors.
+                      </p>
+                      <p>
+                        Surrounded by the scenic Margalla Hills backdrop, the sector delivers both urban commercial vibrancy and tranquil residential ambiance.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsLocationExpanded(!isLocationExpanded)}
+                    className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
+                  >
+                    <span>{isLocationExpanded ? 'See Less' : 'See More Location Details'}</span>
+                    <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isLocationExpanded ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right Column: Google Map Embed */}
+          <div className="lg:col-span-5 space-y-3">
+            <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+              <iframe
+                title="Faisal Hills Executive Block Exact Location Google Map"
+                src="https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 3. MASTER PLAN SECTION                                    */}
+      {/* ========================================================= */}
+      <section id="master-plan" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+
+        {/* Mobile View: Title First */}
+        <div className="block lg:hidden space-y-2">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+            Faisal Hills Executive Block Master Plan
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+
+          {/* Map Container */}
+          <div className="lg:col-span-6 flex flex-col">
+            <ScrollReveal direction="left" delay={50}>
+              <div
+                onClick={() => setIsMapModalOpen(true)}
+                className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[380px] p-2"
+              >
+                <img
+                  src="/images/faisalexecutivemap.png"
+                  alt="Faisal Hills Executive Block Master Plan Map"
+                  className="w-full h-auto max-h-[500px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                  <span className="px-4 py-2 rounded-xl bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-2">
+                    <Maximize2 className="w-4 h-4 text-[#7b002c]" />
+                    <span>Click to Enlarge & Download</span>
+                  </span>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Desktop Narrative & Action Buttons */}
+          <div className="lg:col-span-6 flex flex-col justify-between space-y-5 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
+            <ScrollReveal direction="right" delay={100}>
+              <div className="space-y-4">
+
+                {/* Desktop Title */}
+                <div className="hidden lg:block space-y-2">
+                  <TextReveal
+                    as="h2"
+                    text="Faisal Hills Executive Block Master Plan"
+                    className="font-serif text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                    staggerDelay={70}
+                    direction="left"
+                  />
+                </div>
+
+                <p className="hidden lg:block text-slate-600 text-sm leading-relaxed">
+                  The master plan of Executive Block is engineered as an integrated self-sustaining community where commercial zones, schools, and parks sit harmoniously beside luxury residential streets.
+                </p>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsMapModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Master Plan</span>
+                  </button>
+                  <Link
+                    href="/master-plan"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all active:scale-95"
+                  >
+                    <Compass className="w-4 h-4 text-[#7b002c]" />
+                    <span>Explore Society Map</span>
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 4. VERIFIED PLOTS FOR SALE (2 IN A LINE ON MOBILE)         */}
       {/* ========================================================= */}
       <section id="pricing-matrix" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Tag className="w-3.5 h-3.5" />
-                <span>Verified Inventory & Resale Files</span>
-              </div>
               <TextReveal
                 as="h2"
                 text="Executive Block Plots for Sale — Direct Booking & Verified Files"
@@ -596,33 +610,30 @@ export default function ExecutiveBlockContent() {
               <button
                 type="button"
                 onClick={() => setPlotCategoryFilter('all')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  plotCategoryFilter === 'all'
+                className={`hidden sm:inline-block px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${plotCategoryFilter === 'all'
                     ? 'bg-[#7b002c] text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 All Plots ({executivePlots.length})
               </button>
               <button
                 type="button"
-                onClick={() => setPlotCategoryFilter('residential')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  plotCategoryFilter === 'residential'
+                onClick={() => setPlotCategoryFilter(plotCategoryFilter === 'residential' ? 'all' : 'residential')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${plotCategoryFilter === 'residential'
                     ? 'bg-[#7b002c] text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 Residential
               </button>
               <button
                 type="button"
-                onClick={() => setPlotCategoryFilter('commercial')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  plotCategoryFilter === 'commercial'
+                onClick={() => setPlotCategoryFilter(plotCategoryFilter === 'commercial' ? 'all' : 'commercial')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${plotCategoryFilter === 'commercial'
                     ? 'bg-[#7b002c] text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 Commercial
               </button>
@@ -630,75 +641,70 @@ export default function ExecutiveBlockContent() {
           </div>
         </ScrollReveal>
 
-        {/* Plot Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Plot Cards Grid (2 in line on mobile, 4 in line on desktop) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
           {executivePlots
             .filter(plot => plotCategoryFilter === 'all' || plot.category.toLowerCase() === plotCategoryFilter)
             .map((plot, idx) => (
               <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
-                    {/* Plot Image Container -> Links to /plots inventory page */}
+                    {/* Plot Image Container -> Links to /plots filtered */}
                     <Link
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=executive-block`}
-                      className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                      className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     >
                       <img
-                        src={plot.image || 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80'}
+                        src={plot.image}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
                       {/* Top Badges Row */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
-                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
-                            {plot.category}
-                          </span>
-                          <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-200 border border-white/15 truncate max-w-[95px]">
-                            {plot.size}
-                          </span>
-                        </div>
-                        <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
-                          {plot.status || 'Available'}
+                      <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between gap-1 z-10">
+                        <span className="text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
+                          {plot.category}
+                        </span>
+                        <span className="bg-emerald-600 text-white text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
+                          {plot.status}
                         </span>
                       </div>
 
                       {/* Plot Number & Block */}
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
-                        <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName || 'Executive Block'}</span>
-                        <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
+                      <div className="absolute bottom-1.5 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 text-white">
+                        <span className="text-[8px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
+                        <h4 className="font-serif font-bold text-sm sm:text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
                       </div>
                     </Link>
 
-                    {/* Specs Details -> Links to /plots inventory page */}
+                    {/* Specs Details */}
                     <Link
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=executive-block`}
-                      className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                      className="p-2.5 sm:p-5 space-y-2 sm:space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
                     >
-                      <div className="space-y-2 text-xs text-slate-600">
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Plot Size:</span>
+                      <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs text-slate-600">
+                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Size:</span>
                           <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
                         </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Dimensions:</span>
+                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Dims:</span>
                           <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
                         </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <div className="hidden sm:flex justify-between items-center pb-1.5 border-b border-slate-100">
                           <span className="text-slate-500 font-medium">Orientation:</span>
                           <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Trend / Status:</span>
-                          <span className="text-emerald-700 font-bold">{plot.priceHistoryTrend || 'High Demand'}</span>
+                          <span className="text-slate-500 font-medium">Down:</span>
+                          <span className="text-[#7b002c] font-bold text-[9px] sm:text-xs">{plot.downPayment}</span>
                         </div>
                       </div>
 
                       {/* Feature Pills */}
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat, fIdx) => (
+                      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
+                        {Array.isArray(plot.features) && plot.features.slice(0, 2).map((feat: string, fIdx: number) => (
                           <span
                             key={fIdx}
                             className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
@@ -711,30 +717,28 @@ export default function ExecutiveBlockContent() {
                   </div>
 
                   {/* Price & Action Buttons Footer */}
-                  <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
+                  <div className="p-2.5 sm:p-4 pt-2 sm:pt-3 border-t border-slate-100 mt-1 sm:mt-2 space-y-2 sm:space-y-2.5">
                     <div className="flex items-baseline justify-between">
-                      <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Price</span>
-                      <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
+                      <span className="text-[8px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Price</span>
+                      <span className="font-serif font-bold text-xs sm:text-base text-[#7b002c] truncate">{plot.priceFormatted}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-1 sm:gap-2">
                       <Link
                         href={`/plots/${plot.id}`}
-                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
+                        className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 text-center"
                       >
                         <span>Details</span>
-                        <ChevronRight className="w-3 h-3" />
+                        <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       </Link>
 
                       <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(
-                          `Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
-                        )}`}
+                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification details.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                        className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
                       >
-                        <Phone className="w-3 h-3" />
+                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         <span>Book</span>
                       </a>
                     </div>
@@ -754,7 +758,7 @@ export default function ExecutiveBlockContent() {
             <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
               Want to Sell or Assess Your Executive Block Plot / File?
             </h3>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl font-sans">
               Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.
             </p>
           </div>
@@ -763,7 +767,7 @@ export default function ExecutiveBlockContent() {
             href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Executive%20Block."
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center justify-center gap-2 active:scale-95"
           >
             <span>List Your Plot File</span>
             <ArrowRight className="w-4 h-4" />
@@ -771,1090 +775,434 @@ export default function ExecutiveBlockContent() {
         </div>
       </section>
 
-
       {/* ========================================================= */}
-      {/* 8. LOCATION & MAP + GOOGLE MAP EMBED (2-COLUMN LAYOUT)   */}
+      {/* 5. FACILITIES AND MASTER AMENITIES (AUTO-SCROLL + BUTTONS) */}
       {/* ========================================================= */}
-      <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
-          {/* Left Column: Content & Accessibility */}
-          <div className="lg:col-span-7 space-y-6">
-            <ScrollReveal direction="left" delay={50}>
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>N-5 GT Road Frontage</span>
-                </div>
-                <TextReveal
-                  as="h2"
-                  text="Faisal Hills Executive Block Location & Map"
-                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
-                  staggerDelay={65}
-                  direction="left"
-                />
-                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
-                  <p>
-                    The Faisal Hills Executive Block location is one of its strongest selling points. Positioned directly off the main G.T. Road (N-5) near the society’s grand entrance, the block has the kind of road frontage that few housing schemes along this corridor can match. If you pull up the Faisal Hills Executive Block map, you’ll notice it sits right beside <Link href="/blocks/block-a" className="text-[#7b002c] font-bold hover:underline">Faisal Hills Block A</Link> and just a short drive from Taxila and Multi Gardens B-17 — placing it firmly in what locals refer to as Zone 2, Islamabad.
-                  </p>
-                  <p>
-                    For families relocating from Rawalpindi or Islamabad, or for overseas Pakistanis comparing options before a visit, the GT Road frontage means the block is easy to find and easy to reach — even on a first visit using GPS navigation.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
+      <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex items-end justify-between gap-4">
+            <div className="space-y-1.5">
+              <TextReveal
+                as="h2"
+                text="Facilities and Amenities in Executive Block"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
+                staggerDelay={60}
+                direction="left"
+              />
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Executive Block is planned with world-class facilities and modern municipal infrastructure:
+              </p>
+            </div>
 
-            {/* Accessibility and Travel Times */}
-            <div className="space-y-3 pt-4 border-t border-slate-100">
-              <ScrollReveal direction="up" delay={80}>
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#7b002c]" />
-                  <span>Accessibility & Travel Times</span>
-                </h3>
-              </ScrollReveal>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {travelTimes.map((item, idx) => (
-                  <ScrollReveal key={idx} direction="up" delay={(idx % 4) * 40}>
-                    <div
-                      className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-1 hover:border-[#7b002c]/40 transition-all hover:scale-[1.02] shadow-2xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-900">{item.destination}</span>
-                        <span className="px-2 py-0.5 bg-rose-50 text-[#7b002c] font-bold text-[10px] rounded-full border border-rose-100">
-                          {item.time}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
-                        <span>{item.distance}</span>
-                        <span className="text-slate-400 italic">{item.note}</span>
-                      </div>
-                    </div>
-                  </ScrollReveal>
-                ))}
-              </div>
+            {/* Scrolling Navigation Buttons */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleAmenitiesScrollLeft}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 flex items-center justify-center shadow-xs transition-all active:scale-90 cursor-pointer"
+                aria-label="Scroll amenities left"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleAmenitiesScrollRight}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 flex items-center justify-center shadow-xs transition-all active:scale-90 cursor-pointer"
+                aria-label="Scroll amenities right"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
+        </ScrollReveal>
 
-          {/* Right Column: Sticky Live Interactive Google Map Embed */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 self-start space-y-3">
-            <div className="flex items-center justify-between gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs">
-              <div className="space-y-0.5">
-                <strong className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
-                  <span>Live GPS Pin Location</span>
-                </strong>
-                <span className="text-[11px] text-slate-500 block">Main GT Road (N-5), Taxila</span>
+        {/* 8 Facilities & Amenities Cards (Rolling Carousel on Mobile with Auto-Scroll, Grid on Desktop) */}
+        <div
+          ref={amenitiesScrollRef}
+          onTouchStart={() => setIsAmenitiesAutoScrolling(false)}
+          onTouchEnd={() => setTimeout(() => setIsAmenitiesAutoScrolling(true), 5000)}
+          onMouseEnter={() => setIsAmenitiesAutoScrolling(false)}
+          onMouseLeave={() => setIsAmenitiesAutoScrolling(true)}
+          className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+        >
+          {executiveAmenities.map((item, idx) => {
+            const IconComponent = item.icon;
+            return (
+              <div key={item.id} className="w-[260px] sm:w-auto shrink-0 snap-center flex flex-col">
+                <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
+                  <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full">
+                    <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+                      <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
+                        <IconComponent className="w-4 h-4" />
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 text-white">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">{item.tag}</span>
+                        <strong className="text-sm font-serif font-bold text-white block leading-snug">{item.title}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollReveal>
               </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 6. WHY INVEST & DEVELOPMENT STATUS                        */}
+      {/* ========================================================= */}
+      <div className="space-y-10">
+
+        {/* Why Invest Cards (White Background with Mobile Options Accordion) */}
+        <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="space-y-2">
+              <TextReveal
+                as="h2"
+                text="Why Invest in Faisal Hills Executive Block"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-sm">
+                Why buyers and overseas Pakistanis rank Executive Block as the flagship sector:
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Mobile View: Compact Interactive Options List */}
+          <div className="block sm:hidden space-y-2.5">
+            {[
+              { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
+              { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
+              { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
+              { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
+              { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
+              { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
+            ].map((item, idx) => {
+              const isSelected = activeWhyInvestOption === idx;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setActiveWhyInvestOption(isSelected ? null : idx)}
+                  className={`rounded-2xl border transition-all cursor-pointer overflow-hidden ${isSelected
+                      ? 'bg-rose-50/50 border-[#7b002c]/40 shadow-xs'
+                      : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/60'
+                    }`}
+                >
+                  <div className="p-3.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${isSelected ? 'bg-[#7b002c] text-white' : 'bg-slate-200 text-slate-700'
+                        }`}>
+                        {idx + 1}
+                      </div>
+                      <strong className={`font-semibold text-xs transition-colors ${isSelected ? 'text-[#7b002c]' : 'text-slate-900'
+                        }`}>
+                        {item.title}
+                      </strong>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-500 shrink-0 transform transition-transform duration-300 ${isSelected ? 'rotate-180 text-[#7b002c]' : ''
+                        }`}
+                    />
+                  </div>
+
+                  {isSelected && (
+                    <div className="px-3.5 pb-3.5 pt-0 text-xs text-slate-600 leading-relaxed font-sans border-t border-rose-100/80 mt-1 pt-2 animate-fadeIn">
+                      {item.desc}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop View: 6-Card Grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+            {[
+              { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
+              { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
+              { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
+              { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
+              { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
+              { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
+            ].map((item, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={(idx % 3) * 60}>
+                <div className="p-5 bg-slate-50/70 rounded-2xl border border-slate-200/80 space-y-2 hover:border-[#7b002c]/40 hover:bg-white transition-all hover:scale-[1.02] h-full shadow-2xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <strong className="text-slate-900 block font-bold text-sm">{item.title}</strong>
+                  <span className="text-slate-600 leading-relaxed block">{item.desc}</span>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </section>
+
+        {/* On-Ground Development Status */}
+        <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+
+            {/* Left Column: Narrative Content & Status Counters */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-5 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
+              <ScrollReveal direction="left" delay={50}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <TextReveal
+                      as="h2"
+                      text="Executive Block Development Status"
+                      className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                      staggerDelay={65}
+                      direction="left"
+                    />
+                  </div>
+
+                  <p className="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
+                    Development in Executive Block is 100% operational with possession fully delivered. Roads, underground electricity, sewer lines, water supply, and street lighting are fully functional.
+                  </p>
+
+                  {isDevStatusExpanded && (
+                    <div className="space-y-4 animate-fadeIn">
+                      <p>
+                        Roots International School is actively educating students on-site. The structural framework of the 27-storey Faisal Jewel Tower is at an advanced completion stage.
+                      </p>
+                      <p>
+                        Families are actively residing in constructed luxury houses, while high-profile commercial plazas along the main boulevard are operating brand retail outlets.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
+                      className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
+                    >
+                      <span>{isDevStatusExpanded ? 'See Less' : 'See More Development Details'}</span>
+                      <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isDevStatusExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick Status Metrics */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-slate-100">
+                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">95%+</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Roads Carpeted</span>
+                  </div>
+                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">100%</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Underground Grid</span>
+                  </div>
+                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                    <span className="text-base sm:text-2xl font-serif font-bold text-emerald-700 block">Possession</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Ready to Build</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right Column: Real On-Ground Development Photo */}
+            <div className="lg:col-span-5 flex flex-col">
+              <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
+                <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
+                  <img
+                    src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                    alt="Faisal Hills Executive Block On-Ground Development Status & Aerial View"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1 bg-emerald-600/90 text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md flex items-center gap-1.5 backdrop-blur-xs border border-emerald-400/30">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Possession Delivered</span>
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-5 left-5 right-5 text-white space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
+                      Verified Aerial Drone Survey
+                    </span>
+                    <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
+                      Executive Sector On-Ground Progress
+                    </h4>
+                    <p className="text-xs text-slate-300">
+                      Wide carpeted boulevards, complete utilities, and active on-ground villa construction.
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Step-by-Step Transfer & Booking Process (Animated 4-Point Roadmap) */}
+        <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="space-y-2">
+              <TextReveal
+                as="h2"
+                text="Faisal Hills Executive Block Transfer Process"
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
+                Follow these 4 essential points to complete official plot transfer directly at Zedem International:
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Points Timeline / Roadmap Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+            {[
+              {
+                point: '01',
+                tag: 'Step 1: Identity',
+                title: 'CNIC / NICOP Copies',
+                points: [
+                  'Two verified photocopies of buyer CNIC / NICOP',
+                  'One photocopy of Next-of-Kin (Nominee) CNIC',
+                  'Passport copies for Overseas Pakistani buyers'
+                ],
+                badge: 'Attested Copies Required'
+              },
+              {
+                point: '02',
+                tag: 'Step 2: Photos',
+                title: 'Passport Photographs',
+                points: [
+                  'Two recent passport-size color photographs',
+                  'Clear blue background',
+                  'Applicant name written on back'
+                ],
+                badge: 'Recent Photographs'
+              },
+              {
+                point: '03',
+                tag: 'Step 3: Payment',
+                title: 'Pay Order / Bank Draft',
+                points: [
+                  'Pay Order in favour of "Zedem International"',
+                  'Transfer fee receipt from society counter',
+                  'Direct online wire verification for NRPs'
+                ],
+                badge: 'Official Bank Draft'
+              },
+              {
+                point: '04',
+                tag: 'Step 4: Transfer',
+                title: 'Allotment Letter Transfer',
+                points: [
+                  'Official transfer execution at head office counter',
+                  'Immediate biometric record verification',
+                  'New registered owner allotment letter handover'
+                ],
+                badge: 'Official Allotment Handover'
+              }
+            ].map((item, idx) => (
+              <ScrollReveal key={idx} direction="up" delay={idx * 70}>
+                <div className="bg-slate-50 hover:bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/50 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between h-full space-y-4 relative overflow-hidden">
+
+                  {/* Subtle Top Accent Line */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#7b002c]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-9 h-9 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-serif font-bold text-sm shadow-sm group-hover:scale-110 transition-transform">
+                        {item.point}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/70">
+                        {item.tag}
+                      </span>
+                    </div>
+
+                    <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors pt-1">
+                      {item.title}
+                    </h3>
+
+                    {/* Bullet Points */}
+                    <ul className="space-y-1.5 pt-1 text-xs text-slate-600 font-sans">
+                      {item.points.map((pt, pIdx) => (
+                        <li key={pIdx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0 mt-1.5" />
+                          <span className="leading-relaxed">{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Requirement Badge Footer */}
+                  <div className="pt-3 border-t border-slate-200/70 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>{item.badge}</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Transfer Desk Banner */}
+          <div className="p-5 bg-gradient-to-r from-slate-900 via-[#4a081a] to-slate-950 rounded-2xl text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md border border-white/10">
+            <div className="space-y-1 text-center sm:text-left">
+              <h4 className="font-serif font-bold text-base sm:text-lg text-white">Need Assistance with Plot Transfer & File Verification?</h4>
+              <p className="text-xs text-rose-100/80 font-sans">Our dedicated transfer advisory desk verifies society records and guides you step-by-step.</p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Faisal+Hills+Executive+Block+Taxila"
+                href="https://wa.me/923044811717?text=Hi%2C%20I%20need%20official%20assistance%20with%20plot%20transfer%20in%20Faisal%20Hills%20Executive%20Block."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl shadow-xs transition-all hover:scale-105 shrink-0 cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105"
               >
-                <Navigation className="w-3 h-3" />
-                <span>Open Map</span>
-                <ExternalLink className="w-2.5 h-2.5 text-white/80" />
+                <Phone className="w-3.5 h-3.5" />
+                <span>Contact Transfer Desk</span>
               </a>
             </div>
-
-            <div className="relative w-full h-[380px] sm:h-[420px] lg:h-[460px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
-              <iframe
-                title="Faisal Hills Executive Block Exact Location Google Map"
-                src="https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full"
-              />
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
 
       {/* ========================================================= */}
-      {/* 9. MASTER PLAN SECTION (UNBOXED 2-COLUMN LAYOUT)          */}
+      {/* 7. COMPARE OTHER FAISAL HILLS BLOCKS (CAROUSEL SHOWCASE)  */}
       {/* ========================================================= */}
-      <section id="master-plan" className="scroll-mt-28 space-y-6 pt-2 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-
-          {/* Left Column: High-Resolution Map Container */}
-          <div className="lg:col-span-6 flex flex-col">
-            <ScrollReveal direction="left" delay={50}>
-              <div
-                onClick={() => setIsMapModalOpen(true)}
-                className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[320px] sm:min-h-[400px] lg:min-h-[460px] p-2"
-              >
-                <img
-                  src="/images/faisalexecutivemap.png"
-                  alt="Faisal Hills Executive Block Master Plan Map"
-                  className="w-full h-auto max-h-[520px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                  <span className="px-4 py-2 rounded-xl bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-2">
-                    <Maximize2 className="w-4 h-4 text-[#7b002c]" />
-                    <span>Click to Enlarge & Download</span>
-                  </span>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Right Column: Title, Narrative, See More Toggle & Action Buttons */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-5 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
-            <ScrollReveal direction="right" delay={100}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>Zoning Blueprint • Sector Masterplan</span>
-                  </div>
-                  <TextReveal
-                    as="h2"
-                    text="Faisal Hills Executive Block Master Plan"
-                    className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                    staggerDelay={70}
-                    direction="left"
-                  />
-                </div>
-
-                <p className="font-medium text-slate-900 text-sm sm:text-base leading-relaxed">
-                  The master plan for the Executive Block was designed with one goal in mind: residents shouldn’t have to leave the block for their everyday needs. It’s a genuinely master planned development — residential sectors sit alongside dedicated commercial zones, with Faisal Jewel, the Roots International School Campus and other mixed-use projects woven directly into the layout.
-                </p>
-
-                {isMasterPlanExpanded && (
-                  <div className="space-y-3 animate-fadeIn">
-                    <p>
-                      The plan also sets aside space for a wide main boulevard (reported at around 250 feet across at its widest point), along with mosques, a cricket ground and parks distributed across the block.
-                    </p>
-                    <p>
-                      Compared with some of the older, purely residential sectors of Faisal Hills, the Executive Block was clearly planned with higher-density commercial use in mind — which is part of why it carries the “civic and commercial center” label for the whole society, and why its residential and commercial sectors work well alongside each other rather than competing for space.
-                    </p>
-                  </div>
-                )}
-
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsMasterPlanExpanded(!isMasterPlanExpanded)}
-                    className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
-                  >
-                    <span>{isMasterPlanExpanded ? 'See Less' : 'See More Master Plan Details'}</span>
-                    <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isMasterPlanExpanded ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-2.5 pt-4 border-t border-slate-100">
-                <button
-                  onClick={() => setIsMapModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all hover:scale-105 cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download Master Plan (PDF)</span>
-                </button>
-                <Link
-                  href="/master-plan"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all hover:scale-105"
-                >
-                  <Compass className="w-4 h-4 text-[#7b002c]" />
-                  <span>Explore Full Society Map</span>
-                </Link>
-              </div>
-            </ScrollReveal>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 10. FEATURED AVAILABLE PLOTS SHOWCASE                     */}
-      {/* ========================================================= */}
-      <section id="plots-inventory" className="scroll-mt-28 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div className="space-y-1">
-            <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider block">Verified Available Listings</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">Featured On-Ground Executive Plots</h2>
-          </div>
-          <Link
-            href="/plots"
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#7b002c] hover:underline"
-          >
-            <span>View All Plots Inventory</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* 8 Executive Plot Cards Grid (4 in a row) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {executivePlots.slice(0, 8).map((plot, idx) => (
-            <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 100}>
-              <div
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 h-full"
-              >
-                <div>
-                  {/* Image Banner Container -> Redirects to /plots with pre-filtered size */}
-                  <Link
-                    href={`/plots?size=${encodeURIComponent(plot.size)}`}
-                    className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container block cursor-pointer"
-                  >
-                    <img
-                      src={plot.image}
-                      alt={plot.plotNumber}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
-
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full shadow bg-[#7b002c] text-white border border-white/20">
-                        {plot.category === 'Apartment' ? 'Luxury Flat' : plot.category}
-                      </span>
-                    </div>
-
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow border border-white/20">
-                        {plot.status}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="label-caps text-[9px] text-slate-300 block">{plot.blockName}</span>
-                      <h4 className="font-serif font-bold text-xl group-hover:text-slate-200 transition-colors">#{plot.plotNumber}</h4>
-                    </div>
-                  </Link>
-
-                  <div className="p-5 space-y-3">
-                    <div className="space-y-1.5 text-xs text-slate-600">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-500">Property Type:</span>
-                        <Link
-                          href={`/plots?size=${encodeURIComponent(plot.size)}`}
-                          className="text-slate-900 font-bold hover:text-[#7b002c] hover:underline"
-                        >
-                          {plot.size}
-                        </Link>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Dimensions:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Orientation:</span>
-                        <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-5 pt-0 flex items-center justify-between border-t border-slate-100 mt-2">
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase block font-semibold">Demand Price</span>
-                    <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
-                  </div>
-
-                  <Link
-                    href={`/plots/${plot.id}`}
-                    className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>View Details</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 11. FACILITIES AND AMENITIES                              */}
-      {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6 overflow-hidden">
+      <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Trees className="w-3.5 h-3.5" />
-              <span>Master Amenities</span>
-            </div>
             <TextReveal
               as="h2"
-              text="Facilities and Amenities in Faisal Hills Executive Block"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
-              staggerDelay={60}
-              direction="left"
-            />
-            <p className="text-slate-700 text-sm leading-relaxed">
-              Faisal Hills Executive Block facilities cover most of what a modern residential community needs day to day:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* 8 Facilities & Amenities Cards with Real Photos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* 1. Civic Hub */}
-          <ScrollReveal direction="pop" delay={0}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisalhillarc.jpg"
-                    alt="Civic Hub & Monument Entrance"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Building2 className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Sector Core</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Civic Hub</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    The central business, commercial, and community gathering core for the entire society.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 2. Roots International School */}
-          <ScrollReveal direction="pop" delay={60}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisal-roots-school.jpg"
-                    alt="Roots International School Campus Faisal Hills"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <GraduationCap className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Operational</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Roots International School</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    An internationally benchmarked campus, fully operational for quality education.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 3. Faisal Jewel */}
-          <ScrollReveal direction="pop" delay={120}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisal-jewel.jpg"
-                    alt="Faisal Jewel Landmark Tower"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Landmark className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">27-Storey Icon</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Faisal Jewel Tower</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    A landmark high-rise combining residences, shopping mall floors, and a luxury hotel.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 4. Three Mosques */}
-          <ScrollReveal direction="pop" delay={180}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/imgi_46_Mosques.webp"
-                    alt="Jamia Masjid Fatima Tuz Zahra"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Building className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Spiritual Centers</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Three Jamia Mosques</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Including Jamia Masjid Fatima Tuz Zahra for daily prayers and community gatherings.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 5. Two Parks & Play Areas */}
-          <ScrollReveal direction="pop" delay={0}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisal-park.jpg"
-                    alt="Parks & Play Areas Faisal Hills"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Trees className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Lush Greenery</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Two Parks & Play Areas</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Giving families genuine parks, jogging tracks, and safe green spaces close to home.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 6. Cricket Ground & Sports */}
-          <ScrollReveal direction="pop" delay={60}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/imgi_48_sports-arena.webp"
-                    alt="Cricket Ground & Sports Arena Faisal Hills"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Activity className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Active Sports</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Cricket Ground & Arena</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    For residents who want organized sports, cricket matches, and active recreation nearby.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 7. Fuel Station */}
-          <ScrollReveal direction="pop" delay={120}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80"
-                    alt="Boulevard Fuel Station"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Fuel className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">24/7 Utility</span>
-                    <strong className="text-sm font-serif font-bold text-white block">Boulevard Fuel Station</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Convenient fuel filling stations located directly off the entrance boulevard.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* 8. High-Rise Apartment Sites */}
-          <ScrollReveal direction="pop" delay={180}>
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group flex flex-col justify-between h-full">
-              <div>
-                <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80"
-                    alt="High-Rise Apartment Sites"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-xl bg-white/90 backdrop-blur-xs text-[#7b002c] flex items-center justify-center shadow">
-                    <Building2 className="w-4 h-4" />
-                  </div>
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">Vertical Living</span>
-                    <strong className="text-sm font-serif font-bold text-white block">High-Rise Apartment Sites</strong>
-                  </div>
-                </div>
-                <div className="p-4 space-y-1">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    For those who prefer luxury high-rise apartment living with panoramic mountain views.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-
-        <p className="text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-4 font-medium">
-          On the infrastructure side, the block also benefits from wide carpeted roads, underground electricity and a functioning sewerage system — the kind of modern infrastructure that’s easy to take for granted until you compare it with societies still waiting on basic utilities.
-        </p>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 12. KEY PROJECTS WITH VISUAL PHOTOGRAPHY CARDS            */}
-      {/* ========================================================= */}
-      <section id="faisal-jewel" className="scroll-mt-28 space-y-6 overflow-hidden">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Landmark className="w-3.5 h-3.5" />
-              <span>Built Megastructures</span>
-            </div>
-            <TextReveal
-              as="h2"
-              text="Key Projects in Faisal Hills Executive Block"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
-              staggerDelay={65}
-              direction="left"
-            />
-            <p className="text-slate-700 text-sm">
-              A few names come up constantly when people discuss this block, so it’s worth knowing what each one actually is:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {/* Project 1: Faisal Jewel */}
-          <ScrollReveal direction="up" delay={50}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 group h-full">
-              <div>
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/faisal-jewel-1.png"
-                    alt="Faisal Jewel Skyscraper"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-[#7b002c] text-white font-bold text-[10px] rounded-full uppercase tracking-wider shadow">
-                      26-27 Storeys
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-2">
-                  <h3 className="font-serif font-bold text-xl text-slate-900">
-                    <Link href="/blocks/faisal-jewel-islamabad" className="hover:text-[#7b002c] transition-colors">Faisal Jewel Tower</Link>
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    A high-rise project combining commercial retail space, residential apartments and a luxury hotel component. Positioned as the architectural centerpiece of the Executive Block.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <Link
-                  href="/blocks/faisal-jewel-islamabad"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:underline pt-3 border-t border-slate-100 w-full"
-                >
-                  <span>Explore Faisal Jewel Tower</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Project 2: Roots International School */}
-          <ScrollReveal direction="up" delay={100}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 group h-full">
-              <div>
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisal-roots-school.jpg"
-                    alt="Roots International School Campus"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-emerald-600 text-white font-bold text-[10px] rounded-full uppercase tracking-wider shadow">
-                      Fully Operational
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-2">
-                  <h3 className="font-serif font-bold text-xl text-slate-900">Roots International School Campus</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    A fully functional educational facility offering an internationally benchmarked curriculum, giving resident families a nearby option for their children’s schooling.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 pt-3 border-t border-slate-100">
-                  <BadgeCheck className="w-4 h-4" />
-                  <span>Actively Teaching Students on Site</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Project 3: Sports Arena / Community Parks */}
-          <ScrollReveal direction="up" delay={150}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 group h-full">
-              <div>
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/images/faisal-park.jpg"
-                    alt="Sports Arena and Parks"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-blue-600 text-white font-bold text-[10px] rounded-full uppercase tracking-wider shadow">
-                      Active Sports & Recreation
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-2">
-                  <h3 className="font-serif font-bold text-xl text-slate-900">Sports Arena & Community Parks</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    A dedicated ground for cricket, sports events, jogging tracks and green open parks for healthy family living.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <span className="text-xs font-semibold text-blue-700 pt-3 border-t border-slate-100 block">
-                  Integrated in Block Zoning
-                </span>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Project 4: Faisal Mansion / Monument Gateway */}
-          <ScrollReveal direction="up" delay={200}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 group h-full">
-              <div>
-                <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src="/faisalhillarc.jpg"
-                    alt="Faisal Hills Monument Gateway"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-amber-600 text-white font-bold text-[10px] rounded-full uppercase tracking-wider shadow">
-                      Main Gateway & Head Office
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-2">
-                  <h3 className="font-serif font-bold text-xl text-slate-900">Faisal Mansion & Grand Arch</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    The iconic architectural entrance on Main GT Road housing customer facilitation, official site offices and booking documentation desks.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <span className="text-xs font-semibold text-amber-700 pt-3 border-t border-slate-100 block">
-                  Customer Facilitation Active
-                </span>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-
-        <ScrollReveal direction="up" delay={50}>
-          <p className="text-xs text-slate-600 italic bg-white p-5 rounded-2xl border border-slate-200">
-            Together, these projects are what elevate the Executive Block from “a collection of plots” to something closer to a small, self-contained town centre — and they’re a big part of why this block is treated as the flagship of Faisal Hills.
-          </p>
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 14. DEVELOPMENT STATUS (WITH REAL ON-GROUND PHOTO)         */}
-      {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-
-          {/* Left Column: Narrative Content & Status Counters */}
-          <div className="lg:col-span-7 flex flex-col justify-between space-y-5 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
-            <ScrollReveal direction="left" delay={50}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                    <Activity className="w-3.5 h-3.5" />
-                    <span>On-Ground Progress • Verified Site Update</span>
-                  </div>
-                  <TextReveal
-                    as="h2"
-                    text="Faisal Hills Executive Block Development Status"
-                    className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                    staggerDelay={65}
-                    direction="left"
-                  />
-                </div>
-
-                <p className="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
-                  In short, the Faisal Hills Executive Block development status is <strong className="text-[#7b002c]">“actively under construction, with a lot already in place.”</strong> The main boulevard, internal roads and streets are functional. Sewerage, street lighting and underground electricity work have largely been completed across the developed sectors.
-                </p>
-
-                {isDevStatusExpanded && (
-                  <div className="space-y-4 animate-fadeIn">
-                    <p>
-                      On the landmark front, the Roots International School Campus is operational and already teaching students — not a rendering on a brochure, but a working school. Construction on the <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel project</Link> has been progressing steadily, with the structure reportedly nearing completion, and its design has even picked up recognition at international property award events.
-                    </p>
-
-                    <p>
-                      Home construction is also visibly underway across multiple sectors, which is generally reassuring for anyone wary of buying into a project that’s still mostly empty land. That said, development pace can vary by sector — some parts of the Executive Block are noticeably further along than others, so it’s worth asking specifically about the sector your plot is in rather than judging by the block’s overall progress. Read the <Link href="/blogs" className="text-[#7b002c] font-bold hover:underline">latest investment guides on our blog</Link> for detailed quarterly development photo logs.
-                    </p>
-                  </div>
-                )}
-
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
-                    className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
-                  >
-                    <span>{isDevStatusExpanded ? 'See Less' : 'See More Development Details'}</span>
-                    <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isDevStatusExpanded ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Quick Status Metrics */}
-              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100">
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-center space-y-0.5 shadow-2xs">
-                  <span className="text-xl font-serif font-bold text-[#7b002c] block">95%+</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Roads Carpeted</span>
-                </div>
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-center space-y-0.5 shadow-2xs">
-                  <span className="text-xl font-serif font-bold text-[#7b002c] block">100%</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Underground Grid</span>
-                </div>
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-center space-y-0.5 shadow-2xs">
-                  <span className="text-xl font-serif font-bold text-emerald-700 block">Possession</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">Ready to Build</span>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Right Column: Real On-Ground Development Photo */}
-          <div className="lg:col-span-5 flex flex-col">
-            <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
-              <div className="relative w-full h-full min-h-[320px] sm:min-h-[380px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
-                <img
-                  src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
-                  alt="Faisal Hills Executive Block On-Ground Development Status & Aerial View"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-emerald-600/90 text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md flex items-center gap-1.5 backdrop-blur-xs border border-emerald-400/30">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Possession Ready</span>
-                  </span>
-                </div>
-
-                <div className="absolute bottom-5 left-5 right-5 text-white space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
-                    Verified Aerial Drone Survey
-                  </span>
-                  <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
-                    Executive Sector On-Ground Progress
-                  </h4>
-                  <p className="text-xs text-slate-300">
-                    Wide carpeted boulevards, complete utilities, and active on-ground villa construction.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 15. WHY INVEST IN EXECUTIVE BLOCK                         */}
-      {/* ========================================================= */}
-      <section className="bg-slate-900 text-white p-8 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-6 overflow-hidden">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>ROI & Capital Growth</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-              Why Invest in Faisal Hills Executive Block
-            </h2>
-            <p className="text-slate-300 text-sm">
-              If you’re weighing a Faisal Hills Executive Block investment against other options along GT Road, here’s what tends to stand out:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-          {[
-            { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
-            { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
-            { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
-            { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
-            { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
-            { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
-          ].map((item, idx) => (
-            <ScrollReveal key={idx} direction="up" delay={(idx % 3) * 60}>
-              <div className="p-4 bg-white/10 rounded-2xl border border-white/10 space-y-1.5 hover:bg-white/15 transition-all hover:scale-[1.02]">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <strong className="text-white block font-bold">{item.title}</strong>
-                <span className="text-slate-300 leading-relaxed">{item.desc}</span>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-
-        <ScrollReveal direction="up" delay={100}>
-          <p className="text-xs text-slate-300 leading-relaxed pt-2 border-t border-slate-800">
-            None of this guarantees a particular outcome — real estate carries risk like any investment, and prices can move in either direction depending on broader market conditions. But for buyers looking for a secure investment option with both end-use and resale potential, and the possibility of a high return on investment over the medium to long term, the combination of location, legal status and active development is hard to ignore.
-          </p>
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 16. TRANSFER & BOOKING PROCESS (PREMIUM REDESIGN)          */}
-      {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6 overflow-hidden">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <FileText className="w-3.5 h-3.5" />
-              <span>Documentation Checklist • Transfer Protocol</span>
-            </div>
-            <TextReveal
-              as="h2"
-              text="Faisal Hills Executive Block Transfering Process"
+              text="Explore All Faisal Hills Blocks & Landmarks"
               className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
               staggerDelay={65}
               direction="left"
             />
-            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-              Transferring a plot is straightforward with Zedem International. Prepare the following verified documentation checklist for prompt submission:
+            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl font-sans">
+              Hover across the sector columns to view each block's location advantages, development progress, and direct links to full block details:
             </p>
           </div>
         </ScrollReveal>
 
-        {/* 4-Step Process Workflow Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Step 1 */}
-          <ScrollReveal direction="up" delay={0}>
-            <div className="bg-slate-50 hover:bg-white p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between space-y-4 h-full">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="w-9 h-9 rounded-xl bg-rose-100/70 text-[#7b002c] flex items-center justify-center font-serif font-bold text-sm group-hover:scale-110 transition-transform">
-                    01
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800/80 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/60">
-                    Identity
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  CNIC / NICOP Copies
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Two verified photocopies of the applicant’s CNIC (or NICOP for overseas Pakistani buyers).
-                </p>
-              </div>
-              <div className="pt-2 border-t border-slate-200/60 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Attested Copy Required</span>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Step 2 */}
-          <ScrollReveal direction="up" delay={60}>
-            <div className="bg-slate-50 hover:bg-white p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between space-y-4 h-full">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="w-9 h-9 rounded-xl bg-rose-100/70 text-[#7b002c] flex items-center justify-center font-serif font-bold text-sm group-hover:scale-110 transition-transform">
-                    02
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800/80 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/60">
-                    Photos
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Passport Photographs
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Two recent passport-size color photographs of the applicant with a clear blue background.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-slate-200/60 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Blue Background</span>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Step 3 */}
-          <ScrollReveal direction="up" delay={120}>
-            <div className="bg-slate-50 hover:bg-white p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between space-y-4 h-full">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="w-9 h-9 rounded-xl bg-rose-100/70 text-[#7b002c] flex items-center justify-center font-serif font-bold text-sm group-hover:scale-110 transition-transform">
-                    03
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800/80 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/60">
-                    Nominee
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Next of Kin CNIC
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Clear photocopy of next-of-kin CNIC for official nominee and succession files.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-slate-200/60 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Nominee Record</span>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Step 4 */}
-          <ScrollReveal direction="up" delay={180}>
-            <div className="bg-slate-50 hover:bg-white p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/40 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between space-y-4 h-full">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="w-9 h-9 rounded-xl bg-rose-100/70 text-[#7b002c] flex items-center justify-center font-serif font-bold text-sm group-hover:scale-110 transition-transform">
-                    04
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800/80 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/60">
-                    Payment
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                  Down Payment / Pay Order
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Official booking amount bank pay order or verified direct bank deposit slip.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-slate-200/60 flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Official Zedem Pay Order</span>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-
-        {/* Support Help Banner */}
-        <ScrollReveal direction="pop" delay={100}>
-          <div className="p-5 sm:p-6 bg-gradient-to-r from-[#7b002c] via-[#8c0334] to-[#5a0020] rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
-            <div className="space-y-1">
-              <h4 className="font-serif font-bold text-base sm:text-lg">Need Assistance with Plot Transfer & File Verification?</h4>
-              <p className="text-xs text-rose-100">Our dedicated transfer advisory desk verifies society records and guides you step-by-step.</p>
-            </div>
-            <Link
-              href="/contact"
-              className="px-5 py-2.5 bg-white hover:bg-rose-50 text-[#7b002c] text-xs font-bold uppercase tracking-wider rounded-xl shadow transition-all hover:scale-105 shrink-0"
-            >
-              Contact Transfer Desk
-            </Link>
-          </div>
+        {/* Panoramic Expanding Cards Showcase (Filtered Without Executive Block) */}
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={otherBlocks}
+            defaultActiveIndex={0}
+            containerHeightClass="h-[460px] sm:h-[500px] lg:h-[540px]"
+            roundedClass="rounded-2xl sm:rounded-3xl"
+          />
         </ScrollReveal>
       </section>
 
       {/* ========================================================= */}
-      {/* 17. COMPARE OTHER FAISAL HILLS BLOCKS (GRID REDESIGN)      */}
-      {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6 overflow-hidden">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-100 pb-4">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-wider block">Cross-Sector Exploration</span>
-              <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-                Faisal Hills Blocks
-              </h3>
-              <p className="text-xs text-slate-600">
-                Explore other  sectors in Faisal Hills to compare plot sizes, elevations, and possession timelines:
-              </p>
-            </div>
-            <Link
-              href="/faisal-hills-blocks"
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#7b002c] hover:underline shrink-0"
-            >
-              <span>View All Blocks Guide</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </ScrollReveal>
-
-        {/* 6-Block Interactive Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          {[
-            { href: "/blocks/prime-block", badge: "VIP Crest", name: "Prime Block" },
-            { href: "/blocks/block-a", badge: "Developed", name: "Block A" },
-            { href: "/blocks/block-b", badge: "Hill Views", name: "Block B" },
-            { href: "/blocks/block-c", badge: "High Growth", name: "Block C" },
-            { href: "/blocks/block-d", badge: "Affordable", name: "Block D" },
-            { href: "/blocks/gandahara-block", badge: "M-1 Access", name: "Gandhara" }
-          ].map((b, idx) => (
-            <ScrollReveal key={idx} direction="up" delay={idx * 50}>
-              <Link
-                href={b.href}
-                className="p-4 bg-slate-50 hover:bg-[#7b002c] rounded-2xl border border-slate-200 hover:border-[#7b002c] text-slate-800 hover:text-white transition-all duration-300 group shadow-2xs hover:shadow-lg flex flex-col justify-between h-32"
-              >
-                <div className="space-y-1">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#7b002c] group-hover:text-rose-200 block">
-                    {b.badge}
-                  </span>
-                  <strong className="font-serif font-bold text-sm block">{b.name}</strong>
-                </div>
-                <div className="flex items-center justify-between text-[10px] font-medium text-slate-500 group-hover:text-rose-100">
-                  <span>View Details</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 18. FREQUENTLY ASKED QUESTIONS (HOMEPAGE DESIGN STYLE)     */}
+      {/* 8. FREQUENTLY ASKED QUESTIONS (FAQS)                      */}
       {/* ========================================================= */}
       <section className="py-12 lg:py-16 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start relative">
@@ -1869,7 +1217,7 @@ export default function ExecutiveBlockContent() {
 
           {/* Right Column: Clean Horizontal Separated Accordion */}
           <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
-            {seoFaqs.map((faq, index) => {
+            {executiveFaqs.map((faq, index) => {
               const isOpen = openFaq === index;
               return (
                 <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
@@ -1902,50 +1250,33 @@ export default function ExecutiveBlockContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 19. FINAL THOUGHTS & CONCLUSION                           */}
+      {/* 9. SCHEDULE A TOUR & DIRECT INQUIRY FORM                  */}
       {/* ========================================================= */}
-      <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-          Final Thoughts on Faisal Hills Executive Block
-        </h2>
-        <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
-          <p>
-            Pulling all of this together, Faisal Hills Executive Block works because it doesn’t ask buyers to choose between location, lifestyle and investment potential — it tries to offer all three. Its GT Road frontage and RDA approval cover the practical and legal basics. Its mix of residential and commercial plots, parks, mosques, a school and a cricket ground cover the day-to-day living side. And its ongoing development, anchored by the <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel project</Link> and Roots International School, gives it momentum that’s visible on the ground rather than just on paper.
-          </p>
-          <p>
-            If you’re exploring Faisal Hills Executive Block for a personal home, a rental property, or as part of a longer-term investment plan, the next sensible step is to get current, sector-specific information — exact pricing, available plot numbers and the latest payment plan — directly from our team. Real estate decisions tend to work out better when they’re based on up-to-date facts rather than brochure averages, and we’re happy to walk you through whichever part of the Executive Block fits what you’re looking for. <Link href="/contact" className="text-[#7b002c] font-bold hover:underline">Get in touch with our team</Link> today.
-          </p>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 20. DIRECT LEAD CAPTURE INQUIRY FORM                      */}
-      {/* ========================================================= */}
-      <section className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-2xl mx-auto text-center space-y-2 relative z-10">
-          <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block">Executive Assistance</span>
+      <section className="bg-gradient-to-r from-slate-950 via-[#500a1d] to-slate-950 p-8 sm:p-12 rounded-3xl text-white shadow-2xl relative overflow-hidden border border-white/10">
+        <div className="max-w-3xl mx-auto text-center space-y-3 relative z-10">
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-rose-300 bg-white/10 px-3.5 py-1 rounded-full border border-white/15 inline-block backdrop-blur-xs">
+            Direct Developer Facilitation Desk
+          </span>
           <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white">
             Schedule an On-Site Executive Block Tour
           </h3>
-          <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
-            Leave your contact details to receive verified plot listings, current resale rates, and official allotment files directly on WhatsApp.
+          <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-sans">
+            Leave your contact details to receive verified plot listings, latest market rates, and official allotment files directly on WhatsApp.
           </p>
         </div>
 
         {submitted ? (
-          <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 text-center space-y-3 animate-fade-in relative z-10">
+          <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 text-center space-y-3 animate-fade-in relative z-10 mt-6">
             <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto">
               <Check className="w-6 h-6" />
             </div>
             <h4 className="font-serif font-bold text-xl text-white">Inquiry Received!</h4>
-            <p className="text-xs text-rose-100 max-w-md mx-auto">
+            <p className="text-xs text-rose-100 max-w-md mx-auto font-sans">
               Thank you, <strong>{leadName}</strong>. Our Executive Block property specialist will contact you on <strong>{leadPhone}</strong> with available plot files.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleInquirySubmit} className="space-y-4 max-w-2xl mx-auto relative z-10">
+          <form onSubmit={handleInquirySubmit} className="space-y-4 max-w-2xl mx-auto relative z-10 mt-6 font-sans">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1 text-left">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Full Name *</label>
@@ -1960,11 +1291,11 @@ export default function ExecutiveBlockContent() {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">WhatsApp / Phone Number *</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">WhatsApp / Phone *</label>
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. +92 341 0472229"
+                  placeholder="e.g. +92 304 4811717"
                   value={leadPhone}
                   onChange={(e) => setLeadPhone(e.target.value)}
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all"
@@ -1974,103 +1305,45 @@ export default function ExecutiveBlockContent() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Interested Plot Size</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Plot Category / Size</label>
                 <select
                   value={leadPlot}
                   onChange={(e) => setLeadPlot(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-900 border border-white/25 rounded-xl text-xs text-white focus:outline-none focus:border-white transition-all"
                 >
-                  <option value="5 Marla (25x50)">5 Marla Residential (25×50)</option>
-                  <option value="8 Marla (30x60)">8 Marla Residential (30×60)</option>
-                  <option value="10 Marla (35x70)">10 Marla Residential (35×70)</option>
-                  <option value="14 Marla (40x80)">14 Marla Residential (40×80)</option>
-                  <option value="1 Kanal (50x90)">1 Kanal Luxury Residential (50×90)</option>
-                  <option value="Commercial Plot (Boulevard)">Commercial Boulevard Plot</option>
-                  <option value="Faisal Jewel Apartment / Shop">Faisal Jewel Apartment / Shop</option>
+                  <option value="5 Marla (25x50)">5 Marla Residential (25x50)</option>
+                  <option value="8 Marla (30x60)">8 Marla Residential (30x60)</option>
+                  <option value="10 Marla (35x70)">10 Marla Residential (35x70)</option>
+                  <option value="1 Kanal (50x90)">1 Kanal Residential (50x90)</option>
+                  <option value="4 Marla Plaza">4 Marla Commercial Plaza</option>
+                  <option value="5.33 Marla Plaza">5.33 Marla Commercial Plaza</option>
+                  <option value="6 Marla Corner">6 Marla Commercial Corner</option>
+                  <option value="8 Marla Corporate">8 Marla Corporate Boulevard</option>
                 </select>
               </div>
 
-              <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Specific Requirements</label>
-                <input
-                  type="text"
-                  placeholder="Corner, Park Facing, Investment, etc."
-                  value={leadNote}
-                  onChange={(e) => setLeadNote(e.target.value)}
-                  className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all"
-                />
+              <div className="space-y-1 text-left flex flex-col justify-end">
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-white hover:bg-rose-50 text-[#7b002c] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-xl flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Submit Inquiry Request</span>
+                </button>
               </div>
             </div>
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-white hover:bg-slate-100 text-[#7b002c] text-xs font-bold uppercase tracking-widest rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] active:scale-95 cursor-pointer flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4 text-[#7b002c]" />
-              <span>Submit Executive Block Inquiry</span>
-            </button>
           </form>
         )}
       </section>
 
-      {/* Map Download Lead Capture Modal */}
+      {/* Lightbox / Map Download Modal */}
       <MapDownloadModal
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
-        mapPdfUrl="/FAISAL HILLS MASTER PLAN.pdf"
+        blockName="Executive Block"
+        mapImageUrl="/images/faisalexecutivemap.png"
+        mapPdfUrl="/images/faisalexecutivemap.png"
       />
-
-      {/* Interactive Photo Lightbox Modal */}
-      {selectedGalleryImage && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-fade-in"
-          onClick={() => setSelectedGalleryImage(null)}
-        >
-          <div
-            className="bg-slate-900 rounded-3xl border border-white/20 shadow-2xl max-w-4xl w-full overflow-hidden text-white relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedGalleryImage(null)}
-              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-[#7b002c] text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="relative h-72 sm:h-[450px] w-full bg-black flex items-center justify-center overflow-hidden">
-              <img
-                src={selectedGalleryImage.image}
-                alt={selectedGalleryImage.title}
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            <div className="p-6 sm:p-8 bg-slate-950 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-800">
-              <div className="space-y-1">
-                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
-                  {selectedGalleryImage.tag}
-                </span>
-                <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  {selectedGalleryImage.title}
-                </h3>
-                <p className="text-xs text-slate-400 max-w-xl">
-                  {selectedGalleryImage.desc}
-                </p>
-              </div>
-
-              <a
-                href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedGalleryImage.title)}%20in%20Faisal%20Hills%20Executive%20Block.`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span>Inquire on WhatsApp</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
