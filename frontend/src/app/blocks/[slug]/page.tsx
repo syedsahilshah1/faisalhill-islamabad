@@ -222,23 +222,32 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
   const heroSubtitle = block.subtitle;
 
-  const heroDesc = block.description || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
-    ? 'Faisal Jewel is a landmark 27-story mixed-use skyscraper featuring 6 commercial shopping mall floors, luxury serviced residences, a 4-star hotel, rooftop infinity dining, and 3-level underground parking at the grand GT Road entrance.'
-    : block.slug === 'prime-block'
-    ? 'Official fixed launch rates, 48-month easy installment schedule with zero dealer markup, 225ft boulevard access, and scenic Margalla Ridge elevation.'
-    : block.slug === 'block-a'
-    ? 'The most developed & fully populated residential sector in Faisal Hills featuring the Grand Jamia Mosque, ready family villas, 12-Kanal central park, and 100% on-ground immediate construction possession.'
-    : block.slug === 'block-b'
-    ? 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.'
-    : block.slug === 'block-b1-extension'
-    ? 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.'
-    : block.slug === 'block-c'
-    ? 'RDA-approved possession sector adjacent to Hills Walk & M-1 corridor, offering scenic Margalla views, live RO water supply, and high capital growth.'
-    : block.slug === 'block-d'
-    ? 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.'
-    : block.slug === 'hills-walk'
-    ? 'Faisal Hills Walk is the signature European-style open-air pedestrian commercial promenade, featuring luxury retail arcades, rooftop dining, amphitheater, and high-yield commercial plaza cuts.'
-    : 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.');
+  const getHeroDescription = () => {
+    if (block.slug === 'block-a' || block.slug === 'prime-block') return '';
+    if (block.description) return block.description;
+
+    switch (block.slug) {
+      case 'faisal-jewel-islamabad':
+      case 'faisal-jewels':
+        return 'Faisal Jewel is a landmark 27-story mixed-use skyscraper featuring 6 commercial shopping mall floors, luxury serviced residences, a 4-star hotel, rooftop infinity dining, and 3-level underground parking at the grand GT Road entrance.';
+      case 'prime-block':
+        return '';
+      case 'block-b':
+        return 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.';
+      case 'block-b1-extension':
+        return 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.';
+      case 'block-c':
+        return 'RDA-approved possession sector adjacent to Hills Walk & M-1 corridor, offering scenic Margalla views, live RO water supply, and high capital growth.';
+      case 'block-d':
+        return 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.';
+      case 'hills-walk':
+        return 'Faisal Hills Walk is the signature European-style open-air pedestrian commercial promenade, featuring luxury retail arcades, rooftop dining, amphitheater, and high-yield commercial plaza cuts.';
+      default:
+        return 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.';
+    }
+  };
+
+  const heroDesc = getHeroDescription();
 
   return (
     <div className="space-y-8 lg:space-y-10 pb-20">
@@ -252,7 +261,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
         {/* Subtle Transparent Overlay for Maximum Image Visibility & Readable Text */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/50 to-slate-950/60" />
 
-        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-24 sm:gap-16 lg:gap-12 items-center pb-10 sm:pb-14">
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-16 lg:gap-12 items-center pb-10 sm:pb-14">
           
           {/* Left Column: Title, Details, Quick Price & CTAs */}
           <div className="lg:col-span-7 space-y-6">
@@ -284,7 +293,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               {heroSubtitle && (
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
-              <h1 className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight">
+              <h1 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl text-white leading-tight">
                 {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
               </h1>
               {heroDesc && (

@@ -743,7 +743,7 @@ export const blocksData: BlockInfo[] = [
     status: "Under Development",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
-    description: "Faisal Hills Prime Block is a premium VIP residential enclave positioned on the highest crest of the society.",
+    description: "",
     locationDetails: "Situated on the highest crest of Faisal Hills with uninterrupted views of the Margalla Hills range.",
     highlights: [
       "VIP Enclave with Gated Entry & Biometrics",
@@ -826,12 +826,12 @@ export const blocksData: BlockInfo[] = [
     id: "block-a",
     slug: "block-a",
     name: "Block A",
-    subtitle: "The Vibrant Commercial & Residential Heart of Faisal Hills",
+    subtitle: "",
     category: "developed",
     status: "Fully Developed & Populated",
     nocStatus: "RDA Approved",
     verificationDate: "August 2026",
-    description: "Faisal Hills Block A is the most developed and fully populated sector of the society, bordering the main entrance. Offering legal clarity with full RDA approval and possessionable plots, it is the top choice for home-builders ready to construct immediately near Jamia mosques, schools, and central commercial hubs.",
+    description: "",
     locationDetails: "Adjoining Executive Block, connected via the 150ft Central Avenue.",
     highlights: [
       "RDA-Approved & Fully Populated Neighborhood",

@@ -901,16 +901,6 @@ export default function PrimeBlockContent() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
-                      {/* Top Badges Row */}
-                      <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between gap-1 z-10">
-                        <span className="text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
-                          {plot.category}
-                        </span>
-                        <span className="bg-emerald-600 text-white text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
-                          {plot.status}
-                        </span>
-                      </div>
-
                       {/* Plot Number & Block */}
                       <div className="absolute bottom-1.5 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 text-white">
                         <span className="text-[8px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>

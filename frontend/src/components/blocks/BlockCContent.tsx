@@ -1056,21 +1056,6 @@ export default function BlockCContent() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
-                    {/* Top Badges Row */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-10">
-                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm bg-[#7b002c] text-white border border-white/20 shrink-0">
-                          {plot.category}
-                        </span>
-                        <span className="text-[9px] font-medium px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-slate-200 border border-white/15 truncate max-w-[95px]">
-                          {plot.size}
-                        </span>
-                      </div>
-                      <span className="bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm border border-emerald-400/30 shrink-0 whitespace-nowrap">
-                        {plot.status || 'Available'}
-                      </span>
-                    </div>
-
                     {/* Plot Number & Block */}
                     <div className="absolute bottom-3 left-3 right-3 text-white">
                       <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">
