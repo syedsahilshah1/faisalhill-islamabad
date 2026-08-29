@@ -541,6 +541,10 @@ export default function BlockDContent() {
     return blockDAmenities.filter((a) => a.category === selectedAmenityFilter);
   }, [selectedAmenityFilter]);
 
+  const otherBlocks = useMemo(() => {
+    return defaultFaisalHillsBlocks.filter((b) => b.id !== 'block-d' && b.href !== '/blocks/block-d');
+  }, []);
+
   // Handle Form Submission
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1299,41 +1303,87 @@ export default function BlockDContent() {
           </div>
         </div>
 
-        {/* Pricing Schedule Table */}
-        <div className="rounded-3xl border border-slate-200 overflow-hidden shadow-xs bg-white">
+        {/* Mobile View: Clean Responsive Price Cards */}
+        <div className="block sm:hidden space-y-3">
+          {filteredPriceSchedule.map((row, idx) => (
+            <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#7b002c]" />
+                  <span className="font-bold text-sm text-slate-900">{row.size}</span>
+                </div>
+                <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200">
+                  {row.possession}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-sans">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Dimensions</span>
+                  <span className="text-slate-800 font-mono font-medium">{row.dimensions}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Total Area</span>
+                  <span className="text-slate-800 font-medium">{row.sqYards} <span className="text-slate-400 text-[10px]">({row.sqFeet})</span></span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Market Price Band</span>
+                  <span className="font-serif font-bold text-sm text-[#7b002c]">{row.priceRange}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, plotSize: row.size }));
+                    setIsLeadModalOpen(true);
+                  }}
+                  className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1"
+                >
+                  <span>Inquire</span>
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Full Table */}
+        <div className="hidden sm:block rounded-3xl border border-slate-200 overflow-hidden shadow-xs bg-white">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[650px]">
               <thead>
                 <tr className="bg-slate-900 text-white font-serif">
-                  <th className="p-4 sm:p-5">Plot Category & Cut</th>
-                  <th className="p-4 sm:p-5">Dimensions</th>
-                  <th className="p-4 sm:p-5">Total Area</th>
-                  <th className="p-4 sm:p-5">Market Price Band</th>
-                  <th className="p-4 sm:p-5">Possession Status</th>
-                  <th className="p-4 sm:p-5">Action</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Plot Category & Cut</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Dimensions</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Total Area</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Market Price Band</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Possession Status</th>
+                  <th className="p-4 sm:p-5 whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-slate-700">
                 {filteredPriceSchedule.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2">
+                    <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2 whitespace-nowrap">
                       <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
                       <span>{row.size}</span>
                     </td>
-                    <td className="p-4 sm:p-5 font-mono text-slate-600">{row.dimensions}</td>
-                    <td className="p-4 sm:p-5">
+                    <td className="p-4 sm:p-5 font-mono text-slate-600 whitespace-nowrap">{row.dimensions}</td>
+                    <td className="p-4 sm:p-5 whitespace-nowrap">
                       <div className="font-semibold text-slate-900">{row.sqYards}</div>
                       <div className="text-[11px] text-slate-400">{row.sqFeet}</div>
                     </td>
-                    <td className="p-4 sm:p-5 font-bold text-[#7b002c] font-serif text-sm sm:text-base">
+                    <td className="p-4 sm:p-5 font-bold text-[#7b002c] font-serif text-sm sm:text-base whitespace-nowrap">
                       {row.priceRange}
                     </td>
-                    <td className="p-4 sm:p-5">
+                    <td className="p-4 sm:p-5 whitespace-nowrap">
                       <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
                         {row.possession}
                       </span>
                     </td>
-                    <td className="p-4 sm:p-5">
+                    <td className="p-4 sm:p-5 whitespace-nowrap">
                       <button
                         type="button"
                         onClick={() => {
@@ -1595,7 +1645,7 @@ export default function BlockDContent() {
 
         <ScrollReveal direction="up" delay={100}>
           <ExpandingProjectsShowcase
-            items={defaultFaisalHillsBlocks}
+            items={otherBlocks}
             defaultActiveIndex={3}
             containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
             roundedClass="rounded-2xl sm:rounded-3xl"

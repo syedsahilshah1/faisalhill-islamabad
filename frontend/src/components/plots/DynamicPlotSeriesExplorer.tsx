@@ -97,10 +97,6 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
       {/* Header with Title & Category Switcher */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Interactive Dynamic Pricing Engine</span>
-          </div>
           <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
             {blockName} Plot Price & Series Explorer
           </h2>

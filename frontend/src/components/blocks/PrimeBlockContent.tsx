@@ -331,7 +331,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 62,00,000 (20%)',
     status: 'Corner Plot',
     badge: 'Double Corner',
-    image: '/images/faisal-hills-site-home-page-header.webp',
+    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
     features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
   },
   {
@@ -517,16 +517,13 @@ export default function PrimeBlockContent() {
                       </div>
                     )}
 
-                    <div className="pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                        className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
-                      >
-                        <span>{isOverviewExpanded ? 'See Less' : 'See More Overview Details'}</span>
-                        <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isOverviewExpanded ? 'rotate-180' : ''}`} />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                      className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
+                    >
+                      {isOverviewExpanded ? 'See less' : 'See more'}
+                    </button>
                   </div>
                 </div>
               </ScrollReveal>
@@ -598,16 +595,13 @@ export default function PrimeBlockContent() {
                       </p>
                     </div>
                   )}
-                  <div className="pt-1">
                     <button
                       type="button"
                       onClick={() => setIsLocationExpanded(!isLocationExpanded)}
-                      className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
+                      className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
                     >
-                      <span>{isLocationExpanded ? 'See Less' : 'See More Location Details'}</span>
-                      <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isLocationExpanded ? 'rotate-180' : ''}`} />
+                      {isLocationExpanded ? 'See less' : 'See more'}
                     </button>
-                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -728,16 +722,13 @@ export default function PrimeBlockContent() {
                   </div>
                 )}
 
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsMasterPlanExpanded(!isMasterPlanExpanded)}
-                    className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
-                  >
-                    <span>{isMasterPlanExpanded ? 'See Less' : 'See More Master Plan Details'}</span>
-                    <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isMasterPlanExpanded ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMasterPlanExpanded(!isMasterPlanExpanded)}
+                  className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
+                >
+                  {isMasterPlanExpanded ? 'See less' : 'See more'}
+                </button>
               </div>
 
               {/* Action Buttons */}
@@ -1239,16 +1230,13 @@ export default function PrimeBlockContent() {
                     </div>
                   )}
 
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
-                      className="inline-flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] bg-rose-50 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl border border-rose-200/80 transition cursor-pointer"
-                    >
-                      <span>{isDevStatusExpanded ? 'See Less' : 'See More Development Details'}</span>
-                      <ChevronDown className={`w-4 h-4 transform transition-transform duration-300 ${isDevStatusExpanded ? 'rotate-180' : ''}`} />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
+                    className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
+                  >
+                    {isDevStatusExpanded ? 'See less' : 'See more'}
+                  </button>
                 </div>
 
                 {/* Quick Status Metrics (Optimized responsive typography & layout) */}
