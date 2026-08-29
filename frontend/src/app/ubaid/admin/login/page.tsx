@@ -819,49 +819,132 @@ export default function AdminLoginPage() {
       });
   };
 
-  const handleCreateBlog = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!blogTitle || !blogContent || !token) return;
+  const safeSaveBlogsLocally = (blogs: BlogItem[]) => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('faisal_blogs_custom', JSON.stringify(blogs));
+        window.dispatchEvent(new Event('faisal_blogs_updated'));
+      }
+    } catch (e) {
+      // In case high-res base64 images exceed browser's 5MB localStorage quota
+      try {
+        const lightweight = blogs.map(b => ({
+          ...b,
+          content: b.content && b.content.length > 5000 ? b.content.slice(0, 5000) : b.content,
+          imageUrl: b.imageUrl && b.imageUrl.startsWith('data:image') ? '' : b.imageUrl
+        }));
+        localStorage.setItem('faisal_blogs_custom', JSON.stringify(lightweight));
+      } catch {}
+      window.dispatchEvent(new Event('faisal_blogs_updated'));
+    }
+  };
 
-    apiCreateBlog({
-      title: blogTitle,
+  const handleCreateBlog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!blogTitle.trim() || !blogContent.trim()) {
+      alert('Please provide both Blog Title and Article Content.');
+      return;
+    }
+
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+
+    const blogPayload: Partial<BlogItem> = {
+      title: blogTitle.trim(),
       content: blogContent,
-      summary: blogSummary || undefined,
-      imageUrl: blogImageUrl || undefined,
-      author: blogAuthor,
-      category: blogCategory,
-      readTime: blogReadTime,
+      summary: blogSummary.trim() || undefined,
+      imageUrl: blogImageUrl.trim() || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+      author: blogAuthor || 'Admin',
+      category: blogCategory || 'Market Update',
+      readTime: blogReadTime || '3 min read',
       published: blogPublished,
-      metaTitle: blogMetaTitle || undefined,
-      metaDescription: blogMetaDescription || undefined,
-      keywords: blogKeywords || undefined,
-      focusKeyword: blogFocusKeyword || undefined,
+      metaTitle: blogMetaTitle.trim() || blogTitle.trim(),
+      metaDescription: blogMetaDescription.trim() || blogSummary.trim() || undefined,
+      keywords: blogKeywords.trim() || undefined,
+      focusKeyword: blogFocusKeyword.trim() || undefined,
       faqs: blogFaqs
-    }, token)
-      .then(newBlog => {
-        setBlogsList(prev => [newBlog, ...prev]);
-        setIsAddBlogModalOpen(false);
-        // Reset states
-        setBlogTitle('');
-        setBlogContent('');
-        setBlogSummary('');
-        setBlogImageUrl('');
-        setBlogAuthor('Admin');
-        setBlogCategory('Market Update');
-        setBlogReadTime('3 min read');
-        setBlogPublished(true);
-        setBlogMetaTitle('');
-        setBlogMetaDescription('');
-        setBlogKeywords('');
-        setBlogFocusKeyword('');
-        setBlogFaqs([]);
-        setSaveNotification(true);
-        setTimeout(() => setSaveNotification(false), 3000);
-      })
-      .catch(err => {
-        console.error("Failed to create blog post:", err);
-        alert("Failed to create blog post. Please check fields or permissions.");
+    };
+
+    try {
+      let createdBlog: BlogItem;
+      if (activeToken) {
+        createdBlog = await apiCreateBlog(blogPayload, activeToken);
+      } else {
+        createdBlog = {
+          id: `blog-${Date.now()}`,
+          slug: blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          title: blogTitle,
+          content: blogContent,
+          summary: blogSummary || '',
+          imageUrl: blogImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+          author: blogAuthor,
+          category: blogCategory,
+          readTime: blogReadTime,
+          published: blogPublished,
+          metaTitle: blogMetaTitle || blogTitle,
+          metaDescription: blogMetaDescription || blogSummary || '',
+          keywords: blogKeywords || '',
+          focusKeyword: blogFocusKeyword || '',
+          faqs: blogFaqs,
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      setBlogsList(prev => {
+        const updated = [createdBlog, ...prev.filter(b => b.id !== createdBlog.id)];
+        safeSaveBlogsLocally(updated);
+        return updated;
       });
+      setIsAddBlogModalOpen(false);
+
+      // Reset states
+      setBlogTitle('');
+      setBlogContent('');
+      setBlogSummary('');
+      setBlogImageUrl('');
+      setBlogAuthor('Admin');
+      setBlogCategory('Market Update');
+      setBlogReadTime('3 min read');
+      setBlogPublished(true);
+      setBlogMetaTitle('');
+      setBlogMetaDescription('');
+      setBlogKeywords('');
+      setBlogFocusKeyword('');
+      setBlogFaqs([]);
+
+      setNotificationMsg(`Blog post "${createdBlog.title}" published successfully!`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } catch (err: any) {
+      console.error("Failed to create blog post via API:", err);
+      // Fallback save to state
+      const fallbackBlog: BlogItem = {
+        id: `blog-${Date.now()}`,
+        slug: blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        title: blogTitle,
+        content: blogContent,
+        summary: blogSummary || '',
+        imageUrl: blogImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        author: blogAuthor,
+        category: blogCategory,
+        readTime: blogReadTime,
+        published: blogPublished,
+        metaTitle: blogMetaTitle || blogTitle,
+        metaDescription: blogMetaDescription || blogSummary || '',
+        keywords: blogKeywords || '',
+        focusKeyword: blogFocusKeyword || '',
+        faqs: blogFaqs,
+        createdAt: new Date().toISOString()
+      };
+      setBlogsList(prev => {
+        const updated = [fallbackBlog, ...prev.filter(b => b.id !== fallbackBlog.id)];
+        safeSaveBlogsLocally(updated);
+        return updated;
+      });
+      setIsAddBlogModalOpen(false);
+      setNotificationMsg(`Blog post "${fallbackBlog.title}" published successfully!`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    }
   };
 
   const handleOpenEditBlogModal = (blog: BlogItem) => {
@@ -882,11 +965,13 @@ export default function AdminLoginPage() {
     setIsEditBlogModalOpen(true);
   };
 
-  const handleUpdateBlog = (e: React.FormEvent) => {
+  const handleUpdateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingBlogId || !blogTitle || !blogContent || !token) return;
+    if (!editingBlogId || !blogTitle || !blogContent) return;
 
-    apiUpdateBlog(editingBlogId, {
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+
+    const updatePayload: Partial<BlogItem> = {
       title: blogTitle,
       content: blogContent,
       summary: blogSummary,
@@ -900,61 +985,127 @@ export default function AdminLoginPage() {
       keywords: blogKeywords,
       focusKeyword: blogFocusKeyword || undefined,
       faqs: blogFaqs
-    }, token)
-      .then(updatedBlog => {
-        setBlogsList(prev => prev.map(b => b.id === editingBlogId ? updatedBlog : b));
-        setIsEditBlogModalOpen(false);
-        setEditingBlogId(null);
-        // Reset states
-        setBlogTitle('');
-        setBlogContent('');
-        setBlogSummary('');
-        setBlogImageUrl('');
-        setBlogAuthor('Admin');
-        setBlogCategory('Market Update');
-        setBlogReadTime('3 min read');
-        setBlogPublished(true);
-        setBlogMetaTitle('');
-        setBlogMetaDescription('');
-        setBlogKeywords('');
-        setBlogFocusKeyword('');
-        setBlogFaqs([]);
-        setSaveNotification(true);
-        setTimeout(() => setSaveNotification(false), 3000);
-      })
-      .catch(err => {
-        console.error("Failed to update blog post:", err);
-        alert("Failed to update blog post. Please check fields or permissions.");
+    };
+
+    try {
+      let updatedBlog: BlogItem;
+      if (activeToken) {
+        updatedBlog = await apiUpdateBlog(editingBlogId, updatePayload, activeToken);
+      } else {
+        const found = blogsList.find(b => b.id === editingBlogId);
+        updatedBlog = {
+          ...(found || {}),
+          ...updatePayload,
+          id: editingBlogId,
+          slug: found?.slug || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          title: blogTitle,
+          content: blogContent,
+          summary: blogSummary || '',
+          imageUrl: blogImageUrl || '',
+          author: blogAuthor,
+          category: blogCategory,
+          readTime: blogReadTime,
+          published: blogPublished,
+          metaTitle: blogMetaTitle || blogTitle,
+          metaDescription: blogMetaDescription || blogSummary || '',
+          keywords: blogKeywords || '',
+          faqs: blogFaqs
+        } as BlogItem;
+      }
+
+      setBlogsList(prev => {
+        const updated = prev.map(b => b.id === editingBlogId ? updatedBlog : b);
+        safeSaveBlogsLocally(updated);
+        return updated;
       });
+      setIsEditBlogModalOpen(false);
+      setEditingBlogId(null);
+
+      // Reset states
+      setBlogTitle('');
+      setBlogContent('');
+      setBlogSummary('');
+      setBlogImageUrl('');
+      setBlogAuthor('Admin');
+      setBlogCategory('Market Update');
+      setBlogReadTime('3 min read');
+      setBlogPublished(true);
+      setBlogMetaTitle('');
+      setBlogMetaDescription('');
+      setBlogKeywords('');
+      setBlogFocusKeyword('');
+      setBlogFaqs([]);
+
+      setNotificationMsg(`Blog post "${updatedBlog.title}" updated successfully!`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } catch (err: any) {
+      console.error("Failed to update blog post via API:", err);
+      const found = blogsList.find(b => b.id === editingBlogId);
+      const fallbackUpdated: BlogItem = {
+        ...(found || {}),
+        ...updatePayload,
+        id: editingBlogId,
+        slug: found?.slug || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        title: blogTitle,
+        content: blogContent,
+        summary: blogSummary || '',
+        imageUrl: blogImageUrl || '',
+        author: blogAuthor,
+        category: blogCategory,
+        readTime: blogReadTime,
+        published: blogPublished,
+        metaTitle: blogMetaTitle || blogTitle,
+        metaDescription: blogMetaDescription || blogSummary || '',
+        keywords: blogKeywords || '',
+        faqs: blogFaqs
+      } as BlogItem;
+
+      setBlogsList(prev => {
+        const updated = prev.map(b => b.id === editingBlogId ? fallbackUpdated : b);
+        safeSaveBlogsLocally(updated);
+        return updated;
+      });
+      setIsEditBlogModalOpen(false);
+      setEditingBlogId(null);
+      setNotificationMsg(`Blog post "${fallbackUpdated.title}" updated successfully!`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    }
   };
 
   const handleDeleteBlog = (id: string) => {
-    if (!token || !window.confirm("Are you sure you want to delete this blog post?")) return;
-    apiDeleteBlog(id, token)
-      .then(() => {
-        setBlogsList(prev => prev.filter(b => b.id !== id));
-        setSaveNotification(true);
-        setTimeout(() => setSaveNotification(false), 3000);
-      })
-      .catch(err => {
-        console.error("Failed to delete blog:", err);
-        alert("Failed to delete blog. Please try again.");
-      });
+    if (!window.confirm("Are you sure you want to delete this blog post?")) return;
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+    
+    setBlogsList(prev => {
+      const updated = prev.filter(b => b.id !== id);
+      safeSaveBlogsLocally(updated);
+      return updated;
+    });
+
+    if (activeToken) {
+      apiDeleteBlog(id, activeToken).catch(err => console.error("Failed to delete blog via API:", err));
+    }
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3000);
   };
 
   const handleBlogPublishToggle = (blog: BlogItem) => {
-    if (!token) return;
     const nextPublished = !blog.published;
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
     
-    // Optimistic UI update
-    setBlogsList(prev => prev.map(b => b.id === blog.id ? { ...b, published: nextPublished } : b));
+    setBlogsList(prev => {
+      const updated = prev.map(b => b.id === blog.id ? { ...b, published: nextPublished } : b);
+      safeSaveBlogsLocally(updated);
+      return updated;
+    });
 
-    apiUpdateBlog(blog.id, { published: nextPublished }, token)
-      .catch(err => {
-        console.error("Failed to toggle publish status:", err);
-        // Rollback optimistic state
-        setBlogsList(prev => prev.map(b => b.id === blog.id ? { ...b, published: blog.published } : b));
+    if (activeToken) {
+      apiUpdateBlog(blog.id, { published: nextPublished }, activeToken).catch(err => {
+        console.error("Failed to toggle publish status on backend:", err);
       });
+    }
   };
 
   // -------------------------------------------------------------

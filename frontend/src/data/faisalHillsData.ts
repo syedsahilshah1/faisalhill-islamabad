@@ -1573,28 +1573,69 @@ export async function apiUpdateGlobalSeo(globalSeo: any, token: string): Promise
   return await res.json();
 }
 
+export const initialBlogsData: BlogItem[] = [];
+
 export async function fetchBlogs(): Promise<BlogItem[]> {
+  let localBlogs: BlogItem[] = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('faisal_blogs_custom');
+      if (stored) {
+        localBlogs = JSON.parse(stored);
+      }
+    } catch {}
+  }
+
   try {
     const res = await fetch(`${API_URL}/blogs`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch blogs');
     const data = await res.json();
-    return data.map(mapBlogToCamel);
+    const mapped = Array.isArray(data) ? data.map(mapBlogToCamel) : [];
+    
+    // Combine local custom blogs with API results (no dummy data)
+    const combined = [...localBlogs, ...mapped];
+    const seen = new Set<string>();
+    return combined.filter(b => {
+      const key = b.id || b.slug;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return b.published !== false;
+    });
   } catch (e) {
     console.error(e);
-    return [];
+    const seen = new Set<string>();
+    return localBlogs.filter(b => {
+      const key = b.id || b.slug;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return b.published !== false;
+    });
   }
 }
 
 export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('faisal_blogs_custom');
+      if (stored) {
+        const localBlogs: BlogItem[] = JSON.parse(stored);
+        const found = localBlogs.find(b => b.slug === slug || b.id === slug);
+        if (found) return found;
+      }
+    } catch {}
+  }
+
   try {
     const res = await fetch(`${API_URL}/blogs/${slug}`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch blog post');
-    const data = await res.json();
-    return mapBlogToCamel(data);
+    if (res.ok) {
+      const data = await res.json();
+      return mapBlogToCamel(data);
+    }
   } catch (e) {
     console.error(e);
-    return null;
   }
+
+  return null;
 }
 
 export async function apiFetchAllBlogs(token: string): Promise<BlogItem[]> {

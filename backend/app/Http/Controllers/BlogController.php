@@ -64,7 +64,7 @@ class BlogController extends Controller
             'faqs' => 'nullable|array',
         ]);
 
-        $id = 'blog-' . Str::uuid()->getHex()->toString();
+        $id = 'blog-' . (string) Str::uuid();
         
         // Generate unique slug
         $baseSlug = Str::slug($validated['title']);

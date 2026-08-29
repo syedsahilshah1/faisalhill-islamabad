@@ -205,7 +205,7 @@ export default function BlogDetailPage() {
     <div className="bg-[#fff8f6] min-h-screen pb-16 font-sans">
       
       {/* ── Top Header Banner ── */}
-      <section className="bg-gradient-to-r from-[#4c050d] via-[#7b002c] to-[#0d0105] text-white py-12 sm:py-16 relative border-b border-[#7b002c]/20">
+      <section className="bg-gradient-to-r from-[#4c050d] via-[#7b002c] to-[#0d0105] text-white pt-28 sm:pt-36 lg:pt-40 pb-12 sm:pb-16 relative border-b border-[#7b002c]/20">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 space-y-4">
           
           <Link 
@@ -295,31 +295,67 @@ export default function BlogDetailPage() {
 
           {/* Frequently Asked Questions (FAQ Accordion) */}
           {blog.faqs && blog.faqs.length > 0 && (
-            <div className="bg-white p-5 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
-              <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#7b002c]">
-                Frequently Asked Questions
-              </h3>
+            <div className="bg-white p-6 sm:p-9 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div className="w-10 h-10 rounded-2xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold shrink-0">
+                  <HelpCircle className="w-5 h-5 text-[#7b002c]" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 leading-tight">
+                    Frequently Asked Questions
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Quick answers regarding this article & Faisal Hills real estate.
+                  </p>
+                </div>
+              </div>
               
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {blog.faqs.map((faq, idx) => {
                   const isOpen = openFaqIndex === idx;
                   return (
                     <div 
                       key={idx} 
-                      className="border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-[#7b002c]/20 transition-all duration-300"
+                      className={`rounded-2xl transition-all duration-300 overflow-hidden border ${
+                        isOpen 
+                          ? 'border-[#7b002c]/40 bg-gradient-to-br from-rose-50/40 via-white to-white shadow-md' 
+                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-xs'
+                      }`}
                     >
                       <button
+                        type="button"
                         onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                        className="w-full p-4.5 text-left font-serif font-bold text-[#0d0105] text-xs sm:text-sm hover:text-[#7b002c] flex items-start gap-3 transition cursor-pointer"
+                        className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 transition cursor-pointer group"
                       >
-                        <span className="text-base leading-none text-slate-400 font-bold shrink-0 mt-0.5">
-                          {isOpen ? '−' : '+'}
-                        </span>
-                        <span>{faq.question}</span>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-[11px] font-bold shrink-0 transition-colors ${
+                            isOpen 
+                              ? 'bg-[#7b002c] text-white shadow-xs' 
+                              : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                          }`}>
+                            Q{idx + 1}
+                          </span>
+                          <span className={`font-serif font-bold text-sm sm:text-base transition-colors leading-snug ${
+                            isOpen ? 'text-[#7b002c]' : 'text-slate-900 group-hover:text-[#7b002c]'
+                          }`}>
+                            {faq.question}
+                          </span>
+                        </div>
+
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          isOpen 
+                            ? 'bg-[#7b002c] text-white rotate-180 shadow-xs' 
+                            : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                        }`}>
+                          <ChevronDown className="w-4 h-4" />
+                        </div>
                       </button>
+
                       {isOpen && (
-                        <div className="px-5 pb-5 pl-10 text-xs sm:text-sm text-slate-650 leading-relaxed font-sans border-t border-slate-100 bg-slate-50/50">
-                          {faq.answer}
+                        <div className="px-5 pb-5 pt-1 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans border-t border-rose-100/60 animate-fadeIn">
+                          <div className="pl-10 text-slate-650 leading-relaxed">
+                            {faq.answer}
+                          </div>
                         </div>
                       )}
                     </div>

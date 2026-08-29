@@ -13,7 +13,7 @@ export default function BlogsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  useEffect(() => {
+  const loadBlogsData = () => {
     fetchBlogs()
       .then((data) => {
         setBlogs(data);
@@ -23,6 +23,21 @@ export default function BlogsPage() {
         console.error("Failed to load blogs:", err);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    loadBlogsData();
+
+    const handleUpdate = () => {
+      loadBlogsData();
+    };
+
+    window.addEventListener('faisal_blogs_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('faisal_blogs_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   const filteredBlogs = blogs.filter((blog) => {
@@ -42,7 +57,7 @@ export default function BlogsPage() {
     <div className="bg-[#fff8f6] min-h-screen pb-16 font-sans">
       
       {/* ── Editorial Header Banner ── */}
-      <section className="bg-gradient-to-r from-[#4c050d] via-[#7b002c] to-[#0d0105] text-white py-16 sm:py-24 relative overflow-hidden border-b border-[#7b002c]/30">
+      <section className="bg-gradient-to-r from-[#4c050d] via-[#7b002c] to-[#0d0105] text-white pt-28 sm:pt-36 lg:pt-40 pb-16 sm:pb-20 relative overflow-hidden border-b border-[#7b002c]/30">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fed65b_1px,transparent_1px)] [background-size:16px_16px]" />
         
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 relative z-10 text-center space-y-4">
@@ -126,8 +141,11 @@ export default function BlogsPage() {
                 className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group hover:border-[#7b002c]/40 hover:-translate-y-1"
               >
                 
-                {/* Image Cover */}
-                <div className="h-56 bg-slate-900 relative overflow-hidden shrink-0">
+                {/* Image Cover - Clickable Link */}
+                <Link 
+                  href={`/blogs/${blog.slug}`} 
+                  className="h-56 bg-slate-900 relative overflow-hidden shrink-0 block cursor-pointer"
+                >
                   <img
                     src={blog.imageUrl}
                     alt={blog.title}
@@ -136,7 +154,7 @@ export default function BlogsPage() {
                   <span className="absolute top-4 left-4 bg-[#7b002c] text-white text-[9px] font-bold tracking-wider uppercase px-3 py-1 rounded-full shadow backdrop-blur-xs">
                     {blog.category}
                   </span>
-                </div>
+                </Link>
 
                 {/* Body Content */}
                 <div className="p-6 flex-grow flex flex-col justify-between space-y-5">
@@ -149,7 +167,7 @@ export default function BlogsPage() {
                         <span>
                           {blog.createdAt 
                             ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                            : 'Aug 19, 2026'
+                            : 'Aug 29, 2026'
                           }
                         </span>
                       </span>
@@ -160,9 +178,11 @@ export default function BlogsPage() {
                       </span>
                     </div>
 
-                    <h3 className="font-serif font-bold text-lg text-slate-900 line-clamp-2 leading-snug group-hover:text-[#7b002c] transition-colors">
-                      {blog.title}
-                    </h3>
+                    <Link href={`/blogs/${blog.slug}`} className="block group/title">
+                      <h3 className="font-serif font-bold text-lg text-slate-900 line-clamp-2 leading-snug group-hover/title:text-[#7b002c] transition-colors cursor-pointer">
+                        {blog.title}
+                      </h3>
+                    </Link>
 
                     <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">
                       {blog.summary}
