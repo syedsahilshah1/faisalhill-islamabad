@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  Building2, Phone, MessageSquare, MapPin, Mail, Clock, 
+import {
+  Building2, Phone, MessageSquare, MapPin, Mail, Clock,
   ShieldCheck, CheckCircle2, ArrowRight, Star, ChevronDown, ChevronUp,
-  FileText, Compass, Award, Calculator, TrendingUp, Landmark, 
+  FileText, Compass, Award, Calculator, TrendingUp, Landmark,
   Globe2, Check, HelpCircle, PhoneCall, ExternalLink, Calendar,
   ArrowUpRight, AlertCircle, Sparkles, ChevronRight, Home, Store
 } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function ContactPage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isHeroSeeMoreOpen, setIsHeroSeeMoreOpen] = useState(false);
   const [isAboutSeeMoreOpen, setIsAboutSeeMoreOpen] = useState(false);
-  
+
   // Interactive Mobile/Desktop Tab States
   const [selectedBlockTab, setSelectedBlockTab] = useState<string>('executive');
   const [selectedPlotCategoryTab, setSelectedPlotCategoryTab] = useState<'residential' | 'commercial'>('residential');
@@ -223,13 +223,8 @@ export default function ContactPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/75" />
 
         <div className="relative z-10 max-w-[1440px] mx-auto space-y-4 sm:space-y-5 text-left">
-          
-          <ScrollReveal direction="up" delay={50}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#7b002c] text-white border border-rose-400/30 shadow-md">
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>Official Sales & Advisory Desk</span>
-            </div>
-          </ScrollReveal>
+
+
 
           <ScrollReveal direction="up" delay={150}>
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight max-w-4xl">
@@ -239,14 +234,11 @@ export default function ContactPage() {
 
           <ScrollReveal direction="up" delay={250}>
             <div className="text-slate-200 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed font-sans space-y-2">
-              <p>
-                Connect directly with authorized consultants for verified plot rates, live block availability, official RDA approval records, and site visit scheduling across Faisal Hills.
-              </p>
 
-              <div 
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  isHeroSeeMoreOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-                }`}
+
+              <div
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${isHeroSeeMoreOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}
               >
                 <p className="pt-2 text-slate-300 text-xs sm:text-sm border-t border-slate-800/80 leading-relaxed">
                   Every inquiry is handled by an on-ground specialist who knows the real construction status of each sector. Whether you are interested in Executive Block possession villas, Prime Block installments, or high-yield commercial plots in Hills Walk, we provide transparent guidance without middleman fees.
@@ -308,7 +300,7 @@ export default function ContactPage() {
 
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 -mt-6 sm:-mt-8 relative z-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          
+
           <a
             href="tel:+923313339997"
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
@@ -398,7 +390,7 @@ export default function ContactPage() {
 
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-12 sm:py-16">
         <div className="bg-white p-6 sm:p-10 lg:p-12 rounded-3xl border border-slate-200 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
+
           <div className="lg:col-span-7 space-y-4">
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
               Why This Faisal Hills Islamabad Contact Page Exists
@@ -411,10 +403,9 @@ export default function ContactPage() {
                 Unlike generic portals, our direct advisory desk reviews your investment horizon, family housing needs, and budget before recommending a sector.
               </p>
 
-              <div 
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  isAboutSeeMoreOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-                }`}
+              <div
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${isAboutSeeMoreOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}
               >
                 <div className="space-y-2 pt-2 border-t border-slate-100 text-slate-600 text-xs sm:text-sm leading-relaxed">
                   <p>
@@ -460,7 +451,7 @@ export default function ContactPage() {
 
       <section className="bg-slate-900 text-white py-12 sm:py-16 px-4 sm:px-8 lg:px-12 border-y border-slate-800">
         <div className="max-w-[1440px] mx-auto space-y-8">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
             <div className="space-y-1.5 max-w-2xl">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
@@ -484,11 +475,10 @@ export default function ContactPage() {
               <button
                 key={b.id}
                 onClick={() => setSelectedBlockTab(b.id)}
-                className={`px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold tracking-wide transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  selectedBlockTab === b.id
+                className={`px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold tracking-wide transition-all whitespace-nowrap shrink-0 cursor-pointer ${selectedBlockTab === b.id
                     ? 'bg-[#7b002c] text-white shadow-lg scale-102 ring-2 ring-rose-400/50'
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
-                }`}
+                  }`}
               >
                 {b.name}
               </button>
@@ -496,7 +486,7 @@ export default function ContactPage() {
           </div>
 
           <div className="bg-slate-800/90 rounded-3xl border border-slate-700/80 p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center shadow-xl">
-            
+
             <div className="lg:col-span-5 relative h-52 sm:h-64 rounded-2xl overflow-hidden bg-slate-950 border border-slate-700 group">
               <img
                 src={activeBlockData.image}
@@ -504,7 +494,7 @@ export default function ContactPage() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
-              
+
               <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7b002c] text-white shadow-md">
                 {activeBlockData.name}
               </span>
@@ -561,7 +551,7 @@ export default function ContactPage() {
       </section>
 
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-12 sm:py-16 space-y-8">
-        
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
           <div className="space-y-1.5 max-w-2xl">
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
@@ -575,22 +565,20 @@ export default function ContactPage() {
           <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
             <button
               onClick={() => setSelectedPlotCategoryTab('residential')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedPlotCategoryTab === 'residential'
+              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${selectedPlotCategoryTab === 'residential'
                   ? 'bg-[#7b002c] text-white shadow-md'
                   : 'text-slate-700 hover:text-slate-900'
-              }`}
+                }`}
             >
               <Home className="w-3.5 h-3.5" />
               <span>Residential</span>
             </button>
             <button
               onClick={() => setSelectedPlotCategoryTab('commercial')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
-                selectedPlotCategoryTab === 'commercial'
+              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${selectedPlotCategoryTab === 'commercial'
                   ? 'bg-[#7b002c] text-white shadow-md'
                   : 'text-slate-700 hover:text-slate-900'
-              }`}
+                }`}
             >
               <Store className="w-3.5 h-3.5" />
               <span>Commercial</span>
@@ -642,7 +630,7 @@ export default function ContactPage() {
 
       <section id="inquiry-form" className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-12 sm:py-16">
         <div className="bg-white p-6 sm:p-10 lg:p-12 rounded-3xl border border-slate-200 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
+
           <div className="lg:col-span-5 space-y-5 sm:space-y-6">
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
               Direct Contact & Booking Channels
@@ -859,7 +847,7 @@ export default function ContactPage() {
 
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 py-12 sm:py-16 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          
+
           <div className="lg:col-span-4 space-y-3 relative lg:sticky lg:top-28">
             <span className="label-caps text-[#7b002c] font-bold block">Clarifications & Answers</span>
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] uppercase leading-tight">

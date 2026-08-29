@@ -21,6 +21,9 @@ export interface SeriesConfig {
   end: number;
   label: string;
   tag?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  suitability?: string;
 }
 
 export interface SeriesGroupResult {
@@ -83,65 +86,33 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     pricingMode: 'dynamic_series',
     seriesConfigs: {
       '5 Marla': [
-        { start: 342, end: 450, label: '342–450', tag: 'Entrance Boulevard Sector' },
-        { start: 451, end: 550, label: '451–550', tag: 'Central Park Sector' },
-        { start: 551, end: 650, label: '551–650', tag: 'Civic & Mosque Sector' },
-        { start: 651, end: 750, label: '651–750', tag: 'School Proximity Sector' },
-        { start: 751, end: 850, label: '751–850', tag: 'Residential Avenue' },
-        { start: 851, end: 950, label: '851–950', tag: 'Quiet Residential Enclave' },
-        { start: 951, end: 1050, label: '951–1050', tag: 'Executive Heights Sector' },
-        { start: 1051, end: 1191, label: '1051–1191', tag: 'Faisal Jewel View Sector' },
+        { start: 342, end: 450, label: '342–450', tag: 'Entrance Boulevard Sector', minPrice: 6500000, maxPrice: 7400000 },
+        { start: 451, end: 550, label: '451–550', tag: 'Central Park Sector', minPrice: 7000000, maxPrice: 7600000 },
+        { start: 551, end: 650, label: '551–650', tag: 'Civic & Mosque Sector', minPrice: 7200000, maxPrice: 7800000 },
+        { start: 651, end: 750, label: '651–750', tag: 'School Proximity Sector', minPrice: 7100000, maxPrice: 7900000 },
+        { start: 751, end: 850, label: '751–850', tag: 'Residential Avenue', minPrice: 6800000, maxPrice: 7500000 },
+        { start: 851, end: 950, label: '851–950', tag: 'Quiet Residential Enclave', minPrice: 6600000, maxPrice: 7400000 },
+        { start: 951, end: 1050, label: '951–1050', tag: 'Executive Heights Sector', minPrice: 7300000, maxPrice: 8200000 },
+        { start: 1051, end: 1191, label: '1051–1191', tag: 'Faisal Jewel View Sector', minPrice: 7500000, maxPrice: 8500000 },
       ],
       '8 Marla': [
-        { start: 100, end: 250, label: '100–250', tag: 'Main Boulevard & Park' },
-        { start: 251, end: 400, label: '251–400', tag: 'Executive Residential' },
-        { start: 401, end: 550, label: '401–550', tag: 'Civic Center Proximity' },
+        { start: 100, end: 250, label: '100–250', tag: 'Main Boulevard & Park', minPrice: 9500000, maxPrice: 11000000 },
+        { start: 251, end: 400, label: '251–400', tag: 'Executive Residential', minPrice: 9000000, maxPrice: 10500000 },
+        { start: 401, end: 550, label: '401–550', tag: 'Civic Center Proximity', minPrice: 9800000, maxPrice: 11500000 },
       ],
       '10 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Central Park & School' },
-        { start: 151, end: 300, label: '151–300', tag: 'Executive Avenue' },
-        { start: 301, end: 450, label: '301–450', tag: 'Prime Elevation Sector' },
+        { start: 1, end: 150, label: '001–150', tag: 'Central Park & School', minPrice: 12500000, maxPrice: 14500000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Executive Avenue', minPrice: 12000000, maxPrice: 13800000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Prime Elevation Sector', minPrice: 13000000, maxPrice: 15500000 },
       ],
       '14 Marla': [
-        { start: 1, end: 100, label: '001–100', tag: 'Luxury Boulevard Frontage' },
-        { start: 101, end: 200, label: '101–200', tag: 'Executive Panorama Sector' },
+        { start: 1, end: 100, label: '001–100', tag: 'Luxury Boulevard Frontage', minPrice: 16500000, maxPrice: 19500000 },
+        { start: 101, end: 200, label: '101–200', tag: 'Executive Panorama Sector', minPrice: 16000000, maxPrice: 18800000 },
       ],
       '1 Kanal': [
-        { start: 1, end: 80, label: '001–080', tag: 'Grand Entrance Boulevard' },
-        { start: 81, end: 160, label: '081–160', tag: 'Margalla View Enclave' },
-        { start: 161, end: 250, label: '161–250', tag: 'VIP Sector Frontage' },
-      ],
-    },
-  },
-  'prime-block': {
-    slug: 'prime-block',
-    name: 'Prime Block',
-    pricingMode: 'dynamic_series',
-    seriesConfigs: {
-      '5 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Entrance Boulevard Sector' },
-        { start: 151, end: 300, label: '151–300', tag: 'Central Park & Club Sector' },
-        { start: 301, end: 450, label: '301–450', tag: 'Margalla Ridge View Sector' },
-        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest Avenue' },
-      ],
-      '8 Marla': [
-        { start: 1, end: 120, label: '001–120', tag: 'Main Boulevard Frontage' },
-        { start: 121, end: 250, label: '121–250', tag: 'Park & Jamia Mosque Sector' },
-        { start: 251, end: 380, label: '251–380', tag: 'Ridge Crest VIP Enclave' },
-      ],
-      '10 Marla': [
-        { start: 1, end: 120, label: '001–120', tag: 'Central Boulevard Axis' },
-        { start: 121, end: 250, label: '121–250', tag: 'Family Park & Green Enclave' },
-        { start: 251, end: 380, label: '251–380', tag: 'Margalla Vista Sector' },
-      ],
-      '14 Marla': [
-        { start: 1, end: 80, label: '001–080', tag: 'Grand Boulevard Enclave' },
-        { start: 81, end: 180, label: '081–180', tag: 'Panoramic Ridge Avenue' },
-      ],
-      '1 Kanal': [
-        { start: 1, end: 60, label: '001–060', tag: 'VIP Executive Crest' },
-        { start: 61, end: 150, label: '061–150', tag: 'Margalla Skyline Front' },
-        { start: 151, end: 220, label: '151–220', tag: 'Trophy Villa Enclave' },
+        { start: 1, end: 80, label: '001–080', tag: 'Grand Entrance Boulevard', minPrice: 22000000, maxPrice: 26500000 },
+        { start: 81, end: 160, label: '081–160', tag: 'Margalla View Enclave', minPrice: 21000000, maxPrice: 25000000 },
+        { start: 161, end: 250, label: '161–250', tag: 'VIP Sector Frontage', minPrice: 23500000, maxPrice: 28000000 },
       ],
     },
   },
@@ -151,15 +122,27 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     pricingMode: 'dynamic_series',
     seriesConfigs: {
       '5 Marla': [
-        { start: 1, end: 200, label: '001–200', tag: 'Main Boulevard Front' },
-        { start: 201, end: 400, label: '201–400', tag: 'Central Commercial Sector' },
+        { start: 1, end: 200, label: '001–200', tag: 'Main Boulevard Front', minPrice: 5800000, maxPrice: 6800000 },
+        { start: 201, end: 400, label: '201–400', tag: 'Central Commercial Sector', minPrice: 6200000, maxPrice: 7200000 },
+        { start: 401, end: 600, label: '401–600', tag: 'Family Park Enclave', minPrice: 6000000, maxPrice: 6900000 },
+        { start: 601, end: 800, label: '601–800', tag: 'Executive Living Sector', minPrice: 5900000, maxPrice: 6700000 },
+      ],
+      '8 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Central Avenue', minPrice: 8500000, maxPrice: 9800000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Park Facing Horizon', minPrice: 8900000, maxPrice: 10200000 },
       ],
       '10 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Park Facing Enclave' },
-        { start: 151, end: 300, label: '151–300', tag: 'Executive Heights' },
+        { start: 1, end: 150, label: '001–150', tag: 'Park Facing Enclave', minPrice: 11500000, maxPrice: 13500000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Executive Heights', minPrice: 11000000, maxPrice: 12800000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Mosque & Market Sector', minPrice: 11800000, maxPrice: 13800000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 100, label: '001–100', tag: 'Main Boulevard Luxury', minPrice: 15000000, maxPrice: 17500000 },
+        { start: 101, end: 200, label: '101–200', tag: 'Grand Avenue Enclave', minPrice: 14500000, maxPrice: 16800000 },
       ],
       '1 Kanal': [
-        { start: 1, end: 100, label: '001–100', tag: 'Grand Boulevard Frontage' },
+        { start: 1, end: 100, label: '001–100', tag: 'Grand Boulevard Frontage', minPrice: 19500000, maxPrice: 23500000 },
+        { start: 101, end: 200, label: '101–200', tag: 'Margalla Skyline Front', minPrice: 19000000, maxPrice: 22500000 },
       ],
     },
   },
@@ -169,24 +152,25 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     pricingMode: 'dynamic_series',
     seriesConfigs: {
       '5 Marla': [
-        { start: 1, end: 200, label: '001–200', tag: 'Grand Boulevard Sector' },
-        { start: 201, end: 400, label: '201–400', tag: 'Sports Complex Sector' },
-        { start: 401, end: 600, label: '401–600', tag: 'Central Park Sector' },
-        { start: 601, end: 850, label: '601–850', tag: 'Margalla View Crest' },
+        { start: 1, end: 200, label: '001–200', tag: 'Grand Boulevard Sector', minPrice: 5200000, maxPrice: 6100000 },
+        { start: 201, end: 400, label: '201–400', tag: 'Sports Complex Sector', minPrice: 5400000, maxPrice: 6300000 },
+        { start: 401, end: 600, label: '401–600', tag: 'Central Park Sector', minPrice: 5600000, maxPrice: 6500000 },
+        { start: 601, end: 850, label: '601–850', tag: 'Margalla View Crest', minPrice: 5300000, maxPrice: 6200000 },
       ],
       '8 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector' },
-        { start: 151, end: 300, label: '151–300', tag: 'Sports Park View' },
+        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector', minPrice: 7800000, maxPrice: 8900000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Sports Park View', minPrice: 8200000, maxPrice: 9400000 },
       ],
       '10 Marla': [
-        { start: 1, end: 200, label: '001–200', tag: 'Hilltop Promenade' },
-        { start: 201, end: 400, label: '201–400', tag: 'Boulevard Enclave' },
+        { start: 1, end: 200, label: '001–200', tag: 'Hilltop Promenade', minPrice: 10500000, maxPrice: 12200000 },
+        { start: 201, end: 400, label: '201–400', tag: 'Boulevard Enclave', minPrice: 10200000, maxPrice: 11800000 },
       ],
       '14 Marla': [
-        { start: 1, end: 100, label: '001–100', tag: 'Executive Ridge' },
+        { start: 1, end: 100, label: '001–100', tag: 'Executive Ridge', minPrice: 14000000, maxPrice: 16200000 },
       ],
       '1 Kanal': [
-        { start: 1, end: 120, label: '001–120', tag: 'Margalla Panorama Crest' },
+        { start: 1, end: 120, label: '001–120', tag: 'Margalla Panorama Crest', minPrice: 18000000, maxPrice: 21500000 },
+        { start: 121, end: 250, label: '121–250', tag: 'Grand Boulevard Facing', minPrice: 18500000, maxPrice: 22000000 },
       ],
     },
   },
@@ -196,17 +180,24 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     pricingMode: 'dynamic_series',
     seriesConfigs: {
       '5 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector' },
-        { start: 151, end: 300, label: '151–300', tag: 'Central Green Enclave' },
-        { start: 301, end: 450, label: '301–450', tag: 'Margalla Hill View' },
-        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest' },
+        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector', minPrice: 4200000, maxPrice: 4900000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Central Green Enclave', minPrice: 4400000, maxPrice: 5100000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Margalla Hill View', minPrice: 4600000, maxPrice: 5300000 },
+        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest', minPrice: 4700000, maxPrice: 5400000 },
       ],
       '8 Marla': [
-        { start: 1, end: 120, label: '001–120', tag: 'Boulevard Link Sector' },
-        { start: 121, end: 240, label: '121–240', tag: 'Community Park Facing' },
+        { start: 1, end: 120, label: '001–120', tag: 'Boulevard Link Sector', minPrice: 6200000, maxPrice: 7100000 },
+        { start: 121, end: 240, label: '121–240', tag: 'Community Park Facing', minPrice: 6600000, maxPrice: 7500000 },
       ],
       '10 Marla': [
-        { start: 1, end: 100, label: '001–100', tag: 'Executive Hilltop Crest' },
+        { start: 1, end: 100, label: '001–100', tag: 'Executive Hilltop Crest', minPrice: 7800000, maxPrice: 9200000 },
+        { start: 101, end: 200, label: '101–200', tag: 'Panoramic Ridge Avenue', minPrice: 8000000, maxPrice: 9400000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 80, label: '001–080', tag: 'Hilltop Avenue', minPrice: 11000000, maxPrice: 12800000 },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 100, label: '001–100', tag: 'Exclusive Panoramic Ridge', minPrice: 15000000, maxPrice: 17800000 },
       ],
     },
   },
@@ -216,17 +207,49 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     pricingMode: 'dynamic_series',
     seriesConfigs: {
       '5 Marla': [
-        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector' },
-        { start: 151, end: 300, label: '151–300', tag: 'Central Green Enclave' },
-        { start: 301, end: 450, label: '301–450', tag: 'Margalla Hill View' },
-        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest' },
+        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector', minPrice: 4200000, maxPrice: 4900000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Central Green Enclave', minPrice: 4400000, maxPrice: 5100000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Margalla Hill View', minPrice: 4600000, maxPrice: 5300000 },
+        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest', minPrice: 4700000, maxPrice: 5400000 },
       ],
       '8 Marla': [
-        { start: 1, end: 120, label: '001–120', tag: 'Boulevard Link Sector' },
-        { start: 121, end: 240, label: '121–240', tag: 'Community Park Facing' },
+        { start: 1, end: 120, label: '001–120', tag: 'Boulevard Link Sector', minPrice: 6200000, maxPrice: 7100000 },
+        { start: 121, end: 240, label: '121–240', tag: 'Community Park Facing', minPrice: 6600000, maxPrice: 7500000 },
       ],
       '10 Marla': [
-        { start: 1, end: 100, label: '001–100', tag: 'Executive Hilltop Crest' },
+        { start: 1, end: 100, label: '001–100', tag: 'Executive Hilltop Crest', minPrice: 7800000, maxPrice: 9200000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 80, label: '001–080', tag: 'Hilltop Avenue', minPrice: 11000000, maxPrice: 12800000 },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 100, label: '001–100', tag: 'Exclusive Panoramic Ridge', minPrice: 15000000, maxPrice: 17800000 },
+      ],
+    },
+  },
+  'block-b1': {
+    slug: 'block-b1',
+    name: 'Block B-1 Extension',
+    pricingMode: 'dynamic_series',
+    seriesConfigs: {
+      '5 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Avenue Sector', minPrice: 4200000, maxPrice: 4900000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Central Green Enclave', minPrice: 4400000, maxPrice: 5100000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Margalla Hill View', minPrice: 4600000, maxPrice: 5300000 },
+        { start: 451, end: 600, label: '451–600', tag: 'High-Elevation Crest', minPrice: 4700000, maxPrice: 5400000 },
+      ],
+      '8 Marla': [
+        { start: 1, end: 120, label: '001–120', tag: 'Boulevard Link Sector', minPrice: 6200000, maxPrice: 7100000 },
+        { start: 121, end: 240, label: '121–240', tag: 'Community Park Facing', minPrice: 6600000, maxPrice: 7500000 },
+      ],
+      '10 Marla': [
+        { start: 1, end: 100, label: '001–100', tag: 'Executive Hilltop Crest', minPrice: 7800000, maxPrice: 9200000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 80, label: '001–080', tag: 'Hilltop Avenue', minPrice: 11000000, maxPrice: 12800000 },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 100, label: '001–100', tag: 'Exclusive Panoramic Ridge', minPrice: 15000000, maxPrice: 17800000 },
       ],
     },
   },
@@ -234,11 +257,60 @@ export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
     slug: 'block-c',
     name: 'Block C',
     pricingMode: 'dynamic_series',
+    seriesConfigs: {
+      '5 Marla': [
+        { start: 1, end: 200, label: '001–200', tag: 'Hills Walk Promenade Sector', minPrice: 5500000, maxPrice: 6500000 },
+        { start: 201, end: 400, label: '201–400', tag: 'Cricket Stadium & Park Axis', minPrice: 5700000, maxPrice: 6700000 },
+        { start: 401, end: 600, label: '401–600', tag: 'Civic Commercial Hub Sector', minPrice: 5900000, maxPrice: 6900000 },
+      ],
+      '8 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Central Boulevard Facing', minPrice: 8200000, maxPrice: 9500000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Lake & Park Vista', minPrice: 8600000, maxPrice: 9900000 },
+      ],
+      '10 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Commercial Strip Proximity', minPrice: 11000000, maxPrice: 12800000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Executive Family Enclave', minPrice: 10800000, maxPrice: 12500000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 100, label: '001–100', tag: 'Civic Vista Avenue', minPrice: 14500000, maxPrice: 16800000 },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 120, label: '001–120', tag: 'Grand Boulevard Waterfront Enclave', minPrice: 19500000, maxPrice: 23500000 },
+        { start: 121, end: 250, label: '121–250', tag: 'Hills Walk Skyline View', minPrice: 20000000, maxPrice: 24500000 },
+      ],
+    },
   },
   'block-d': {
     slug: 'block-d',
     name: 'Block D',
     pricingMode: 'dynamic_series',
+    seriesConfigs: {
+      '5 Marla': [
+        { start: 1, end: 150, label: '001–150', tag: 'Margalla Boulevard Front', minPrice: 4800000, maxPrice: 5600000 },
+        { start: 151, end: 300, label: '151–300', tag: 'Sector Park & Mosque Facing', minPrice: 5100000, maxPrice: 5900000 },
+        { start: 301, end: 450, label: '301–450', tag: 'Ready Possession Sector', minPrice: 5300000, maxPrice: 6200000 },
+        { start: 451, end: 600, label: '451–600', tag: 'Elevated Scenic Vista', minPrice: 4900000, maxPrice: 5700000 },
+      ],
+      '8 Marla': [
+        { start: 1, end: 120, label: '001–120', tag: 'Main Avenue Sector', minPrice: 7200000, maxPrice: 8300000 },
+        { start: 121, end: 240, label: '121–240', tag: 'Central Green Enclave', minPrice: 7500000, maxPrice: 8700000 },
+      ],
+      '10 Marla': [
+        { start: 1, end: 120, label: '001–120', tag: 'Executive Heights Crest', minPrice: 9500000, maxPrice: 11200000 },
+        { start: 121, end: 250, label: '121–250', tag: 'Margalla Hilltop Avenue', minPrice: 9800000, maxPrice: 11600000 },
+      ],
+      '14 Marla': [
+        { start: 1, end: 80, label: '001–080', tag: 'Prime Elevation Sector', minPrice: 13000000, maxPrice: 15200000 },
+      ],
+      '1 Kanal': [
+        { start: 1, end: 100, label: '001–100', tag: 'Margalla Skyline Panorama', minPrice: 17000000, maxPrice: 20500000 },
+      ],
+    },
+  },
+  'prime-block': {
+    slug: 'prime-block',
+    name: 'Prime Block',
+    pricingMode: 'fixed_price',
   },
 };
 
@@ -1412,9 +1484,11 @@ export const INITIAL_PLOTS_INVENTORY: PlotItem[] = [
 export function calculateSeriesGroups(
   plots: PlotItem[],
   blockSlug: string,
-  size: string
+  size: string,
+  customConfigs?: Record<string, BlockConfig>
 ): SeriesGroupResult[] {
-  const blockConfig = BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
+  const configs = customConfigs || BLOCK_SERIES_CONFIGS;
+  const blockConfig = configs[blockSlug] || configs['executive-block'] || BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
   const seriesList = blockConfig?.seriesConfigs?.[size] || [];
 
   // Filter plots by block & size
@@ -1453,9 +1527,22 @@ function buildSeriesResult(cfg: SeriesConfig, allMatchedPlots: PlotItem[]): Seri
     return !isNaN(pNum) && pNum >= cfg.start && pNum <= cfg.end;
   });
 
-  const prices = plotsInSeries.map((p) => p.price);
-  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+  const prices = plotsInSeries.map((p) => p.price).filter((p) => p > 0);
+  let minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+  let maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+  if (cfg.minPrice && cfg.minPrice > 0) {
+    if (minPrice === 0 || cfg.minPrice < minPrice) minPrice = cfg.minPrice;
+  }
+  if (cfg.maxPrice && cfg.maxPrice > 0) {
+    if (maxPrice === 0 || cfg.maxPrice > maxPrice) maxPrice = cfg.maxPrice;
+  }
+
+  // If specific series min/max were set in config, prefer config bounds
+  if (cfg.minPrice && cfg.maxPrice) {
+    minPrice = cfg.minPrice;
+    maxPrice = cfg.maxPrice;
+  }
 
   return {
     seriesKey: `${cfg.start}-${cfg.end}`,

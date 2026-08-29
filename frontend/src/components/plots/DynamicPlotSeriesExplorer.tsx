@@ -20,8 +20,10 @@ import {
   calculateSeriesGroups,
   BLOCK_SERIES_CONFIGS,
   formatPKR,
+  INITIAL_PLOTS_INVENTORY,
+  BlockConfig,
 } from '@/utils/plotSeriesEngine';
-import { getStoredPlots } from '@/utils/plotStore';
+import { getStoredPlots, getStoredBlockConfigs } from '@/utils/plotStore';
 
 interface DynamicPlotSeriesExplorerProps {
   blockSlug?: string;
@@ -62,29 +64,42 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   const [selectedSize, setSelectedSize] = useState<string>('5 Marla');
   const [selectedSeriesIndex, setSelectedSeriesIndex] = useState<number>(0);
   const [selectedComPlotIndex, setSelectedComPlotIndex] = useState<number>(0);
-  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>(INITIAL_PLOTS_INVENTORY);
+  const [storedConfigs, setStoredConfigs] = useState<Record<string, BlockConfig> | null>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
 
-  const blockConfig = BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
+  const blockConfig = (isClient && storedConfigs && storedConfigs[blockSlug]) || BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
   const isFixedPriceBlock = blockConfig.pricingMode === 'fixed_price';
 
-  // Load and subscribe to real-time plots store
+  // Load and subscribe to real-time plots and series configs store
   useEffect(() => {
     setIsClient(true);
     setAllPlots(getStoredPlots());
+    setStoredConfigs(getStoredBlockConfigs());
 
     const handleUpdate = () => {
       setAllPlots(getStoredPlots());
+      setStoredConfigs(getStoredBlockConfigs());
     };
 
     window.addEventListener('fh_plots_updated', handleUpdate);
+    window.addEventListener('fh_series_configs_updated', handleUpdate);
     return () => {
       window.removeEventListener('fh_plots_updated', handleUpdate);
+      window.removeEventListener('fh_series_configs_updated', handleUpdate);
     };
   }, []);
 
   // Compute dynamic series groups for the selected size
-  const seriesGroups: SeriesGroupResult[] = calculateSeriesGroups(allPlots, blockSlug, selectedSize);
+  const currentPlots = isClient ? allPlots : INITIAL_PLOTS_INVENTORY;
+  const currentConfigs = isClient && storedConfigs ? storedConfigs : BLOCK_SERIES_CONFIGS;
+
+  const seriesGroups: SeriesGroupResult[] = calculateSeriesGroups(
+    currentPlots,
+    blockSlug,
+    selectedSize,
+    currentConfigs
+  );
   const activeSeries = seriesGroups[selectedSeriesIndex] || seriesGroups[0] || null;
 
   // Reset series index if size changes and index is out of bounds

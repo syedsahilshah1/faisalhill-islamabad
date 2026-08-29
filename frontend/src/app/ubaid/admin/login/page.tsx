@@ -6,9 +6,27 @@ import {
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
   Trash2, Plus, Users, DollarSign, Calendar, Eye, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
-  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3
+  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
+import {
+  formatPKR,
+  formatPriceRange,
+  BLOCK_SERIES_CONFIGS,
+  calculateSeriesGroups,
+  SeriesConfig,
+  SeriesGroupResult,
+  BlockConfig,
+} from '@/utils/plotSeriesEngine';
+import {
+  getStoredPlots,
+  getStoredBlockConfigs,
+  saveStoredBlockConfigs,
+  updateSeriesConfig,
+  addSeriesConfig,
+  deleteSeriesConfig,
+  resetSeriesConfigsToDefault,
+} from '@/utils/plotStore';
 import {
   blocksData,
   plotInventoryData,
@@ -68,10 +86,42 @@ export default function AdminLoginPage() {
   const [token, setToken] = useState<string | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('plots');
+  const [activeTab, setActiveTab] = useState<'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('series');
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
+
+  // Series & Block Price Engine State
+  const [seriesBlockConfigs, setSeriesBlockConfigs] = useState<Record<string, BlockConfig>>(BLOCK_SERIES_CONFIGS);
+  const [selectedSeriesBlock, setSelectedSeriesBlock] = useState<string>('block-a');
+  const [selectedSeriesSize, setSelectedSeriesSize] = useState<string>('5 Marla');
+  const [isSeriesModalOpen, setIsSeriesModalOpen] = useState<boolean>(false);
+  const [editingSeries, setEditingSeries] = useState<{
+    seriesKey: string;
+    start: number;
+    end: number;
+    label: string;
+    tag: string;
+    minPrice: string;
+    maxPrice: string;
+  } | null>(null);
+
+  const [isAddSeriesModalOpen, setIsAddSeriesModalOpen] = useState<boolean>(false);
+  const [newSeriesData, setNewSeriesData] = useState<{
+    start: string;
+    end: string;
+    label: string;
+    tag: string;
+    minPrice: string;
+    maxPrice: string;
+  }>({
+    start: '',
+    end: '',
+    label: '',
+    tag: '',
+    minPrice: '',
+    maxPrice: '',
+  });
   const [verifiedDate, setVerifiedDate] = useState(societyStats.lastVerifiedDate);
   const [leadsList, setLeadsList] = useState<LeadItem[]>(initialLeadsData);
   const [saveNotification, setSaveNotification] = useState(false);
@@ -166,6 +216,13 @@ export default function AdminLoginPage() {
 
     // Load initial frontend data from API
     fetchPlots().then(data => setPlots(data)).catch(console.error);
+    setSeriesBlockConfigs(getStoredBlockConfigs());
+
+    const handleConfigsUpdate = () => {
+      setSeriesBlockConfigs(getStoredBlockConfigs());
+    };
+    window.addEventListener('fh_series_configs_updated', handleConfigsUpdate);
+    window.addEventListener('fh_plots_updated', handleConfigsUpdate);
     fetchBlocks().then(data => {
       if (data && data.length > 0) {
         setBlocksList(data);
@@ -829,6 +886,140 @@ export default function AdminLoginPage() {
       });
   };
 
+  // -------------------------------------------------------------
+  // SERIES MANAGEMENT HANDLERS
+  // -------------------------------------------------------------
+  const allBlocksList = [
+    { slug: 'executive-block', name: 'Executive Block' },
+    { slug: 'block-a', name: 'Block A' },
+    { slug: 'block-b', name: 'Block B' },
+    { slug: 'block-b1-extension', name: 'Block B-1 Extension' },
+    { slug: 'block-c', name: 'Block C' },
+    { slug: 'block-d', name: 'Block D' },
+  ];
+
+  const allPlotSizes = ['5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal'];
+
+  const currentSeriesBlockName = allBlocksList.find(b => b.slug === selectedSeriesBlock)?.name || 'Block A';
+
+  const currentSeriesGroups: SeriesGroupResult[] = calculateSeriesGroups(
+    getStoredPlots(),
+    selectedSeriesBlock,
+    selectedSeriesSize,
+    seriesBlockConfigs
+  );
+
+  const handleOpenEditSeries = (series: SeriesGroupResult) => {
+    const rawMin = series.minPrice > 0 ? series.minPrice.toString() : '';
+    const rawMax = series.maxPrice > 0 ? series.maxPrice.toString() : '';
+
+    setEditingSeries({
+      seriesKey: series.seriesKey,
+      start: series.rangeStart,
+      end: series.rangeEnd,
+      label: series.label,
+      tag: series.tag || '',
+      minPrice: rawMin,
+      maxPrice: rawMax,
+    });
+    setIsSeriesModalOpen(true);
+  };
+
+  const handleSaveSeries = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSeries) return;
+
+    const minP = parseFloat(editingSeries.minPrice) || 0;
+    const maxP = parseFloat(editingSeries.maxPrice) || minP;
+
+    if (minP < 0 || maxP < 0) {
+      alert('Prices cannot be negative.');
+      return;
+    }
+
+    const updated = updateSeriesConfig(selectedSeriesBlock, selectedSeriesSize, editingSeries.seriesKey, {
+      tag: editingSeries.tag,
+      label: editingSeries.label,
+      minPrice: minP,
+      maxPrice: maxP,
+    });
+
+    setSeriesBlockConfigs(updated);
+    setIsSeriesModalOpen(false);
+    setNotificationMsg(`Series ${editingSeries.label} in ${currentSeriesBlockName} (${selectedSeriesSize}) updated to ${formatPriceRange(minP, maxP)}!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleOpenAddSeries = () => {
+    setNewSeriesData({
+      start: '',
+      end: '',
+      label: '',
+      tag: 'Sector Boulevard Front',
+      minPrice: '5800000',
+      maxPrice: '6800000',
+    });
+    setIsAddSeriesModalOpen(true);
+  };
+
+  const handleSaveNewSeries = (e: React.FormEvent) => {
+    e.preventDefault();
+    const startNum = parseInt(newSeriesData.start, 10);
+    const endNum = parseInt(newSeriesData.end, 10);
+    const minP = parseFloat(newSeriesData.minPrice) || 0;
+    const maxP = parseFloat(newSeriesData.maxPrice) || minP;
+
+    if (isNaN(startNum) || isNaN(endNum) || startNum <= 0 || endNum < startNum) {
+      alert('Please enter valid start and end plot numbers (e.g. Start: 401, End: 600).');
+      return;
+    }
+
+    const label = newSeriesData.label.trim() || `${startNum}–${endNum}`;
+    const newConfig: SeriesConfig = {
+      start: startNum,
+      end: endNum,
+      label,
+      tag: newSeriesData.tag || 'Sector Avenue',
+      minPrice: minP,
+      maxPrice: maxP,
+    };
+
+    const updated = addSeriesConfig(selectedSeriesBlock, selectedSeriesSize, newConfig);
+    setSeriesBlockConfigs(updated);
+
+    updateSeriesConfig(selectedSeriesBlock, selectedSeriesSize, `${startNum}-${endNum}`, {
+      minPrice: minP,
+      maxPrice: maxP,
+      tag: newConfig.tag,
+    });
+
+    setIsAddSeriesModalOpen(false);
+    setNotificationMsg(`New Series ${label} added to ${currentSeriesBlockName} (${selectedSeriesSize})!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleDeleteSeries = (seriesKey: string, label: string) => {
+    if (window.confirm(`Are you sure you want to delete Series ${label} from ${currentSeriesBlockName} (${selectedSeriesSize})?`)) {
+      const updated = deleteSeriesConfig(selectedSeriesBlock, selectedSeriesSize, seriesKey);
+      setSeriesBlockConfigs(updated);
+      setNotificationMsg(`Series ${label} deleted.`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    }
+  };
+
+  const handleResetAllSeries = () => {
+    if (window.confirm('Reset all block series configurations & prices to defaults? Custom series edits will be reset.')) {
+      const reset = resetSeriesConfigsToDefault();
+      setSeriesBlockConfigs(reset);
+      setNotificationMsg('All Block Series reset to default configurations.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    }
+  };
+
   const handleLogout = () => {
 
     if (token) {
@@ -1006,6 +1197,16 @@ export default function AdminLoginPage() {
       {/* Tabs Bar */}
       <div className="flex border-b border-slate-200 gap-1 sm:gap-4 text-xs font-bold overflow-x-auto pb-1 no-scrollbar">
         <button
+          onClick={() => setActiveTab('series')}
+          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+            activeTab === 'series' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-[#7b002c]" />
+          <span>⚡ Plot Series & Prices (All Blocks)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('plots')}
           className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
             activeTab === 'plots' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
@@ -1097,9 +1298,228 @@ export default function AdminLoginPage() {
       </div>
 
 
+      {/* TAB: PLOT SERIES & PRICE ENGINE */}
+      {activeTab === 'series' && (
+        <div className="space-y-6">
+          {/* Header & Reset Strip */}
+          <div className="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-white p-5 sm:p-7 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider">
+                  Live Series Control
+                </span>
+                <span className="text-xs text-amber-300 font-semibold">Instant Public Site Sync</span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                Faisal Hills Plot Series &amp; Valuation Manager
+              </h2>
+              <p className="text-xs text-slate-400">
+                Select any block and plot size to edit prices, change sector tags, or add new series ranges.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={handleResetAllSeries}
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                title="Reset all series to default values"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reset Defaults</span>
+              </button>
+              <button
+                onClick={handleOpenAddSeries}
+                className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Series Range</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Step 1: Block Selector */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[#7b002c]" />
+                <span className="text-xs font-bold uppercase text-slate-900 tracking-wider">
+                  1. Select Block to Manage Series
+                </span>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                Active: <strong className="text-[#7b002c]">{currentSeriesBlockName}</strong>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {allBlocksList.map((b) => (
+                <button
+                  key={b.slug}
+                  onClick={() => setSelectedSeriesBlock(b.slug)}
+                  className={`py-3 px-2 rounded-xl text-xs font-bold text-center transition cursor-pointer border ${
+                    selectedSeriesBlock === b.slug
+                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-102 ring-2 ring-rose-300'
+                      : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
+                  }`}
+                >
+                  <span className="block font-serif text-sm">{b.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Step 2: Plot Size Selector */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#7b002c]" />
+              <span className="text-xs font-bold uppercase text-slate-900 tracking-wider">
+                2. Select Plot Size for {currentSeriesBlockName}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {allPlotSizes.map((sz) => (
+                <button
+                  key={sz}
+                  onClick={() => setSelectedSeriesSize(sz)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 border ${
+                    selectedSeriesSize === sz
+                      ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md font-bold'
+                      : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>{sz}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Step 3: Series Cards Grid */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 className="font-serif text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <span>{currentSeriesBlockName} • {selectedSeriesSize} Series Ranges</span>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-sans font-medium">
+                    {currentSeriesGroups.length} Series Configured
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click <strong>&quot;Edit Price &amp; Tag&quot;</strong> on any series card below to modify its live valuation.
+                </p>
+              </div>
+
+              <button
+                onClick={handleOpenAddSeries}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-sm self-start sm:self-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Series Range</span>
+              </button>
+            </div>
+
+            {currentSeriesGroups.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {currentSeriesGroups.map((series) => (
+                  <div
+                    key={series.seriesKey}
+                    className="bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:border-[#7b002c] transition-all flex flex-col justify-between space-y-4 group shadow-sm hover:shadow-md"
+                  >
+                    {/* Header */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#7b002c] text-white shadow-sm">
+                          Series {series.label}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-mono">
+                          Plot #{series.rangeStart} – #{series.rangeEnd}
+                        </span>
+                      </div>
+
+                      <h4 className="font-bold text-sm text-slate-800 group-hover:text-[#7b002c] transition-colors">
+                        {series.tag || 'Sector Enclave'}
+                      </h4>
+                    </div>
+
+                    {/* Price Range Box */}
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                        Live Market Valuation Range
+                      </span>
+                      <div className="font-serif text-lg font-bold text-[#7b002c]">
+                        {series.formattedRange}
+                      </div>
+                      <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
+                        <span>Plots in database: {series.totalPlots}</span>
+                        <span className="text-emerald-700 font-bold">{series.availablePlots} Available</span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
+                      <button
+                        onClick={() => handleOpenEditSeries(series)}
+                        className="flex-1 py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>Edit Price &amp; Sector</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSeries(series.seriesKey, series.label)}
+                        className="p-2.5 bg-white hover:bg-rose-50 text-slate-400 hover:text-red-600 rounded-xl transition cursor-pointer border border-slate-200"
+                        title="Delete series"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-800">No Series Configured for {selectedSeriesSize} in {currentSeriesBlockName}</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Click the button below to add your first series range for this sector.
+                </p>
+                <button
+                  onClick={handleOpenAddSeries}
+                  className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add First Series Range</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* TAB 1: PLOTS INVENTORY & FOR SALE */}
       {activeTab === 'plots' && (
         <div className="space-y-4">
+          {/* Direct Banner to Series Manager */}
+          <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-[#7b002c] shrink-0" />
+              <div>
+                <strong className="text-xs font-bold text-slate-900 block">
+                  Looking to update Series price ranges (Series 001–200, 201–400 etc.)?
+                </strong>
+                <span className="text-[11px] text-slate-600">
+                  You can set min/max prices and sector names for each series from the dedicated Series Manager tab.
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('series')}
+              className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition shrink-0 cursor-pointer shadow-sm flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Open Series &amp; Price Manager</span>
+            </button>
+          </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
             {/* Search & Filter bar (Explicitly removed Status Filter as requested) */}
             <div className="flex flex-wrap items-center gap-2.5 flex-1">
@@ -3757,6 +4177,291 @@ export default function AdminLoginPage() {
                 >
                   <Save className="w-3.5 h-3.5 text-white" />
                   <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* ========================================================================= */}
+      {/* MODAL: EDIT SERIES PRICE & TAG                                            */}
+      {/* ========================================================================= */}
+      {isSeriesModalOpen && editingSeries && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c]">
+                  {currentSeriesBlockName} • {selectedSeriesSize}
+                </span>
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900">
+                  Edit Series {editingSeries.label} Price &amp; Tag
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsSeriesModalOpen(false)}
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSeries} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Display Label</label>
+                  <input
+                    type="text"
+                    value={editingSeries.label}
+                    onChange={(e) =>
+                      setEditingSeries({ ...editingSeries, label: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. 001–200"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Plot Number Range</label>
+                  <div className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-mono">
+                    #{editingSeries.start} to #{editingSeries.end}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700">
+                  Sector / Zone Title (Tag)
+                </label>
+                <input
+                  type="text"
+                  value={editingSeries.tag}
+                  onChange={(e) =>
+                    setEditingSeries({ ...editingSeries, tag: e.target.value })
+                  }
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  placeholder="e.g. Main Boulevard Front, Central Commercial Sector..."
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">
+                    Min Price (PKR)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingSeries.minPrice}
+                    onChange={(e) =>
+                      setEditingSeries({ ...editingSeries, minPrice: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. 5800000"
+                    required
+                  />
+                  <span className="text-[11px] text-emerald-700 font-mono font-bold block">
+                    {formatPKR(parseFloat(editingSeries.minPrice) || 0)}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">
+                    Max Price (PKR)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingSeries.maxPrice}
+                    onChange={(e) =>
+                      setEditingSeries({ ...editingSeries, maxPrice: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. 6800000"
+                    required
+                  />
+                  <span className="text-[11px] text-emerald-700 font-mono font-bold block">
+                    {formatPKR(parseFloat(editingSeries.maxPrice) || 0)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                  Public Site Live Preview
+                </span>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-slate-800">
+                    Series {editingSeries.label} ({editingSeries.tag || 'Sector'})
+                  </span>
+                  <span className="text-[#7b002c] font-serif text-sm">
+                    {formatPriceRange(
+                      parseFloat(editingSeries.minPrice) || 0,
+                      parseFloat(editingSeries.maxPrice) || 0
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsSeriesModalOpen(false)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer hover:scale-105"
+                >
+                  Save Series Price
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: ADD NEW SERIES RANGE                                               */}
+      {/* ========================================================================= */}
+      {isAddSeriesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                  {currentSeriesBlockName} • {selectedSeriesSize}
+                </span>
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900">
+                  Add New Series Range
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsAddSeriesModalOpen(false)}
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNewSeries} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Start Plot #</label>
+                  <input
+                    type="number"
+                    value={newSeriesData.start}
+                    onChange={(e) =>
+                      setNewSeriesData({
+                        ...newSeriesData,
+                        start: e.target.value,
+                        label: `${e.target.value}–${newSeriesData.end || ''}`,
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 401"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">End Plot #</label>
+                  <input
+                    type="number"
+                    value={newSeriesData.end}
+                    onChange={(e) =>
+                      setNewSeriesData({
+                        ...newSeriesData,
+                        end: e.target.value,
+                        label: `${newSeriesData.start || ''}–${e.target.value}`,
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 600"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Display Label</label>
+                  <input
+                    type="text"
+                    value={newSeriesData.label}
+                    onChange={(e) =>
+                      setNewSeriesData({ ...newSeriesData, label: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 401–600"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Sector Tag</label>
+                  <input
+                    type="text"
+                    value={newSeriesData.tag}
+                    onChange={(e) =>
+                      setNewSeriesData({ ...newSeriesData, tag: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. Margalla View Crest"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Min Price (PKR)</label>
+                  <input
+                    type="number"
+                    value={newSeriesData.minPrice}
+                    onChange={(e) =>
+                      setNewSeriesData({ ...newSeriesData, minPrice: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 5500000"
+                    required
+                  />
+                  <span className="text-[11px] text-emerald-700 font-mono font-bold block">
+                    {formatPKR(parseFloat(newSeriesData.minPrice) || 0)}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700">Max Price (PKR)</label>
+                  <input
+                    type="number"
+                    value={newSeriesData.maxPrice}
+                    onChange={(e) =>
+                      setNewSeriesData({ ...newSeriesData, maxPrice: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 6500000"
+                    required
+                  />
+                  <span className="text-[11px] text-emerald-700 font-mono font-bold block">
+                    {formatPKR(parseFloat(newSeriesData.maxPrice) || 0)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSeriesModalOpen(false)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer hover:scale-105"
+                >
+                  Add Series Range
                 </button>
               </div>
             </form>
