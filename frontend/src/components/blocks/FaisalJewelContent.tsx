@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
@@ -17,6 +17,7 @@ import {
   Utensils,
   Hotel,
   ShieldCheck,
+  ChevronLeft,
   ChevronRight,
   Download,
   Phone,
@@ -42,7 +43,13 @@ import {
   List,
   X,
   Store,
-  BadgeCheck
+  BadgeCheck,
+  Navigation,
+  Send,
+  Calculator,
+  Check,
+  Tag,
+  MessageSquare
 } from 'lucide-react';
 import {
   faisalJewelsSpecs,
@@ -56,10 +63,9 @@ import {
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
-import FaqAccordion from '@/components/ui/FaqAccordion';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import LeadModal from '@/components/ui/LeadModal';
-import ExpandingProjectsShowcase from '@/components/ui/ExpandingProjectsShowcase';
+import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 
 // Dedicated Faisal Jewel Inventory Units
 export interface JewelUnitItem {
@@ -94,25 +100,8 @@ const defaultJewelUnits: JewelUnitItem[] = [
     status: 'Hot Investment',
     facing: '225ft Grand Entrance Boulevard',
     features: ['Main Boulevard Direct Frontage', '16ft Double Height Ceiling', 'Drive-thru Option', 'Flagship Corporate Showroom'],
-    description: 'Premier ground-floor commercial plot showroom with direct 225ft Grand Boulevard access. Unrivaled visibility for automotive showrooms, multinational banks, or flagship retail anchors.',
+    description: 'Premier ground-floor commercial showroom with direct 225ft Grand Boulevard access. Unrivaled visibility for automotive showrooms, multinational banks, or flagship retail anchors.',
     image: '/images/commercial/flagship-store.jpg'
-  },
-  // 00. Atrium Corner Executive Commercial Unit
-  {
-    id: 'fj-com-plot-02',
-    unitNumber: 'FJ-COM-G12',
-    category: 'Commercial Plot / Showroom',
-    floorLevel: 'Ground Floor Central Atrium',
-    dimensions: '30 x 35',
-    areaSqFt: 1050,
-    priceFormatted: 'PKR 5.98 Crore',
-    downPaymentFormatted: 'PKR 1.49 Crore',
-    quarterlyInstallmentFormatted: 'PKR 28.0 Lacs',
-    status: 'Fast Selling',
-    facing: 'Central Atrium & Escalator Corner',
-    features: ['Corner Dual Frontage', 'Double Height Glazing', '350+ Brand Footfall', 'High Capital Growth'],
-    description: 'High-visibility commercial cut inside the central atrium corridor with continuous customer footfall from all 6 mall floors.',
-    image: '/images/commercial/food-court.jpg'
   },
   // 1. Ground Floor Flagship Shop
   {
@@ -165,75 +154,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     description: 'Expansive Lower Ground commercial shop directly connected to basement parking elevators. Suitable for pharmacy, mart, or banking branch.',
     image: '/images/faisalarc (2).webp'
   },
-  // 4. Lower Ground Retail Kiosk
-  {
-    id: 'fj-shop-lg09',
-    unitNumber: 'FJ-LG-09',
-    category: 'Commercial Shop',
-    floorLevel: 'Lower Ground Floor',
-    dimensions: '12 x 18',
-    areaSqFt: 215,
-    priceFormatted: 'PKR 1.11 Crore',
-    downPaymentFormatted: 'PKR 27.9 Lacs',
-    quarterlyInstallmentFormatted: 'PKR 5.2 Lacs',
-    status: 'Available',
-    facing: 'Escalator Landing Front',
-    features: ['Affordable Entry Price', 'High Rental Return', 'Direct Escalator Landing', 'Convenience Store Ready'],
-    description: 'Compact, affordable commercial shop on Lower Ground level. Perfect entry-level high-yield commercial investment for overseas buyers.',
-    image: '/images/faisalarc (1).webp'
-  },
-  // 5. 1st Floor Gold Souk & Jewelry Outlet
-  {
-    id: 'fj-shop-1f12',
-    unitNumber: 'FJ-1F-12',
-    category: 'Commercial Shop',
-    floorLevel: '1st Floor (Gold & Jewelry Souk)',
-    dimensions: '14 x 17.5',
-    areaSqFt: 245,
-    priceFormatted: 'PKR 1.27 Crore',
-    downPaymentFormatted: 'PKR 31.8 Lacs',
-    quarterlyInstallmentFormatted: 'PKR 5.9 Lacs',
-    status: 'Fast Selling',
-    facing: 'Jewelry Court Corridor',
-    features: ['Reinforced Vault Security', 'Jewelry Galleria Zone', 'CCTV Grid Coverage', 'Luxury Display Arcades'],
-    description: 'Exclusive retail shop located inside the 1st Floor Gold & Diamond Souk. High security infrastructure tailored for jeweler brands.',
-    image: '/images/faisalarc (3).jpg'
-  },
-  // 6. 2nd Floor Fashion & Apparel Outlet
-  {
-    id: 'fj-shop-2f33',
-    unitNumber: 'FJ-2F-33',
-    category: 'Commercial Shop',
-    floorLevel: '2nd Floor (Fashion Galleria)',
-    dimensions: '18 x 23',
-    areaSqFt: 410,
-    priceFormatted: 'PKR 2.00 Crore',
-    downPaymentFormatted: 'PKR 50.2 Lacs',
-    quarterlyInstallmentFormatted: 'PKR 9.4 Lacs',
-    status: 'Available',
-    facing: 'Fashion Walkway Promenade',
-    features: ['National Brand Anchor Zone', 'Spacious Changing Cubicle Area', 'Wide Glass Front', 'High Daily Footfall'],
-    description: 'Spacious retail outlet on 2nd floor fashion corridor. Surrounding tenants include top Pakistani pret and lawn fashion houses.',
-    image: '/images/faisalarc (1).webp'
-  },
-  // 7. 3rd Floor Tech & Electronics Showroom
-  {
-    id: 'fj-shop-3f07',
-    unitNumber: 'FJ-3F-07',
-    category: 'Commercial Shop',
-    floorLevel: '3rd Floor (Electronics & IT Hub)',
-    dimensions: '16 x 23',
-    areaSqFt: 365,
-    priceFormatted: 'PKR 1.78 Crore',
-    downPaymentFormatted: 'PKR 44.7 Lacs',
-    quarterlyInstallmentFormatted: 'PKR 8.3 Lacs',
-    status: 'Hot Investment',
-    facing: 'IT Plaza Escalator Corner',
-    features: ['High-Speed Fiber Connectivity', 'Gadget Hub Corner', 'Dedicated Power Load', 'Smart POS Integration'],
-    description: 'Prime retail cut on 3rd Floor Electronics & Gadget Hub. Ideal for smartphone franchises, gaming setups, and computer hardware stores.',
-    image: '/images/faisalarc (3).jpg'
-  },
-  // 8. 4th Floor Food Court Kiosk
+  // 4. 4th Floor Food Court Kiosk
   {
     id: 'fj-shop-4ffc2',
     unitNumber: 'FJ-4F-FC2',
@@ -250,41 +171,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     description: 'Fast-food kitchen and kiosk cut on 4th floor mega food court. Excellent recurring cash-flow with high daily student and family visitors.',
     image: '/images/faisalarc (2).webp'
   },
-  // 9. 4th Floor Fine Dining Restaurant
-  {
-    id: 'fj-shop-4fr01',
-    unitNumber: 'FJ-4F-R01',
-    category: 'Food Court',
-    floorLevel: '4th Floor (Rooftop Dining Terrace)',
-    dimensions: '35 x 41',
-    areaSqFt: 1450,
-    priceFormatted: 'PKR 7.54 Crore',
-    downPaymentFormatted: 'PKR 1.88 Crore',
-    quarterlyInstallmentFormatted: 'PKR 35.3 Lacs',
-    status: 'Limited Units',
-    facing: 'Margalla Panoramic Open Terrace',
-    features: ['Alfresco Open-Air Seating', 'Live BBQ & Buffet Station', 'Scenic Margalla Sunset Views', 'VIP Private Lounge'],
-    description: 'Flagship fine-dining restaurant space with attached Margalla view outdoor terrace. Perfect for rooftop dining franchises.',
-    image: '/images/faisalarc (2).webp'
-  },
-  // 10. 5th Floor Corporate Executive Office
-  {
-    id: 'fj-corp-5f',
-    unitNumber: 'FJ-5F-08',
-    category: 'Corporate Office',
-    floorLevel: '5th Floor (Corporate Business Center)',
-    dimensions: '24 x 28',
-    areaSqFt: 680,
-    priceFormatted: 'PKR 2.38 Crore',
-    downPaymentFormatted: 'PKR 59.5 Lacs',
-    quarterlyInstallmentFormatted: 'PKR 11.1 Lacs',
-    status: 'Available',
-    facing: 'Grand Boulevard & GT Road',
-    features: ['Boardroom Access', 'Receptionist Lobby', 'High-Speed Fiber Optic', 'Corporate Prestigious Address'],
-    description: 'Modern corporate office suite on 5th floor. Fully air-conditioned business atmosphere for software houses, law firms, and consulting agencies.',
-    image: '/faisal-jewel-tower.jpg'
-  },
-  // 11. 1-Bed Executive Apartment
+  // 5. 1-Bed Executive Apartment
   {
     id: 'fj-apt-1bed',
     unitNumber: 'FJ-1104',
@@ -301,7 +188,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     description: 'Executive 1-Bedroom serviced apartment on 11th floor with picturesque northern Margalla mountain views and luxury finishes.',
     image: '/faisal-jewel-1.png'
   },
-  // 12. 2-Bed Luxury Suite
+  // 6. 2-Bed Luxury Suite
   {
     id: 'fj-apt-2bed',
     unitNumber: 'FJ-1608',
@@ -318,7 +205,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     description: 'Spacious 2-Bedroom luxury suite with wrap-around terrace, bespoke marble tiling, and panoramic sunset views over Faisal Hills.',
     image: '/faisal-jewel.jpg'
   },
-  // 13. 3-Bed Sky Penthouse
+  // 7. 3-Bed Sky Penthouse
   {
     id: 'fj-apt-3bed',
     unitNumber: 'FJ-2002',
@@ -335,7 +222,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     description: 'Ultra-exclusive 3-Bedroom Sky Penthouse with double-height salon, private sky garden terrace, and VIP elevator access.',
     image: '/faisal-jewel-2.png'
   },
-  // 14. 4-Star Hotel Suite
+  // 8. 4-Star Hotel Suite
   {
     id: 'fj-hotel-suite',
     unitNumber: 'FJ-2305',
@@ -354,1009 +241,628 @@ const defaultJewelUnits: JewelUnitItem[] = [
   }
 ];
 
+const jewelLandmarks = [
+  {
+    id: '01',
+    name: 'Margalla Avenue',
+    distance: 'Direct Frontage',
+    time: '0 min',
+    desc: 'Direct signal-free 6-lane access route into Islamabad sectors.',
+    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+  },
+  {
+    id: '02',
+    name: 'HiTech University',
+    distance: 'Major Education Hub',
+    time: '3 min',
+    desc: 'Premier university and academic campus adjacent to Faisal Hills.',
+    image: '/images/imgi_51_educational.webp'
+  },
+  {
+    id: '03',
+    name: 'Taxila City & Heritage',
+    distance: 'Historic Hub',
+    time: '5 min',
+    desc: 'UNESCO World Heritage sites and ancient Gandhara cultural reserve.',
+    image: '/images/imgi_46_faisal-hills-monument.webp'
+  },
+  {
+    id: '04',
+    name: 'Wah Cantt',
+    distance: 'Cantonment Hub',
+    time: '8 min',
+    desc: 'Established military cantonment city and commercial markets.',
+    image: '/images/imgi_53_medical-college.webp'
+  },
+  {
+    id: '05',
+    name: 'Sector D-12 & B-17',
+    distance: 'Emerging Sectors',
+    time: '12 min',
+    desc: 'Rapidly growing modern residential sectors in Islamabad Zone 2.',
+    image: '/faisal-jewel-1.png'
+  },
+  {
+    id: '06',
+    name: 'Islamabad Int\'l Airport',
+    distance: 'Direct via Motorway',
+    time: '25 min',
+    desc: 'Seamless direct motorway link to the international terminal.',
+    image: '/images/imgi_50_security.webp'
+  },
+  {
+    id: '07',
+    name: 'Sector F-10 & Blue Area',
+    distance: 'Central Business Hub',
+    time: '30 min',
+    desc: 'Islamabad commercial center, luxury dining, and retail avenues.',
+    image: '/faisal-jewel.jpg'
+  }
+];
+
 export function FaisalJewelContent() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
-  const [selectedFloorFilter, setSelectedFloorFilter] = useState<string>('all');
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('featured');
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [activeUnitForModal, setActiveUnitForModal] = useState<JewelUnitItem | null>(null);
-
-  const [isSeeMoreOpen, setIsSeeMoreOpen] = useState<boolean>(false);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState<boolean>(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState<boolean>(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState<boolean>(false);
-  const [selectedUnitForInquiry, setSelectedUnitForInquiry] = useState<JewelUnitItem | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'mall' | 'apartments' | 'hotel' | 'amenities'>('overview');
+  const [selectedUnitForInquiry, setSelectedUnitForInquiry] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [selectedCalcUnit, setSelectedCalcUnit] = useState<'Commercial Shop' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | 'Hotel Suite'>('Commercial Shop');
+  const [formData, setFormData] = useState({ name: '', phone: '', unit: 'Commercial Shop', message: '' });
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // Photo gallery slider
-  const [activeSlide, setActiveSlide] = useState(0);
-  const galleryImages = [
-    {
-      url: '/faisal-jewel.jpg',
-      title: 'Faisal Jewel 27-Storey Landmark Skyscraper',
-      desc: 'Iconic architectural marvel rising above the entrance of Faisal Hills on GT Road'
-    },
-    {
-      url: '/faisal-jewel-1.png',
-      title: 'Grand Retail Atrium & Commercial Mall',
-      desc: '6 floors of luxury retail, brand boutiques, jewelry court, and fine dining'
-    },
-    {
-      url: '/faisal-jewel-2.png',
-      title: 'Ultra-Luxury Serviced Apartments & Suites',
-      desc: 'Executive 1, 2 & 3-Bed residences with panoramic views of the Margalla Hills'
-    },
-    {
-      url: '/faisal-jewel-3.png',
-      title: '3-Level Basement Parking & Smart Infrastructure',
-      desc: '1,000+ car parking facility with ANPR, EV charging, and high-speed elevators'
-    },
-    {
-      url: '/faisal-jewel-sketch.jpg',
-      title: 'Architectural Elevation & Structural Blueprint',
-      desc: 'Earthquake-resistant RCC framed engineering by CAM Construction & Zedem Properties'
-    },
-    {
-      url: '/images/imgi_175_faisal-jewel.jpg',
-      title: 'Evening Skyline & Illumination Concept',
-      desc: 'Modern LED facade lighting illuminating the twin cities growth corridor'
-    }
-  ];
+  // Landmark auto-scroll refs and handlers
+  const landmarksScrollRef = useRef<HTMLDivElement>(null);
+  const [isLandmarksHovered, setIsLandmarksHovered] = useState<boolean>(false);
 
+  // 1-second auto scroll timer
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % galleryImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [galleryImages.length]);
+    if (isLandmarksHovered) return;
+    const interval = setInterval(() => {
+      if (landmarksScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = landmarksScrollRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const cardWidth = 280;
+        if (scrollLeft >= maxScroll - 15) {
+          landmarksScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          landmarksScrollRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }
+    }, 1200); // 1.2s smooth auto scroll
+    return () => clearInterval(interval);
+  }, [isLandmarksHovered]);
 
-  // Filtered and sorted unit listings
-  const filteredUnits = useMemo(() => {
-    return defaultJewelUnits.filter((u) => {
-      if (selectedCategoryFilter !== 'all') {
-        if (selectedCategoryFilter === 'plot' && !u.category.includes('Plot')) return false;
-        if (selectedCategoryFilter === 'shop' && !u.category.includes('Shop')) return false;
-        if (selectedCategoryFilter === 'food' && !u.category.includes('Food')) return false;
-        if (selectedCategoryFilter === 'office' && !u.category.includes('Office')) return false;
-        if (selectedCategoryFilter === 'apt' && !u.category.includes('Apartment') && !u.category.includes('Penthouse')) return false;
-        if (selectedCategoryFilter === 'hotel' && !u.category.includes('Hotel')) return false;
-      }
-      if (selectedFloorFilter !== 'all') {
-        const fl = u.floorLevel.toLowerCase();
-        if (selectedFloorFilter === 'ground' && !fl.includes('ground')) return false;
-        if (selectedFloorFilter === 'lower' && !fl.includes('lower')) return false;
-        if (selectedFloorFilter === 'corporate' && !fl.includes('5th') && !fl.includes('corporate')) return false;
-        if (selectedFloorFilter === 'residential' && !fl.includes('11th') && !fl.includes('16th') && !fl.includes('20th')) return false;
-        if (selectedFloorFilter === 'hotel' && !fl.includes('24th') && !fl.includes('hotel') && !fl.includes('rooftop')) return false;
-      }
-      if (selectedStatusFilter !== 'all') {
-        if (selectedStatusFilter === 'available' && u.status !== 'Available') return false;
-        if (selectedStatusFilter === 'hot' && u.status !== 'Hot Investment') return false;
-        if (selectedStatusFilter === 'fast' && u.status !== 'Fast Selling') return false;
-        if (selectedStatusFilter === 'limited' && u.status !== 'Limited Units') return false;
-      }
-      if (searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase();
-        const matches =
-          u.unitNumber.toLowerCase().includes(q) ||
-          u.category.toLowerCase().includes(q) ||
-          u.floorLevel.toLowerCase().includes(q) ||
-          u.description.toLowerCase().includes(q) ||
-          u.facing.toLowerCase().includes(q) ||
-          u.features.some((f) => f.toLowerCase().includes(q));
-        if (!matches) return false;
-      }
-      return true;
-    }).sort((a, b) => {
-      if (sortBy === 'area-asc') return a.areaSqFt - b.areaSqFt;
-      if (sortBy === 'area-desc') return b.areaSqFt - a.areaSqFt;
-      if (sortBy === 'name-asc') return a.unitNumber.localeCompare(b.unitNumber);
-      return 0;
-    });
-  }, [selectedCategoryFilter, selectedFloorFilter, selectedStatusFilter, searchQuery, sortBy]);
-
-  const resetFilters = () => {
-    setSelectedCategoryFilter('all');
-    setSelectedFloorFilter('all');
-    setSelectedStatusFilter('all');
-    setSearchQuery('');
-    setSortBy('featured');
+  const scrollLandmarks = (direction: 'left' | 'right') => {
+    if (landmarksScrollRef.current) {
+      const cardWidth = 300;
+      landmarksScrollRef.current.scrollBy({
+        left: direction === 'left' ? -cardWidth : cardWidth,
+        behavior: 'smooth'
+      });
+    }
   };
 
-  const hasActiveFilters =
-    selectedCategoryFilter !== 'all' ||
-    selectedFloorFilter !== 'all' ||
-    selectedStatusFilter !== 'all' ||
-    searchQuery !== '';
+  const otherBlocks = useMemo(() => {
+    return defaultFaisalHillsBlocks.filter((b) => b.id !== 'faisal-jewels' && b.id !== 'faisal-jewel-islamabad' && b.href !== '/blocks/faisal-jewel-islamabad');
+  }, []);
 
-  // Block FAQs
-  const jewelBlockData = blocksData.find((b) => b.slug === 'faisal-jewel-islamabad');
-  const jewelFaqs = jewelBlockData?.faqs || [
+  const filteredUnits = useMemo(() => {
+    if (selectedCategoryFilter === 'all') return defaultJewelUnits;
+    return defaultJewelUnits.filter((u) => {
+      if (selectedCategoryFilter === 'commercial') return u.category.includes('Shop') || u.category.includes('Showroom') || u.category.includes('Food');
+      if (selectedCategoryFilter === 'apartments') return u.category.includes('Apartment') || u.category.includes('Penthouse');
+      if (selectedCategoryFilter === 'hotel') return u.category.includes('Hotel');
+      return true;
+    });
+  }, [selectedCategoryFilter]);
+
+  const jewelFaqs = [
     {
-      question: 'What is Faisal Jewel Islamabad?',
-      answer: 'Faisal Jewel Islamabad is a landmark 27-story mixed-use skyscraper in Faisal Hills. It features 6 commercial shopping mall floors (350+ shops), 18 residential apartment floors (250+ units), a 4-star boutique hotel, rooftop infinity pool, and 3 basement parking levels for 1,000+ cars.'
+      q: 'What is Faisal Jewel Islamabad?',
+      a: 'Faisal Jewel Islamabad is a landmark 27-story mixed-use skyscraper in Faisal Hills. It features 6 commercial shopping mall floors (350+ shops), 18 residential apartment floors (250+ units), a 4-star boutique hotel, rooftop infinity pool, and 3 basement parking levels for 1,000+ cars.'
     },
     {
-      question: 'Where is Faisal Jewel located?',
-      answer: 'Faisal Jewel is situated at the main grand entrance of Faisal Hills on GT Road (N-5), directly at the crossroads of Margalla Avenue and the M-1 Motorway Interchange. It is 30 minutes from Islamabad Airport and Blue Area.'
+      q: 'Where is Faisal Jewel located?',
+      a: 'Faisal Jewel is situated at the main grand entrance of Faisal Hills on GT Road (N-5), directly at the crossroads of Margalla Avenue and the M-1 Motorway Interchange. It is 30 minutes from Islamabad Airport and Blue Area.'
     },
     {
-      question: 'What is the payment plan for Faisal Jewel?',
-      answer: 'Faisal Jewel offers an easy 4-year installment plan (16 quarterly installments) with 20–25% down payment at booking. Possession is targeted for Q4 2027.'
+      q: 'What is the payment plan for Faisal Jewel?',
+      a: 'Faisal Jewel offers an easy 4-year installment plan (16 quarterly installments) with 20–25% down payment at booking. Possession is targeted for Q4 2027.'
     },
     {
-      question: 'What amenities are included in Faisal Jewel?',
-      answer: 'Amenities include a panoramic rooftop infinity pool, sky gym & fitness club, 6-floor retail mall, fine dining restaurants, 3-level basement parking with EV chargers, 24/7 biometric security, high-speed capsule elevators, and uninterrupted power backup.'
+      q: 'What amenities are included in Faisal Jewel?',
+      a: 'Amenities include a panoramic rooftop infinity pool, sky gym & fitness club, 6-floor retail mall, fine dining restaurants, 3-level basement parking with EV chargers, 24/7 biometric security, high-speed capsule elevators, and uninterrupted power backup.'
     }
   ];
 
+  const calcDetails = {
+    'Commercial Shop': {
+      price: 'PKR 1.11 Cr – 2.96 Cr',
+      downPayment: 'PKR 27.9 Lacs (25%)',
+      installment: 'PKR 5.2 Lacs / quarter',
+      rental: 'PKR 1.2 Lacs – 2.8 Lacs / month',
+      yield: '12.5% Projected Yield',
+      suitability: 'High footfall retail shops across Lower Ground to 4th Floor shopping mall.'
+    },
+    '1-Bed Apartment': {
+      price: 'PKR 1.45 Cr – 1.85 Cr',
+      downPayment: 'PKR 36.2 Lacs (25%)',
+      installment: 'PKR 6.8 Lacs / quarter',
+      rental: 'PKR 85,000 – 1.2 Lacs / month',
+      yield: '10.8% Projected Yield',
+      suitability: 'Executive serviced residence with private balcony and Margalla mountain views.'
+    },
+    '2-Bed Apartment': {
+      price: 'PKR 2.45 Cr – 3.10 Cr',
+      downPayment: 'PKR 61.2 Lacs (25%)',
+      installment: 'PKR 11.5 Lacs / quarter',
+      rental: 'PKR 1.5 Lacs – 2.2 Lacs / month',
+      yield: '11.4% Projected Yield',
+      suitability: 'Family luxury residence with dual Margalla & boulevard views and sky terrace.'
+    },
+    '3-Bed Penthouse': {
+      price: 'PKR 4.80 Cr – 5.95 Cr',
+      downPayment: 'PKR 1.20 Crore (25%)',
+      installment: 'PKR 22.5 Lacs / quarter',
+      rental: 'PKR 3.0 Lacs – 4.5 Lacs / month',
+      yield: '12.0% Projected Yield',
+      suitability: 'Ultra-exclusive sky penthouse with private plunge pool and 360° horizon views.'
+    },
+    'Hotel Suite': {
+      price: 'PKR 1.50 Cr – 1.95 Cr',
+      downPayment: 'PKR 37.5 Lacs (25%)',
+      installment: 'PKR 7.0 Lacs / quarter',
+      rental: 'Quarterly Hotel Pool Payouts',
+      yield: '13.5% Net Hotel Yield',
+      suitability: 'Fully furnished turnkey 4-Star hotel suite managed by international hotel operator.'
+    }
+  }[selectedCalcUnit];
+
+  const handleSubmitLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormSubmitted(true);
+    setTimeout(() => setFormSubmitted(false), 5000);
+  };
+
   return (
-    <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+    <div className="space-y-12 sm:space-y-16 lg:space-y-20 py-4 sm:py-6">
+      
+      {/* ========================================================= */}
+      {/* 1. STANDALONE 4 CORE METRIC CARDS                         */}
+      {/* ========================================================= */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+          <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Total Storeys</span>
+          <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-[#7b002c]">
+            <CountUpNumber end={27} duration={1800} /> Floors
+          </div>
+          <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">Iconic Margalla skyscraper</span>
+        </div>
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+          <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Commercial Retail</span>
+          <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-emerald-700">
+            <CountUpNumber end={350} suffix="+" duration={1800} /> Shops
+          </div>
+          <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">6-floor luxury shopping mall</span>
+        </div>
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+          <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Luxury Residences</span>
+          <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
+            <CountUpNumber end={250} suffix="+" duration={2000} /> Suites
+          </div>
+          <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">1, 2, 3-Bed & 4★ hotel suites</span>
+        </div>
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+          <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Smart Parking</span>
+          <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
+            <CountUpNumber end={1000} suffix="+" duration={1800} /> Cars
+          </div>
+          <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">3-level underground basement</span>
+        </div>
+      </section>
 
       {/* ========================================================= */}
-      {/* 1. FAISAL JEWEL TOWER OVERVIEW & ARCHITECTURAL VISION     */}
+      {/* 2. OVERVIEW OF FAISAL JEWEL                               */}
       {/* ========================================================= */}
-      <section className="space-y-8">
+      <section id="overview" className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Narrative with Read More toggle */}
+          
+          {/* Left Column: Narrative with See More toggle */}
           <div className="lg:col-span-7 space-y-5">
             <ScrollReveal direction="up" delay={50}>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Jewel Islamabad — Landmark 27-Storey Skyscraper & Luxury Destination"
-                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                  text="Faisal Jewel Islamabad Overview"
+                  className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
 
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans">
-                  Faisal Jewel is the flagship crown jewel of Faisal Hills Islamabad. Soaring 27 storeys into the Margalla skyline, this iconic mixed-use skyscraper combines an ultra-modern 6-floor commercial shopping mall, 250+ luxury serviced residences, a 4-star boutique hotel, panoramic rooftop dining, and 3 levels of subterranean parking for over 1,000 vehicles.
-                </p>
+                <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
+                  <p>
+                    <strong>Faisal Jewel</strong> is the flagship architectural landmark of Faisal Hills Islamabad. Soaring 27 storeys at the grand main entrance on GT Road (N-5), this iconic mixed-use skyscraper integrates a 6-floor luxury shopping mall with 350+ brand outlets, 250+ luxury serviced residences, a 4-star boutique hotel, rooftop infinity pool, and 3 levels of underground smart parking.
+                  </p>
 
-                {isSeeMoreOpen ? (
-                  <div className="space-y-4 pt-2 text-slate-600 text-sm sm:text-base leading-relaxed font-sans animate-in fade-in duration-500">
-                    <p>
-                      Developed as a prestigious joint venture between <strong>Zedem Properties Pvt. Ltd.</strong> and <strong>CAM Construction</strong>, Faisal Jewel redefines vertical luxury. Strategically situated at the main entry point on GT Road (N-5) with direct connectivity to Margalla Avenue and the M-1 Motorway, it captures the highest retail footfall and offers unmatched capital appreciation.
-                    </p>
-                    <p>
-                      Residents and shoppers enjoy world-class infrastructure including high-speed smart elevators, double-glazed energy-efficient facades, 24/7 biometric access, uninterrupted backup generators, a state-of-the-art panoramic fitness center, and a rooftop infinity swimming pool overlooking the lush Margalla range.
-                    </p>
-                    <p>
-                      With prices starting from flexible 48-month installment schedules, Faisal Jewel delivers exceptional return on investment (10%–14% projected commercial and apartment rental yield) backed by 100% legal RDA compliance.
-                    </p>
-                  </div>
-                ) : null}
+                  {isOverviewExpanded && (
+                    <div className="space-y-3 pt-1 animate-fadeIn">
+                      <p>
+                        Developed as a signature joint venture between <strong>Zedem Properties Pvt. Ltd.</strong> and <strong>CAM Construction</strong>, Faisal Jewel redefines vertical luxury living in the twin cities. With direct connectivity to Margalla Avenue, M-1 Motorway, and Taxila, it captures prime commercial footfall and delivers high rental yields.
+                      </p>
+                      <p>
+                        Units are offered on flexible 4-year installment plans with 25% booking down payment and 16 quarterly installments.
+                      </p>
+                    </div>
+                  )}
 
-                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={() => setIsSeeMoreOpen(!isSeeMoreOpen)}
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] transition-colors cursor-pointer"
+                    onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                    className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors block pt-1"
                   >
-                    <span>{isSeeMoreOpen ? 'See Less' : 'Read Full Overview & Vision'}</span>
-                    {isSeeMoreOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    {isOverviewExpanded ? 'See less' : 'See more'}
                   </button>
                 </div>
               </div>
             </ScrollReveal>
           </div>
 
-          {/* Right Column: Tower Quick Inquiry Desk */}
-          <div className="lg:col-span-5">
-            <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5 border border-slate-800">
-              <div className="absolute -top-12 -right-12 w-48 h-48 bg-[#7b002c]/30 rounded-full blur-3xl pointer-events-none" />
-              <div className="space-y-2 relative z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 text-rose-300 text-xs font-bold uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>VIP Investor Desk</span>
-                </span>
-                <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
-                  Invest in Faisal Jewel Islamabad
-                </h3>
-                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
-                  Book commercial shops or luxury apartments on easy 4-year installment plans with official rate cards and floor plans.
-                </p>
-              </div>
+          {/* Right Column: Visual Showcase Card */}
+          <div className="lg:col-span-5 w-full">
+            <ScrollReveal direction="up" delay={100}>
+              <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
+                <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src="/faisal-jewel.jpg"
+                    alt="Faisal Jewel 27-Storey Skyscraper Showcase"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
 
-              <div className="space-y-2.5 relative z-10 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>27 Storeys with 350+ Shops & 250+ Luxury Apartments</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>3-Level Basement Parking for 1,000+ Vehicles</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Target Handover Q4 2027 by Zedem & CAM Construction</span>
+                <div className="p-5 bg-slate-900 text-white space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider block">
+                    Flagship Mixed-Use Landmark
+                  </span>
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-white">
+                    27-Storey Luxury Tower
+                  </h3>
+                  <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                    6-floor shopping mall, luxury apartments, 4★ hotel suites & rooftop infinity pool.
+                  </p>
                 </div>
               </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row gap-3 relative z-10">
-                <button
-                  type="button"
-                  onClick={() => setIsLeadModalOpen(true)}
-                  className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-lg transition-all text-center cursor-pointer"
-                >
-                  Request Rate Schedule
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsMapModalOpen(true)}
-                  className="flex-1 py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Floor Plans PDF</span>
-                </button>
-              </div>
-            </div>
+            </ScrollReveal>
           </div>
+
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 2. PHOTO GALLERY CAROUSEL                                 */}
+      {/* 3. LOCATION & ACCESSIBILITY MAP                           */}
       {/* ========================================================= */}
-      <section className="space-y-4">
+      <section id="location" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Skyscraper Architectural Gallery</span>
-              </div>
-              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 mt-1">
-                Faisal Jewel Elevation & Visual Renders
+          <div className="border-b border-slate-200 pb-5">
+            <div className="space-y-2 max-w-2xl">
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
+                Faisal Jewel Location & Road Connectivity Map
               </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                Positioned at the grand GT Road (N-5) entrance with direct access to Margalla Avenue and M-1 Motorway:
+              </p>
             </div>
-            <span className="text-xs text-slate-600 font-medium">
-              Slide {activeSlide + 1} of {galleryImages.length}
-            </span>
           </div>
         </ScrollReveal>
 
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 aspect-[16/9] md:aspect-[21/9] bg-slate-950">
-          <img
-            src={galleryImages[activeSlide].url}
-            alt={galleryImages[activeSlide].title}
-            className="w-full h-full object-cover transition-all duration-700 ease-out"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent pointer-events-none" />
+        {/* Full-width Map Container */}
+        <ScrollReveal direction="up" delay={100}>
+          <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+            <iframe
+              title="Faisal Jewel Location Map"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
+            />
+          </div>
+        </ScrollReveal>
+      </section>
 
-          {/* Caption Overlay */}
-          <div className="absolute bottom-6 left-6 right-6 sm:left-10 sm:right-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4 z-10 text-white">
+      {/* ========================================================= */}
+      {/* 4. NEARBY LANDMARKS & COMMUTE MATRIX (AUTO-SCROLL)        */}
+      {/* ========================================================= */}
+      <section id="nearby-landmarks" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
             <div className="space-y-1.5 max-w-2xl">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[11px] font-bold uppercase tracking-wider inline-block">
-                Faisal Jewel Architecture
-              </span>
-              <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white drop-shadow-md">
-                {galleryImages[activeSlide].title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-200 drop-shadow font-sans">
-                {galleryImages[activeSlide].desc}
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+                Nearby Landmarks & Commute Distances from Faisal Jewel
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-sans">
+                Strategic transit corridors connecting to Islamabad airport, Motorway, and educational institutions:
               </p>
             </div>
 
-            {/* Slide Navigation Dots */}
-            <div className="flex items-center gap-2 shrink-0">
-              {galleryImages.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveSlide(idx)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    activeSlide === idx ? 'w-8 bg-amber-400' : 'w-2.5 bg-white/40 hover:bg-white/70'
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 3. KEY SKYSCRAPER BENCHMARKS & METRICS (COUNTUP)          */}
-      {/* ========================================================= */}
-      <section className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="border-b border-slate-200 pb-3 flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-                Quantitative Specifications
-              </span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-                Faisal Jewel Skyscraper Benchmarks
-              </h2>
-            </div>
-            <span className="text-xs text-slate-650 hidden sm:inline-block font-sans">
-              Verified Zedem & CAM Construction Specifications
-            </span>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              <CountUpNumber end={27} duration={2000} />
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Total Storeys</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              <CountUpNumber end={350} duration={2200} suffix="+" />
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Retail Shops</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <Home className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              <CountUpNumber end={250} duration={2100} suffix="+" />
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Apartments</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <Car className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              <CountUpNumber end={1000} duration={2400} suffix="+" />
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Car Parking</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <Hotel className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              4<span className="text-amber-500 text-lg">★</span>
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Hotel Suites</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center space-y-1 group">
-            <div className="w-10 h-10 mx-auto rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center font-bold">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-              <CountUpNumber end={14} duration={1800} suffix="%" />
-            </div>
-            <p className="text-[11px] font-semibold text-slate-650 uppercase tracking-wider">Annual Yield</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 4. SIGNATURE LIFESTYLE & AMENITIES (WITH IMAGES)         */}
-      {/* ========================================================= */}
-      <section className="space-y-8">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Signature Skyscraper Experience</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-              World-Class Amenities & Vertical Infrastructure
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-4xl leading-relaxed">
-              Every floor of Faisal Jewel is engineered to deliver unmatched luxury, convenience, and security. Explore key lifestyle amenities featuring high-end images:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* 4 Grid Cards: Gym, Shops, Parking, Hotel/Rooftop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-          {/* Card 1: 6-Floor Commercial Mall & Shops */}
-          <ScrollReveal direction="up" delay={100}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group">
-              <div>
-                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src="/images/faisalarc (1).webp"
-                    alt="Faisal Jewel Commercial Retail Shops & Shopping Mall"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      <ShoppingBag className="w-3 h-3" />
-                      <span>6 Floors</span>
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">350+ Brand Outlets</span>
-                    <h4 className="font-serif font-bold text-base text-white">Mega Shopping Mall</h4>
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-2.5">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Commercial Retail Shops & Food Court
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Six levels of air-conditioned luxury retail including jewelry souks, national fashion brands, banks, electronics, and multi-cuisine food courts.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
-                  <span>High-speed escalators & double-height ceilings</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Card 2: State-of-the-Art Panoramic Sky Gym */}
-          <ScrollReveal direction="up" delay={150}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group">
-              <div>
-                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src="/images/imgi_48_sports-arena.webp"
-                    alt="Faisal Jewel Panoramic Sky Gym & Fitness Club"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      <Dumbbell className="w-3 h-3" />
-                      <span>Sky Gym</span>
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">Margalla View Fitness</span>
-                    <h4 className="font-serif font-bold text-base text-white">Health & Wellness Club</h4>
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-2.5">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    State-of-the-Art Panoramic Gym
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Fully equipped multi-tier fitness club featuring imported cardio machines, free weights, sauna, steam rooms, and yoga studios overlooking Margalla.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
-                  <span>Certified trainers, spa & recovery lounge</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Card 3: 3-Level Basement Parking (1,000+ Cars) */}
-          <ScrollReveal direction="up" delay={200}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group">
-              <div>
-                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src="/faisal-jewel-3.png"
-                    alt="Faisal Jewel 3-Level Underground Smart Basement Parking"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      <Car className="w-3 h-3" />
-                      <span>1,000+ Cars</span>
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">B1, B2 & B3 Levels</span>
-                    <h4 className="font-serif font-bold text-base text-white">Smart Basement Parking</h4>
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-2.5">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    3-Level Underground Parking
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Three spacious subterranean levels with Automated Number Plate Recognition (ANPR), LED vacancy indicators, EV charging, and 24/7 security cameras.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
-                  <span>Direct elevator access to all apartment & retail floors</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Card 4: 4-Star Hotel, Infinity Pool & Dining */}
-          <ScrollReveal direction="up" delay={250}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group">
-              <div>
-                <div className="relative h-48 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src="/images/faisalarc (2).webp"
-                    alt="Faisal Jewel 4-Star Hotel, Rooftop Infinity Pool & Fine Dining"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                  <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow">
-                      <Hotel className="w-3 h-3" />
-                      <span>4-Star Hotel</span>
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">Floors 22–27</span>
-                    <h4 className="font-serif font-bold text-base text-white">Hotel & Rooftop Lounge</h4>
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-2.5">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    4-Star Hotel & Rooftop Pool
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Boutique hospitality experience with rooftop infinity pool, 24/7 concierge, executive boardroom suites, and Margalla mountain dining terraces.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <div className="p-2.5 bg-rose-50/50 rounded-xl border border-rose-100 text-[11px] text-[#7b002c] font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
-                  <span>Managed rental pool with high cash returns</span>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 5. VERTICAL FLOOR DISTRIBUTION MATRIX                     */}
-      {/* ========================================================= */}
-      <section className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Architectural Zoning
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Floor-by-Floor Master Distribution
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1">
-              Comprehensive 27-storey vertical zoning map separating retail, corporate, residential, and hospitality levels:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-rose-700 uppercase font-mono">Basement 1, 2 & 3</span>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">1,000+ Cars</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">3-Level Smart Basement Parking</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Automated barrier gates with RFID / ANPR recognition, separate residential and visitor parking bays, EV charging stations, and direct lift lobbies.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-amber-700 uppercase font-mono">Lower Ground – 4th Floor</span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[10px] font-bold">350+ Shops</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">6 Commercial Shopping Floors</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Air-conditioned central atrium shopping mall, national retail brands, gold & diamond souk, banking square, and multi-cuisine 4th floor food court.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-blue-700 uppercase font-mono">5th – 6th Floor</span>
-              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 text-[10px] font-bold">Corporate</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Corporate Offices & Business Center</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              State-of-the-art corporate office suites, conference facilities, co-working pods, executive business lounges, and high-speed fiber internet.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-emerald-700 uppercase font-mono">7th – 21st Floor</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">250+ Flats</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Luxury Serviced 1, 2 & 3-Bed Residences</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Executive 1-Bed suites (929 sq.ft.), spacious 2-Bed apartments (1,575 sq.ft.), and 3-Bed penthouses (3,226 sq.ft.) with smart automation.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-purple-700 uppercase font-mono">22nd – 25th Floor</span>
-              <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 text-[10px] font-bold">4-Star</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">4-Star International Hotel Wing</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Managed hotel suites with 24/7 concierge, housekeeping, room service, executive lounge, and rental pool revenue distribution.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-rose-700 uppercase font-mono">26th – 27th Floor</span>
-              <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 text-[10px] font-bold">Rooftop</span>
-            </div>
-            <h3 className="font-serif font-bold text-lg text-slate-900">Infinity Pool & Margalla Sky Dining</h3>
-            <p className="text-xs text-slate-600 font-sans leading-relaxed">
-              Temperature-controlled infinity swimming pool, sky fitness gym, open-air alfresco barbecue terraces, and 360-degree Margalla observation deck.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 6. PLOTS, SHOPS & APARTMENTS FOR SALE IN FAISAL JEWEL     */}
-      {/* ========================================================= */}
-      <section id="inventory" className="scroll-mt-28 space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Store className="w-3.5 h-3.5" />
-                <span>Verified Tower & Plot Inventory</span>
-              </div>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-                Plots, Commercial Shops & Luxury Apartments for Sale in Faisal Jewel
-              </h2>
-              <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
-                Explore verified commercial plot showrooms, retail mall shops, corporate office suites, and luxury serviced residences for sale in Faisal Jewel Islamabad.
-              </p>
-            </div>
-
-            {/* Quick Stats Pill */}
-            <div className="flex items-center gap-2.5 bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs shrink-0">
-              <div className="px-3.5 py-1.5 bg-slate-50 rounded-xl text-center">
-                <span className="block text-xs font-bold text-[#7b002c]">{defaultJewelUnits.length}+ Units</span>
-                <span className="text-[9px] text-slate-500 font-semibold uppercase">Tower Inventory</span>
-              </div>
-              <div className="px-3.5 py-1.5 bg-slate-50 rounded-xl text-center">
-                <span className="block text-xs font-bold text-emerald-700">4 Years</span>
-                <span className="text-[9px] text-slate-500 font-semibold uppercase">16 Installments</span>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* UNIFIED MODERN FILTER BAR */}
-        <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm space-y-3.5">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-            {/* Search Input */}
-            <div className="relative md:col-span-4">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search by unit #, plot, shop, floor, or size..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {/* Category Dropdown */}
-            <div className="md:col-span-3">
-              <select
-                value={selectedCategoryFilter}
-                onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                aria-label="Select Category"
-                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
-              >
-                <option value="all">Select Property Type</option>
-                <option value="plot">Commercial Plots & Showrooms</option>
-                <option value="shop">Commercial Retail Shops</option>
-                <option value="food">Food Court & Restaurants</option>
-                <option value="office">Corporate Offices</option>
-                <option value="apt">Luxury Apartments & Penthouses</option>
-                <option value="hotel">4-Star Hotel Suites</option>
-              </select>
-            </div>
-
-            {/* Floor Level Dropdown */}
-            <div className="md:col-span-2">
-              <select
-                value={selectedFloorFilter}
-                onChange={(e) => setSelectedFloorFilter(e.target.value)}
-                aria-label="Select Floor Level"
-                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
-              >
-                <option value="all">Select Floor Level</option>
-                <option value="ground">Ground Floor Boulevard</option>
-                <option value="lower">Lower Ground Floor</option>
-                <option value="corporate">5th–6th Floor Corporate</option>
-                <option value="residential">7th–21st Residential</option>
-                <option value="hotel">22nd–27th Hotel & Penthouse</option>
-              </select>
-            </div>
-
-            {/* Status Dropdown */}
-            <div className="md:col-span-2">
-              <select
-                value={selectedStatusFilter}
-                onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                aria-label="Select Status"
-                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:bg-white cursor-pointer"
-              >
-                <option value="all">Select Status</option>
-                <option value="hot">Hot Investment</option>
-                <option value="fast">Fast Selling</option>
-                <option value="limited">Limited Units</option>
-                <option value="available">Available Units</option>
-              </select>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="md:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
+            {/* Scroll Navigation Buttons */}
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
               <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-[#7b002c] shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-                title="Grid View"
+                type="button"
+                onClick={() => scrollLandmarks('left')}
+                aria-label="Previous Landmark"
+                className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white transition-all flex items-center justify-center shadow-xs cursor-pointer"
               >
-                <Grid className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'table'
-                    ? 'bg-white text-[#7b002c] shadow-xs'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-                title="Table View"
+                type="button"
+                onClick={() => scrollLandmarks('right')}
+                aria-label="Next Landmark"
+                className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white transition-all flex items-center justify-center shadow-xs cursor-pointer"
               >
-                <List className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
-        {/* RESULTS HEADER & SORT */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <strong className="text-slate-900 font-bold">{filteredUnits.length}</strong> of{' '}
-              <strong>{defaultJewelUnits.length}</strong> verified properties for sale
-            </span>
-            {hasActiveFilters && (
-              <button
-                onClick={resetFilters}
-                className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer ml-2"
-              >
-                <X className="w-3.5 h-3.5" />
-                Reset filters
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 font-semibold">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              aria-label="Sort units"
-              className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
+        {/* Horizontal Scroll Carousel with 1-second auto scroll */}
+        <div
+          ref={landmarksScrollRef}
+          onMouseEnter={() => setIsLandmarksHovered(true)}
+          onMouseLeave={() => setIsLandmarksHovered(false)}
+          onTouchStart={() => setIsLandmarksHovered(true)}
+          onTouchEnd={() => setIsLandmarksHovered(false)}
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0"
+        >
+          {jewelLandmarks.map((item) => (
+            <div
+              key={item.id}
+              className="w-[240px] min-[420px]:w-[270px] sm:w-[290px] shrink-0 snap-start bg-slate-50 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group"
             >
-              <option value="featured">Featured / Recommended</option>
-              <option value="area-desc">Area: Largest First</option>
-              <option value="area-asc">Area: Smallest First</option>
-              <option value="name-asc">Unit Number</option>
-            </select>
-          </div>
+              <div>
+                <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-[#7b002c] text-white text-[9px] font-bold uppercase tracking-wider font-mono">
+                    Point {item.id}
+                  </span>
+                  <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-xs text-slate-900 text-[10px] font-bold">
+                    {item.time}
+                  </span>
+                </div>
+
+                <div className="p-4 space-y-1.5">
+                  <h4 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                    {item.name}
+                  </h4>
+                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 pt-0">
+                <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs font-semibold text-slate-700">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Commute</span>
+                  <span className="text-[#7b002c] font-bold">{item.distance}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+      </section>
 
-        {/* GRID VIEW */}
-        {viewMode === 'grid' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredUnits.map((unit) => (
-              <div
-                key={unit.id}
-                className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
-              >
-                <div>
-                  {/* Photo Banner with Link to Plot Inventory */}
-                  <Link
-                    href={`/plots?category=Commercial&block=faisal-jewel-islamabad`}
-                    className="relative h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer"
-                    title={`Click to view ${unit.unitNumber} in Plot Inventory`}
-                  >
-                    <img
-                      src={unit.image}
-                      alt={`${unit.category} - ${unit.unitNumber}`}
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+      {/* ========================================================= */}
+      {/* 5. MASTER PLAN & FLOOR ARCHITECTURAL BLUEPRINT            */}
+      {/* ========================================================= */}
+      <section id="master-plan" className="scroll-mt-28 space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="border-b border-slate-200 pb-5">
+            <div className="space-y-2 max-w-2xl">
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+                Faisal Jewel Vertical Master Plan & Floor Zoning
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                Explore the 27-storey vertical distribution separating retail, dining, corporate, residential, and hotel decks:
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
 
-                    {/* Badges */}
-                    <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
-                      <span className="px-3 py-1 rounded-full bg-[#7b002c] text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
-                        {unit.category}
-                      </span>
-                      <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
-                        {unit.status}
-                      </span>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          {/* Left Column: Visual Master Plan Layout + Button Below */}
+          <div className="lg:col-span-5 flex flex-col space-y-3">
+            <div
+              onClick={() => setIsMapModalOpen(true)}
+              className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md hover:shadow-xl transition-all cursor-pointer flex-1 flex flex-col justify-center min-h-[380px] p-3"
+            >
+              <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
+                <img
+                  src="/faisal-jewel-sketch.jpg"
+                  alt="Faisal Jewel Architectural Elevation Blueprint"
+                  className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+              </div>
+            </div>
 
-                    <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white z-10 flex items-end justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold text-rose-300 uppercase block font-mono">
-                          {unit.floorLevel}
-                        </span>
-                        <h4 className="font-serif font-bold text-base text-white group-hover:text-amber-300 transition-colors">
-                          {unit.unitNumber} ({unit.areaSqFt} Sq.Ft.)
-                        </h4>
-                      </div>
-                      <span className="text-xs font-mono text-slate-200 bg-white/10 px-2 py-0.5 rounded backdrop-blur-xs">
-                        {unit.dimensions}
-                      </span>
-                    </div>
-                  </Link>
+            {/* Button Below Master Plan */}
+            <button
+              type="button"
+              onClick={() => setIsMapModalOpen(true)}
+              className="w-full py-3 px-4 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Floor Plans</span>
+            </button>
+          </div>
 
-                  {/* Details Body */}
-                  <div className="p-5 space-y-3.5">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Demand</span>
-                        <span className="font-serif font-bold text-lg text-[#7b002c]">{unit.priceFormatted}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">25% Booking</span>
-                        <span className="font-sans font-bold text-xs text-slate-800">{unit.downPaymentFormatted}</span>
-                      </div>
-                    </div>
+          {/* Right Column: Floor Breakdown Specs */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 border-b border-slate-100 pb-2">
+                  Commercial Mall & Corporate (LG to 5th)
+                </h3>
+                <div className="text-xs text-slate-700 leading-relaxed font-sans space-y-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• LG to 3rd Floors:</strong> 350+ luxury retail shops, gold souk, fashion avenues, and tech hubs.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• 4th Floor:</strong> 500-seat mega food court with alfresco Margalla dining terrace.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• 5th Floor:</strong> Corporate executive office suites with high-speed fiber connectivity.
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-slate-500 font-sans pt-2 border-t border-slate-100 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>RDA Sanctioned commercial mixed-use layout.</span>
+              </div>
+            </div>
 
-                    <p className="text-xs text-slate-600 font-sans leading-relaxed line-clamp-2">
-                      {unit.description}
-                    </p>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 border-b border-slate-100 pb-2">
+                  Residences, Hotel & Rooftop (6th to 27th)
+                </h3>
+                <div className="text-xs text-slate-700 leading-relaxed font-sans space-y-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• 6th to 19th Floors:</strong> 250+ luxury 1, 2, and 3-bed serviced apartments.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• 20th to 22nd Floors:</strong> Executive sky penthouses with private sky garden terraces.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <strong>• 23rd to 27th Floors:</strong> 4-Star boutique hotel suites & rooftop infinity pool deck.
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-slate-500 font-sans pt-2 border-t border-slate-100 flex items-center justify-between">
+                <Link href="/faisal-hills-commercial" className="text-[#7b002c] font-bold hover:underline flex items-center gap-1">
+                  <span>Commercial Rates</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+                <Link href="/blocks/executive-block" className="text-[#7b002c] font-bold hover:underline flex items-center gap-1">
+                  <span>Executive Block</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
 
-                    {/* Feature Tags */}
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Specs</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {unit.features.slice(0, 2).map((feat, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-0.5 rounded-md bg-rose-50 border border-rose-100 text-[10px] text-[#7b002c] font-medium"
-                          >
-                            ✓ {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 6. SHOPS, APARTMENTS & UNITS FOR SALE (PRICING & INVENTORY)*/}
+      {/* ========================================================= */}
+      <section id="plots-for-sale" className="scroll-mt-28 space-y-8">
+        
+        {/* Pricing Schedule Section */}
+        <div className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="space-y-1.5 border-b border-slate-200 pb-5">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Faisal Jewel 4-Year Payment Plan Schedule
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Official rates for Commercial Shops (LG to 4th Floor) and Luxury Serviced Apartments (6th to 19th Floor) spread over 16 quarterly installments:
+            </p>
+          </div>
+
+          {/* Mobile View: Clean Responsive Price Cards */}
+          <div className="block sm:hidden space-y-3">
+            {faisalJewelCommercialPlans.map((plan, idx) => (
+              <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#7b002c]" />
+                    <span className="font-bold text-sm text-slate-900">{plan.floor}</span>
+                  </div>
+                  <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200">
+                    16 Quarters (4 Yrs)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-sans">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Rate / Sq.Ft.</span>
+                    <span className="text-slate-800 font-mono font-medium">PKR {plan.ratePerSqFtFormatted}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Area Range</span>
+                    <span className="text-slate-800 font-medium">{plan.areaMin}–{plan.areaMax} Sq.Ft.</span>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="p-5 pt-0 grid grid-cols-2 gap-2">
+                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Price Range</span>
+                    <span className="font-serif font-bold text-sm text-[#7b002c]">PKR {plan.totalPriceMinFormatted} – {plan.totalPriceMaxFormatted}</span>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setActiveUnitForModal(unit)}
-                    className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedUnitForInquiry(`Faisal Jewel ${plan.floor} Commercial Shop`);
+                      setIsLeadModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1"
                   >
-                    <Eye className="w-3.5 h-3.5 text-[#7b002c]" />
-                    <span>Full Specs</span>
+                    <span>Inquire</span>
+                    <ChevronRight className="w-3 h-3" />
                   </button>
-                  <a
-                    href={`https://wa.me/923044811717?text=Hello%20Faisal%20Jewel%20Desk,%20I%20am%20interested%20in%20${encodeURIComponent(unit.category)}%20${unit.unitNumber}%20(${unit.areaSqFt}%20sqft)%20priced%20at%20${unit.priceFormatted}.%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5 text-white" />
-                    <span>WhatsApp</span>
-                  </a>
                 </div>
               </div>
             ))}
           </div>
-        )}
 
-        {/* TABLE VIEW */}
-        {viewMode === 'table' && (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          {/* Desktop View: Full Table */}
+          <div className="hidden sm:block rounded-3xl border border-slate-200 overflow-hidden shadow-xs bg-white">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                  <tr>
-                    <th className="p-4">Unit / Plot #</th>
-                    <th className="p-4">Category</th>
-                    <th className="p-4">Floor Level</th>
-                    <th className="p-4">Area & Dims</th>
-                    <th className="p-4">Total Price</th>
-                    <th className="p-4">25% Booking</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-center">Action</th>
+              <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[650px]">
+                <thead>
+                  <tr className="bg-slate-900 text-white font-serif">
+                    <th className="p-4 whitespace-nowrap">Floor Level</th>
+                    <th className="p-4 whitespace-nowrap">Rate / Sq.Ft.</th>
+                    <th className="p-4 whitespace-nowrap">Area Range (Sq.Ft.)</th>
+                    <th className="p-4 whitespace-nowrap">25% Booking Range</th>
+                    <th className="p-4 whitespace-nowrap">Total Price Range</th>
+                    <th className="p-4 whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {filteredUnits.map((unit) => (
-                    <tr key={unit.id} className="hover:bg-rose-50/40 transition-colors">
-                      <td className="p-4">
-                        <Link
-                          href={`/plots?category=Commercial&block=faisal-jewel-islamabad`}
-                          className="flex items-center gap-3 cursor-pointer group/item"
-                          title={`Click to view ${unit.unitNumber} in Plot Inventory`}
-                        >
-                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
-                            <img src={unit.image} alt={unit.unitNumber} className="w-full h-full object-cover" />
-                          </div>
-                          <div>
-                            <span className="font-mono font-bold text-xs text-[#7b002c]">#{unit.unitNumber}</span>
-                            <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[180px] group-hover/item:text-[#7b002c] transition-colors">
-                              {unit.category}
-                            </strong>
-                          </div>
-                        </Link>
+                <tbody className="divide-y divide-slate-200 text-slate-700">
+                  {faisalJewelCommercialPlans.map((plan, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="p-4 font-bold text-slate-900 whitespace-nowrap flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
+                        <span>{plan.floor}</span>
                       </td>
-                      <td className="p-4 font-semibold text-slate-800">{unit.category}</td>
-                      <td className="p-4 font-sans text-slate-600">{unit.floorLevel}</td>
-                      <td className="p-4 font-sans">
-                        <strong className="block text-slate-900">{unit.areaSqFt} Sq.Ft.</strong>
-                        <span className="text-[10px] text-slate-400">{unit.dimensions}</span>
-                      </td>
-                      <td className="p-4 font-serif font-bold text-[#7b002c] text-sm whitespace-nowrap">
-                        {unit.priceFormatted}
-                      </td>
-                      <td className="p-4 font-sans text-slate-800 font-bold whitespace-nowrap">
-                        {unit.downPaymentFormatted}
-                      </td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full whitespace-nowrap">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          {unit.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-center">
+                      <td className="p-4 font-mono text-[#7b002c] font-bold whitespace-nowrap">PKR {plan.ratePerSqFtFormatted}</td>
+                      <td className="p-4 whitespace-nowrap">{plan.areaMin} – {plan.areaMax} Sq.Ft.</td>
+                      <td className="p-4 font-semibold text-slate-800 whitespace-nowrap">PKR {plan.downPaymentMinFormatted} – {plan.downPaymentMaxFormatted}</td>
+                      <td className="p-4 font-bold text-emerald-700 whitespace-nowrap">PKR {plan.totalPriceMinFormatted} – {plan.totalPriceMaxFormatted}</td>
+                      <td className="p-4 whitespace-nowrap">
                         <button
-                          onClick={() => setActiveUnitForModal(unit)}
-                          className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                          type="button"
+                          onClick={() => {
+                            setSelectedUnitForInquiry(`Faisal Jewel ${plan.floor} Shop`);
+                            setIsLeadModalOpen(true);
+                          }}
+                          className="px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
                         >
-                          View Specs
+                          Inquire
                         </button>
                       </td>
                     </tr>
@@ -1365,969 +871,632 @@ export function FaisalJewelContent() {
               </table>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Empty State */}
-        {filteredUnits.length === 0 && (
-          <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center space-y-3">
-            <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
-            <h3 className="font-serif font-bold text-lg text-slate-800">No Units Found</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              No Faisal Jewel units matched your filter criteria. Try clearing search or resetting filters.
-            </p>
-            <button
-              onClick={resetFilters}
-              className="px-5 py-2 bg-[#7b002c] text-white text-xs font-bold rounded-full uppercase tracking-wider hover:bg-[#9e1245] transition-colors cursor-pointer"
-            >
-              Reset Filters
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* FULL SPECS MODAL FOR FAISAL JEWEL */}
-      {activeUnitForModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-          <div
-            className="bg-white w-full max-w-3xl max-h-[92vh] rounded-3xl shadow-2xl overflow-y-auto border border-slate-200 relative flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-slate-200 flex items-center justify-between z-20">
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#7b002c] text-white">
-                  #{activeUnitForModal.unitNumber}
-                </span>
-                <div>
-                  <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900">
-                    {activeUnitForModal.category} ({activeUnitForModal.areaSqFt} Sq.Ft.)
-                  </h3>
-                  <p className="text-xs text-slate-500 font-sans">
-                    {activeUnitForModal.floorLevel} • {activeUnitForModal.facing}
-                  </p>
-                </div>
+        {/* Live Inventory Grid */}
+        <div className="space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+              <div className="space-y-2">
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
+                  Available Units & Suites in Faisal Jewel
+                </h2>
+                <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+                  Browse verified commercial shops, luxury apartments, and penthouses on easy 4-year installment plans:
+                </p>
               </div>
 
-              <button
-                onClick={() => setActiveUnitForModal(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Filter Tabs (Hidden on mobile, visible on desktop) */}
+              <div className="hidden sm:flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 shrink-0">
+                {[
+                  { key: 'all', label: 'All Units' },
+                  { key: 'commercial', label: 'Shops & Food' },
+                  { key: 'apartments', label: 'Apartments' },
+                  { key: 'hotel', label: 'Hotel Suites' }
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setSelectedCategoryFilter(tab.key)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      selectedCategoryFilter === tab.key
+                        ? 'bg-[#7b002c] text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Units Cards Grid: 2 per row on mobile */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+            {filteredUnits.map((unit, idx) => (
+              <ScrollReveal key={unit.id} direction="up" delay={(idx % 3) * 80}>
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                  <div>
+                    <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950 block">
+                      <img
+                        src={unit.image}
+                        alt={unit.unitNumber}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                      <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 text-white">
+                        <span className="text-[9px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider truncate">{unit.floorLevel}</span>
+                        <h4 className="font-serif font-bold text-sm sm:text-xl group-hover:text-amber-300 transition-colors">Unit #{unit.unitNumber}</h4>
+                      </div>
+                    </div>
+
+                    <div className="p-3 sm:p-5 space-y-2 sm:space-y-3.5 block">
+                      <div className="space-y-1.5 sm:space-y-2 text-[11px] sm:text-xs text-slate-600">
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Category:</span>
+                          <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors truncate max-w-[85px] sm:max-w-none">{unit.category}</span>
+                        </div>
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Area:</span>
+                          <strong className="text-slate-900 font-semibold">{unit.areaSqFt} Sq.Ft.</strong>
+                        </div>
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">25% Booking:</span>
+                          <strong className="text-slate-900 font-semibold truncate max-w-[85px] sm:max-w-none">{unit.downPaymentFormatted}</strong>
+                        </div>
+                        <div className="hidden sm:flex justify-between items-center">
+                          <span className="text-slate-500 font-medium">Quarterly:</span>
+                          <span className="text-emerald-700 font-bold">{unit.quarterlyInstallmentFormatted}</span>
+                        </div>
+                      </div>
+
+                      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
+                        {Array.isArray(unit.features) && unit.features.slice(0, 3).map((feat, fIdx) => (
+                          <span
+                            key={fIdx}
+                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
+                          >
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 sm:p-4 pt-2 sm:pt-3 border-t border-slate-100 mt-1 sm:mt-2 space-y-2 sm:space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5">
+                      <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Price</span>
+                      <span className="font-serif font-bold text-xs min-[400px]:text-sm sm:text-base text-[#7b002c] truncate">{unit.priceFormatted}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedUnitForInquiry(`Faisal Jewel Unit #${unit.unitNumber} (${unit.category})`);
+                          setIsLeadModalOpen(true);
+                        }}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 text-center cursor-pointer"
+                      >
+                        <span>Details</span>
+                        <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      </button>
+
+                      <a
+                        href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                          `Hi! I am interested in booking Faisal Jewel Unit #${unit.unitNumber} (${unit.category} - ${unit.priceFormatted}). Please share verification & installment details.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
+                      >
+                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        <span>Book</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* List / Book Your Unit Banner */}
+          <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
+            <div className="space-y-2 text-center md:text-left">
+              <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+                Looking to Book or Transfer a Unit in Faisal Jewel?
+              </h3>
+              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+                Get priority allocation on prime corner shops and penthouse suites with official Zedem registration.
+              </p>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              {/* Image & Price Summary */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="md:col-span-7 relative h-64 rounded-2xl overflow-hidden bg-slate-900">
+            <a
+              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20book%20a%20commercial%20shop%20or%20luxury%20apartment%20in%20Faisal%20Jewel%20Islamabad."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
+            >
+              <span>WhatsApp Booking Desk</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+      </section>
+
+      {/* ========================================================= */}
+      {/* 7. AMENITIES & HOTEL-GRADE FACILITIES                     */}
+      {/* ========================================================= */}
+      <section id="amenities" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="space-y-2 max-w-2xl">
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900">
+                World-Class Amenities in Faisal Jewel
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-sans">
+                Signature skyscraper facilities engineered for luxury living and high retail footfall:
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              title: '6-Floor Shopping Mall',
+              desc: 'Six levels of air-conditioned luxury retail including jewelry souks, fashion brands, and food courts.',
+              image: '/images/faisalarc (1).webp',
+              tag: '350+ Shops'
+            },
+            {
+              title: 'Panoramic Sky Gym & Spa',
+              desc: 'Fully equipped multi-tier fitness club with imported cardio machines, sauna, and yoga studio overlooking Margalla.',
+              image: '/images/imgi_48_sports-arena.webp',
+              tag: 'Health Club'
+            },
+            {
+              title: '3-Level Basement Parking',
+              desc: 'Three subterranean levels with ANPR number plate recognition, EV charging, and 1,000+ car bays.',
+              image: '/faisal-jewel-3.png',
+              tag: '1,000+ Cars'
+            },
+            {
+              title: '4★ Hotel & Rooftop Pool',
+              desc: 'Boutique hospitality experience with rooftop infinity pool, 24/7 concierge, and fine dining terraces.',
+              image: '/images/faisalarc (2).webp',
+              tag: 'Floors 22–27'
+            }
+          ].map((item, idx) => (
+            <ScrollReveal key={idx} direction="up" delay={idx * 40}>
+              <div className="rounded-3xl border border-slate-200 overflow-hidden bg-slate-50 flex flex-col justify-between h-full shadow-2xs hover:shadow-md transition-all">
+                <div className="relative h-44 w-full bg-slate-950">
                   <img
-                    src={activeUnitForModal.image}
-                    alt={activeUnitForModal.unitNumber}
+                    src={item.image}
+                    alt={item.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded-full font-bold">
-                    {activeUnitForModal.category}
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                  <span className="absolute bottom-3 left-3 text-xs font-bold text-white bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-full border border-white/20">
+                    {item.tag}
+                  </span>
                 </div>
-
-                <div className="md:col-span-5 flex flex-col justify-between space-y-3">
-                  <div className="bg-rose-50 border border-rose-200/80 p-4 rounded-2xl space-y-2">
-                    <span className="text-[10px] text-[#7b002c] font-bold uppercase tracking-wider block">Total Demand</span>
-                    <div className="text-xl font-serif font-bold text-[#7b002c]">{activeUnitForModal.priceFormatted}</div>
-                    <div className="pt-2 border-t border-rose-200/60 space-y-1 text-xs text-slate-700">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">25% Booking:</span>
-                        <strong className="text-slate-900 font-bold">{activeUnitForModal.downPaymentFormatted}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Quarterly (16x):</span>
-                        <strong className="text-emerald-700 font-bold">{activeUnitForModal.quarterlyInstallmentFormatted}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-1 text-xs">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Handover & Approval</span>
-                    <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>RDA Approved High-Rise Tower</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-slate-600">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#7b002c]" />
-                      <span>Direct Zedem Allotment Letter</span>
-                    </div>
-                  </div>
+                <div className="p-5 space-y-2 flex-1 flex flex-col justify-between">
+                  <h3 className="font-serif font-bold text-base text-slate-900">{item.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-sans">{item.desc}</p>
                 </div>
               </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
 
-              {/* Specs Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-sans">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Covered Area</span>
-                  <strong className="text-slate-800 text-sm block">{activeUnitForModal.areaSqFt} Sq.Ft.</strong>
-                  <span className="text-slate-500">{activeUnitForModal.dimensions}</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Floor Level</span>
-                  <strong className="text-slate-800 text-sm block truncate">{activeUnitForModal.floorLevel}</strong>
-                  <span className="text-slate-500">Faisal Jewel Tower</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Facing</span>
-                  <strong className="text-slate-800 text-sm block truncate">{activeUnitForModal.facing}</strong>
-                  <span className="text-slate-500">High Visibility</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Payment Schedule</span>
-                  <strong className="text-[#7b002c] text-sm block">48 Months</strong>
-                  <span className="text-slate-500">Easy Installments</span>
-                </div>
+      {/* ========================================================= */}
+      {/* 8. VERTICAL FLOOR EXPLORER & ZONING                       */}
+      {/* ========================================================= */}
+      <section id="series-of-plots" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2 border-b border-slate-200 pb-4">
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+              Floor-by-Floor Master Distribution Series
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl">
+              Comprehensive 27-storey vertical zoning map separating retail, corporate, residential, and hospitality levels:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { level: 'Floors B1 to B3', title: 'Smart Subterranean Parking', desc: '3 basement levels accommodating 1,000+ vehicles with smart electronic parking guidance.', badge: '1,000+ Cars' },
+            { level: 'Floors LG to 3rd', title: 'Luxury Shopping Mall', desc: '6 levels of high-end retail shops, gold souk, electronics hub, and fashion outlets.', badge: '350+ Brand Shops' },
+            { level: 'Floors 4th & 5th', title: 'Food Court & Corporate', desc: '500-seat multi-cuisine food court and executive air-conditioned corporate offices.', badge: 'Food & Offices' },
+            { level: 'Floors 6th to 27th', title: 'Apartments, Hotel & Pool', desc: 'Luxury serviced apartments, 4-star boutique hotel suites, and rooftop infinity pool.', badge: 'Residences & 4★ Hotel' }
+          ].map((item, idx) => (
+            <div key={idx} className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 flex flex-col justify-between">
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-mono font-bold text-[#7b002c] uppercase tracking-wider block">{item.level}</span>
+                <h4 className="font-serif font-bold text-base text-slate-900">{item.title}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">{item.desc}</p>
               </div>
-
-              {/* Description & Features */}
-              <div className="space-y-3 text-xs font-sans">
-                <h4 className="font-serif font-bold text-sm text-slate-900">Property Overview</h4>
-                <p className="text-slate-600 leading-relaxed">{activeUnitForModal.description}</p>
-
-                <div className="space-y-2 pt-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Amenities</span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {activeUnitForModal.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200/60">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span className="text-slate-800 font-semibold">{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between gap-3 z-20">
-              <span className="text-xs text-slate-500 hidden sm:inline">
-                Official booking managed via Zedem Properties & Faisal Hills Desk.
+              <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 block text-center">
+                {item.badge}
               </span>
-
-              <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                <button
-                  onClick={() => setActiveUnitForModal(null)}
-                  className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl cursor-pointer"
-                >
-                  Close
-                </button>
-                <a
-                  href={`https://wa.me/923044811717?text=Hello%20Faisal%20Jewel%20Desk,%20I%20am%20interested%20in%20booking%20${encodeURIComponent(activeUnitForModal.category)}%20${activeUnitForModal.unitNumber}%20(${activeUnitForModal.areaSqFt}%20sqft)%20priced%20at%20${activeUnitForModal.priceFormatted}.%20Please%20share%20allotment%20details.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5 cursor-pointer"
-                >
-                  <MessageCircle className="w-3.5 h-3.5 text-white" />
-                  <span>WhatsApp Booking</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* 7. COMMERCIAL SHOPS FOR SALE FLOOR DIRECTORY & SPECS      */}
-      {/* ========================================================= */}
-      <section className="space-y-10">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Commercial Shops For Sale</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-              Commercial Shops Directory Across 6 Retail Mall Floors
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-4xl leading-relaxed">
-              Faisal Jewel features 350+ commercial shops zoned across six specialized levels. Explore floor-by-floor specifications, rates, and business categories with alternating image layouts:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Alternating Floor Rows */}
-        <div className="space-y-8">
-
-          {/* Floor 1: Lower Ground (Image LEFT, Content RIGHT) */}
-          <ScrollReveal direction="up" delay={100}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row group">
-              {/* Image Left */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/hypermarket.jpg"
-                  alt="Faisal Jewel Lower Ground Hypermarket & Convenience Anchor"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full bg-[#7b002c] text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    Lower Ground Floor
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-rose-300 uppercase tracking-wider block font-mono">
-                    Direct Lift & Escalator Concourse
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    Hypermarket & Daily Grocery Anchor
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Right */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 52,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold">
-                      16 Quarterly Installments (48 Mo)
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Hypermarket & Daily Convenience Anchor
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    Directly connected to 3-level basement parking lifts and central escalators. Engineered for heavy daily footfall with wide shopping avenues. Ideal for large grocery supermarkets, pharmacies, optical stores, bakeries, and day-to-day essentials.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Sizes: 153 to 2,683 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>25% Booking from PKR 20.4 Lacs</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Dedicated Cargo & Loading Bays</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>High Tenant Rental Retention</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[3]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Lower Ground Shop</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%20Lower%20Ground%20Floor%20commercial%20shops%20for%20sale%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Floor 2: Ground Floor (Content LEFT, Image RIGHT) */}
-          <ScrollReveal direction="up" delay={150}>
-            <div className="bg-white rounded-3xl border border-[#7b002c]/30 shadow-2xs hover:shadow-xl hover:border-[#7b002c] transition-all duration-300 overflow-hidden flex flex-col lg:flex-row-reverse group">
-              {/* Image Right */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/flagship-store.jpg"
-                  alt="Faisal Jewel Ground Floor High-Street Luxury Flagship Stores"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 rounded-full bg-[#7b002c] text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    Ground Floor (Flagship)
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block font-mono">
-                    Main Boulevard Frontage
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    High-Street Luxury Brands & Banking
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Left */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 57,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-[#7b002c] text-xs font-bold">
-                      Flagship Entrance Cut
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    High-Street Luxury Brands & Banking Square
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    The highest-value commercial zone in the entire development. Features soaring 14ft double-height ceilings, seamless glass frontage, and direct visibility from the Grand Entrance Boulevard. Reserved for tier-1 national and international retail brands and commercial banks.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Sizes: 169 to 765 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>25% Booking from PKR 24.6 Lacs</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>14ft High Display Facades</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Highest Capital Value Appreciation</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[0]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Ground Floor Shop</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%20Ground%20Floor%20flagship%20commercial%20shops%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Floor 3: 1st Floor (Image LEFT, Content RIGHT) */}
-          <ScrollReveal direction="up" delay={200}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row group">
-              {/* Image Left */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/jewelry-souk.jpg"
-                  alt="Faisal Jewel 1st Floor Gold, Diamond & Jewelry Souk"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full bg-amber-600 text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    1st Floor
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block font-mono">
-                    High Security Galleria
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    Gold, Diamond & Luxury Jewelry Souk
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Right */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 52,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold">
-                      Specialized Jewelry Court
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Gold, Diamond & Bridal Jewelry Galleria
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    A dedicated luxury zone designed exclusively for gold jewelers, diamond merchants, bridal couture accessories, and Swiss watchmakers. Features reinforced perimeter security, safe vaults, and specialized architectural lighting.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Sizes: 169 to 842 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>25% Booking from PKR 22.4 Lacs</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Bulletproof Glass & Vault Conduits</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>24/7 Dedicated CCTV Surveillance</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[4]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Jewelry Shop</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%201st%20Floor%20Gold%20and%20Jewelry%20shops%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Floor 4: 2nd Floor (Content LEFT, Image RIGHT) */}
-          <ScrollReveal direction="up" delay={250}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row-reverse group">
-              {/* Image Right */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/fashion-pret.jpg"
-                  alt="Faisal Jewel 2nd Floor Fashion Pret & Apparel Galleria"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    2nd Floor
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-sky-300 uppercase tracking-wider block font-mono">
-                    Fashion & Lifestyle Galleria
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    Fashion Pret, Footwear & Cosmetics
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Left */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 49,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 text-xs font-bold">
-                      Fashion Hub
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Fashion Pret, Designer Lawn & Cosmetics
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    The lifestyle center of the mall. Housing premier Pakistani pret brands, unstitched luxury lawn, men formal suiting, footwear chains, perfume kiosks, and cosmetics. Wide pedestrian aisles encourage long shopping dwell times.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Sizes: 169 to 1,990 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>25% Booking from PKR 21.2 Lacs</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Wide Promenade Corridors</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>High Weekend Family Footfall</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[5]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Fashion Shop</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%202nd%20Floor%20fashion%20pret%20shops%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Floor 5: 3rd Floor (Image LEFT, Content RIGHT) */}
-          <ScrollReveal direction="up" delay={300}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row group">
-              {/* Image Left */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/tech-gadgets.jpg"
-                  alt="Faisal Jewel 3rd Floor IT, Electronics & Mobile Tech Galleria"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full bg-purple-600 text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    3rd Floor
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-purple-300 uppercase tracking-wider block font-mono">
-                    Digital & Smart Tech Hub
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    IT, Electronics & Mobile Galleria
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Right */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 49,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 text-xs font-bold">
-                      Electronics & IT Zone
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    IT, Electronics & Mobile Phone Galleria
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    The tech destination for twin cities shoppers. Features smartphone official brand stores, laptop and computing hubs, gaming setups, VR lounges, home theater systems, and electronic appliances with high-speed fiber infrastructure.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Sizes: 169 to 1,279 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>25% Booking from PKR 21.2 Lacs</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>High-Speed Fiber & Smart POS</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>High Youth & University Engagement</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[6]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Electronics Shop</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%203rd%20Floor%20electronics%20and%20mobile%20shops%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Floor 6: 4th Floor (Content LEFT, Image RIGHT) */}
-          <ScrollReveal direction="up" delay={350}>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row-reverse group">
-              {/* Image Right */}
-              <div className="lg:w-1/2 relative h-64 sm:h-72 lg:h-auto min-h-[280px] overflow-hidden bg-slate-950">
-                <img
-                  src="/images/commercial/food-court.jpg"
-                  alt="Faisal Jewel 4th Floor Mega Food Court & Margalla Open Dining Terraces"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                    4th Floor
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider block font-mono">
-                    Open Margalla Dining Terrace
-                  </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
-                    500-Seat Mega Food Court & Fine Dining
-                  </h4>
-                </div>
-              </div>
-
-              {/* Content Left */}
-              <div className="lg:w-1/2 p-6 sm:p-8 lg:p-10 space-y-5 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider font-mono">
-                      Rate: PKR 52,000 / Sq.Ft.
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold">
-                      Food & Beverages
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    500-Seat Mega Food Court & Rooftop Terraces
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
-                    A vibrant culinary paradise featuring international fast-food giants, traditional Pakistani live barbecue grills, artisanal coffee houses, and an expansive open-air outdoor terrace with unobstructed Margalla mountain views. Equipped with heavy-duty kitchen exhaust and gas lines.
-                  </p>
-
-                  {/* Feature Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Kiosks & Restaurants: 180 to 2,200 Sq.Ft.</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Commercial Gas & High-Capacity Exhaust</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Alfresco Margalla Sunset Seating</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Consistent High Cash Turnover</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUnitForInquiry(defaultJewelUnits[7]);
-                      setIsLeadModalOpen(true);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>Inquire Food Court Unit</span>
-                  </button>
-                  <a
-                    href="https://wa.me/923044811717?text=Hello%2C%20I%20am%20interested%20in%204th%20Floor%20food%20court%20and%20restaurant%20spaces%20in%20Faisal%20Jewel%20Islamabad."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider text-center transition-all shadow-md flex items-center justify-center gap-1.5"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 8. OFFICIAL 4-YEAR INSTALLMENT SCHEDULE TABLES            */}
-      {/* ========================================================= */}
-      <section className="space-y-8">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <FileText className="w-3.5 h-3.5" />
-              <span>Official Financial Plans</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
-              Faisal Jewel 4-Year Payment Plan Schedule
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-4xl leading-relaxed">
-              Official rates for Commercial Shops (Lower Ground to 4th Floor) and Luxury Serviced Apartments (6th to 19th Floor) spread over 16 quarterly installments:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Commercial Shops Price Schedule Table */}
-        <div className="space-y-3">
-          <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 border-b border-slate-200 pb-2">
-            Commercial Shops Rate Schedule (6 Retail Floors)
-          </h3>
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                  <tr>
-                    <th className="p-3.5 whitespace-nowrap">Floor Level</th>
-                    <th className="p-3.5 whitespace-nowrap">Rate / Sq.Ft.</th>
-                    <th className="p-3.5 whitespace-nowrap">Area Range (Sq.Ft.)</th>
-                    <th className="p-3.5 whitespace-nowrap">25% Booking Range</th>
-                    <th className="p-3.5 whitespace-nowrap">Total Price Range</th>
-                    <th className="p-3.5 whitespace-nowrap">Installments</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {faisalJewelCommercialPlans.map((plan, idx) => (
-                    <tr key={idx} className="hover:bg-rose-50/30 transition-colors">
-                      <td className="p-3.5 font-bold text-slate-900 whitespace-nowrap">{plan.floor}</td>
-                      <td className="p-3.5 font-mono text-[#7b002c] font-bold whitespace-nowrap">PKR {plan.ratePerSqFtFormatted}</td>
-                      <td className="p-3.5 whitespace-nowrap">{plan.areaMin} – {plan.areaMax} Sq.Ft.</td>
-                      <td className="p-3.5 font-semibold text-slate-800 whitespace-nowrap">PKR {plan.downPaymentMinFormatted} – {plan.downPaymentMaxFormatted}</td>
-                      <td className="p-3.5 font-bold text-emerald-700 whitespace-nowrap">PKR {plan.totalPriceMinFormatted} – {plan.totalPriceMaxFormatted}</td>
-                      <td className="p-3.5 text-slate-500 whitespace-nowrap">16 Quarterly (4 Years)</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Residential Apartments Price Schedule Table */}
-        <div className="space-y-3">
-          <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 border-b border-slate-200 pb-2">
-            Luxury Apartments Rate Schedule (6th to 19th Floors)
-          </h3>
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                  <tr>
-                    <th className="p-3.5 whitespace-nowrap">Category</th>
-                    <th className="p-3.5 whitespace-nowrap">Floors</th>
-                    <th className="p-3.5 whitespace-nowrap">Rate / Sq.Ft.</th>
-                    <th className="p-3.5 whitespace-nowrap">Area Range</th>
-                    <th className="p-3.5 whitespace-nowrap">25% Down Payment</th>
-                    <th className="p-3.5 whitespace-nowrap">Total Price Range</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  <tr className="hover:bg-rose-50/30 transition-colors">
-                    <td className="p-3.5 font-bold text-slate-900 whitespace-nowrap">1, 2 & 3-Bed Luxury Apartments</td>
-                    <td className="p-3.5 whitespace-nowrap">{faisalJewelResidentialPlan.floor}</td>
-                    <td className="p-3.5 font-mono text-[#7b002c] font-bold whitespace-nowrap">PKR {faisalJewelResidentialPlan.ratePerSqFtFormatted}</td>
-                    <td className="p-3.5 whitespace-nowrap">{faisalJewelResidentialPlan.gfaMin} – {faisalJewelResidentialPlan.gfaMax} Sq.Ft.</td>
-                    <td className="p-3.5 font-semibold text-slate-800 whitespace-nowrap">PKR {faisalJewelResidentialPlan.downPaymentMinFormatted} – {faisalJewelResidentialPlan.downPaymentMaxFormatted}</td>
-                    <td className="p-3.5 font-bold text-emerald-700 whitespace-nowrap">PKR {faisalJewelResidentialPlan.totalPriceMinFormatted} – {faisalJewelResidentialPlan.totalPriceMaxFormatted}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 8. CONSTRUCTION MILESTONES & DELIVERY STATUS              */}
-      {/* ========================================================= */}
-      <section className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Live Engineering Tracker
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Faisal Jewel Construction Progress
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1">
-              Active structural updates by CAM Construction & Zedem Properties engineering teams:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800">3 Basements & Foundation</span>
-              <span className="text-xs font-bold text-emerald-600">100% Complete</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full w-full" />
-            </div>
-            <p className="text-[11px] text-slate-600 font-sans">
-              Substructure deep piling, raft foundation, and 3 basement retaining walls 100% completed.
-            </p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800">Commercial Mall Floors</span>
-              <span className="text-xs font-bold text-emerald-600">100% Cast</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full w-full" />
-            </div>
-            <p className="text-[11px] text-slate-600 font-sans">
-              Lower Ground to 4th Floor shopping mall slabs fully poured with MEP conduit piping.
-            </p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800">Residential Superstructure</span>
-              <span className="text-xs font-bold text-amber-600">65% Progress</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-amber-500 h-full rounded-full w-[65%]" />
-            </div>
-            <p className="text-[11px] text-slate-600 font-sans">
-              RCC slab casting active on Floor 14 with heavy tower crane and concrete placing booms.
-            </p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800">Target Delivery</span>
-              <span className="text-xs font-bold text-rose-700">Q4 2027</span>
-            </div>
-            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-              <div className="bg-[#7b002c] h-full rounded-full w-[55%]" />
-            </div>
-            <p className="text-[11px] text-slate-600 font-sans">
-              Projected completion and possession on track for Q4 2027 with turnkey fittings.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 9. TRAVEL TIMES & SURROUNDING CONNECTIVITY                */}
-      {/* ========================================================= */}
-      <section className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Location & Strategic Advantage
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Travel Times & Key Hub Proximity
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1">
-              Faisal Jewel sits at the junction of Margalla Avenue, GT Road, and the M-1 Motorway:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {faisalJewelsSurroundings.map((item) => (
-            <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
-              <span className="text-[10px] font-bold text-[#7b002c] uppercase font-mono">Distance Point {item.id}</span>
-              <h4 className="font-serif font-bold text-sm text-slate-900">{item.name}</h4>
-              <p className="text-xs text-slate-650 font-sans">{item.distance}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 10. EXPANDING SHOWCASE CAROUSEL (OTHER BLOCKS)            */}
+      {/* 9. OTHER FAISAL HILLS BLOCKS & SECTORS                    */}
       {/* ========================================================= */}
-      <section className="space-y-4">
-        <ExpandingProjectsShowcase defaultActiveIndex={1} />
+      <section id="sectors" className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-1.5 border-b border-slate-200 pb-4">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Explore Other Faisal Hills Blocks & Sectors
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Hover across the sector columns to view each block's location advantages, development progress, and direct links:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={otherBlocks}
+            defaultActiveIndex={1}
+            containerHeightClass="h-[480px] lg:h-[520px]"
+          />
+        </ScrollReveal>
       </section>
 
       {/* ========================================================= */}
-      {/* 11. FAQS ACCORDION SECTION (CENTERED)                     */}
+      {/* 10. FACILITIES, ROI CALCULATOR & CONSTRUCTION PROGRESS     */}
       {/* ========================================================= */}
-      <section id="faqs" className="scroll-mt-28 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Frequently Asked Questions</span>
+      <section id="facilities" className="scroll-mt-28 space-y-12 sm:space-y-16">
+        
+        {/* Smart Skyscraper ROI & Rental Calculator */}
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="space-y-2">
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
+                Faisal Jewel Smart Investment & ROI Explorer
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-2xl leading-relaxed">
+                Select a unit category to calculate 25% down payment, quarterly installments, and projected rental income:
+              </p>
+            </div>
+
+            {/* Unit Selector Buttons */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 shrink-0 overflow-x-auto">
+              {(['Commercial Shop', '1-Bed Apartment', '2-Bed Apartment', '3-Bed Penthouse', 'Hotel Suite'] as const).map((unit) => (
+                <button
+                  key={unit}
+                  type="button"
+                  onClick={() => setSelectedCalcUnit(unit)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                    selectedCalcUnit === unit
+                      ? 'bg-[#7b002c] text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {unit}
+                </button>
+              ))}
+            </div>
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Faisal Jewel Skyscraper FAQs
-          </h2>
-          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
-            Clear answers regarding shop & apartment booking, construction progress, floor plans, and payment schedules.
-          </p>
+
+          <div className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200 shadow-sm space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+              
+              <div className="lg:col-span-7 space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                    <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Total Price Band</span>
+                    <div className="font-serif font-bold text-2xl text-slate-900">{calcDetails.price}</div>
+                    <span className="text-[11px] text-slate-500 block">25% Booking: <strong>{calcDetails.downPayment}</strong></span>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                    <span className="text-[11px] font-mono text-emerald-800 uppercase tracking-wider font-semibold">Projected Monthly Rental</span>
+                    <div className="font-serif font-bold text-2xl text-emerald-700">{calcDetails.rental}</div>
+                    <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      {calcDetails.yield}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-xs text-[#7b002c] font-serif uppercase tracking-wider block">Quarterly Installment:</strong>
+                    <span className="text-xs font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                      {calcDetails.installment}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed font-sans">{calcDetails.suitability}</p>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-gradient-to-br from-rose-50/80 via-white to-slate-50 border border-rose-200/80 shadow-xs space-y-5 h-full">
+                <div className="space-y-2.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-100/80 px-3 py-1 rounded-full border border-rose-300/50 inline-block">
+                    Official 4-Year Installment Plan
+                  </span>
+                  <h3 className="font-serif font-bold text-xl text-slate-900">
+                    Lock {selectedCalcUnit} at Today's Baseline
+                  </h3>
+                  <p className="text-xs text-slate-600 font-sans leading-relaxed">
+                    Avoid paying post-possession premiums. Speak directly with our sales team to verify available floor levels and installment schedules.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5 pt-2">
+                  <a
+                    href="#plots-for-sale"
+                    className="w-full py-3 px-5 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Tag className="w-4 h-4 text-[#7b002c]" />
+                    <span>View Available {selectedCalcUnit} Units</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                      `Hello! I am interested in booking a ${selectedCalcUnit} in Faisal Jewel Islamabad.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>WhatsApp Booking Desk</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
 
-        <FaqAccordion faqs={jewelFaqs} blockName="Faisal Jewel" />
+        {/* Construction Progress */}
+        <div className="space-y-6">
+          <div className="space-y-1.5 border-b border-slate-200 pb-5">
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+              Faisal Jewel Construction Progress & Milestones
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              Live engineering tracker by CAM Construction & Zedem Properties teams:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { step: '01', title: '3 Basements & Deep Raft Piling', status: '100% Complete', note: 'Substructure deep piling, raft foundation & retaining walls 100% completed.', state: 'done' },
+              { step: '02', title: 'Commercial Mall Floors (LG-4th)', status: '100% Cast', note: 'Lower Ground to 4th Floor shopping mall slabs fully poured with MEP conduit piping.', state: 'done' },
+              { step: '03', title: 'Residential Superstructure', status: 'Active Casting', note: 'RCC slab casting active on Floor 14 with heavy tower crane and placing booms.', state: 'active' },
+              { step: '04', title: 'Target Delivery & Handover', status: 'Q4 2027', note: 'Projected completion and possession on track for Q4 2027 with turnkey fittings.', state: 'active' }
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className={`p-5 rounded-3xl border flex flex-col justify-between space-y-4 ${
+                  item.state === 'done'
+                    ? 'bg-emerald-50/50 border-emerald-200'
+                    : 'bg-rose-50/40 border-[#7b002c]/30 ring-2 ring-[#7b002c]/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-sm text-slate-400">{item.step}</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    item.state === 'done' ? 'bg-emerald-200 text-emerald-900' : 'bg-[#7b002c] text-white'
+                  }`}>
+                    {item.status}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-serif font-bold text-sm text-slate-900">{item.title}</h4>
+                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed">{item.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* How to Book / Official Zedem Transfer */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-7 space-y-5">
+            <div className="space-y-2">
+              <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+                How to Book a Shop or Apartment in Faisal Jewel
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                Securing a unit follows official verified procedures at Zedem International head office:
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              {[
+                { title: 'CNIC / NICOP Copies', desc: 'Two clear copies of buyer CNIC (or NICOP for overseas buyers).' },
+                { title: 'Next of Kin Details', desc: 'Two clear copies of your designated nominee / Next of Kin CNIC.' },
+                { title: 'Passport Photographs', desc: 'Two recent passport-size photos with clean white background.' },
+                { title: 'Payment Instrument', desc: '25% Down payment pay order in developer name for clear transaction record.' }
+              ].map((doc, idx) => (
+                <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{doc.title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed">{doc.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-[#3b0015] text-white p-7 sm:p-8 rounded-3xl border border-rose-900/40 shadow-xl space-y-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-200 bg-[#7b002c] px-3.5 py-1 rounded-full border border-white/20 shadow">
+                    Official Zedem Transfer
+                  </span>
+                  <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+                    <ShieldCheck className="w-4 h-4" />
+                    100% Verified
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="font-serif font-bold text-xl sm:text-2xl text-white">
+                    Faisal Jewel VIP Sales Desk
+                  </h4>
+                  <p className="text-xs text-slate-300 font-sans leading-relaxed">
+                    Our certified advisors coordinate official unit allocation, NDC clearance, and legal biometric transfer directly at Zedem International head office.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <a
+                  href="https://wa.me/923044811717?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20unit%20in%20Faisal%20Jewel%20Islamabad."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>WhatsApp Skyscraper Desk</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
-      {/* Map / Floor Plan Download Modal */}
-      <MapDownloadModal
-        isOpen={isMapModalOpen}
-        onClose={() => setIsMapModalOpen(false)}
-        blockName="Faisal Jewel Skyscraper"
-      />
+      {/* ========================================================= */}
+      {/* 11. FAQS & PRIORITY CONSULTATION FORM                     */}
+      {/* ========================================================= */}
+      <section id="faqs" className="scroll-mt-28 space-y-10">
+        
+        {/* FAQs Accordion */}
+        <div className="space-y-6">
+          <div className="space-y-1.5 border-b border-slate-200 pb-4">
+            <span className="text-[#7b002c] font-bold text-xs uppercase tracking-widest block">
+              Frequently Asked Questions
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Everything You Need to Know About Faisal Jewel
+            </h2>
+          </div>
 
-      {/* Lead Inquiry Modal */}
+          <div className="space-y-3">
+            {jewelFaqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all shadow-xs"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-serif font-bold text-slate-900 text-sm sm:text-base hover:text-[#7b002c] transition-colors cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-[#7b002c] shrink-0 transition-transform duration-300 ${
+                      openFaq === idx ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-600 font-sans leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Priority Lead Form */}
+        <div className="bg-gradient-to-br from-[#7b002c] via-[#5a0020] to-slate-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl space-y-8">
+          <div className="max-w-2xl space-y-2">
+            <span className="text-rose-200 text-xs font-bold uppercase tracking-wider block">
+              VIP Skyscraper Consultation
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold">
+              Interested in Faisal Jewel Commercial Shops or Apartments?
+            </h2>
+            <p className="text-xs sm:text-sm text-rose-100/90 font-sans leading-relaxed">
+              Leave your details below to receive official rate schedules, floor-by-floor blueprints, and available unit reservations.
+            </p>
+          </div>
+
+          {formSubmitted ? (
+            <div className="p-6 bg-emerald-500/20 border border-emerald-400/40 rounded-2xl text-emerald-200 font-sans text-sm flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
+              <span>Thank you! Your inquiry has been received. Our senior advisor will contact you shortly.</span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmitLead} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-rose-100 mb-1.5">Your Name</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Tariq Mehmood"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-rose-200/50 text-xs focus:outline-none focus:ring-2 focus:ring-rose-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-rose-100 mb-1.5">WhatsApp / Phone</label>
+                <input
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+92 300 1234567"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-rose-200/50 text-xs focus:outline-none focus:ring-2 focus:ring-rose-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-rose-100 mb-1.5">Preferred Unit</label>
+                <select
+                  value={formData.unit}
+                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/20 text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-400 cursor-pointer"
+                >
+                  <option value="Commercial Shop">Commercial Retail Shop</option>
+                  <option value="1-Bed Apartment">1-Bed Luxury Apartment</option>
+                  <option value="2-Bed Apartment">2-Bed Executive Suite</option>
+                  <option value="3-Bed Penthouse">3-Bed Sky Penthouse</option>
+                  <option value="Hotel Suite">4-Star Hotel Suite</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  className="w-full py-3 px-6 bg-white hover:bg-rose-50 text-[#7b002c] font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Submit Inquiry</span>
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* Modals */}
+      {isMapModalOpen && (
+        <MapDownloadModal
+          isOpen={isMapModalOpen}
+          onClose={() => setIsMapModalOpen(false)}
+          blockName="Faisal Jewel Skyscraper"
+        />
+      )}
+
       <LeadModal
         isOpen={isLeadModalOpen}
         onClose={() => {
@@ -2335,9 +1504,10 @@ export function FaisalJewelContent() {
           setSelectedUnitForInquiry(null);
         }}
         defaultBlock="Faisal Jewel"
-        defaultPlot={selectedUnitForInquiry ? `${selectedUnitForInquiry.category} - ${selectedUnitForInquiry.unitNumber}` : undefined}
-        interest={selectedUnitForInquiry ? `${selectedUnitForInquiry.category} (${selectedUnitForInquiry.areaSqFt} Sq.Ft.) in Faisal Jewel` : 'Faisal Jewel Skyscraper Investment'}
+        defaultPlot={selectedUnitForInquiry || undefined}
+        interest={selectedUnitForInquiry ? `${selectedUnitForInquiry} in Faisal Jewel` : 'Faisal Jewel Skyscraper Investment'}
       />
+
     </div>
   );
 }

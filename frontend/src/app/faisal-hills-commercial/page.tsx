@@ -223,12 +223,6 @@ export default function FaisalHillsCommercialPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 space-y-5 text-center flex flex-col items-center justify-center">
-          <ScrollReveal direction="down" delay={0}>
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-[#7b002c] shadow-lg">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>High Yield Commercial Real Estate • 12% - 16% Rental ROI</span>
-            </span>
-          </ScrollReveal>
 
           <ScrollReveal direction="up" delay={80}>
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight max-w-3xl mx-auto text-center drop-shadow-md">
@@ -264,8 +258,8 @@ export default function FaisalHillsCommercialPage() {
       {/* FULL COMMERCIAL PLOTS CATALOG & EXPLORER (CORE REQUEST) */}
       <CommercialPlotsExplorer />
 
-      {/* COMMERCIAL PLOT SIZES & BYLAWS VISUAL SHOWCASE */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
+      {/* COMMERCIAL PLOT SIZES & BYLAWS VISUAL SHOWCASE: 2 in line on mobile */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
         <ScrollReveal direction="up" delay={50}>
           <div className="text-center max-w-3xl mx-auto space-y-2">
             <span className="label-caps text-[#7b002c] font-bold block">Plot Dimensions & Bylaws</span>
@@ -278,13 +272,13 @@ export default function FaisalHillsCommercialPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pt-4">
           {commercialSizesShowcase.map((item, idx) => (
             <ScrollReveal key={idx} direction="pop" delay={idx * 50}>
-              <div className="bg-slate-50 rounded-3xl border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
+              <div className="bg-slate-50 rounded-2xl sm:rounded-3xl border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
                 <Link 
                   href="/plots?category=Commercial"
-                  className="relative h-48 w-full overflow-hidden bg-slate-900 block cursor-pointer"
+                  className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-900 block cursor-pointer"
                   title={`Click to view ${item.size} in Plot Inventory`}
                 >
                   <Image
@@ -294,40 +288,40 @@ export default function FaisalHillsCommercialPage() {
                     className="object-cover group-hover:scale-108 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-                  <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7b002c] text-white">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-[#7b002c] text-white">
                     {item.badge}
                   </span>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[11px] font-semibold text-rose-300 block">{item.dimensions}</span>
-                    <h3 className="font-serif font-bold text-lg text-white group-hover:text-amber-300 transition-colors flex items-center justify-between">
-                      <span>{item.size}</span>
-                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-amber-300" />
+                  <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 text-white">
+                    <span className="text-[9px] sm:text-[11px] font-semibold text-rose-300 block truncate">{item.dimensions}</span>
+                    <h3 className="font-serif font-bold text-xs sm:text-lg text-white group-hover:text-amber-300 transition-colors flex items-center justify-between">
+                      <span className="truncate">{item.size}</span>
+                      <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-amber-300 shrink-0" />
                     </h3>
                   </div>
                 </Link>
 
-                <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2.5 text-xs font-sans">
-                    <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
-                      <span className="text-slate-500">Approved Height:</span>
-                      <strong className="text-slate-900 font-bold">{item.height}</strong>
+                <div className="p-3 sm:p-5 space-y-2.5 sm:space-y-4 flex-1 flex flex-col justify-between">
+                  <div className="space-y-1.5 sm:space-y-2.5 text-[10px] sm:text-xs font-sans">
+                    <div className="flex justify-between items-center py-0.5 sm:py-1 border-b border-slate-200/60">
+                      <span className="text-slate-500">Height:</span>
+                      <strong className="text-slate-900 font-bold truncate max-w-[85px] sm:max-w-none">{item.height}</strong>
                     </div>
-                    <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
-                      <span className="text-slate-500">Price Bracket:</span>
-                      <strong className="text-[#7b002c] font-bold">{item.priceRange}</strong>
+                    <div className="flex justify-between items-center py-0.5 sm:py-1 border-b border-slate-200/60">
+                      <span className="text-slate-500">Price:</span>
+                      <strong className="text-[#7b002c] font-bold truncate">{item.priceRange}</strong>
                     </div>
-                    <div className="pt-1">
+                    <div className="hidden sm:block pt-1">
                       <span className="text-[10px] text-slate-400 font-bold uppercase block">Recommended Business:</span>
-                      <p className="text-slate-600 leading-relaxed text-[11px] mt-0.5">{item.idealUse}</p>
+                      <p className="text-slate-600 leading-relaxed text-[11px] mt-0.5 line-clamp-2">{item.idealUse}</p>
                     </div>
                   </div>
 
                   <Link
                     href="/plots?category=Commercial"
-                    className="w-full py-2.5 bg-white border border-slate-300 hover:bg-[#7b002c] hover:border-[#7b002c] hover:text-white text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl text-center shadow-2xs transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-1.5 sm:py-2.5 bg-white border border-slate-300 hover:bg-[#7b002c] hover:border-[#7b002c] hover:text-white text-slate-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-lg sm:rounded-xl text-center shadow-2xs transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer"
                   >
-                    <Store className="w-3.5 h-3.5" />
-                    <span>View in Plot Inventory</span>
+                    <Store className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span>View Plots</span>
                   </Link>
                 </div>
               </div>
@@ -336,31 +330,76 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Interactive Master Plan Section */}
-      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2 text-center max-w-2xl mx-auto">
-            <span className="label-caps text-[#7b002c] font-bold block">Commercial Master Plan</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Interactive Commercial Hotspots & Plots Blueprint
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Locate Faisal Jewel, Block C Civic Center, Executive Boulevard, and commercial sectors up to 1200% zoom:
-            </p>
-          </div>
-        </ScrollReveal>
+      {/* OFFICIAL MASTER PLAN MAP BLUEPRINT (Clean 2-Column Design) */}
+      <section className="bg-slate-50 py-12 lg:py-16 border-b border-slate-200 overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-        <ScrollReveal direction="pop" delay={100}>
-          <MasterPlanViewer />
-        </ScrollReveal>
-        
-        <p className="text-[10px] text-slate-500 italic text-center">
-          Review the <Link href="/master-plan" className="text-[#7b002c] font-bold hover:underline">full Faisal Hills master plan page</Link> for detailed high-resolution sector layout grids and PDF downloads.
-        </p>
+            {/* Left Column: Text & Features & Action Buttons */}
+            <div className="lg:col-span-5 space-y-5 text-center lg:text-left">
+              <ScrollReveal direction="up" delay={50} className="space-y-2">
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight leading-tight text-center lg:text-left">
+                  Faisal Hills Master Plan Map
+                </h2>
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed text-center lg:text-left">
+                  Explore the officially approved layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.
+                </p>
+              </ScrollReveal>
+
+              {/* Desktop Action Buttons */}
+              <ScrollReveal direction="up" delay={150} className="hidden lg:flex flex-wrap items-center gap-3 pt-2">
+                <a
+                  href="/images/faisal-hills-master-plan-map.jpg"
+                  download="Faisal-Hills-Master-Plan.jpg"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  <FileText className="w-4 h-4 text-white" />
+                  <span>Download Master Plan (PDF)</span>
+                </a>
+
+                <Link
+                  href="/master-plan"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3.5 rounded-xl border border-slate-300 shadow-sm transition-all duration-300 hover:scale-105"
+                >
+                  <span>Launch Fullscreen Map</span>
+                  <ArrowRight className="w-4 h-4 text-[#7b002c]" />
+                </Link>
+              </ScrollReveal>
+            </div>
+
+            {/* Right Column: Compact Interactive Map Viewer & Mobile Action Buttons */}
+            <div className="lg:col-span-7 space-y-4">
+              <ScrollReveal direction="left" delay={150}>
+                <MasterPlanViewer heightClass="h-[210px] sm:h-[340px] lg:h-[440px]" />
+              </ScrollReveal>
+
+              {/* Mobile Action Buttons Below Map */}
+              <div className="lg:hidden flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-1">
+                <a
+                  href="/images/faisal-hills-master-plan-map.jpg"
+                  download="Faisal-Hills-Master-Plan.jpg"
+                  className="inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all active:scale-95 cursor-pointer text-center"
+                >
+                  <FileText className="w-4 h-4 text-white" />
+                  <span>Download Master Plan (PDF)</span>
+                </a>
+
+                <Link
+                  href="/master-plan"
+                  className="inline-flex items-center justify-center gap-2 text-xs font-bold text-[#7b002c] bg-white hover:bg-slate-100 px-5 py-3.5 rounded-xl border border-slate-300 shadow-sm transition-all active:scale-95 text-center"
+                >
+                  <span>Launch Fullscreen Map</span>
+                  <ArrowRight className="w-4 h-4 text-[#7b002c]" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
 
-      {/* Commercial Pockets by Block */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
+      {/* Commercial Pockets by Block: 2 in line on mobile */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 border-b border-slate-200 pb-4">
             <span className="label-caps text-[#7b002c] font-bold block">Sector-By-Sector Guide</span>
@@ -373,12 +412,12 @@ export default function FaisalHillsCommercialPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {blockCommercials.map((block, idx) => (
             <ScrollReveal key={idx} direction="pop" delay={(idx % 3) * 60}>
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 h-full group">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 h-full group">
                 {/* Commercial Block Image Banner */}
-                <div className="relative h-44 w-full overflow-hidden bg-slate-900">
+                <div className="relative h-28 min-[400px]:h-36 sm:h-44 w-full overflow-hidden bg-slate-900">
                   <Image
                     src={block.image}
                     alt={block.name}
@@ -386,23 +425,23 @@ export default function FaisalHillsCommercialPage() {
                     className="object-cover group-hover:scale-108 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent" />
-                  <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-white bg-[#7b002c] px-3 py-1 rounded-full shadow-md">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-white bg-[#7b002c] px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-md">
                     {block.tag}
                   </span>
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <h3 className="font-serif font-bold text-base text-white group-hover:text-amber-300 transition-colors">
+                  <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 text-white">
+                    <h3 className="font-serif font-bold text-xs sm:text-base text-white group-hover:text-amber-300 transition-colors truncate">
                       {block.name}
                     </h3>
                   </div>
                 </div>
 
-                <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                <div className="p-3 sm:p-5 space-y-2 sm:space-y-3 flex-1 flex flex-col justify-between">
+                  <p className="text-[10px] sm:text-xs text-slate-600 leading-relaxed font-sans line-clamp-3 sm:line-clamp-none">
                     {block.description}
                   </p>
-                  <div className="pt-3 text-[11px] text-slate-600 border-t border-slate-100 space-y-1">
+                  <div className="pt-2 sm:pt-3 text-[9px] sm:text-[11px] text-slate-600 border-t border-slate-100 space-y-0.5 sm:space-y-1">
                     <span className="text-[#7b002c] font-bold block">Best Suited For:</span>
-                    <p className="text-slate-500">{block.suitability}</p>
+                    <p className="text-slate-500 truncate">{block.suitability}</p>
                   </div>
                 </div>
               </div>
@@ -411,8 +450,8 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
+      {/* Services Grid: 3 in line */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
         <ScrollReveal direction="up" delay={50}>
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="label-caps text-[#7b002c] font-bold block">Our Services</span>
@@ -425,7 +464,7 @@ export default function FaisalHillsCommercialPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-4">
           {[
             {
               icon: Building2,
@@ -461,11 +500,11 @@ export default function FaisalHillsCommercialPage() {
             const IconComp = srv.icon;
             return (
               <ScrollReveal key={sIdx} direction="pop" delay={sIdx * 60}>
-                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-3xl space-y-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
-                  <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-[#7b002c] shadow-2xs">
-                    <IconComp className="w-5 h-5" />
+                <div className="p-5 sm:p-6 bg-slate-50 border border-slate-200/80 rounded-2xl sm:rounded-3xl space-y-2.5 sm:space-y-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-[#7b002c] shadow-2xs">
+                    <IconComp className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900">{srv.title}</h3>
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-slate-900">{srv.title}</h3>
                   <p className="text-xs text-slate-600 font-sans leading-relaxed">
                     {srv.desc}
                   </p>

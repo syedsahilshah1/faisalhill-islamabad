@@ -450,7 +450,7 @@ export default function BlockB1ExtensionContent() {
       {/* ========================================================= */}
       <section id="location" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="border-b border-slate-200 pb-5">
             <div className="space-y-2 max-w-2xl">
               <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
                 Block B-1 Extension Location & Road Connectivity Map
@@ -459,15 +459,6 @@ export default function BlockB1ExtensionContent() {
                 Positioned inside the serene interior pocket between Block B, Block A, Block D, and Prime Block:
               </p>
             </div>
-            <a
-              href="https://maps.google.com/?q=Faisal+Hills+Taxila+Block+B"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all hover:scale-105 cursor-pointer shrink-0"
-            >
-              <Navigation className="w-4 h-4" />
-              <span>Get Directions</span>
-            </a>
           </div>
         </ScrollReveal>
 
@@ -525,11 +516,11 @@ export default function BlockB1ExtensionContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 5. MASTER PLAN BLUEPRINT & PLOT CUTS                      */}
+      {/* 5. MASTER PLAN & CUTS                                     */}
       {/* ========================================================= */}
       <section id="master-plan" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="border-b border-slate-200 pb-5">
             <div className="space-y-2 max-w-2xl">
               <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                 Faisal Hills Block B1 Extension Master Plan & Cuts
@@ -538,21 +529,13 @@ export default function BlockB1ExtensionContent() {
                 Explore the sector layout, 40ft to 150ft street hierarchy, and demarcated residential plot cuts:
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsMapModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all hover:scale-105 cursor-pointer shrink-0"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download Master Plan</span>
-            </button>
           </div>
         </ScrollReveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Left Column: Visual Master Plan Layout */}
-          <div className="lg:col-span-5 flex flex-col">
+          {/* Left Column: Visual Master Plan Layout + Button Below */}
+          <div className="lg:col-span-5 flex flex-col space-y-3">
             <div
               onClick={() => setIsMapModalOpen(true)}
               className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md hover:shadow-xl transition-all cursor-pointer flex-1 flex flex-col justify-center min-h-[380px] p-3"
@@ -565,6 +548,16 @@ export default function BlockB1ExtensionContent() {
                 />
               </div>
             </div>
+
+            {/* Button Below Master Plan */}
+            <button
+              type="button"
+              onClick={() => setIsMapModalOpen(true)}
+              className="w-full py-3 px-4 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Master Plan</span>
+            </button>
           </div>
 
           {/* Right Column: Residential & Commercial Plot Cuts */}
@@ -785,8 +778,8 @@ export default function BlockB1ExtensionContent() {
                 </p>
               </div>
 
-              {/* Filter Tabs */}
-              <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
+              {/* Filter Tabs (Hidden on mobile, visible on desktop) */}
+              <div className="hidden sm:flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
                 {(['all', '5 Marla', '8 Marla', '10 Marla'] as const).map((sz) => (
                   <button
                     key={sz}
@@ -805,15 +798,15 @@ export default function BlockB1ExtensionContent() {
             </div>
           </ScrollReveal>
 
-          {/* Plot Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Plot Cards Grid: 2 per row on mobile */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {displayedB1Plots.map((plot, idx) => (
               <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
                     <Link
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
-                      className="relative h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
+                      className="relative h-28 min-[400px]:h-36 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     >
                       <img
                         src={plot.image || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'}
@@ -822,36 +815,36 @@ export default function BlockB1ExtensionContent() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
-                        <span className="text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName || 'Block B-1 Extension'}</span>
-                        <h4 className="font-serif font-bold text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
+                      <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 text-white">
+                        <span className="text-[9px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider truncate">{plot.blockName || 'Block B-1 Ext'}</span>
+                        <h4 className="font-serif font-bold text-sm sm:text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
                       </div>
                     </Link>
 
                     <Link
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
-                      className="p-5 space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
+                      className="p-3 sm:p-5 space-y-2 sm:space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
                     >
-                      <div className="space-y-2 text-xs text-slate-600">
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Plot Size:</span>
+                      <div className="space-y-1.5 sm:space-y-2 text-[11px] sm:text-xs text-slate-600">
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Size:</span>
                           <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
                         </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
                           <span className="text-slate-500 font-medium">Dimensions:</span>
                           <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
                         </div>
-                        <div className="flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Orientation:</span>
-                          <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
+                        <div className="flex justify-between items-center pb-1 border-b border-slate-100">
+                          <span className="text-slate-500 font-medium">Facing:</span>
+                          <strong className="text-slate-900 font-semibold truncate max-w-[85px] sm:max-w-none">{plot.facing}</strong>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Trend / Status:</span>
-                          <span className="text-emerald-700 font-bold">{plot.priceHistoryTrend || 'High Demand Resale'}</span>
+                        <div className="hidden sm:flex justify-between items-center">
+                          <span className="text-slate-500 font-medium">Trend:</span>
+                          <span className="text-emerald-700 font-bold">{plot.priceHistoryTrend || 'High Demand'}</span>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5 pt-1">
+                      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
                         {Array.isArray(plot.features) && plot.features.slice(0, 3).map((feat, fIdx) => (
                           <span
                             key={fIdx}
@@ -864,30 +857,30 @@ export default function BlockB1ExtensionContent() {
                     </Link>
                   </div>
 
-                  <div className="p-4 pt-3 border-t border-slate-100 mt-2 space-y-2.5">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Demand</span>
-                      <span className="font-serif font-bold text-base text-[#7b002c]">{plot.priceFormatted}</span>
+                  <div className="p-3 sm:p-4 pt-2 sm:pt-3 border-t border-slate-100 mt-1 sm:mt-2 space-y-2 sm:space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5">
+                      <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Demand</span>
+                      <span className="font-serif font-bold text-xs min-[400px]:text-sm sm:text-base text-[#7b002c] truncate">{plot.priceFormatted}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                       <Link
-                        href={`/plots/${plot.id}`}
-                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 text-center"
+                        href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 text-center cursor-pointer"
                       >
                         <span>Details</span>
-                        <ChevronRight className="w-3 h-3" />
+                        <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       </Link>
 
                       <a
                         href={`https://wa.me/923044811717?text=${encodeURIComponent(
-                          `Hi! I am interested in buying Block B-1 Extension Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
+                          `Hi! I am interested in B-1 Extension plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                        className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
                       >
-                        <Phone className="w-3 h-3" />
+                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         <span>Book</span>
                       </a>
                     </div>

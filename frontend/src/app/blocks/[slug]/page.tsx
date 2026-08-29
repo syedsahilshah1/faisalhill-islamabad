@@ -223,28 +223,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const heroSubtitle = block.subtitle;
 
   const getHeroDescription = () => {
-    if (block.slug === 'block-a' || block.slug === 'prime-block' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'block-b' || block.slug === 'block-b1-extension') return '';
+    if (block.slug === 'block-a' || block.slug === 'prime-block' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'hills-walk' || block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels' || block.id === 'faisal-jewels') return '';
     if (block.description) return block.description;
-
-    switch (block.slug) {
-      case 'faisal-jewel-islamabad':
-      case 'faisal-jewels':
-        return 'Faisal Jewel is a landmark 27-story mixed-use skyscraper featuring 6 commercial shopping mall floors, luxury serviced residences, a 4-star hotel, rooftop infinity dining, and 3-level underground parking at the grand GT Road entrance.';
-      case 'prime-block':
-        return '';
-      case 'block-b':
-        return 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.';
-      case 'block-b1-extension':
-        return '';
-      case 'block-c':
-        return '';
-      case 'block-d':
-        return 'Peaceful eco-friendly suburban sector featuring natural Margalla springs, planned Medical City, 50ft tree-lined avenues, and rapid access to the Brahma M-1 Interchange.';
-      case 'hills-walk':
-        return 'Faisal Hills Walk is the signature European-style open-air pedestrian commercial promenade, featuring luxury retail arcades, rooftop dining, amphitheater, and high-yield commercial plaza cuts.';
-      default:
-        return 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.';
-    }
+    return 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.';
   };
 
   const heroDesc = getHeroDescription();
@@ -290,13 +271,13 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             )}
 
             <div className="space-y-3">
-              {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
+              {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
                 {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
               </h1>
-              {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
+              {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
                   {heroDesc}
                 </p>
@@ -305,7 +286,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
 
             {/* Quick Action CTAs (Hidden on mobile, visible on desktop) */}
-            {block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
+            {block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
               <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="tel:+923313339997"

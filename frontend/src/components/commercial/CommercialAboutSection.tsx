@@ -4,21 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  BadgeCheck,
   ChevronDown,
-  ChevronUp,
-  Store,
-  TrendingUp,
-  ShieldCheck,
-  Building2,
-  CheckCircle2,
-  Sparkles,
-  ArrowRight,
-  Compass,
-  Layers,
-  Coins,
-  MapPin,
-  Check
+  ChevronUp
 } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -89,12 +76,12 @@ export const CommercialAboutSection: React.FC = () => {
           </ScrollReveal>
         </div>
 
-        {/* Right: Rich Commercial Image Gallery & Animated Advantage Highlights */}
-        <div className="lg:col-span-6 space-y-5">
-          <ScrollReveal direction="right" delay={100}>
-            <div className="grid grid-cols-2 gap-4">
+        {/* Right: Rich Commercial Image Gallery */}
+        <div className="lg:col-span-6 h-full">
+          <ScrollReveal direction="right" delay={100} className="h-full">
+            <div className="grid grid-cols-2 gap-4 h-full">
               {/* Image 1: Flagship Retail Store */}
-              <div className="relative h-48 sm:h-52 rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
+              <div className="relative h-64 sm:h-72 lg:h-full min-h-[280px] rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
                 <Image
                   src="/images/commercial/flagship-store.jpg"
                   alt="Faisal Hills Boulevard Commercial Plaza"
@@ -102,14 +89,14 @@ export const CommercialAboutSection: React.FC = () => {
                   className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent group-hover:from-slate-950/70 transition-colors" />
-                <div className="absolute bottom-3 left-3 right-3 text-white transform group-hover:-translate-y-1 transition-transform duration-300">
+                <div className="absolute bottom-4 left-4 right-4 text-white transform group-hover:-translate-y-1 transition-transform duration-300">
                   <span className="text-[10px] font-bold text-rose-300 uppercase tracking-wider block">Executive Boulevard</span>
                   <strong className="text-xs sm:text-sm font-serif font-bold text-white block truncate">225ft Commercial Frontage</strong>
                 </div>
               </div>
 
               {/* Image 2: Food Court & Plazas */}
-              <div className="relative h-48 sm:h-52 rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
+              <div className="relative h-64 sm:h-72 lg:h-full min-h-[280px] rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
                 <Image
                   src="/images/commercial/food-court.jpg"
                   alt="Block C Civic Center Plazas"
@@ -117,82 +104,9 @@ export const CommercialAboutSection: React.FC = () => {
                   className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent group-hover:from-slate-950/70 transition-colors" />
-                <div className="absolute bottom-3 left-3 right-3 text-white transform group-hover:-translate-y-1 transition-transform duration-300">
+                <div className="absolute bottom-4 left-4 right-4 text-white transform group-hover:-translate-y-1 transition-transform duration-300">
                   <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">Civic Center</span>
                   <strong className="text-xs sm:text-sm font-serif font-bold text-white block truncate">800+ Commercial Plazas</strong>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Key Advantages Animated Card */}
-          <ScrollReveal direction="up" delay={150}>
-            <div className="relative bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden group">
-              {/* Subtle Shimmer Ray */}
-              <div className="absolute -top-24 -left-24 w-48 h-48 bg-gradient-to-br from-rose-200/30 to-amber-200/20 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
-
-              {/* Card Header with Animated Live Pulsing Badge */}
-              <div className="relative flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-[#7b002c] shadow-2xs group-hover:rotate-6 transition-transform">
-                    <BadgeCheck className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-serif font-bold text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                    Commercial Buyer Advantages
-                  </h3>
-                </div>
-
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-[10px] font-bold text-emerald-700 shadow-2xs">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span>RDA Approved</span>
-                </div>
-              </div>
-
-              {/* Animated 3-Column Metrics Grid */}
-              <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
-                {/* Item 1: Highway Access */}
-                <div className="p-3.5 bg-slate-50 hover:bg-white rounded-2xl border border-slate-200/70 hover:border-[#7b002c]/30 shadow-2xs hover:shadow-md hover:-translate-y-1.5 transition-all duration-300 cursor-default group/item">
-                  <div className="flex items-center gap-1.5 text-slate-400 group-hover/item:text-[#7b002c] transition-colors mb-1">
-                    <Compass className="w-3.5 h-3.5 group-hover/item:rotate-45 transition-transform duration-300" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Access</span>
-                  </div>
-                  <strong className="block text-slate-900 text-xs font-bold group-hover/item:text-[#7b002c] transition-colors">
-                    GT Road & M-1
-                  </strong>
-                  <span className="text-[11px] text-slate-500 leading-tight block mt-0.5">
-                    Dual Highway Connectivity
-                  </span>
-                </div>
-
-                {/* Item 2: Height Bylaws */}
-                <div className="p-3.5 bg-slate-50 hover:bg-white rounded-2xl border border-slate-200/70 hover:border-[#7b002c]/30 shadow-2xs hover:shadow-md hover:-translate-y-1.5 transition-all duration-300 cursor-default group/item">
-                  <div className="flex items-center gap-1.5 text-slate-400 group-hover/item:text-[#7b002c] transition-colors mb-1">
-                    <Building2 className="w-3.5 h-3.5 group-hover/item:scale-110 transition-transform duration-300" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Bylaws</span>
-                  </div>
-                  <strong className="block text-slate-900 text-xs font-bold group-hover/item:text-[#7b002c] transition-colors">
-                    G+4 to G+9
-                  </strong>
-                  <span className="text-[11px] text-slate-500 leading-tight block mt-0.5">
-                    Approved Height Limits
-                  </span>
-                </div>
-
-                {/* Item 3: Rental ROI */}
-                <div className="p-3.5 bg-rose-50/40 hover:bg-white rounded-2xl border border-rose-100 hover:border-[#7b002c]/30 shadow-2xs hover:shadow-md hover:-translate-y-1.5 transition-all duration-300 cursor-default group/item">
-                  <div className="flex items-center gap-1.5 text-rose-500 group-hover/item:text-[#7b002c] transition-colors mb-1">
-                    <TrendingUp className="w-3.5 h-3.5 group-hover/item:-translate-y-0.5 transition-transform duration-300" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Yield</span>
-                  </div>
-                  <strong className="block text-[#7b002c] text-xs font-bold">
-                    12% – 16% ROI
-                  </strong>
-                  <span className="text-[11px] text-slate-500 leading-tight block mt-0.5">
-                    Projected Rental Return
-                  </span>
                 </div>
               </div>
             </div>

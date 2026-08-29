@@ -783,18 +783,18 @@ export const CommercialPlotsExplorer: React.FC = () => {
         </div>
       </div>
 
-      {/* GRID VIEW */}
+      {/* GRID VIEW: 2 per line on mobile */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {filteredPlots.map((plot) => (
             <div
               key={plot.id}
-              className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group"
+              className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group"
             >
               {/* Image Container with Badge - Redirects to Plot Inventory Page */}
               <Link 
                 href={`/plots?category=Commercial&block=${plot.blockSlug}`}
-                className="relative h-56 w-full overflow-hidden bg-slate-900 block cursor-pointer"
+                className="relative h-28 min-[400px]:h-36 sm:h-56 w-full overflow-hidden bg-slate-900 block cursor-pointer"
                 title={`Click to view ${plot.title} in Plot Inventory`}
               >
                 <Image
@@ -802,65 +802,65 @@ export const CommercialPlotsExplorer: React.FC = () => {
                   alt={plot.title}
                   fill
                   className="object-cover group-hover:scale-108 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
 
                 {/* Top Badges */}
-                <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#7b002c] text-white shadow-md">
+                <div className="absolute top-2 left-2 right-2 sm:top-3.5 sm:left-3.5 sm:right-3.5 flex items-center justify-between gap-1">
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-[#7b002c] text-white shadow-md truncate">
                     {plot.blockName}
                   </span>
                   {plot.badge && (
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-400 text-slate-950 shadow-md">
+                    <span className="hidden sm:inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-400 text-slate-950 shadow-md">
                       {plot.badge}
                     </span>
                   )}
                 </div>
 
                 {/* Bottom Overlay Title & Plot Number */}
-                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white space-y-1">
+                <div className="absolute bottom-2 left-2 right-2 sm:bottom-3.5 sm:left-3.5 sm:right-3.5 text-white space-y-0.5 sm:space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold text-rose-300 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                    <span className="text-[9px] sm:text-[11px] font-mono font-bold text-rose-300 bg-black/40 px-1.5 py-0.5 rounded-md backdrop-blur-xs">
                       #{plot.plotNumber}
                     </span>
-                    <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      {plot.possessionStatus}
+                    <span className="text-[9px] sm:text-[11px] font-bold text-emerald-300 flex items-center gap-0.5 sm:gap-1">
+                      <ShieldCheck className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
+                      <span className="truncate">{plot.possessionStatus}</span>
                     </span>
                   </div>
-                  <h3 className="font-serif font-bold text-base line-clamp-1 group-hover:text-amber-300 transition-colors">
+                  <h3 className="font-serif font-bold text-xs sm:text-base line-clamp-1 group-hover:text-amber-300 transition-colors">
                     {plot.title}
                   </h3>
                 </div>
               </Link>
 
               {/* Card Body Specs */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-4">
                 {/* Key Metrics Grid */}
-                <div className="grid grid-cols-2 gap-2.5 text-xs font-sans">
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Size & Dimensions</span>
-                    <strong className="text-slate-800 font-bold block">{plot.sizeLabel}</strong>
-                    <span className="text-[10px] text-slate-500">{plot.dimensions}</span>
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs font-sans">
+                  <div className="bg-slate-50 p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-100">
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 font-semibold block uppercase">Size</span>
+                    <strong className="text-slate-800 font-bold block truncate">{plot.sizeLabel}</strong>
+                    <span className="text-[8px] sm:text-[10px] text-slate-500 block truncate">{plot.dimensions}</span>
                   </div>
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Road / Frontage</span>
+                  <div className="bg-slate-50 p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-100">
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 font-semibold block uppercase">Road</span>
                     <strong className="text-slate-800 font-bold block truncate">{plot.roadWidth}</strong>
-                    <span className="text-[10px] text-slate-500 truncate block">{plot.facing}</span>
+                    <span className="text-[8px] sm:text-[10px] text-slate-500 truncate block">{plot.facing}</span>
                   </div>
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">Approved Height</span>
+                  <div className="bg-slate-50 p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-100">
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 font-semibold block uppercase">Height</span>
                     <strong className="text-slate-800 font-bold block truncate">{plot.heightPermission}</strong>
                   </div>
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">ROI Projection</span>
-                    <strong className="text-emerald-600 font-bold block">{plot.roiEstimate}</strong>
+                  <div className="bg-slate-50 p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-100">
+                    <span className="text-[8px] sm:text-[10px] text-slate-400 font-semibold block uppercase">ROI</span>
+                    <strong className="text-emerald-600 font-bold block truncate">{plot.roiEstimate}</strong>
                   </div>
                 </div>
 
                 {/* Features Pill List */}
-                <div className="space-y-1.5">
+                <div className="hidden sm:block space-y-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Key Highlights</span>
                   <div className="flex flex-wrap gap-1.5">
                     {plot.features.slice(0, 2).map((feat, fIdx) => (
@@ -875,41 +875,41 @@ export const CommercialPlotsExplorer: React.FC = () => {
                 </div>
 
                 {/* Pricing & Actions */}
-                <div className="pt-3 border-t border-slate-100 space-y-3">
-                  <div className="flex items-baseline justify-between">
+                <div className="pt-2 sm:pt-3 border-t border-slate-100 space-y-2 sm:space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5">
                     <div>
-                      <span className="text-[10px] text-slate-400 font-semibold uppercase block">Estimated Price</span>
-                      <span className="text-lg font-serif font-bold text-[#7b002c]">{plot.priceFormatted}</span>
+                      <span className="text-[8px] sm:text-[10px] text-slate-400 font-semibold uppercase block">Price</span>
+                      <span className="text-xs min-[400px]:text-sm sm:text-lg font-serif font-bold text-[#7b002c] block truncate">{plot.priceFormatted}</span>
                     </div>
                     {plot.installmentAvailable ? (
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
-                        Installments Avail.
+                      <span className="text-[8px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full self-start sm:self-auto">
+                        Installments
                       </span>
                     ) : (
-                      <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
-                        Cash / Resale
+                      <span className="text-[8px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full self-start sm:self-auto">
+                        Cash
                       </span>
                     )}
                   </div>
 
                   {/* Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     <button
                       onClick={() => handleOpenModal(plot)}
-                      className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="py-1.5 sm:py-2.5 px-2 sm:px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     >
-                      <Eye className="w-3.5 h-3.5 text-[#7b002c]" />
-                      <span>Full Specs</span>
+                      <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#7b002c]" />
+                      <span>Specs</span>
                     </button>
 
                     <a
                       href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20am%20interested%20in%20commercial%20plot%20${plot.plotNumber}%20(${plot.sizeLabel}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details%20and%20payment%20plan.`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                      className="py-1.5 sm:py-2.5 px-2 sm:px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all cursor-pointer"
                     >
-                      <MessageSquare className="w-3.5 h-3.5 text-white" />
-                      <span>Inquire / Book</span>
+                      <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" />
+                      <span>Book</span>
                     </a>
                   </div>
                 </div>
