@@ -36,7 +36,7 @@ export default function HomePage() {
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(initialGalleryData);
-  const [activeGalleryFilter, setActiveGalleryFilter] = useState<'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('Infrastructure');
+  const [activeGalleryFilter, setActiveGalleryFilter] = useState<'All' | 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('All');
   const [lightboxImage, setLightboxImage] = useState<GalleryItem | null>(null);
   const [activeAmenityIndex, setActiveAmenityIndex] = useState(0);
   const [activeBlockIndex, setActiveBlockIndex] = useState(0);
@@ -54,6 +54,7 @@ export default function HomePage() {
   };
 
   const filteredGallery = useMemo(() => {
+    if (activeGalleryFilter === 'All') return galleryItems;
     return galleryItems.filter(item => item && item.category === activeGalleryFilter);
   }, [galleryItems, activeGalleryFilter]);
 
@@ -64,11 +65,25 @@ export default function HomePage() {
   React.useEffect(() => {
     fetchBlocks().then(data => setBlocks(data)).catch(console.error);
     fetchPlots().then(data => setPlots(data)).catch(console.error);
-    fetchGallery().then(data => setGalleryItems(data)).catch(console.error);
 
     const syncGallery = () => {
-      fetchGallery().then(data => setGalleryItems(data)).catch(console.error);
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('faisal_gallery_data');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setGalleryItems(parsed);
+            }
+          } catch (e) {}
+        }
+      }
+      fetchGallery().then(data => {
+        if (data && data.length > 0) setGalleryItems(data);
+      }).catch(console.error);
     };
+
+    syncGallery();
     window.addEventListener('faisal_gallery_updated', syncGallery);
     window.addEventListener('faisal_plots_updated', () => {
       fetchPlots().then(data => setPlots(data)).catch(console.error);
@@ -1882,9 +1897,9 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-          {/* Filter Buttons (Removed 'All' Option) */}
+          {/* Filter Buttons */}
           <ScrollReveal direction="up" delay={150} className="flex flex-wrap gap-2 justify-center md:justify-end">
-            {['Infrastructure', 'Towers', 'Amenities', 'Entrance'].map((cat) => (
+            {['All', 'Infrastructure', 'Towers', 'Amenities', 'Entrance'].map((cat) => (
               <button
                 key={cat}
                 type="button"
@@ -1910,7 +1925,7 @@ export default function HomePage() {
               >
                 <img
                   src={item.imageUrl}
-                  alt={item.title}
+                  alt={item.alt || item.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
@@ -1969,7 +1984,7 @@ export default function HomePage() {
               <div className="h-[450px] w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
                 <img
                   src={lightboxImage?.imageUrl}
-                  alt={lightboxImage?.title || 'Gallery Preview'}
+                  alt={lightboxImage?.alt || lightboxImage?.title || 'Gallery Preview'}
                   className="max-h-full max-w-full object-contain"
                 />
               </div>

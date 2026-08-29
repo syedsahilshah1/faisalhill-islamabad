@@ -2,6 +2,9 @@ import React from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import {
   Building2, ShieldCheck, MapPin, CheckCircle2, Trees, Landmark, Activity,
   Droplets, ShoppingBag, ArrowLeft, ArrowRight, MessageSquare, Calendar, HelpCircle,
@@ -275,7 +278,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
-                {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
+                {block.name}
               </h1>
               {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
@@ -406,7 +409,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
       {/* Faisal Jewel Dedicated Skyscraper Content (27-Storey Mixed-Use Landmark) */}
       {(block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels' || block.id === 'faisal-jewels') && (
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-          <FaisalJewelContent />
+          <FaisalJewelContent block={block} />
         </div>
       )}
 

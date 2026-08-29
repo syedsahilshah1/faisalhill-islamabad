@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, MessageSquare, CheckCircle, ShieldCheck, Loader2 } from 'lucide-react';
-import { blocksData, submitLead } from '@/data/faisalHillsData';
+import { blocksData, submitLead, formatWhatsAppUrl } from '@/data/faisalHillsData';
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -66,8 +66,18 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
     );
     
     // Open WhatsApp after brief delay
+    let whatsappNum = '923044811717';
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('faisal_social_links');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.whatsapp) whatsappNum = parsed.whatsapp;
+        }
+      } catch (e) {}
+    }
     setTimeout(() => {
-      window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+      window.open(formatWhatsAppUrl(whatsappNum, decodeURIComponent(waText)), '_blank');
     }, 600);
   };
 

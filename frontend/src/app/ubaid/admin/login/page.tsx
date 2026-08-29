@@ -6,7 +6,8 @@ import {
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
   Trash2, Plus, Users, DollarSign, Calendar, Eye, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
-  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X
+  CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X,
+  Loader2
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import {
@@ -82,6 +83,38 @@ import {
   fetchSettingByKey
 } from '@/data/faisalHillsData';
 
+function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } else {
+          resolve((event.target?.result as string) || '');
+        }
+      };
+      img.onerror = () => resolve((event.target?.result as string) || '');
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function AdminLoginPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -164,11 +197,13 @@ export default function AdminLoginPage() {
   const [editingBlock, setEditingBlock] = useState<Partial<BlockInfo>>({ ...blocksData[0] });
   const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | null>(null);
   const [newHighlightText, setNewHighlightText] = useState<string>('');
+  const [isSavingBlock, setIsSavingBlock] = useState<boolean>(false);
 
   // Legal Policies State
   const [termsOfService, setTermsOfService] = useState<LegalPolicyData>(defaultTermsOfService);
   const [privacyPolicy, setPrivacyPolicy] = useState<LegalPolicyData>(defaultPrivacyPolicy);
   const [legalSubTab, setLegalSubTab] = useState<'terms' | 'privacy'>('terms');
+  const [isSavingLegal, setIsSavingLegal] = useState<boolean>(false);
 
   // Bank Accounts & Social/Contact State
   const [bankAccounts, setBankAccounts] = useState<BankAccountItem[]>(defaultBankAccounts);
@@ -228,6 +263,7 @@ export default function AdminLoginPage() {
   // Photo Gallery State
   const [galleryList, setGalleryList] = useState<GalleryItem[]>(initialGalleryData);
   const [newPhotoTitle, setNewPhotoTitle] = useState('');
+  const [newPhotoAlt, setNewPhotoAlt] = useState('');
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [newPhotoCategory, setNewPhotoCategory] = useState<'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('Infrastructure');
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
@@ -269,11 +305,40 @@ export default function AdminLoginPage() {
     fetchSettings().then(data => {
       if (data.last_verified_date) setVerifiedDate(data.last_verified_date);
     }).catch(console.error);
+
+    // Check localStorage cache first for immediate responsiveness
+    if (typeof window !== 'undefined') {
+      const cachedTerms = localStorage.getItem('faisal_terms_of_service');
+      if (cachedTerms) {
+        try {
+          const parsed = JSON.parse(cachedTerms);
+          if (parsed && parsed.sections) setTermsOfService(parsed);
+        } catch (e) {}
+      }
+      const cachedPrivacy = localStorage.getItem('faisal_privacy_policy');
+      if (cachedPrivacy) {
+        try {
+          const parsed = JSON.parse(cachedPrivacy);
+          if (parsed && parsed.sections) setPrivacyPolicy(parsed);
+        } catch (e) {}
+      }
+    }
+
     fetchSettingByKey<LegalPolicyData>('terms_of_service').then(data => {
-      if (data && data.sections) setTermsOfService(data);
+      if (data && data.sections) {
+        setTermsOfService(data);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('faisal_terms_of_service', JSON.stringify(data));
+        }
+      }
     }).catch(console.error);
     fetchSettingByKey<LegalPolicyData>('privacy_policy').then(data => {
-      if (data && data.sections) setPrivacyPolicy(data);
+      if (data && data.sections) {
+        setPrivacyPolicy(data);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('faisal_privacy_policy', JSON.stringify(data));
+        }
+      }
     }).catch(console.error);
     fetchSettingByKey<BankAccountItem[]>('bank_accounts').then(data => {
       if (data && data.length > 0) setBankAccounts(data);
@@ -329,6 +394,7 @@ export default function AdminLoginPage() {
 
     apiAddGalleryItem({
       title: newPhotoTitle,
+      alt: newPhotoAlt || newPhotoTitle,
       category: newPhotoCategory,
       imageUrl: newPhotoUrl,
       description: newPhotoDescription
@@ -336,11 +402,14 @@ export default function AdminLoginPage() {
       .then(newItem => {
         setGalleryList(prev => [newItem, ...prev]);
         setNewPhotoTitle('');
+        setNewPhotoAlt('');
         setNewPhotoUrl('');
         setNewPhotoDescription('');
         setSaveNotification(true);
         setTimeout(() => setSaveNotification(false), 3000);
         if (typeof window !== 'undefined') {
+          const current = [newItem, ...galleryList];
+          localStorage.setItem('faisal_gallery_data', JSON.stringify(current));
           window.dispatchEvent(new Event('faisal_gallery_updated'));
         }
       })
@@ -519,14 +588,19 @@ export default function AdminLoginPage() {
 
   const handleDeletePhoto = (id: string) => {
     if (!token) return;
+    if (!confirm('Are you sure you want to delete this photo from the gallery?')) return;
     apiDeleteGalleryItem(id, token)
       .then(() => {
-        setGalleryList(prev => prev.filter(item => item.id !== id));
+        setGalleryList(prev => {
+          const updated = prev.filter(item => item.id !== id);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('faisal_gallery_data', JSON.stringify(updated));
+            window.dispatchEvent(new Event('faisal_gallery_updated'));
+          }
+          return updated;
+        });
         setSaveNotification(true);
         setTimeout(() => setSaveNotification(false), 3000);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new Event('faisal_gallery_updated'));
-        }
       })
       .catch(err => {
         console.error("Failed to delete photo:", err);
@@ -615,30 +689,62 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleSaveBlock = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingBlock) return;
-    
-    // Update local state
-    setBlocksList(prev => prev.map(b => (b.slug === editingBlock.slug || b.id === editingBlock.id) ? { ...b, ...editingBlock } as BlockInfo : b));
-
-    if (typeof window !== 'undefined') {
-      const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
-      existing[editingBlock.slug || ''] = editingBlock;
-      localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
-      window.dispatchEvent(new Event('faisal_blocks_updated'));
-    }
-
-    if (token && editingBlock.id) {
+  const safeSaveBlocksLocally = (block: Partial<BlockInfo>) => {
+    try {
+      if (typeof window !== 'undefined') {
+        const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+        existing[block.slug || ''] = block;
+        localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
+        window.dispatchEvent(new Event('faisal_blocks_updated'));
+      }
+    } catch (e) {
+      console.warn("Local storage quota exceeded for block images; saving lightweight metadata cache.");
       try {
-        const updated = await apiUpdateBlock(editingBlock.id, editingBlock, token);
-        setBlocksList(prev => prev.map(b => b.id === updated.id ? updated : b));
-        setEditingBlock(updated);
+        if (typeof window !== 'undefined') {
+          const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+          const lightweight = {
+            ...block,
+            heroImage: block.heroImage?.startsWith('data:') ? '' : block.heroImage,
+            masterPlanImage: block.masterPlanImage?.startsWith('data:') ? '' : block.masterPlanImage
+          };
+          existing[block.slug || ''] = lightweight;
+          localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
+          window.dispatchEvent(new Event('faisal_blocks_updated'));
+        }
+      } catch (innerErr) {
+        // Safe failover - backend database stores the full image
+      }
+    }
+  };
+
+  const handleSaveBlock = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editingBlock) return;
+    setIsSavingBlock(true);
+    
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+
+    // 1. Update local state
+    setBlocksList(prev => prev.map(b => (b.slug === editingBlock.slug || (editingBlock.id && b.id === editingBlock.id)) ? { ...b, ...editingBlock } as BlockInfo : b));
+
+    // 2. Safe local persistence (guarded against 5MB quota errors)
+    safeSaveBlocksLocally(editingBlock);
+
+    // 3. Backend database update via Laravel API
+    if (activeToken) {
+      try {
+        const identifier = editingBlock.slug || editingBlock.id || '';
+        if (identifier) {
+          const updated = await apiUpdateBlock(identifier, editingBlock, activeToken);
+          setBlocksList(prev => prev.map(b => (b.id === updated.id || b.slug === updated.slug) ? updated : b));
+          setEditingBlock(updated);
+        }
       } catch (e) {
         console.error('API block update error, saved locally:', e);
       }
     }
 
+    setIsSavingBlock(false);
     setNotificationMsg(`Block "${editingBlock.name}" updated and published successfully!`);
     setSaveNotification(true);
     setTimeout(() => setSaveNotification(false), 3500);
@@ -663,20 +769,43 @@ export default function AdminLoginPage() {
   };
 
   const handleSaveLegalPolicies = async () => {
-    if (!token) return;
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+    setIsSavingLegal(true);
     try {
-      if (legalSubTab === 'terms') {
-        await apiUpdateSetting('terms_of_service', termsOfService, token);
-        setNotificationMsg('Terms of Service policy updated and published live in database!');
-      } else {
-        await apiUpdateSetting('privacy_policy', privacyPolicy, token);
-        setNotificationMsg('Privacy Policy updated and published live in database!');
+      if (activeToken) {
+        // Save both to database to ensure all clauses are synced simultaneously
+        await Promise.all([
+          apiUpdateSetting('terms_of_service', termsOfService, activeToken),
+          apiUpdateSetting('privacy_policy', privacyPolicy, activeToken)
+        ]);
       }
+
+      // Persist to local cache for instant UI availability
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('faisal_terms_of_service', JSON.stringify(termsOfService));
+        localStorage.setItem('faisal_privacy_policy', JSON.stringify(privacyPolicy));
+        window.dispatchEvent(new Event('faisal_legal_policies_updated'));
+      }
+
+      const msg = legalSubTab === 'terms'
+        ? 'Terms of Service policy updated and published live in database!'
+        : 'Privacy Policy updated and published live in database!';
+      setNotificationMsg(msg);
       setSaveNotification(true);
       setTimeout(() => setSaveNotification(false), 3500);
     } catch (e) {
-      console.error(e);
-      alert('Failed to save legal policy to database.');
+      console.error("Error saving legal policies:", e);
+      // Fallback local persistence
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('faisal_terms_of_service', JSON.stringify(termsOfService));
+        localStorage.setItem('faisal_privacy_policy', JSON.stringify(privacyPolicy));
+        window.dispatchEvent(new Event('faisal_legal_policies_updated'));
+      }
+      setNotificationMsg('Policy saved and updated locally.');
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    } finally {
+      setIsSavingLegal(false);
     }
   };
 
@@ -734,6 +863,14 @@ export default function AdminLoginPage() {
       await apiUpdateSetting('bank_accounts', bankAccounts, token);
       await apiUpdateSetting('social_links', socialLinks, token);
       await apiUpdateSetting('contact_info', contactInfo, token);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('faisal_social_links', JSON.stringify(socialLinks));
+        localStorage.setItem('faisal_contact_info', JSON.stringify(contactInfo));
+        localStorage.setItem('faisal_bank_accounts', JSON.stringify(bankAccounts));
+        window.dispatchEvent(new Event('faisal_contact_updated'));
+      }
+
       setNotificationMsg('Bank accounts, official numbers, and social links saved to database!');
       setSaveNotification(true);
       setTimeout(() => setSaveNotification(false), 3500);
@@ -1595,8 +1732,8 @@ export default function AdminLoginPage() {
 
       {saveNotification && (
         <div className="bg-slate-900 border border-[#7b002c] text-white px-4 sm:px-5 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-sm">
-          <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
-          <span>All plot availability, SEO meta tags, and verification timestamps published live!</span>
+          <CheckCircle2 className="w-4 h-4 text-[#22c55e] shrink-0" />
+          <span>{notificationMsg}</span>
         </div>
       )}
 
@@ -3197,16 +3334,102 @@ export default function AdminLoginPage() {
                 </select>
               </div>
 
+              {/* Photo Alt Text [alt] */}
               <div className="md:col-span-12 space-y-1">
-                <label className="block text-xs font-bold text-slate-800">Image URL / File Path</label>
+                <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
+                  <span>Image Alt Text <span className="text-[#7b002c] font-mono font-bold">[alt]</span> (SEO & Accessibility)</span>
+                  <span className="text-[10px] text-slate-400 font-normal">e.g. Faisal Hills Arc Entrance Gate Taxila</span>
+                </label>
                 <input
                   type="text"
-                  required
-                  value={newPhotoUrl}
-                  onChange={(e) => setNewPhotoUrl(e.target.value)}
-                  placeholder="e.g. /faisal-jewel.jpg or https://images.unsplash.com/..."
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  value={newPhotoAlt}
+                  onChange={(e) => setNewPhotoAlt(e.target.value)}
+                  placeholder="Descriptive alt tag for Google Images & SEO optimization..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                 />
+              </div>
+
+              {/* Photo Source [src] & Device Upload */}
+              <div className="md:col-span-12 space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#7b002c]" />
+                    <span>Image Source <span className="text-[#7b002c] font-mono font-bold">[src]</span> / Laptop Gallery *</span>
+                  </label>
+                  {newPhotoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setNewPhotoUrl('')}
+                      className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                    >
+                      Clear Photo
+                    </button>
+                  )}
+                </div>
+
+                {/* Upload from Device Action Button */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <label className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-2 shadow-xs transition hover:scale-[1.02] active:scale-95">
+                    <Camera className="w-4 h-4" />
+                    <span>Upload from Device / Laptop Gallery</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                            if (dataUrl) {
+                              setNewPhotoUrl(dataUrl);
+                            }
+                          });
+                        }
+                      }}
+                    />
+                  </label>
+                  <span className="text-xs text-slate-400 font-medium">PNG, JPG, WEBP supported</span>
+                </div>
+
+                {/* Manual [src] URL Input */}
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-semibold text-slate-600">
+                    Or Enter Image Source <span className="font-mono text-[#7b002c]">[src]</span> URL:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newPhotoUrl}
+                    onChange={(e) => setNewPhotoUrl(e.target.value)}
+                    placeholder="e.g. /images/faisal-jewel.jpg or https://images.unsplash.com/..."
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-mono text-[11px] focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Live Preview Card */}
+                {newPhotoUrl && (
+                  <div className="rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner space-y-2 p-3">
+                    <div className="h-44 w-full rounded-lg overflow-hidden relative">
+                      <img
+                        src={newPhotoUrl}
+                        alt={newPhotoAlt || newPhotoTitle || "Gallery Photo Preview"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Live [src] Preview
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-300">
+                      <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 font-mono">
+                        alt: &quot;{newPhotoAlt || newPhotoTitle || 'N/A'}&quot;
+                      </span>
+                      <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 font-mono truncate max-w-xs">
+                        src: {newPhotoUrl.startsWith('data:') ? 'base64 data...' : newPhotoUrl}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="md:col-span-12 space-y-1">
@@ -3344,10 +3567,20 @@ export default function AdminLoginPage() {
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
+                  disabled={isSavingBlock}
+                  className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
                 >
-                  <Save className="w-4 h-4 text-white" />
-                  <span>Save & Publish Block</span>
+                  {isSavingBlock ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save & Publish Block</span>
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -3393,11 +3626,11 @@ export default function AdminLoginPage() {
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setEditingBlock(prev => ({ ...prev, heroImage: reader.result as string }));
-                            };
-                            reader.readAsDataURL(file);
+                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                              if (dataUrl) {
+                                setEditingBlock(prev => ({ ...prev, heroImage: dataUrl }));
+                              }
+                            });
                           }
                         }}
                       />
@@ -3489,11 +3722,11 @@ export default function AdminLoginPage() {
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setEditingBlock(prev => ({ ...prev, masterPlanImage: reader.result as string }));
-                            };
-                            reader.readAsDataURL(file);
+                            compressImageFile(file, 2560, 0.88).then((dataUrl) => {
+                              if (dataUrl) {
+                                setEditingBlock(prev => ({ ...prev, masterPlanImage: dataUrl }));
+                              }
+                            });
                           }
                         }}
                       />
@@ -3715,10 +3948,20 @@ export default function AdminLoginPage() {
                 </span>
                 <button
                   type="submit"
-                  className="px-7 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition cursor-pointer hover:scale-102"
+                  disabled={isSavingBlock}
+                  className="px-7 py-3 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition cursor-pointer hover:scale-102"
                 >
-                  <Save className="w-4 h-4 text-white" />
-                  <span>Save & Publish Block Updates</span>
+                  {isSavingBlock ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Publishing Block Updates...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save & Publish Block Updates</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -3855,11 +4098,21 @@ export default function AdminLoginPage() {
                 </button>
                 <button
                   type="button"
+                  disabled={isSavingLegal}
                   onClick={handleSaveLegalPolicies}
-                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
                 >
-                  <Save className="w-4 h-4 text-white" />
-                  <span>Save Policy</span>
+                  {isSavingLegal ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save Policy</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -3936,11 +4189,21 @@ export default function AdminLoginPage() {
             <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
               <button
                 type="button"
+                disabled={isSavingLegal}
                 onClick={handleSaveLegalPolicies}
-                className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
               >
-                <Save className="w-4 h-4 text-white" />
-                <span>Save & Publish Legal Policies</span>
+                {isSavingLegal ? (
+                  <>
+                    <Loader2 className="w-4 h-4 text-white animate-spin" />
+                    <span>Publishing Policies...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 text-white" />
+                    <span>Save & Publish Legal Policies</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

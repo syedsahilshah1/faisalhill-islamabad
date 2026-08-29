@@ -12,12 +12,24 @@ class BlockController extends Controller
         return response()->json(Block::all());
     }
 
-    public function show(string $identifier)
+    private function findBlock(string $identifier)
     {
-        // Accept both id and slug
-        $block = Block::where('id', $identifier)
+        if (in_array($identifier, ['faisal-jewel-islamabad', 'faisal-jewels', 'faisal-jewel'])) {
+            $block = Block::whereIn('slug', ['faisal-jewel-islamabad', 'faisal-jewels', 'faisal-jewel'])
+                ->orWhereIn('id', ['faisal-jewel-islamabad', 'faisal-jewels', 'faisal-jewel'])
+                ->first();
+            if ($block) return $block;
+        }
+
+        return Block::where('id', $identifier)
             ->orWhere('slug', $identifier)
             ->first();
+    }
+
+    public function show(string $identifier)
+    {
+        // Accept both id, slug, and common aliases
+        $block = $this->findBlock($identifier);
 
         if (!$block) {
             return response()->json(['message' => 'Block not found'], 404);
@@ -28,7 +40,7 @@ class BlockController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $block = Block::find($id);
+        $block = $this->findBlock($id);
         if (!$block) {
             return response()->json(['message' => 'Block not found'], 404);
         }

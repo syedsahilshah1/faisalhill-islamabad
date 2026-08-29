@@ -13,6 +13,18 @@ export default function Footer() {
   const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
 
   useEffect(() => {
+    const syncContact = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedC = localStorage.getItem('faisal_contact_info');
+          if (cachedC) setContact(JSON.parse(cachedC));
+          const cachedS = localStorage.getItem('faisal_social_links');
+          if (cachedS) setSocials(JSON.parse(cachedS));
+        } catch (e) {}
+      }
+    };
+    syncContact();
+
     fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
       if (data) setSocials(data);
     }).catch(console.error);
@@ -20,6 +32,11 @@ export default function Footer() {
     fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
       if (data) setContact(data);
     }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncContact);
+      return () => window.removeEventListener('faisal_contact_updated', syncContact);
+    }
   }, []);
 
   return (

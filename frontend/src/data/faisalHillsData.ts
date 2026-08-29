@@ -998,6 +998,7 @@ export interface GalleryItem {
   title: string;
   category: 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance';
   imageUrl: string;
+  alt?: string;
   description?: string;
   dateAdded?: string;
 }
@@ -1171,6 +1172,7 @@ export function mapGalleryToCamel(item: any): GalleryItem {
   return {
     ...item,
     imageUrl: item.image_url || item.imageUrl,
+    alt: item.alt || item.alt_text || item.title,
     dateAdded: item.date_added || item.dateAdded
   };
 }
@@ -1224,7 +1226,7 @@ export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
     return mapBlockToCamel(data);
   } catch (e) {
     console.error(e);
-    return blocksData.find(b => b.slug === slug) || null; // fallback
+    return blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null; // fallback
   }
 }
 
@@ -1470,6 +1472,7 @@ export async function apiAddGalleryItem(item: Partial<GalleryItem>, token: strin
     title: item.title,
     category: item.category,
     image_url: item.imageUrl,
+    alt: item.alt || item.title,
     description: item.description,
   };
   const res = await fetch(`${API_URL}/gallery`, {
@@ -1866,6 +1869,35 @@ export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
     return null;
   }
 }
+
+export function formatWhatsAppUrl(rawNumber?: string, message?: string): string {
+  const defaultText = message ? `?text=${encodeURIComponent(message)}` : '';
+  if (!rawNumber || !rawNumber.trim()) return `https://wa.me/923044811717${defaultText}`;
+  
+  let digits = rawNumber.replace(/\D/g, '');
+  if (digits.startsWith('0092')) {
+    digits = digits.slice(2);
+  } else if (digits.startsWith('0')) {
+    digits = '92' + digits.slice(1);
+  } else if (!digits.startsWith('92') && (digits.length === 10 || digits.length === 11)) {
+    digits = '92' + digits;
+  }
+  return `https://wa.me/${digits || '923044811717'}${defaultText}`;
+}
+
+export function formatTelUrl(rawNumber?: string): string {
+  if (!rawNumber || !rawNumber.trim()) return 'tel:+923044811717';
+  let cleaned = rawNumber.replace(/[^\d+]/g, '');
+  if (cleaned.startsWith('03')) {
+    cleaned = '+92' + cleaned.slice(1);
+  } else if (cleaned.startsWith('0')) {
+    cleaned = '+92' + cleaned.slice(1);
+  } else if (!cleaned.startsWith('+') && cleaned.startsWith('92')) {
+    cleaned = '+' + cleaned;
+  }
+  return `tel:${cleaned || '+923044811717'}`;
+}
+
 
 
 

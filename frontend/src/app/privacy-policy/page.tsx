@@ -8,11 +8,47 @@ export default function PrivacyPolicyPage() {
   const [policy, setPolicy] = useState<LegalPolicyData>(defaultPrivacyPolicy);
 
   useEffect(() => {
+    // 1. Initial cached read
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('faisal_privacy_policy');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.sections) setPolicy(parsed);
+        } catch (e) {}
+      }
+    }
+
+    // 2. Fetch latest from database
     fetchSettingByKey<LegalPolicyData>('privacy_policy').then((data) => {
       if (data && data.sections) {
         setPolicy(data);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('faisal_privacy_policy', JSON.stringify(data));
+        }
       }
     }).catch(console.error);
+
+    // 3. Real-time update listeners
+    const handleUpdate = () => {
+      const cached = localStorage.getItem('faisal_privacy_policy');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.sections) setPolicy(parsed);
+        } catch (e) {}
+      }
+      fetchSettingByKey<LegalPolicyData>('privacy_policy').then((data) => {
+        if (data && data.sections) setPolicy(data);
+      }).catch(console.error);
+    };
+
+    window.addEventListener('faisal_legal_policies_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('faisal_legal_policies_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   return (

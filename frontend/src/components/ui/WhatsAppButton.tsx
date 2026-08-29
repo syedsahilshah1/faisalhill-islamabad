@@ -2,14 +2,36 @@
 
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { defaultSocialLinks, SocialLinksData, fetchSettingByKey, formatWhatsAppUrl } from '@/data/faisalHillsData';
 
 export default function WhatsAppButton() {
   const [visible, setVisible] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
 
-  const whatsappNumber = '923044811717';
   const defaultMessage = 'Hi, I am interested in Faisal Hills Islamabad. Please share details.';
+
+  useEffect(() => {
+    const syncSocials = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('faisal_social_links');
+          if (cached) setSocials(JSON.parse(cached));
+        } catch (e) {}
+      }
+    };
+    syncSocials();
+
+    fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
+      if (data) setSocials(data);
+    }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncSocials);
+      return () => window.removeEventListener('faisal_contact_updated', syncSocials);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +60,7 @@ export default function WhatsAppButton() {
     setDismissed(true);
   };
 
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`;
+  const whatsappUrl = formatWhatsAppUrl(socials.whatsapp, defaultMessage);
 
   return (
     <div

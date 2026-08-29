@@ -58,7 +58,8 @@ import {
   faisalJewelsHotelExperience,
   faisalJewelResidentialPlan,
   faisalJewelCommercialPlans,
-  blocksData
+  blocksData,
+  BlockInfo
 } from '@/data/faisalHillsData';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -66,6 +67,10 @@ import TextReveal from '@/components/ui/TextReveal';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import LeadModal from '@/components/ui/LeadModal';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+
+export interface FaisalJewelContentProps {
+  block?: BlockInfo | null;
+}
 
 // Dedicated Faisal Jewel Inventory Units
 export interface JewelUnitItem {
@@ -300,7 +305,8 @@ const jewelLandmarks = [
   }
 ];
 
-export function FaisalJewelContent() {
+export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
+  const [currentBlock, setCurrentBlock] = useState<BlockInfo | null>(block || null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
   const [isOverviewExpanded, setIsOverviewExpanded] = useState<boolean>(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState<boolean>(false);
@@ -310,6 +316,31 @@ export function FaisalJewelContent() {
   const [selectedCalcUnit, setSelectedCalcUnit] = useState<'Commercial Shop' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | 'Hotel Suite'>('Commercial Shop');
   const [formData, setFormData] = useState({ name: '', phone: '', unit: 'Commercial Shop', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Sync block data from props or localStorage
+  useEffect(() => {
+    if (block) setCurrentBlock(block);
+  }, [block]);
+
+  useEffect(() => {
+    const syncLocal = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+          const jewelStored = stored['faisal-jewel-islamabad'] || stored['faisal-jewels'];
+          if (jewelStored) {
+            setCurrentBlock(prev => ({ ...(prev || {}), ...jewelStored } as BlockInfo));
+          }
+        } catch (e) {}
+      }
+    };
+    syncLocal();
+    window.addEventListener('faisal_blocks_updated', syncLocal);
+    return () => window.removeEventListener('faisal_blocks_updated', syncLocal);
+  }, []);
+
+  const showcaseImage = currentBlock?.heroImage || '/faisal-jewel.jpg';
+  const masterPlanImg = currentBlock?.masterPlanImage || '/faisal-jewel-sketch.jpg';
 
   // Landmark auto-scroll refs and handlers
   const landmarksScrollRef = useRef<HTMLDivElement>(null);
@@ -474,7 +505,7 @@ export function FaisalJewelContent() {
               <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Jewel Islamabad Overview"
+                  text={`${currentBlock?.name || 'Faisal Jewel'} Overview`}
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
@@ -482,7 +513,7 @@ export function FaisalJewelContent() {
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    <strong>Faisal Jewel</strong> is the flagship architectural landmark of Faisal Hills Islamabad. Soaring 27 storeys at the grand main entrance on GT Road (N-5), this iconic mixed-use skyscraper integrates a 6-floor luxury shopping mall with 350+ brand outlets, 250+ luxury serviced residences, a 4-star boutique hotel, rooftop infinity pool, and 3 levels of underground smart parking.
+                    <strong>{currentBlock?.name || 'Faisal Jewel'}</strong> is the flagship architectural landmark of Faisal Hills Islamabad. Soaring 27 storeys at the grand main entrance on GT Road (N-5), this iconic mixed-use skyscraper integrates a 6-floor luxury shopping mall with 350+ brand outlets, 250+ luxury serviced residences, a 4-star boutique hotel, rooftop infinity pool, and 3 levels of underground smart parking.
                   </p>
 
                   {isOverviewExpanded && (
@@ -514,7 +545,7 @@ export function FaisalJewelContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   <img
-                    src="/faisal-jewel.jpg"
+                    src={showcaseImage}
                     alt="Faisal Jewel 27-Storey Skyscraper Showcase"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -688,7 +719,7 @@ export function FaisalJewelContent() {
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
                 <img
-                  src="/faisal-jewel-sketch.jpg"
+                  src={masterPlanImg}
                   alt="Faisal Jewel Architectural Elevation Blueprint"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -1494,6 +1525,7 @@ export function FaisalJewelContent() {
           isOpen={isMapModalOpen}
           onClose={() => setIsMapModalOpen(false)}
           blockName="Faisal Jewel Skyscraper"
+          mapImageUrl={masterPlanImg}
         />
       )}
 

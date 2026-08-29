@@ -17,7 +17,16 @@ import {
   MessageSquare,
   Store
 } from 'lucide-react';
-import { blocksData } from '@/data/faisalHillsData';
+import {
+  blocksData,
+  defaultSocialLinks,
+  defaultContactInfo,
+  SocialLinksData,
+  ContactInfoData,
+  fetchSettingByKey,
+  formatWhatsAppUrl,
+  formatTelUrl
+} from '@/data/faisalHillsData';
 import LeadModal from './LeadModal';
 
 export default function Navbar() {
@@ -28,6 +37,37 @@ export default function Navbar() {
   const [blocksDropdownOpen, setBlocksDropdownOpen] = useState(false);
   const [highriseDropdownOpen, setHighriseDropdownOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+
+  // Dynamic Contact & WhatsApp Info
+  const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+  const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
+
+  useEffect(() => {
+    const syncContact = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedC = localStorage.getItem('faisal_contact_info');
+          if (cachedC) setContact(JSON.parse(cachedC));
+          const cachedS = localStorage.getItem('faisal_social_links');
+          if (cachedS) setSocials(JSON.parse(cachedS));
+        } catch (e) {}
+      }
+    };
+    syncContact();
+
+    fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
+      if (data) setContact(data);
+    }).catch(console.error);
+
+    fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
+      if (data) setSocials(data);
+    }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncContact);
+      return () => window.removeEventListener('faisal_contact_updated', syncContact);
+    }
+  }, []);
 
   // Scroll visibility & scroll position state
   const [isVisible, setIsVisible] = useState(true);
@@ -281,13 +321,13 @@ export default function Navbar() {
 
             {/* Mobile Left Action: Direct Call Button */}
             <a
-              href="tel:+923044811717"
+              href={formatTelUrl(contact.salesHotline)}
               className={`xl:hidden p-2 sm:p-2.5 rounded-full flex items-center justify-center transition-all active:scale-95 shrink-0 cursor-pointer ${isSolidNav
                 ? 'text-[#7b002c] bg-slate-100 hover:bg-slate-200 border border-slate-200'
                 : 'text-white bg-white/10 hover:bg-white/20 border border-white/20'
                 }`}
               aria-label="Call Sales Desk"
-              title="Call +92 304 4811 717"
+              title={`Call ${contact.salesHotline || '+92 304 4811 717'}`}
             >
               <Phone className="w-4 h-4 text-inherit" />
             </a>
@@ -401,12 +441,12 @@ export default function Navbar() {
 
               {/* Action Button - Compact Sleek Calling Pill */}
               <a
-                href="tel:+923044811717"
+                href={formatTelUrl(contact.salesHotline)}
                 className={`inline-flex items-center gap-1.5 pl-1.5 pr-3.5 py-1 text-xs font-bold rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ${isSolidNav
                   ? 'bg-[#7b002c] hover:bg-[#9e1245] text-white'
                   : 'bg-[#7b002c] hover:bg-[#9e1245] text-white border border-white/10'
                   }`}
-                title="Call Helpline: +92 304 4811 717"
+                title={`Call Helpline: ${contact.salesHotline || '+92 304 4811 717'}`}
               >
                 <Image
                   src="/images/girl-headphone-support.png"
@@ -415,7 +455,7 @@ export default function Navbar() {
                   height={20}
                   className="w-5 h-5 rounded-full object-cover shrink-0"
                 />
-                <span>+92 304 4811 717</span>
+                <span>{contact.salesHotline || '+92 304 4811 717'}</span>
               </a>
             </div>
 
@@ -585,7 +625,7 @@ export default function Navbar() {
             {/* Drawer Bottom Actions */}
             <div className="p-6 bg-slate-50 border-t border-slate-200 grid grid-cols-2 gap-3">
               <a
-                href="tel:+923044811717"
+                href={formatTelUrl(contact.salesHotline)}
                 className="py-3 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
               >
                 <Image
@@ -599,7 +639,7 @@ export default function Navbar() {
               </a>
 
               <a
-                href="https://wa.me/923044811717"
+                href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I am interested in Faisal Hills Islamabad. Please share details.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-3 text-xs font-bold text-white bg-[#25D366] hover:bg-[#20ba5a] rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all"
