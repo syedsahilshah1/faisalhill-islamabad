@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Building2,
@@ -15,6 +15,7 @@ import {
   MessageSquare,
   PhoneCall,
   ChevronRight,
+  ChevronLeft,
   Users,
   Globe,
   Shield,
@@ -43,8 +44,39 @@ import FaqAccordion from '@/components/ui/FaqAccordion';
 export default function AboutUsPage() {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isSeeMoreOpen, setIsSeeMoreOpen] = useState(false);
-  const [isPillarsExpanded, setIsPillarsExpanded] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<number>(0);
+
+  // Pillars Auto-scroll refs & state
+  const pillarsScrollRef = useRef<HTMLDivElement>(null);
+  const [isPillarsHovered, setIsPillarsHovered] = useState<boolean>(false);
+
+  // 1-second auto scroll timer for Pillars section
+  useEffect(() => {
+    if (isPillarsHovered) return;
+    const interval = setInterval(() => {
+      if (pillarsScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = pillarsScrollRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const cardWidth = 300;
+        if (scrollLeft >= maxScroll - 15) {
+          pillarsScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          pillarsScrollRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }
+    }, 1200); // 1.2s auto scroll
+    return () => clearInterval(interval);
+  }, [isPillarsHovered]);
+
+  const scrollPillars = (direction: 'left' | 'right') => {
+    if (pillarsScrollRef.current) {
+      const cardWidth = 320;
+      pillarsScrollRef.current.scrollBy({
+        left: direction === 'left' ? -cardWidth : cardWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Timeline Milestones
   const timelineMilestones = [
@@ -267,9 +299,7 @@ export default function AboutUsPage() {
             
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-3.5">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#7b002c] font-sans block">
-                ABOUT FAISAL HILLS
-              </span>
+              
 
               <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#7b002c]">
                 Chairman & Founder — Chaudhry Abdul Majeed
@@ -310,8 +340,8 @@ export default function AboutUsPage() {
                 </button>
               </div>
 
-              {/* Discover More Link */}
-              <div className="pt-2">
+              {/* Discover More Link (Desktop) */}
+              <div className="pt-2 hidden lg:block">
                 <button
                   type="button"
                   onClick={() => setIsLeadModalOpen(true)}
@@ -323,13 +353,24 @@ export default function AboutUsPage() {
             </div>
 
             {/* Right Cutout Image */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+            <div className="lg:col-span-5 flex flex-col items-center lg:items-end justify-center relative space-y-3">
               <div className="relative w-full max-w-sm sm:max-w-md flex items-end justify-center">
                 <img
                   src="/chaudhry-abdul-majeed.png"
                   alt="Chairman & Founder - Chaudhry Abdul Majeed"
                   className="w-full h-auto max-h-[500px] object-contain object-bottom drop-shadow-2xl"
                 />
+              </div>
+
+              {/* Discover More Link (Mobile: Below Image) */}
+              <div className="lg:hidden pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="inline-block text-xs font-bold text-[#7b002c] hover:text-[#9e1245] border-b-2 border-[#7b002c] pb-0.5 transition-all cursor-pointer"
+                >
+                  Discover More About Zedem International →
+                </button>
               </div>
             </div>
 
@@ -387,38 +428,35 @@ export default function AboutUsPage() {
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-1 border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Chronology of Growth
-            </span>
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
               Our Journey: From Strategic Vision to GT Road Landmark
             </h2>
           </div>
         </ScrollReveal>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {timelineMilestones.map((item, idx) => (
             <ScrollReveal key={idx} direction="up" delay={50 * idx}>
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col md:flex-row group">
-                {/* Visual Image */}
-                <div className="md:w-1/3 relative h-48 md:h-auto min-h-[180px] overflow-hidden bg-slate-950">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col group h-full justify-between">
+                {/* Visual Image with Year Badge */}
+                <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950">
                   <img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#7b002c] text-white text-xs font-bold font-mono shadow">
+                  <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#7b002c] text-white text-[10px] sm:text-xs font-bold font-mono shadow">
                     {item.year}
                   </span>
                 </div>
 
                 {/* Milestone Details */}
-                <div className="md:w-2/3 p-6 space-y-2 flex flex-col justify-center">
-                  <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#7b002c] transition-colors">
+                <div className="p-3 sm:p-5 space-y-1 sm:space-y-2 flex-1 flex flex-col justify-start">
+                  <h3 className="font-serif font-bold text-xs sm:text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug line-clamp-2">
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
+                  <p className="text-[10px] sm:text-xs text-slate-600 font-sans leading-relaxed line-clamp-3 sm:line-clamp-none pt-0.5">
                     {item.desc}
                   </p>
                 </div>
@@ -485,67 +523,85 @@ export default function AboutUsPage() {
       </section>
 
       {/* ========================================================= */}
-      {/* 6. WHY CHOOSE FAISAL HILLS (PILLARS WITH SEE MORE)        */}
+      {/* 6. WHY CHOOSE FAISAL HILLS (AUTO-SCROLL CAROUSEL)         */}
       {/* ========================================================= */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 space-y-6">
         <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
             <div className="space-y-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-                Investment Safeguards
-              </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
                 Why Choose Faisal Hills: Key Pillars That Matter
               </h2>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsPillarsExpanded(!isPillarsExpanded)}
-              className="text-xs font-bold uppercase tracking-wider text-[#7b002c] hover:text-[#9e1245] transition-colors cursor-pointer flex items-center gap-1 shrink-0"
-            >
-              <span>{isPillarsExpanded ? 'Show Top 3 Pillars' : 'View All 7 Pillars'}</span>
-              {isPillarsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
+
+            {/* Scroll Navigation Buttons */}
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+              <button
+                type="button"
+                onClick={() => scrollPillars('left')}
+                aria-label="Previous Pillar"
+                className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white transition-all flex items-center justify-center shadow-xs cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollPillars('right')}
+                aria-label="Next Pillar"
+                className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white transition-all flex items-center justify-center shadow-xs cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(isPillarsExpanded ? reasonsToChoose : reasonsToChoose.slice(0, 3)).map((reason, idx) => (
-            <ScrollReveal key={idx} direction="up" delay={50 * idx}>
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden h-full flex flex-col justify-between group">
-                <div>
-                  <div className="relative h-44 w-full overflow-hidden bg-slate-950">
-                    <img
-                      src={reason.image}
-                      alt={reason.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
-                    <span className="absolute top-3 left-3 w-7 h-7 rounded-full bg-[#7b002c] text-white text-xs font-bold flex items-center justify-center shadow">
-                      {idx + 1}
-                    </span>
-                  </div>
-                  <div className="p-5 space-y-2">
-                    <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                      {reason.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 font-sans leading-relaxed">
-                      {reason.desc}
-                    </p>
-                  </div>
+        {/* Horizontal Scroll Carousel with 1-second auto scroll */}
+        <div
+          ref={pillarsScrollRef}
+          onMouseEnter={() => setIsPillarsHovered(true)}
+          onMouseLeave={() => setIsPillarsHovered(false)}
+          onTouchStart={() => setIsPillarsHovered(true)}
+          onTouchEnd={() => setIsPillarsHovered(false)}
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-1 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0"
+        >
+          {reasonsToChoose.map((reason, idx) => (
+            <div
+              key={idx}
+              className="w-[260px] min-[400px]:w-[290px] sm:w-[340px] shrink-0 snap-start bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col justify-between group"
+            >
+              <div>
+                <div className="relative h-36 min-[400px]:h-44 w-full overflow-hidden bg-slate-950">
+                  <img
+                    src={reason.image}
+                    alt={reason.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute top-3 left-3 w-7 h-7 rounded-full bg-[#7b002c] text-white text-xs font-bold flex items-center justify-center shadow font-mono">
+                    {idx + 1}
+                  </span>
                 </div>
-
-                <div className="p-5 pt-0">
-                  <button
-                    type="button"
-                    onClick={() => setIsLeadModalOpen(true)}
-                    className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-[#7b002c] hover:text-white text-xs font-bold text-slate-700 transition-colors text-center cursor-pointer"
-                  >
-                    Inquire Details
-                  </button>
+                <div className="p-4 sm:p-5 space-y-1.5 sm:space-y-2">
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                    {reason.title}
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-slate-600 font-sans leading-relaxed">
+                    {reason.desc}
+                  </p>
                 </div>
               </div>
-            </ScrollReveal>
+
+              <div className="p-4 sm:p-5 pt-0">
+                <button
+                  type="button"
+                  onClick={() => setIsLeadModalOpen(true)}
+                  className="w-full py-2 sm:py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-[#7b002c] hover:text-white text-xs font-bold text-slate-700 transition-colors text-center cursor-pointer shadow-2xs"
+                >
+                  Inquire Details
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       </section>
@@ -556,9 +612,6 @@ export default function AboutUsPage() {
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-1 border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Target Demographics
-            </span>
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
               Who We Serve: Our Investor & Buyer Community
             </h2>
@@ -633,9 +686,6 @@ export default function AboutUsPage() {
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-1 border-b border-slate-200 pb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#7b002c]">
-              Step-By-Step Journey
-            </span>
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
               Our 5-Step Plot Allotment & Handover Process
             </h2>
@@ -674,12 +724,8 @@ export default function AboutUsPage() {
       {/* ========================================================= */}
       <section id="faqs" className="scroll-mt-28 space-y-6">
         <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Frequently Asked Questions</span>
-          </div>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            About Faisal Hills Developer FAQs
+            Frequently Asked Questions
           </h2>
           <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
             Key answers regarding Zedem International leadership, RDA NOC legality, remote booking for overseas Pakistanis, and possession timelines.

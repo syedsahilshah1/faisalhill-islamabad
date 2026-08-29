@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
+import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import { Download } from 'lucide-react';
 
@@ -9,15 +9,15 @@ export default function MasterPlanPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-10 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-12 space-y-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="space-y-2">
-          <span className="label-caps text-[#7b002c] font-semibold block">Society Navigation</span>
+          <span className="label-caps text-[#7b002c] font-bold block">Society Navigation</span>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#7b002c]">
-            Faisal Hills Interactive Master Plan Map
+            Faisal Hills Master Plan Map
           </h1>
-          <p className="text-slate-600 text-sm max-w-3xl">
-            Use the interactive map below to explore Executive Block, Block A, B, C, D, Prime Block, and Hills Walk. Click individual plot nodes to view real-time availability, plot dimension, facing type, and demand prices.
+          <p className="text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
+            Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.
           </p>
         </div>
 
@@ -30,8 +30,11 @@ export default function MasterPlanPage() {
         </button>
       </div>
 
-      {/* Fullscreen Master Plan Viewer */}
-      <InteractiveMasterPlan isFullscreen={true} />
+      {/* Clean Interactive Deep Zoom Master Plan Viewer */}
+      <MasterPlanViewer 
+        heightClass="h-[480px] sm:h-[620px] lg:h-[750px]" 
+        onDownloadClick={() => setIsModalOpen(true)}
+      />
 
       {/* Lead Gated Map Download Modal */}
       <MapDownloadModal
