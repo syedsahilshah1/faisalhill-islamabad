@@ -223,7 +223,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const heroSubtitle = block.subtitle;
 
   const getHeroDescription = () => {
-    if (block.slug === 'block-a' || block.slug === 'prime-block' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'block-b') return '';
+    if (block.slug === 'block-a' || block.slug === 'prime-block' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'block-b' || block.slug === 'block-b1-extension') return '';
     if (block.description) return block.description;
 
     switch (block.slug) {
@@ -235,7 +235,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
       case 'block-b':
         return 'Faisal Hills Block B is the premier central sector built along the 225ft Grand Boulevard, offering ready possession plots, the dedicated Sports Arena, and scenic Margalla mountain views.';
       case 'block-b1-extension':
-        return 'Faisal Hills Block B1 Extension offers the most affordable entry-level residential plots in the scheme with 5, 8, and 10 Marla options, rapid road laying, and maximum capital appreciation potential.';
+        return '';
       case 'block-c':
         return '';
       case 'block-d':
@@ -290,13 +290,13 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             )}
 
             <div className="space-y-3">
-              {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && (
+              {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
-              <h1 className="font-serif font-bold text-5xl sm:text-6xl lg:text-7xl text-white leading-tight">
+              <h1 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
                 {block.id === 'faisal-jewels' || block.slug === 'faisal-jewel-islamabad' ? 'Faisal Jewel Islamabad' : block.name}
               </h1>
-              {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && (
+              {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
                   {heroDesc}
                 </p>
@@ -305,7 +305,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
 
             {/* Quick Action CTAs (Hidden on mobile, visible on desktop) */}
-            {block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && (
+            {block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && (
               <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="tel:+923313339997"
