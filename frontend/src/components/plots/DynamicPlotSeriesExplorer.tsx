@@ -24,13 +24,14 @@ import {
   BlockConfig,
 } from '@/utils/plotSeriesEngine';
 import { getStoredPlots, getStoredBlockConfigs } from '@/utils/plotStore';
+import { fetchPlots } from '@/data/faisalHillsData';
 
 interface DynamicPlotSeriesExplorerProps {
   blockSlug?: string;
   blockName?: string;
 }
 
-const RESIDENTIAL_SIZES = ['5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal'];
+const RESIDENTIAL_SIZES = ['5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', '2 Kanal'];
 
 const COMMERCIAL_PLOTS = [
   {
@@ -64,7 +65,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   const [selectedSize, setSelectedSize] = useState<string>('5 Marla');
   const [selectedSeriesIndex, setSelectedSeriesIndex] = useState<number>(0);
   const [selectedComPlotIndex, setSelectedComPlotIndex] = useState<number>(0);
-  const [allPlots, setAllPlots] = useState<PlotItem[]>(INITIAL_PLOTS_INVENTORY);
+  const [allPlots, setAllPlots] = useState<any[]>(INITIAL_PLOTS_INVENTORY);
   const [storedConfigs, setStoredConfigs] = useState<Record<string, BlockConfig> | null>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
 
@@ -74,19 +75,27 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   // Load and subscribe to real-time plots and series configs store
   useEffect(() => {
     setIsClient(true);
-    setAllPlots(getStoredPlots());
-    setStoredConfigs(getStoredBlockConfigs());
 
-    const handleUpdate = () => {
-      setAllPlots(getStoredPlots());
+    const loadAll = () => {
+      fetchPlots().then((dbPlots) => {
+        if (dbPlots && dbPlots.length > 0) {
+          setAllPlots([...getStoredPlots(), ...dbPlots]);
+        } else {
+          setAllPlots(getStoredPlots());
+        }
+      }).catch(() => {
+        setAllPlots(getStoredPlots());
+      });
       setStoredConfigs(getStoredBlockConfigs());
     };
 
-    window.addEventListener('fh_plots_updated', handleUpdate);
-    window.addEventListener('fh_series_configs_updated', handleUpdate);
+    loadAll();
+
+    window.addEventListener('fh_plots_updated', loadAll);
+    window.addEventListener('fh_series_configs_updated', loadAll);
     return () => {
-      window.removeEventListener('fh_plots_updated', handleUpdate);
-      window.removeEventListener('fh_series_configs_updated', handleUpdate);
+      window.removeEventListener('fh_plots_updated', loadAll);
+      window.removeEventListener('fh_series_configs_updated', loadAll);
     };
   }, []);
 
@@ -379,7 +388,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <span className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                              Plot #{plot.plotNumber}
+                              {(plot as any).displayNumber || `Plot #${plot.plotNumber}`}
                             </span>
                             <span
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -401,19 +410,19 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                           <div className="flex items-center justify-between text-xs pt-1">
                             <span className="text-slate-500 font-mono">{plot.dimensions}</span>
                             <strong className="text-[#7b002c] font-serif font-bold text-sm">
-                              {formatPKR(plot.price)}
+                              {plot.price > 0 ? formatPKR(plot.price) : 'Contact for Price'}
                             </strong>
                           </div>
                         </div>
 
                         <a
-                          href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Plot%20%23${plot.plotNumber}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
+                          href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full py-2 bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
-                          <span>Inquire Plot #{plot.plotNumber}</span>
+                          <span>Inquire {(plot as any).displayNumber || `Plot #${plot.plotNumber}`}</span>
                         </a>
                       </div>
                     ))}

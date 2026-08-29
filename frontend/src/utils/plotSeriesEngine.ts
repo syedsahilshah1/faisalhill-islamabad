@@ -78,6 +78,20 @@ export function formatPriceRange(min: number, max: number): string {
   return `PKR ${minStr} – ${maxStr.replace('PKR ', '')}`;
 }
 
+// Get standard dimensions automatically based on plot size
+export function getStandardDimensionsForSize(size: string): string {
+  const s = (size || '').toLowerCase().trim();
+  if (s.includes('2 kanal') || s.includes('2kanal')) return '75 × 120 ft';
+  if (s.includes('1 kanal') || s.includes('1kanal')) return '50 × 90 ft';
+  if (s.includes('14 marla') || s.includes('14marla')) return '40 × 80 ft';
+  if (s.includes('10 marla') || s.includes('10marla')) return '35 × 70 ft';
+  if (s.includes('8 marla') || s.includes('8marla')) return '30 × 60 ft';
+  if (s.includes('5.33')) return '40 × 30 ft';
+  if (s.includes('4 marla') || s.includes('4marla')) return '30 × 30 ft';
+  if (s.includes('5 marla') || s.includes('5marla')) return '25 × 50 ft';
+  return '25 × 50 ft';
+}
+
 // Master Series Configuration per Block & Size
 export const BLOCK_SERIES_CONFIGS: Record<string, BlockConfig> = {
   'executive-block': {
@@ -1482,7 +1496,7 @@ export const INITIAL_PLOTS_INVENTORY: PlotItem[] = [
 
 // Calculation function to dynamically group plots into configured series & calculate Min/Max prices
 export function calculateSeriesGroups(
-  plots: PlotItem[],
+  plots: (PlotItem | any)[],
   blockSlug: string,
   size: string,
   customConfigs?: Record<string, BlockConfig>
@@ -1491,10 +1505,88 @@ export function calculateSeriesGroups(
   const blockConfig = configs[blockSlug] || configs['executive-block'] || BLOCK_SERIES_CONFIGS[blockSlug] || BLOCK_SERIES_CONFIGS['executive-block'];
   const seriesList = blockConfig?.seriesConfigs?.[size] || [];
 
-  // Filter plots by block & size
-  const matchedPlots = (plots || []).filter(
-    (p) => p && p.blockSlug === blockSlug && p.size === size && p.category === 'residential'
-  );
+  const cleanTargetBlock = (blockSlug || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/^block-?/, 'block-');
+  const cleanTargetSize = (size || '').toLowerCase().trim();
+
+  // Normalize all plots from either local store, Laravel database API, or legacy schema
+  const normalizedMatchedPlots: PlotItem[] = (plots || []).map((rawP: any) => {
+    if (!rawP) return null;
+
+    // Normalize block
+    const rawBlock = String(rawP.blockSlug || rawP.block || rawP.block_name || '').toLowerCase().trim();
+    const cleanBlock = rawBlock.replace(/\s+/g, '-').replace(/^block-?/, 'block-');
+
+    // Extract plot number
+    let pNum = 0;
+    if (typeof rawP.plotNumber === 'number') {
+      pNum = rawP.plotNumber;
+    } else {
+      const extracted = parseInt(String(rawP.plotNumber || rawP.id || '').replace(/\D/g, ''), 10);
+      pNum = !isNaN(extracted) && extracted > 0 ? extracted : 1;
+    }
+
+    // Extract numerical price
+    let pPrice = 0;
+    if (typeof rawP.price === 'number' && rawP.price > 0) {
+      pPrice = rawP.price;
+    } else if (typeof rawP.priceNumber === 'number' && rawP.priceNumber > 0) {
+      pPrice = rawP.priceNumber;
+    } else if (typeof rawP.price === 'string') {
+      const priceStr = rawP.price.toLowerCase();
+      if (priceStr.includes('crore') || priceStr.includes('cr')) {
+        const num = parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num)) pPrice = Math.round(num * 10000000);
+      } else if (priceStr.includes('lac') || priceStr.includes('lakh')) {
+        const num = parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num)) pPrice = Math.round(num * 100000);
+      } else {
+        const num = parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num)) pPrice = num;
+      }
+    }
+
+    const rawSize = String(rawP.size || '').toLowerCase().trim();
+    const sizeNumber = cleanTargetSize.split(' ')[0]; // e.g. '5' from '5 Marla'
+    const sizeMatches = rawSize.includes(sizeNumber);
+
+    const rawCat = String(rawP.category || rawP.type || 'residential').toLowerCase().trim();
+    const catMatches = rawCat.includes('res') || rawCat === '' || rawCat === 'residential';
+
+    const blockMatches = cleanBlock === cleanTargetBlock || cleanBlock.includes(cleanTargetBlock.replace('block-', '')) || cleanTargetBlock.includes(cleanBlock.replace('block-', ''));
+
+    if (!blockMatches || !sizeMatches || !catMatches) {
+      return null;
+    }
+
+    const displayNumStr = rawP.plotNumber ? String(rawP.plotNumber) : String(pNum);
+
+    return {
+      id: String(rawP.id || `${cleanBlock}-${pNum}`),
+      plotNumber: pNum,
+      displayNumber: displayNumStr,
+      price: pPrice,
+      size: rawP.size || size,
+      blockSlug: cleanBlock,
+      blockName: rawP.blockName || rawP.block || 'Block A',
+      category: 'residential',
+      status: String(rawP.status || 'available').toLowerCase() === 'sold' ? 'sold' : 'available',
+      locationType: rawP.locationType || rawP.facing || 'Standard',
+      dimensions: rawP.dimensions || '25 × 50',
+      features: Array.isArray(rawP.features) ? rawP.features : [rawP.facing || 'Standard'],
+      demandRange: rawP.demandRange || 'Live Market Rate',
+      suitability: rawP.suitability || 'Residential Construction',
+    } as PlotItem;
+  }).filter((p): p is PlotItem => p !== null);
+
+  // Remove duplicate plots by id / plotNumber
+  const uniqueMap = new Map<string, PlotItem>();
+  for (const p of normalizedMatchedPlots) {
+    const key = `${p.blockSlug}-${p.plotNumber}-${p.id}`;
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, p);
+    }
+  }
+  const matchedPlots = Array.from(uniqueMap.values());
 
   // If no custom series configs defined, generate default intervals of 100
   if (seriesList.length === 0) {

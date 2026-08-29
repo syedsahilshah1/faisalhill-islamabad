@@ -76,6 +76,7 @@ export interface BlogItem {
   metaTitle: string;
   metaDescription: string;
   keywords: string;
+  focusKeyword?: string;
   faqs?: { question: string; answer: string }[];
   createdAt?: string;
   updatedAt?: string;

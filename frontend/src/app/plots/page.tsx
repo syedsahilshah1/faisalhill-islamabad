@@ -38,6 +38,7 @@ import {
   PlotItem,
   fetchPlots
 } from '@/data/faisalHillsData';
+import { getStandardDimensionsForSize } from '@/utils/plotSeriesEngine';
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -398,7 +399,11 @@ function PlotSearchContent() {
                   <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-semibold block uppercase">Size & Dims</span>
                     <strong className="text-slate-800 font-bold block">{plot.size}</strong>
-                    <span className="text-[10px] text-slate-500">{plot.dimensions}</span>
+                    <span className="text-[10px] text-slate-500">
+                      {plot.dimensions && !plot.dimensions.includes('25 × 50') || plot.size.includes('5')
+                        ? (plot.dimensions || getStandardDimensionsForSize(plot.size))
+                        : getStandardDimensionsForSize(plot.size)}
+                    </span>
                   </div>
                   <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-semibold block uppercase">Facing</span>
@@ -652,7 +657,11 @@ function PlotSearchContent() {
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <span className="text-[10px] text-slate-400 font-bold uppercase block">Dimensions</span>
-                    <strong className="text-slate-800 text-sm block">{activePlotForModal.dimensions}</strong>
+                    <strong className="text-slate-800 text-sm block">
+                      {activePlotForModal.dimensions && !activePlotForModal.dimensions.includes('25 × 50') || activePlotForModal.size.includes('5')
+                        ? (activePlotForModal.dimensions || getStandardDimensionsForSize(activePlotForModal.size))
+                        : getStandardDimensionsForSize(activePlotForModal.size)}
+                    </strong>
                     <span className="text-slate-500">Standard RDA Frontage</span>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">

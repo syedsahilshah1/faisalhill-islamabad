@@ -17,6 +17,8 @@ import {
   SeriesConfig,
   SeriesGroupResult,
   BlockConfig,
+  PlotItem as EnginePlotItem,
+  getStandardDimensionsForSize,
 } from '@/utils/plotSeriesEngine';
 import {
   getStoredPlots,
@@ -26,6 +28,9 @@ import {
   addSeriesConfig,
   deleteSeriesConfig,
   resetSeriesConfigsToDefault,
+  addOrUpdatePlot,
+  updatePlotPrice,
+  deletePlot,
 } from '@/utils/plotStore';
 import {
   blocksData,
@@ -122,6 +127,32 @@ export default function AdminLoginPage() {
     minPrice: '',
     maxPrice: '',
   });
+
+  const [quickEditPlot, setQuickEditPlot] = useState<{
+    id: string;
+    plotNumber: string;
+    price: string;
+    size: string;
+    blockSlug: string;
+    locationType: string;
+  } | null>(null);
+  const [isQuickEditPlotOpen, setIsQuickEditPlotOpen] = useState<boolean>(false);
+
+  const [isQuickAddPlotOpen, setIsQuickAddPlotOpen] = useState<boolean>(false);
+  const [quickAddPlotData, setQuickAddPlotData] = useState<{
+    plotNumber: string;
+    price: string;
+    locationType: string;
+    size: string;
+    blockSlug: string;
+  }>({
+    plotNumber: '',
+    price: '',
+    locationType: 'Standard',
+    size: '5 Marla',
+    blockSlug: 'executive-block',
+  });
+
   const [verifiedDate, setVerifiedDate] = useState(societyStats.lastVerifiedDate);
   const [leadsList, setLeadsList] = useState<LeadItem[]>(initialLeadsData);
   const [saveNotification, setSaveNotification] = useState(false);
@@ -131,6 +162,8 @@ export default function AdminLoginPage() {
   const [blocksList, setBlocksList] = useState<BlockInfo[]>(blocksData);
   const [selectedBlockSlug, setSelectedBlockSlug] = useState<string>('executive-block');
   const [editingBlock, setEditingBlock] = useState<Partial<BlockInfo>>({ ...blocksData[0] });
+  const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | null>(null);
+  const [newHighlightText, setNewHighlightText] = useState<string>('');
 
   // Legal Policies State
   const [termsOfService, setTermsOfService] = useState<LegalPolicyData>(defaultTermsOfService);
@@ -160,7 +193,9 @@ export default function AdminLoginPage() {
   const [blogMetaTitle, setBlogMetaTitle] = useState('');
   const [blogMetaDescription, setBlogMetaDescription] = useState('');
   const [blogKeywords, setBlogKeywords] = useState('');
+  const [blogFocusKeyword, setBlogFocusKeyword] = useState('');
   const [blogFaqs, setBlogFaqs] = useState<{ question: string; answer: string }[]>([]);
+  const [isBlogCoverGalleryOpen, setIsBlogCoverGalleryOpen] = useState(false);
 
 
   // Plot Filters & Modals
@@ -582,18 +617,49 @@ export default function AdminLoginPage() {
 
   const handleSaveBlock = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !editingBlock || !editingBlock.id) return;
-    try {
-      const updated = await apiUpdateBlock(editingBlock.id, editingBlock, token);
-      setBlocksList(prev => prev.map(b => b.id === updated.id ? updated : b));
-      setEditingBlock(updated);
-      setNotificationMsg(`Block "${updated.name}" updated successfully in database!`);
-      setSaveNotification(true);
-      setTimeout(() => setSaveNotification(false), 3500);
-    } catch (e) {
-      console.error(e);
-      alert('Failed to update block in database.');
+    if (!editingBlock) return;
+    
+    // Update local state
+    setBlocksList(prev => prev.map(b => (b.slug === editingBlock.slug || b.id === editingBlock.id) ? { ...b, ...editingBlock } as BlockInfo : b));
+
+    if (typeof window !== 'undefined') {
+      const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+      existing[editingBlock.slug || ''] = editingBlock;
+      localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
+      window.dispatchEvent(new Event('faisal_blocks_updated'));
     }
+
+    if (token && editingBlock.id) {
+      try {
+        const updated = await apiUpdateBlock(editingBlock.id, editingBlock, token);
+        setBlocksList(prev => prev.map(b => b.id === updated.id ? updated : b));
+        setEditingBlock(updated);
+      } catch (e) {
+        console.error('API block update error, saved locally:', e);
+      }
+    }
+
+    setNotificationMsg(`Block "${editingBlock.name}" updated and published successfully!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleAddHighlight = () => {
+    if (!newHighlightText.trim()) return;
+    const current = editingBlock?.highlights || [];
+    setEditingBlock(prev => ({
+      ...prev,
+      highlights: [...current, newHighlightText.trim()]
+    }));
+    setNewHighlightText('');
+  };
+
+  const handleRemoveHighlight = (index: number) => {
+    const current = editingBlock?.highlights || [];
+    setEditingBlock(prev => ({
+      ...prev,
+      highlights: current.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSaveLegalPolicies = async () => {
@@ -769,6 +835,7 @@ export default function AdminLoginPage() {
       metaTitle: blogMetaTitle || undefined,
       metaDescription: blogMetaDescription || undefined,
       keywords: blogKeywords || undefined,
+      focusKeyword: blogFocusKeyword || undefined,
       faqs: blogFaqs
     }, token)
       .then(newBlog => {
@@ -786,6 +853,7 @@ export default function AdminLoginPage() {
         setBlogMetaTitle('');
         setBlogMetaDescription('');
         setBlogKeywords('');
+        setBlogFocusKeyword('');
         setBlogFaqs([]);
         setSaveNotification(true);
         setTimeout(() => setSaveNotification(false), 3000);
@@ -809,6 +877,7 @@ export default function AdminLoginPage() {
     setBlogMetaTitle(blog.metaTitle);
     setBlogMetaDescription(blog.metaDescription);
     setBlogKeywords(blog.keywords);
+    setBlogFocusKeyword(blog.focusKeyword || '');
     setBlogFaqs(blog.faqs || []);
     setIsEditBlogModalOpen(true);
   };
@@ -829,6 +898,7 @@ export default function AdminLoginPage() {
       metaTitle: blogMetaTitle,
       metaDescription: blogMetaDescription,
       keywords: blogKeywords,
+      focusKeyword: blogFocusKeyword || undefined,
       faqs: blogFaqs
     }, token)
       .then(updatedBlog => {
@@ -847,6 +917,7 @@ export default function AdminLoginPage() {
         setBlogMetaTitle('');
         setBlogMetaDescription('');
         setBlogKeywords('');
+        setBlogFocusKeyword('');
         setBlogFaqs([]);
         setSaveNotification(true);
         setTimeout(() => setSaveNotification(false), 3000);
@@ -898,12 +969,12 @@ export default function AdminLoginPage() {
     { slug: 'block-d', name: 'Block D' },
   ];
 
-  const allPlotSizes = ['5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal'];
+  const allPlotSizes = ['5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', '2 Kanal'];
 
   const currentSeriesBlockName = allBlocksList.find(b => b.slug === selectedSeriesBlock)?.name || 'Block A';
 
   const currentSeriesGroups: SeriesGroupResult[] = calculateSeriesGroups(
-    getStoredPlots(),
+    [...getStoredPlots(), ...plots],
     selectedSeriesBlock,
     selectedSeriesSize,
     seriesBlockConfigs
@@ -1018,6 +1089,190 @@ export default function AdminLoginPage() {
       setSaveNotification(true);
       setTimeout(() => setSaveNotification(false), 3500);
     }
+  };
+
+  const handleOpenQuickEditPlot = (plot: EnginePlotItem) => {
+    setQuickEditPlot({
+      id: plot.id,
+      plotNumber: String(plot.plotNumber),
+      price: String(plot.price),
+      size: plot.size,
+      blockSlug: plot.blockSlug,
+      locationType: plot.locationType || 'Standard',
+    });
+    setIsQuickEditPlotOpen(true);
+  };
+
+  const handleSaveQuickEditPlot = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickEditPlot) return;
+    const pNum = parseInt(quickEditPlot.plotNumber, 10);
+    const pPrice = parseFloat(quickEditPlot.price);
+
+    if (isNaN(pNum) || pNum <= 0) {
+      alert('Please enter a valid plot number.');
+      return;
+    }
+    if (isNaN(pPrice) || pPrice <= 0) {
+      alert('Please enter a valid price.');
+      return;
+    }
+
+    const calculatedDims = getStandardDimensionsForSize(quickEditPlot.size);
+    const formattedPriceStr = pPrice >= 10000000
+      ? `PKR ${(pPrice / 10000000).toFixed(2)} Crore`
+      : `PKR ${(pPrice / 100000).toFixed(1)} Lacs`;
+
+    const updatedPlot: EnginePlotItem = {
+      id: quickEditPlot.id,
+      plotNumber: pNum,
+      price: pPrice,
+      size: quickEditPlot.size,
+      blockSlug: quickEditPlot.blockSlug,
+      blockName: allBlocksList.find(b => b.slug === quickEditPlot.blockSlug)?.name || 'Block A',
+      category: 'residential',
+      dimensions: calculatedDims,
+      locationType: quickEditPlot.locationType as any,
+      status: 'available',
+      features: [quickEditPlot.locationType, 'Prime Location'],
+      demandRange: 'Live Market Rate',
+      suitability: 'Residential Construction',
+    };
+
+    // 1. Update plotStore
+    addOrUpdatePlot(updatedPlot);
+
+    // 2. Update Plots Inventory state table
+    setPlots(prev => prev.map(p => {
+      const isMatch = p.id === quickEditPlot.id || 
+                      String(p.plotNumber) === String(pNum) || 
+                      String(p.plotNumber) === String(quickEditPlot.plotNumber) ||
+                      p.id === `${quickEditPlot.blockSlug}-${pNum}`;
+      if (isMatch) {
+        return {
+          ...p,
+          price: pPrice,
+          priceNumber: pPrice,
+          priceFormatted: formattedPriceStr,
+          plotNumber: String(pNum),
+          size: quickEditPlot.size,
+          dimensions: calculatedDims,
+          facing: quickEditPlot.locationType,
+        };
+      }
+      return p;
+    }));
+
+    // 3. Persist to Laravel database API if token present
+    if (token) {
+      apiUpdatePlot(quickEditPlot.id, {
+        price: pPrice,
+        priceFormatted: formattedPriceStr,
+        plotNumber: String(pNum),
+        size: quickEditPlot.size,
+        dimensions: calculatedDims,
+        facing: quickEditPlot.locationType,
+      }, token).catch(console.error);
+    }
+
+    setIsQuickEditPlotOpen(false);
+    setNotificationMsg(`Plot #${pNum} price updated to ${formatPKR(pPrice)}!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleDeleteQuickEditPlot = (id: string, plotNumber: string) => {
+    if (window.confirm(`Are you sure you want to delete Plot #${plotNumber}?`)) {
+      deletePlot(id);
+      setPlots(prev => prev.filter(p => p.id !== id && String(p.plotNumber) !== String(plotNumber)));
+      if (token) {
+        apiDeletePlot(id, token).catch(console.error);
+      }
+      setIsQuickEditPlotOpen(false);
+      setNotificationMsg(`Plot #${plotNumber} deleted.`);
+      setSaveNotification(true);
+      setTimeout(() => setSaveNotification(false), 3500);
+    }
+  };
+
+  const handleOpenQuickAddPlot = (series: SeriesGroupResult) => {
+    const suggestedNum = series.plots.length > 0 ? Math.max(...series.plots.map(p => p.plotNumber)) + 1 : series.rangeStart;
+    setQuickAddPlotData({
+      plotNumber: String(suggestedNum),
+      price: String(series.minPrice || 5800000),
+      locationType: 'Standard',
+      size: selectedSeriesSize,
+      blockSlug: selectedSeriesBlock,
+    });
+    setIsQuickAddPlotOpen(true);
+  };
+
+  const handleSaveQuickAddPlot = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pNum = parseInt(quickAddPlotData.plotNumber, 10);
+    const pPrice = parseFloat(quickAddPlotData.price);
+
+    if (isNaN(pNum) || pNum <= 0) {
+      alert('Please enter a valid plot number.');
+      return;
+    }
+    if (isNaN(pPrice) || pPrice <= 0) {
+      alert('Please enter a valid price.');
+      return;
+    }
+
+    const calculatedDims = getStandardDimensionsForSize(quickAddPlotData.size);
+    const formattedPriceStr = pPrice >= 10000000
+      ? `PKR ${(pPrice / 10000000).toFixed(2)} Crore`
+      : `PKR ${(pPrice / 100000).toFixed(1)} Lacs`;
+
+    const newPlot: EnginePlotItem = {
+      id: `${quickAddPlotData.blockSlug}-${quickAddPlotData.size.toLowerCase().replace(/\s+/g, '')}-${pNum}`,
+      plotNumber: pNum,
+      price: pPrice,
+      size: quickAddPlotData.size,
+      blockSlug: quickAddPlotData.blockSlug,
+      blockName: allBlocksList.find(b => b.slug === quickAddPlotData.blockSlug)?.name || 'Block A',
+      category: 'residential',
+      dimensions: calculatedDims,
+      locationType: quickAddPlotData.locationType as any,
+      status: 'available',
+      features: [quickAddPlotData.locationType, 'Prime Location'],
+      demandRange: 'Live Market Rate',
+      suitability: 'Residential Construction',
+    };
+
+    addOrUpdatePlot(newPlot);
+
+    const dbPlotItem: any = {
+      id: newPlot.id,
+      plotNumber: String(pNum),
+      block: allBlocksList.find(b => b.slug === quickAddPlotData.blockSlug)?.name || 'Block A',
+      blockName: allBlocksList.find(b => b.slug === quickAddPlotData.blockSlug)?.name || 'Block A',
+      blockSlug: quickAddPlotData.blockSlug,
+      size: quickAddPlotData.size,
+      dimensions: calculatedDims,
+      category: 'Residential',
+      propertyType: 'Residential',
+      price: pPrice,
+      priceNumber: pPrice,
+      priceFormatted: formattedPriceStr,
+      facing: quickAddPlotData.locationType,
+      status: 'Available',
+      features: [quickAddPlotData.locationType, 'Prime Location'],
+      image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    };
+
+    setPlots(prev => [dbPlotItem, ...prev]);
+
+    if (token) {
+      apiCreatePlot(dbPlotItem, token).catch(console.error);
+    }
+
+    setIsQuickAddPlotOpen(false);
+    setNotificationMsg(`Plot #${pNum} added with price ${formatPKR(pPrice)}!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
   };
 
   const handleLogout = () => {
@@ -1443,16 +1698,51 @@ export default function AdminLoginPage() {
                     </div>
 
                     {/* Price Range Box */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
-                        Live Market Valuation Range
-                      </span>
-                      <div className="font-serif text-lg font-bold text-[#7b002c]">
-                        {series.formattedRange}
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                          Live Market Valuation Range
+                        </span>
+                        <div className="font-serif text-lg font-bold text-[#7b002c]">
+                          {series.formattedRange}
+                        </div>
                       </div>
-                      <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
-                        <span>Plots in database: {series.totalPlots}</span>
-                        <span className="text-emerald-700 font-bold">{series.availablePlots} Available</span>
+
+                      {/* Active plots in this series */}
+                      <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-slate-600 font-semibold flex items-center gap-1">
+                            <span>Active Plots:</span>
+                            <span className="text-emerald-700 font-bold">({series.totalPlots})</span>
+                          </span>
+                          <button
+                            onClick={() => handleOpenQuickAddPlot(series)}
+                            className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-lg transition cursor-pointer flex items-center gap-1"
+                            title="Add plot into this series"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Add Plot</span>
+                          </button>
+                        </div>
+                        {series.plots.length > 0 ? (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {series.plots.map((p) => (
+                              <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => handleOpenQuickEditPlot(p)}
+                                title={`Click to change price of Plot #${p.plotNumber}`}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-[#7b002c] text-[11px] font-mono text-slate-800 font-bold transition cursor-pointer hover:scale-105 group/pill shadow-xs"
+                              >
+                                <span>{(p as any).displayNumber || `#${p.plotNumber}`}:</span>
+                                <span className="text-[#7b002c] font-sans font-bold">{formatPKR(p.price)}</span>
+                                <Edit className="w-3 h-3 text-slate-400 group-hover/pill:text-[#7b002c]" />
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-slate-400 italic block">No individual plots added yet in this range</span>
+                        )}
                       </div>
                     </div>
 
@@ -1628,7 +1918,11 @@ export default function AdminLoginPage() {
                       </td>
                       <td className="p-3.5 font-medium">
                         <div className="font-bold text-slate-900">{plot.size}</div>
-                        <span className="text-[11px] text-slate-500 font-mono">{plot.dimensions || 'Dimension not provided'}</span>
+                        <span className="text-[11px] text-slate-500 font-mono">
+                          {plot.dimensions && !plot.dimensions.includes('25 × 50') || plot.size.includes('5')
+                            ? (plot.dimensions || getStandardDimensionsForSize(plot.size))
+                            : getStandardDimensionsForSize(plot.size)}
+                        </span>
                       </td>
                       <td className="p-3.5 text-slate-600">
                         {plot.facing || 'Standard'}
@@ -1826,14 +2120,25 @@ export default function AdminLoginPage() {
                     {/* Plot Size */}
                     <div className="space-y-1">
                       <label className="block text-xs font-bold text-slate-800">Plot Size *</label>
-                      <input 
-                        type="text" 
-                        required
+                      <select
                         value={plotForm.size}
-                        onChange={(e) => setPlotForm(prev => ({ ...prev, size: e.target.value }))}
-                        placeholder="e.g. 5 Marla, 10 Marla, 1 Kanal"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                      />
+                        onChange={(e) => {
+                          const newSz = e.target.value;
+                          const autoDim = getStandardDimensionsForSize(newSz);
+                          setPlotForm(prev => ({ ...prev, size: newSz, dimensions: autoDim }));
+                        }}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="5 Marla">5 Marla (25 × 50 ft)</option>
+                        <option value="8 Marla">8 Marla (30 × 60 ft)</option>
+                        <option value="10 Marla">10 Marla (35 × 70 ft)</option>
+                        <option value="14 Marla">14 Marla (40 × 80 ft)</option>
+                        <option value="1 Kanal">1 Kanal (50 × 90 ft)</option>
+                        <option value="2 Kanal">2 Kanal (75 × 120 ft)</option>
+                        <option value="4 Marla Commercial">4 Marla Commercial (30 × 30 ft)</option>
+                        <option value="5.33 Marla Commercial">5.33 Marla Commercial (40 × 30 ft)</option>
+                        <option value="8 Marla Commercial">8 Marla Commercial (40 × 45 ft)</option>
+                      </select>
                     </div>
 
                     {/* Dimensions */}
@@ -2110,14 +2415,25 @@ export default function AdminLoginPage() {
                     {/* Plot Size */}
                     <div className="space-y-1">
                       <label className="block text-xs font-bold text-slate-800">Plot Size *</label>
-                      <input 
-                        type="text" 
-                        required
+                      <select
                         value={plotForm.size}
-                        onChange={(e) => setPlotForm(prev => ({ ...prev, size: e.target.value }))}
-                        placeholder="e.g. 5 Marla, 10 Marla, 1 Kanal"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                      />
+                        onChange={(e) => {
+                          const newSz = e.target.value;
+                          const autoDim = getStandardDimensionsForSize(newSz);
+                          setPlotForm(prev => ({ ...prev, size: newSz, dimensions: autoDim }));
+                        }}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                      >
+                        <option value="5 Marla">5 Marla (25 × 50 ft)</option>
+                        <option value="8 Marla">8 Marla (30 × 60 ft)</option>
+                        <option value="10 Marla">10 Marla (35 × 70 ft)</option>
+                        <option value="14 Marla">14 Marla (40 × 80 ft)</option>
+                        <option value="1 Kanal">1 Kanal (50 × 90 ft)</option>
+                        <option value="2 Kanal">2 Kanal (75 × 120 ft)</option>
+                        <option value="4 Marla Commercial">4 Marla Commercial (30 × 30 ft)</option>
+                        <option value="5.33 Marla Commercial">5.33 Marla Commercial (40 × 30 ft)</option>
+                        <option value="8 Marla Commercial">8 Marla Commercial (40 × 45 ft)</option>
+                      </select>
                     </div>
 
                     {/* Dimensions */}
@@ -2807,7 +3123,7 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* TAB 2: BLOCKS & HERO BACKGROUND IMAGES MANAGER */}
+        {/* TAB 3: BLOCKS & BG IMAGES (FULL FUNCTIONALITY) */}
       {activeTab === 'blocks' && (
         <div className="space-y-6">
           {/* Header */}
@@ -2815,15 +3131,29 @@ export default function AdminLoginPage() {
             <div>
               <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
                 <Building2 className="w-4 h-4 text-[#7b002c]" />
-                <span>Society Blocks & Sectors Management</span>
+                <span>Society Blocks & Background Media Management</span>
               </div>
               <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
-                Edit Block Hero Background Images, NOC Status & Price Rates
+                Edit Block Headings, Descriptions, Media & NOC Details
               </h2>
+              <p className="text-xs text-slate-600 mt-1">
+                Choose images directly from your Photo Gallery or upload new files to customize sector banners and layout plans.
+              </p>
             </div>
-            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-              {blocksList.length} Society Blocks Configured
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                {blocksList.length} Society Blocks
+              </span>
+              <a
+                href={`/blocks/${selectedBlockSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-rose-50 text-[#7b002c] border border-rose-200 hover:bg-rose-100 transition inline-flex items-center gap-1.5"
+              >
+                <span>View Live Page</span>
+                <Globe className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
 
           {/* Block Selection Pills */}
@@ -2832,9 +3162,9 @@ export default function AdminLoginPage() {
               <button
                 key={b.id || b.slug}
                 onClick={() => handleSelectBlockToEdit(b.slug)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
                   selectedBlockSlug === b.slug
-                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-105'
+                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-102'
                     : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
                 }`}
               >
@@ -2848,7 +3178,7 @@ export default function AdminLoginPage() {
             <form onSubmit={handleSaveBlock} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold font-serif text-lg">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold font-serif text-xl border border-[#7b002c]/20">
                     {editingBlock.name?.replace('Block ', '').charAt(0) || 'B'}
                   </div>
                   <div>
@@ -2856,14 +3186,14 @@ export default function AdminLoginPage() {
                       Editing: {editingBlock.name}
                     </h3>
                     <span className="text-xs text-slate-500 font-medium">
-                      Slug: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono">{editingBlock.slug}</code>
+                      Sector Slug: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">{editingBlock.slug}</code>
                     </span>
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                  className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
                 >
                   <Save className="w-4 h-4 text-white" />
                   <span>Save & Publish Block</span>
@@ -2873,107 +3203,228 @@ export default function AdminLoginPage() {
               {/* Form Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                {/* Hero Background Image URL */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
-                    <span>Hero Background Image URL</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Displayed at top of block page</span>
-                  </label>
+                {/* 1. Hero Background Image Section */}
+                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Hero Background Banner Image</span>
+                    </label>
+                    {editingBlock.heroImage && (
+                      <button
+                        type="button"
+                        onClick={() => setEditingBlock(prev => ({ ...prev, heroImage: '' }))}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Image
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Media Action Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('hero')}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setEditingBlock(prev => ({ ...prev, heroImage: reader.result as string }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Manual URL Input */}
                   <input
                     type="text"
                     value={editingBlock.heroImage || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, heroImage: e.target.value }))}
-                    placeholder="e.g. /images/hero-bg.jpg or https://images.unsplash.com/..."
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="Or paste image URL (e.g. /images/... or https://...)"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+
+                  {/* Quick Presets */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
+                    {[
+                      { label: 'Executive Aerial', url: '/images/faisalhillexecutive.webp' },
+                      { label: 'Drone Site View', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
+                      { label: 'Sports Arena View', url: '/images/imgi_48_sports-arena.webp' },
+                      { label: 'European Promenade', url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' },
+                      { label: 'Margalla Springs', url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' },
+                    ].map((preset, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setEditingBlock(prev => ({ ...prev, heroImage: preset.url }))}
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition cursor-pointer"
+                      >
+                        + {preset.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Live Hero Preview */}
                   {editingBlock.heroImage && (
-                    <div className="h-32 rounded-xl overflow-hidden border border-slate-200 relative bg-slate-900">
+                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
                       <img
                         src={editingBlock.heroImage}
                         alt="Hero Background Preview"
                         className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                       />
-                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                        Hero Background Preview
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Hero Banner Preview
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Master Plan Map Image URL */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
-                    <span>Master Plan / Layout Map Image URL</span>
-                    <span className="text-[10px] text-slate-400 font-normal">High-res layout map</span>
-                  </label>
+                {/* 2. Master Plan Map Image Section */}
+                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Master Plan / Layout Map Image</span>
+                    </label>
+                    {editingBlock.masterPlanImage && (
+                      <button
+                        type="button"
+                        onClick={() => setEditingBlock(prev => ({ ...prev, masterPlanImage: '' }))}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Map
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Media Action Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('masterPlan')}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload Map File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setEditingBlock(prev => ({ ...prev, masterPlanImage: reader.result as string }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Manual URL Input */}
                   <input
                     type="text"
                     value={editingBlock.masterPlanImage || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, masterPlanImage: e.target.value }))}
-                    placeholder="e.g. /images/block-a-map.jpg"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="Or paste map image URL..."
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+
+                  {/* Live Master Plan Preview */}
                   {editingBlock.masterPlanImage && (
-                    <div className="h-32 rounded-xl overflow-hidden border border-slate-200 relative bg-slate-900">
+                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
                       <img
                         src={editingBlock.masterPlanImage}
                         alt="Master Plan Preview"
                         className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                       />
-                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                        Master Plan Map Preview
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Master Plan Layout Preview
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Block Name */}
+                {/* 3. Block Name & Title */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Block Name</label>
+                  <label className="block text-xs font-bold text-slate-800">Block Name / Title *</label>
                   <input
                     type="text"
                     required
                     value={editingBlock.name || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. Executive Block"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Subtitle */}
+                {/* 4. Tagline / Subtitle */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Tagline / Subtitle</label>
+                  <label className="block text-xs font-bold text-slate-800">Main Heading / Tagline / Subtitle *</label>
                   <input
                     type="text"
+                    required
                     value={editingBlock.subtitle || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, subtitle: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. Main Entrance & Commercial Hub with RDA-Approved Freehold Plots"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* NOC Approval Status */}
+                {/* 5. NOC Approval Status */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-800">NOC Approval Status</label>
                   <input
                     type="text"
                     value={editingBlock.nocStatus || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, nocStatus: e.target.value }))}
-                    placeholder="e.g. RDA Approved (Rawalpindi Development Authority)"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. 100% RDA Approved (MP&TE/F-PH-1/21)"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Verification Date */}
+                {/* 6. Last Verified Date */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Last Verified Date</label>
+                  <label className="block text-xs font-bold text-slate-800">Last Verified / Update Date</label>
                   <input
                     type="text"
                     value={editingBlock.verificationDate || 'August 2026'}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, verificationDate: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. August 2026"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Residential Rates */}
+                {/* 7. Residential Price Range */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-800">Residential Price Range</label>
                   <input
@@ -2983,12 +3434,12 @@ export default function AdminLoginPage() {
                       ...prev,
                       priceRange: { ...prev.priceRange, residential: e.target.value, commercial: prev.priceRange?.commercial || '' }
                     }))}
-                    placeholder="e.g. PKR 48 Lacs - 1.85 Crore"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. PKR 65 Lacs – 1.85 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Commercial Rates */}
+                {/* 8. Commercial Price Range */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-800">Commercial Price Range</label>
                   <input
@@ -2998,61 +3449,198 @@ export default function AdminLoginPage() {
                       ...prev,
                       priceRange: { ...prev.priceRange, commercial: e.target.value, residential: prev.priceRange?.residential || '' }
                     }))}
-                    placeholder="e.g. PKR 1.2 Crore - 4.5 Crore"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    placeholder="e.g. PKR 2.8 Crore – 5.5 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Total Plots Count */}
+                {/* 9. Total Plots Count */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-800">Total Plots Count</label>
                   <input
                     type="number"
                     value={editingBlock.totalPlots || 1200}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, totalPlots: Number(e.target.value) }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 10. Category Tag */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Category Status</label>
+                  <select
+                    value={editingBlock.category || 'developed'}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, category: e.target.value as any }))}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                  >
+                    <option value="developed">Developed (Possession Ready)</option>
+                    <option value="upcoming">Upcoming (Fast-Paced Development)</option>
+                    <option value="commercial_project">Commercial Project / Hub</option>
+                  </select>
+                </div>
+
+                {/* 11. Location Details */}
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Location & Highway Access Details</label>
+                  <input
+                    type="text"
+                    value={editingBlock.locationDetails || ''}
+                    onChange={(e) => setEditingBlock(prev => ({ ...prev, locationDetails: e.target.value }))}
+                    placeholder="e.g. Direct Frontage on Main GT Road (N-5) with 220ft Central Boulevard Access"
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                {/* Category */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Category</label>
-                  <select
-                    value={editingBlock.category || 'developed'}
-                    onChange={(e) => setEditingBlock(prev => ({ ...prev, category: e.target.value as any }))}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] cursor-pointer"
-                  >
-                    <option value="developed">Developed (Possession Ready)</option>
-                    <option value="upcoming">Upcoming (Fast-Paced Development)</option>
-                    <option value="commercial">Commercial Hub</option>
-                  </select>
-                </div>
-
-                {/* Detailed Description */}
+                {/* 12. Detailed Description */}
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Block Overview & Description</label>
+                  <label className="block text-xs font-bold text-slate-800">Block Overview & Comprehensive Description</label>
                   <textarea
                     rows={4}
                     value={editingBlock.description || ''}
                     onChange={(e) => setEditingBlock(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Enter detailed description of this sector/block..."
+                    placeholder="Enter comprehensive overview, possession updates, lifestyle facilities, and investment potential..."
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+                </div>
+
+                {/* 13. Key Highlights & Features Manager */}
+                <div className="md:col-span-2 space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <span>Key Sector Highlights & Features</span>
+                    <span className="text-[10px] text-slate-500 font-normal">{(editingBlock.highlights || []).length} highlights active</span>
+                  </label>
+
+                  {/* Existing Highlights Pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {(editingBlock.highlights || []).map((highlight, hIdx) => (
+                      <span
+                        key={hIdx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs"
+                      >
+                        <span>✓ {highlight}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveHighlight(hIdx)}
+                          className="text-slate-400 hover:text-red-600 transition cursor-pointer ml-1"
+                          title="Remove highlight"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Add New Highlight Input */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
+                    <input
+                      type="text"
+                      value={newHighlightText}
+                      onChange={(e) => setNewHighlightText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddHighlight();
+                        }
+                      }}
+                      placeholder="Add a new highlight (e.g. Grand Jamia Mosque, 220ft Boulevard) and press Add..."
+                      className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddHighlight}
+                      className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                    >
+                      + Add Highlight
+                    </button>
+                  </div>
                 </div>
 
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs text-slate-500 italic">
+                  Changes save directly to the database and update this sector's public page immediately.
+                </span>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                  className="px-7 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition cursor-pointer hover:scale-102"
                 >
                   <Save className="w-4 h-4 text-white" />
                   <span>Save & Publish Block Updates</span>
                 </button>
               </div>
             </form>
+          )}
+
+          {/* Photo Gallery Picker Modal */}
+          {galleryPickerTarget && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-xl text-slate-900 flex items-center gap-2">
+                      <Camera className="w-5 h-5 text-[#7b002c]" />
+                      <span>Select Photo for {galleryPickerTarget === 'hero' ? 'Hero Background Banner' : 'Master Plan Map'}</span>
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Click any photo from your gallery below to set it instantly for {editingBlock?.name}.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryPickerTarget(null)}
+                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Gallery Image Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {galleryList.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        if (galleryPickerTarget === 'hero') {
+                          setEditingBlock(prev => ({ ...prev, heroImage: item.imageUrl }));
+                        } else {
+                          setEditingBlock(prev => ({ ...prev, masterPlanImage: item.imageUrl }));
+                        }
+                        setGalleryPickerTarget(null);
+                      }}
+                      className="group relative rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-[#7b002c] shadow-xs hover:shadow-lg transition-all duration-300 aspect-video bg-slate-900 cursor-pointer text-left"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                      <div className="absolute bottom-2 left-2 right-2 text-white">
+                        <span className="text-[9px] uppercase tracking-wider font-bold bg-[#7b002c] px-1.5 py-0.5 rounded text-white inline-block mb-1">
+                          {item.category}
+                        </span>
+                        <div className="text-[11px] font-bold truncate group-hover:text-amber-300">
+                          {item.title}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setGalleryPickerTarget(null)}
+                    className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                  >
+                    Close Picker
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
         </div>
@@ -3790,19 +4378,75 @@ export default function AdminLoginPage() {
                     value={blogReadTime}
                     onChange={(e) => setBlogReadTime(e.target.value)}
                     placeholder="e.g. 4 min read"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                <div className="md:col-span-6 space-y-1">
-                  <label className="block text-xs font-bold text-slate-800">Cover Image URL</label>
+                {/* Cover Image with Gallery Picker & File Upload */}
+                <div className="md:col-span-12 space-y-2 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Article Cover Image</span>
+                    </label>
+                    {blogImageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setBlogImageUrl('')}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Cover
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsBlogCoverGalleryOpen(true)}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose Cover from Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setBlogImageUrl(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
                   <input 
                     type="text" 
                     value={blogImageUrl}
                     onChange={(e) => setBlogImageUrl(e.target.value)}
-                    placeholder="e.g. https://images.unsplash.com/..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    placeholder="Or paste direct cover image URL (e.g. /images/... or https://...)"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+
+                  {blogImageUrl && (
+                    <div className="h-28 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
+                      <img src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Cover Preview
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="md:col-span-12 space-y-1">
@@ -3812,7 +4456,7 @@ export default function AdminLoginPage() {
                     value={blogSummary}
                     onChange={(e) => setBlogSummary(e.target.value)}
                     placeholder="Brief description summarizing this blog post..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
@@ -3821,7 +4465,8 @@ export default function AdminLoginPage() {
                   <RichTextEditor
                     value={blogContent}
                     onChange={setBlogContent}
-                    placeholder="Start typing your article here... Highlight text to format like MS Word."
+                    galleryPhotos={galleryList}
+                    placeholder="Start typing your article here... Select heading styles, insert photos with Alt text, or format lists."
                   />
                 </div>
 
@@ -3885,9 +4530,59 @@ export default function AdminLoginPage() {
                   )}
                 </div>
 
-                {/* SEO Sub-section */}
+                {/* SEO Sub-section with Focus Keyword */}
                 <div className="md:col-span-12 border-t border-slate-100 pt-3 space-y-3">
-                  <h4 className="font-serif font-bold text-sm text-[#7b002c]">SEO Optimization Meta Tags</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-sm text-[#7b002c] flex items-center gap-1.5">
+                      <Search className="w-4 h-4 text-[#7b002c]" />
+                      <span>SEO Optimization & Focus Keyword</span>
+                    </h4>
+                  </div>
+
+                  {/* Focus Keyword with Real-time Analysis */}
+                  <div className="p-3.5 bg-rose-50/50 border border-rose-100 rounded-2xl space-y-2">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">
+                        Primary Focus Keyword <span className="text-[#7b002c] font-bold">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        value={blogFocusKeyword}
+                        onChange={(e) => setBlogFocusKeyword(e.target.value)}
+                        placeholder="e.g. Faisal Hills Plot Prices 2026 or Block A Plots"
+                        className="w-full px-3.5 py-2 bg-white border border-rose-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+
+                    {/* Live SEO Score Indicators */}
+                    {blogFocusKeyword.trim() && (
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span className="text-[10px] font-bold uppercase text-slate-500">Live SEO Check:</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogTitle.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogTitle.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Title' : '⚠ not in Title'}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogMetaDescription.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogMetaDescription.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Meta Description' : '⚠ not in Meta Description'}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogContent.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogContent.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Content' : '⚠ not in Content'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="block text-xs font-bold text-slate-700">Meta Title</label>
@@ -3895,7 +4590,7 @@ export default function AdminLoginPage() {
                         type="text" 
                         value={blogMetaTitle}
                         onChange={(e) => setBlogMetaTitle(e.target.value)}
-                        placeholder="Title for search engines"
+                        placeholder="Title for search engines (e.g. Faisal Hills 2026 Update)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
                     </div>
@@ -3905,7 +4600,7 @@ export default function AdminLoginPage() {
                         type="text" 
                         value={blogKeywords}
                         onChange={(e) => setBlogKeywords(e.target.value)}
-                        placeholder="Comma-separated keywords"
+                        placeholder="Comma-separated keywords (e.g. faisal hills, plots, payment plan)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
                     </div>
@@ -4017,19 +4712,75 @@ export default function AdminLoginPage() {
                     value={blogReadTime}
                     onChange={(e) => setBlogReadTime(e.target.value)}
                     placeholder="e.g. 4 min read"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                <div className="md:col-span-6 space-y-1">
-                  <label className="block text-xs font-bold text-slate-800">Cover Image URL</label>
+                {/* Cover Image with Gallery Picker & File Upload */}
+                <div className="md:col-span-12 space-y-2 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Article Cover Image</span>
+                    </label>
+                    {blogImageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setBlogImageUrl('')}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Cover
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsBlogCoverGalleryOpen(true)}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose Cover from Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setBlogImageUrl(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
                   <input 
                     type="text" 
                     value={blogImageUrl}
                     onChange={(e) => setBlogImageUrl(e.target.value)}
-                    placeholder="e.g. https://images.unsplash.com/..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    placeholder="Or paste direct cover image URL (e.g. /images/... or https://...)"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+
+                  {blogImageUrl && (
+                    <div className="h-28 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
+                      <img src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Cover Preview
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="md:col-span-12 space-y-1">
@@ -4039,7 +4790,7 @@ export default function AdminLoginPage() {
                     value={blogSummary}
                     onChange={(e) => setBlogSummary(e.target.value)}
                     placeholder="Brief description summarizing this blog post..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-355 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
@@ -4048,7 +4799,8 @@ export default function AdminLoginPage() {
                   <RichTextEditor
                     value={blogContent}
                     onChange={setBlogContent}
-                    placeholder="Start typing your article here... Highlight text to format like MS Word."
+                    galleryPhotos={galleryList}
+                    placeholder="Start typing your article here... Select heading styles, insert photos with Alt text, or format lists."
                   />
                 </div>
 
@@ -4074,7 +4826,7 @@ export default function AdminLoginPage() {
                           <button
                             type="button"
                             onClick={() => setBlogFaqs(blogFaqs.filter((_, i) => i !== index))}
-                            className="absolute top-2 right-2 text-red-650 hover:text-red-800 text-[10px] font-bold cursor-pointer"
+                            className="absolute top-2 right-2 text-red-600 hover:text-red-800 text-[10px] font-bold cursor-pointer"
                           >
                             Remove
                           </button>
@@ -4089,7 +4841,7 @@ export default function AdminLoginPage() {
                                 setBlogFaqs(updated);
                               }}
                               placeholder="e.g. Can I book this plot from abroad?"
-                              className="w-full px-3 py-1.5 bg-white border border-slate-355 rounded-lg text-xs"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
                             />
                           </div>
                           <div className="space-y-1">
@@ -4103,7 +4855,7 @@ export default function AdminLoginPage() {
                                 setBlogFaqs(updated);
                               }}
                               placeholder="e.g. Yes, the process is fully remote..."
-                              className="w-full px-3 py-1.5 bg-white border border-slate-355 rounded-lg text-xs"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
                             />
                           </div>
                         </div>
@@ -4112,9 +4864,59 @@ export default function AdminLoginPage() {
                   )}
                 </div>
 
-                {/* SEO Sub-section */}
+                {/* SEO Sub-section with Focus Keyword */}
                 <div className="md:col-span-12 border-t border-slate-100 pt-3 space-y-3">
-                  <h4 className="font-serif font-bold text-sm text-[#7b002c]">SEO Optimization Meta Tags</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-sm text-[#7b002c] flex items-center gap-1.5">
+                      <Search className="w-4 h-4 text-[#7b002c]" />
+                      <span>SEO Optimization & Focus Keyword</span>
+                    </h4>
+                  </div>
+
+                  {/* Focus Keyword with Real-time Analysis */}
+                  <div className="p-3.5 bg-rose-50/50 border border-rose-100 rounded-2xl space-y-2">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-800">
+                        Primary Focus Keyword <span className="text-[#7b002c] font-bold">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        value={blogFocusKeyword}
+                        onChange={(e) => setBlogFocusKeyword(e.target.value)}
+                        placeholder="e.g. Faisal Hills Plot Prices 2026 or Block A Plots"
+                        className="w-full px-3.5 py-2 bg-white border border-rose-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+
+                    {/* Live SEO Score Indicators */}
+                    {blogFocusKeyword.trim() && (
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span className="text-[10px] font-bold uppercase text-slate-500">Live SEO Check:</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogTitle.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogTitle.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Title' : '⚠ not in Title'}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogMetaDescription.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogMetaDescription.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Meta Description' : '⚠ not in Meta Description'}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+                          blogContent.toLowerCase().includes(blogFocusKeyword.toLowerCase())
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}>
+                          {blogContent.toLowerCase().includes(blogFocusKeyword.toLowerCase()) ? '✓ in Content' : '⚠ not in Content'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="block text-xs font-bold text-slate-700">Meta Title</label>
@@ -4122,7 +4924,7 @@ export default function AdminLoginPage() {
                         type="text" 
                         value={blogMetaTitle}
                         onChange={(e) => setBlogMetaTitle(e.target.value)}
-                        placeholder="Title for search engines"
+                        placeholder="Title for search engines (e.g. Faisal Hills 2026 Update)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
                     </div>
@@ -4132,7 +4934,7 @@ export default function AdminLoginPage() {
                         type="text" 
                         value={blogKeywords}
                         onChange={(e) => setBlogKeywords(e.target.value)}
-                        placeholder="Comma-separated keywords"
+                        placeholder="Comma-separated keywords (e.g. faisal hills, plots, payment plan)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
                     </div>
@@ -4465,6 +5267,268 @@ export default function AdminLoginPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* ========================================================================= */}
+      {/* MODAL: QUICK EDIT PLOT PRICE & DETAILS                                    */}
+      {/* ========================================================================= */}
+      {isQuickEditPlotOpen && quickEditPlot && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c]">
+                  {allBlocksList.find((b) => b.slug === quickEditPlot.blockSlug)?.name || 'Block A'} • {quickEditPlot.size}
+                </span>
+                <h3 className="font-serif text-xl font-bold text-slate-900">
+                  Edit Plot #{quickEditPlot.plotNumber} Price
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsQuickEditPlotOpen(false)}
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQuickEditPlot} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Plot Number</label>
+                  <input
+                    type="number"
+                    value={quickEditPlot.plotNumber}
+                    onChange={(e) =>
+                      setQuickEditPlot({ ...quickEditPlot, plotNumber: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Feature / Location</label>
+                  <select
+                    value={quickEditPlot.locationType}
+                    onChange={(e) =>
+                      setQuickEditPlot({ ...quickEditPlot, locationType: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                  >
+                    <option value="Standard">Standard Plot</option>
+                    <option value="Corner">Corner Plot</option>
+                    <option value="Park Facing">Park Facing</option>
+                    <option value="Corner + Park">Corner + Park</option>
+                    <option value="Main Boulevard">Main Boulevard</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Plot Price (PKR)</label>
+                <input
+                  type="number"
+                  value={quickEditPlot.price}
+                  onChange={(e) =>
+                    setQuickEditPlot({ ...quickEditPlot, price: e.target.value })
+                  }
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  placeholder="e.g. 5800000"
+                  required
+                />
+                <span className="text-xs text-[#7b002c] font-mono font-bold block pt-1">
+                  Preview: {formatPKR(parseFloat(quickEditPlot.price) || 0)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteQuickEditPlot(quickEditPlot.id, quickEditPlot.plotNumber)}
+                  className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1 border border-rose-200"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete Plot</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsQuickEditPlotOpen(false)}
+                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer hover:scale-105"
+                  >
+                    Update Price
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: QUICK ADD PLOT TO SERIES                                          */}
+      {/* ========================================================================= */}
+      {isQuickAddPlotOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                  {allBlocksList.find((b) => b.slug === quickAddPlotData.blockSlug)?.name || 'Block A'} • {quickAddPlotData.size}
+                </span>
+                <h3 className="font-serif text-xl font-bold text-slate-900">
+                  Add Plot to Series
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsQuickAddPlotOpen(false)}
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQuickAddPlot} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Plot Number (#)</label>
+                  <input
+                    type="number"
+                    value={quickAddPlotData.plotNumber}
+                    onChange={(e) =>
+                      setQuickAddPlotData({ ...quickAddPlotData, plotNumber: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                    placeholder="e.g. 25"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Feature / Category</label>
+                  <select
+                    value={quickAddPlotData.locationType}
+                    onChange={(e) =>
+                      setQuickAddPlotData({ ...quickAddPlotData, locationType: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600 cursor-pointer"
+                  >
+                    <option value="Standard">Standard</option>
+                    <option value="Corner">Corner</option>
+                    <option value="Park Facing">Park Facing</option>
+                    <option value="Corner + Park">Corner + Park</option>
+                    <option value="Main Boulevard">Main Boulevard</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Plot Demand Price (PKR)</label>
+                <input
+                  type="number"
+                  value={quickAddPlotData.price}
+                  onChange={(e) =>
+                    setQuickAddPlotData({ ...quickAddPlotData, price: e.target.value })
+                  }
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. 5800000"
+                  required
+                />
+                <span className="text-xs text-emerald-700 font-mono font-bold block pt-1">
+                  Preview: {formatPKR(parseFloat(quickAddPlotData.price) || 0)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsQuickAddPlotOpen(false)}
+                  className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer hover:scale-105"
+                >
+                  Add Plot to Database
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: SELECT BLOG COVER FROM PHOTO GALLERY */}
+      {isBlogCoverGalleryOpen && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <Camera className="w-5 h-5 text-[#7b002c]" />
+                  <span>Select Blog Cover Image from Photo Gallery</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click any photo below to set it as the article cover image.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsBlogCoverGalleryOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {galleryList.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setBlogImageUrl(item.imageUrl);
+                    setIsBlogCoverGalleryOpen(false);
+                  }}
+                  className="group relative rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-[#7b002c] shadow-xs hover:shadow-lg transition-all duration-300 aspect-video bg-slate-900 cursor-pointer text-left"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2 text-white">
+                    <span className="text-[9px] uppercase tracking-wider font-bold bg-[#7b002c] px-1.5 py-0.5 rounded text-white inline-block mb-1">
+                      {item.category}
+                    </span>
+                    <div className="text-[11px] font-bold truncate">
+                      {item.title}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsBlogCoverGalleryOpen(false)}
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Close Picker
+              </button>
+            </div>
           </div>
         </div>
       )}

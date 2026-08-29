@@ -65,6 +65,11 @@ const nextConfig = {
         destination: '/faisal-hills-payment-plan',
         permanent: true,
       },
+      {
+        source: '/ubaid/admin/plots',
+        destination: '/ubaid/admin/login',
+        permanent: true,
+      },
     ];
   },
 };
