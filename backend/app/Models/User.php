@@ -7,7 +7,6 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -24,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
     ];
 
     /**
@@ -47,5 +48,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is Super Admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    /**
+     * Check if user account is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 }

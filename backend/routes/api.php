@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\PlotController;
 use App\Http\Controllers\LeadController;
@@ -17,8 +18,10 @@ use App\Http\Controllers\RedirectController;
 |--------------------------------------------------------------------------
 */
 
-// Public Authentication
+// Public Authentication & Password Recovery
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
 // Public Blocks
 Route::get('/blocks', [BlockController::class, 'index']);
@@ -49,11 +52,21 @@ Route::post('/redirects/hit', [RedirectController::class, 'incrementHit']);
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{slug}', [BlogController::class, 'show']);
 
-// Protected Routes (Admin Only)
-Route::middleware('auth:sanctum')->group(function () {
-    // Auth Protected
+// Protected Routes (Authenticated & Active Administrators)
+Route::middleware(['auth:sanctum', 'active_user'])->group(function () {
+    // Auth Protected (Self Management)
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
+    Route::put('/auth/password', [AuthController::class, 'changePassword']);
+    
+    // Super Admin Exclusive Management
+    Route::middleware('super_admin')->group(function () {
+        Route::get('/admin/users', [AdminUserController::class, 'index']);
+        Route::post('/admin/users', [AdminUserController::class, 'store']);
+        Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
+        Route::patch('/admin/users/{id}/status', [AdminUserController::class, 'toggleStatus']);
+        Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
+    });
     
     // Blocks Admin
     Route::put('/blocks/{id}', [BlockController::class, 'update']);

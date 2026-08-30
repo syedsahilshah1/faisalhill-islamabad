@@ -1453,10 +1453,41 @@ export async function submitLead(lead: { name: string; phone: string; interest?:
   return await res.json();
 }
 
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: 'super_admin' | 'admin';
+  status: 'active' | 'inactive';
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AdminUserPayload {
+  name: string;
+  email: string;
+  password?: string;
+  password_confirmation?: string;
+  status: 'active' | 'inactive';
+}
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}
+
 // -------------------------------------------------------------
 // Admin Authenticated Operations
 // -------------------------------------------------------------
-export async function adminLogin(username: string, password: string): Promise<{ token: string; user: any }> {
+export async function adminLogin(username: string, password: string): Promise<{ token: string; user: AdminUser }> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: {
@@ -1467,7 +1498,7 @@ export async function adminLogin(username: string, password: string): Promise<{ 
   });
   if (!res.ok) {
     const err = await res.json();
-    throw new Error(err.message || 'Authentication failed');
+    throw new Error(err.message || (err.errors && Object.values(err.errors)[0] as string) || 'Authentication failed');
   }
   return await res.json();
 }
@@ -1483,6 +1514,153 @@ export async function adminLogout(token: string): Promise<any> {
   });
   if (!res.ok) throw new Error('Failed to logout');
   return await res.json();
+}
+
+export async function apiFetchCurrentUser(token: string): Promise<AdminUser> {
+  const res = await fetch(`${API_URL}/auth/user`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) throw new Error('Session expired or unauthorized');
+  const data = await res.json();
+  return data.user;
+}
+
+export async function apiChangePassword(payload: ChangePasswordPayload, token: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_URL}/auth/password`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const firstErr = data.errors ? Object.values(data.errors)[0] : null;
+    throw new Error((Array.isArray(firstErr) ? firstErr[0] : firstErr) || data.message || 'Failed to update password');
+  }
+  return data;
+}
+
+export async function apiForgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to process password reset request');
+  }
+  return data;
+}
+
+export async function apiResetPassword(payload: ResetPasswordPayload): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const firstErr = data.errors ? Object.values(data.errors)[0] : null;
+    throw new Error((Array.isArray(firstErr) ? firstErr[0] : firstErr) || data.message || 'Failed to reset password');
+  }
+  return data;
+}
+
+// -------------------------------------------------------------
+// Super Admin Administrator Management
+// -------------------------------------------------------------
+export async function apiFetchAdminUsers(token: string): Promise<AdminUser[]> {
+  const res = await fetch(`${API_URL}/admin/users`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'Unauthorized. Super Admin access required.');
+  }
+  const data = await res.json();
+  return data.users || [];
+}
+
+export async function apiCreateAdminUser(payload: AdminUserPayload, token: string): Promise<{ success: boolean; message: string; user: AdminUser }> {
+  const res = await fetch(`${API_URL}/admin/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const firstErr = data.errors ? Object.values(data.errors)[0] : null;
+    throw new Error((Array.isArray(firstErr) ? firstErr[0] : firstErr) || data.message || 'Failed to create administrator');
+  }
+  return data;
+}
+
+export async function apiUpdateAdminUser(id: number, payload: Partial<AdminUserPayload>, token: string): Promise<{ success: boolean; message: string; user: AdminUser }> {
+  const res = await fetch(`${API_URL}/admin/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const firstErr = data.errors ? Object.values(data.errors)[0] : null;
+    throw new Error((Array.isArray(firstErr) ? firstErr[0] : firstErr) || data.message || 'Failed to update administrator');
+  }
+  return data;
+}
+
+export async function apiToggleAdminStatus(id: number, token: string): Promise<{ success: boolean; message: string; status: 'active' | 'inactive' }> {
+  const res = await fetch(`${API_URL}/admin/users/${id}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to change administrator status');
+  }
+  return data;
+}
+
+export async function apiDeleteAdminUser(id: number, token: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_URL}/admin/users/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to delete administrator');
+  }
+  return data;
 }
 
 export async function apiUpdatePlot(id: string, plot: Partial<PlotItem>, token: string): Promise<PlotItem> {

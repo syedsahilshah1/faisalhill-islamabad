@@ -21,15 +21,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Admin User
-        User::updateOrCreate(
-            ['email' => 'ubaid@faisalhills.com'],
-            [
-                'name' => 'ubaid',
-                'password' => Hash::make('admin123'),
-                'email_verified_at' => now(),
-            ]
-        );
+        // 1. Seed Super Admin User
+        $this->call(SuperAdminSeeder::class);
+
 
         // Load JSON data file
         $dataPath = database_path('seeders/faisal_hills_data.json');

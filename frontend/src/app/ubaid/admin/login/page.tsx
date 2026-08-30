@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
+import AdminManagementTab from '@/components/admin/AdminManagementTab';
+import SecuritySettingsTab from '@/components/admin/SecuritySettingsTab';
 import {
   formatPKR,
   formatPriceRange,
@@ -46,8 +48,10 @@ import {
   GalleryItem,
   LeadItem,
   initialLeadsData,
+  AdminUser,
   adminLogin,
   adminLogout,
+  apiFetchCurrentUser,
   fetchPlots,
   fetchBlocks,
   fetchGallery,
@@ -123,9 +127,10 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [token, setToken] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs'>('series');
+  const [activeTab, setActiveTab] = useState<'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('series');
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
@@ -288,9 +293,32 @@ export default function AdminLoginPage() {
     // Load local token if exists
     if (typeof window !== 'undefined') {
       const savedToken = sessionStorage.getItem('faisal_admin_token');
+      const savedUser = sessionStorage.getItem('faisal_admin_user');
+      if (savedUser) {
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch (e) {}
+      }
       if (savedToken) {
         setToken(savedToken);
         setIsAuthenticated(true);
+        apiFetchCurrentUser(savedToken)
+          .then(user => {
+            setCurrentUser(user);
+            sessionStorage.setItem('faisal_admin_user', JSON.stringify(user));
+          })
+          .catch(() => {
+            sessionStorage.removeItem('faisal_admin_token');
+            sessionStorage.removeItem('faisal_admin_user');
+            setToken(null);
+            setIsAuthenticated(false);
+          });
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam && ['series', 'plots', 'blocks', 'legal', 'accounts', 'verification', 'leads', 'seo', 'gallery', 'blogs', 'users', 'security'].includes(tabParam)) {
+        setActiveTab(tabParam as any);
       }
     }
 
@@ -647,9 +675,11 @@ export default function AdminLoginPage() {
     adminLogin(username, password)
       .then(res => {
         setToken(res.token);
+        setCurrentUser(res.user);
         setIsAuthenticated(true);
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('faisal_admin_token', res.token);
+          sessionStorage.setItem('faisal_admin_user', JSON.stringify(res.user));
         }
         setErrorMsg('');
       })
@@ -662,9 +692,11 @@ export default function AdminLoginPage() {
     adminLogin('ubaid', 'admin123')
       .then(res => {
         setToken(res.token);
+        setCurrentUser(res.user);
         setIsAuthenticated(true);
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('faisal_admin_token', res.token);
+          sessionStorage.setItem('faisal_admin_user', JSON.stringify(res.user));
         }
         setErrorMsg('');
       })
@@ -1636,14 +1668,15 @@ export default function AdminLoginPage() {
   };
 
   const handleLogout = () => {
-
     if (token) {
       adminLogout(token).catch(console.error);
     }
     setToken(null);
+    setCurrentUser(null);
     setIsAuthenticated(false);
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('faisal_admin_token');
+      sessionStorage.removeItem('faisal_admin_user');
     }
   };
 
@@ -1684,14 +1717,14 @@ export default function AdminLoginPage() {
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300">Admin Username</label>
+              <label className="block text-xs font-semibold text-slate-300">Admin Username or Email</label>
               <div className="relative">
                 <input
                   type="text"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username (e.g. ubaid)"
+                  placeholder="Username or Email (e.g. ubaid or ubaidnasir147.un@gmail.com)"
                   className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-[#7b002c] transition"
                 />
                 <Shield className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -1699,7 +1732,15 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300">Password / Security Key</label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold text-slate-300">Password / Security Key</label>
+                <Link
+                  href="/forgot-password"
+                  className="text-[11px] font-bold text-rose-300 hover:text-white transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   type="password"
@@ -1909,6 +1950,31 @@ export default function AdminLoginPage() {
         >
           <FileText className="w-4 h-4 text-[#7b002c]" />
           <span>Blogs CMS ({blogsList.length})</span>
+        </button>
+
+        {currentUser?.role === 'super_admin' && (
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              activeTab === 'users' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users className="w-4 h-4 text-[#7b002c]" />
+            <span>Administrators</span>
+            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-100 text-[#7b002c]">
+              Super Admin
+            </span>
+          </button>
+        )}
+
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+            activeTab === 'security' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <KeyRound className="w-4 h-4 text-[#7b002c]" />
+          <span>Security & Password</span>
         </button>
       </div>
 
@@ -5304,6 +5370,16 @@ export default function AdminLoginPage() {
           </div>
         </div>
       )}
+      {/* TAB 8: ADMINISTRATOR MANAGEMENT (SUPER ADMIN ONLY) */}
+      {activeTab === 'users' && currentUser?.role === 'super_admin' && (
+        <AdminManagementTab token={token || ''} currentUser={currentUser} />
+      )}
+
+      {/* TAB 9: SECURITY & PASSWORD CREDENTIALS */}
+      {activeTab === 'security' && (
+        <SecuritySettingsTab token={token || ''} currentUser={currentUser} />
+      )}
+
       {/* ========================================================================= */}
       {/* MODAL: EDIT SERIES PRICE & TAG                                            */}
       {/* ========================================================================= */}
