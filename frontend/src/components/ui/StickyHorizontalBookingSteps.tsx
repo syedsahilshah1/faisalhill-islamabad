@@ -70,19 +70,26 @@ export default function StickyHorizontalBookingSteps() {
     calculateBounds();
     window.addEventListener('resize', calculateBounds);
 
+    let ticking = false;
     const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const totalScrollableDistance = rect.height - windowHeight;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (sectionRef.current) {
+            const rect = sectionRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const totalScrollableDistance = rect.height - windowHeight;
 
-      if (totalScrollableDistance <= 0) return;
-
-      const currentScroll = -rect.top;
-      // Linear clamp between 0 and 1, with a small 5% buffer at the end so step 5 remains fully in view before unpinning
-      const rawProgress = currentScroll / (totalScrollableDistance * 0.92);
-      const progress = Math.min(Math.max(rawProgress, 0), 1);
-      setScrollProgress(progress);
+            if (totalScrollableDistance > 0) {
+              const currentScroll = -rect.top;
+              const rawProgress = currentScroll / (totalScrollableDistance * 0.92);
+              const progress = Math.min(Math.max(rawProgress, 0), 1);
+              setScrollProgress(progress);
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

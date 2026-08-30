@@ -65,17 +65,26 @@ export interface PaymentPlanItem {
 export interface BlogItem {
   id: string;
   title: string;
+  h1?: string;
   slug: string;
   content: string;
   summary: string;
   imageUrl: string;
+  imageAlt?: string;
   author: string;
   category: string;
   readTime: string;
   published: boolean;
   metaTitle: string;
   metaDescription: string;
+  canonicalUrl?: string;
+  robotsIndex?: boolean;
+  robotsFollow?: boolean;
   keywords: string;
+  primaryKeyword?: string;
+  secondaryKeywords?: string;
+  ogImage?: string;
+  twitterImage?: string;
   focusKeyword?: string;
   faqs?: { question: string; answer: string }[];
   createdAt?: string;
@@ -804,25 +813,58 @@ export interface SeoPageConfig {
   pageSlug: string;
   pageTitle: string;
   metaTitle: string;
+  h1Heading?: string;
   metaDescription: string;
+  canonicalUrl?: string;
+  robotsIndex?: boolean;
+  robotsFollow?: boolean;
   metaKeywords: string;
+  focusKeyword?: string;
+  secondaryKeywords?: string;
   ogTitle: string;
   ogDescription: string;
-  ogImage: string;
-  canonicalUrl: string;
-  author: string;
+  ogImage?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  schemaType?: string;
+  customSchemaJson?: string;
+  author?: string;
 }
 
 export interface GlobalSeoSettings {
   siteName: string;
+  siteUrl?: string;
+  titleSeparator?: string;
   defaultMetaTitle: string;
   defaultMetaDescription: string;
   defaultMetaKeywords: string;
+  defaultOgImage?: string;
   googleSiteVerification: string;
   bingSiteVerification: string;
+  gtmId?: string;
+  gaMeasurementId?: string;
   facebookAppId: string;
   twitterHandle: string;
+  organizationName?: string;
+  organizationPhone?: string;
+  organizationEmail?: string;
+  organizationAddress?: string;
+  defaultRobotsIndex?: boolean;
+  defaultRobotsFollow?: boolean;
   pages: SeoPageConfig[];
+}
+
+export interface RedirectItem {
+  id: number;
+  source_url: string;
+  destination_url: string;
+  status_code: number;
+  is_active: boolean;
+  hits?: number;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const initialSeoConfig: GlobalSeoSettings = {
@@ -990,6 +1032,90 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogImage: "/faisal-jewel.jpg",
       canonicalUrl: "https://faisalhills.com/faisal-hills-commercial",
       author: "Faisal Hills Marketing Team"
+    },
+    {
+      pageSlug: "about-us",
+      pageTitle: "About Us Page",
+      metaTitle: "About Faisal Hills | Zedem International & Vision",
+      metaDescription: "Learn about Faisal Hills Taxila, Zedem International leadership, project milestones, RDA NOC approval, and visionary urban master planning.",
+      metaKeywords: "About Faisal Hills, Zedem International, Chaudhry Abdul Majeed, Faisal Hills developers, RDA approval",
+      ogTitle: "About Faisal Hills | Zedem International & Vision",
+      ogDescription: "Learn about Faisal Hills Taxila, Zedem International leadership, project milestones, RDA NOC approval.",
+      ogImage: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+      canonicalUrl: "https://faisalhills.com/about-us",
+      author: "Faisal Hills Corporate Affairs"
+    },
+    {
+      pageSlug: "hills-walk",
+      pageTitle: "Hills Walk Commercial Page",
+      metaTitle: "Hills Walk Commercial Strip Faisal Hills | Retail & Dining Boulevard",
+      metaDescription: "Hills Walk at Faisal Hills: European style pedestrian open-air commercial boulevard with retail outlets, cafes, and scenic Margalla views.",
+      metaKeywords: "Hills Walk Faisal Hills, Hills Walk commercial, retail shops Faisal Hills, boulevard shops",
+      ogTitle: "Hills Walk Commercial Strip Faisal Hills",
+      ogDescription: "European style pedestrian open-air commercial boulevard with retail outlets & cafes.",
+      ogImage: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg",
+      canonicalUrl: "https://faisalhills.com/blocks/hills-walk",
+      author: "Faisal Hills Commercial Desk"
+    },
+    {
+      pageSlug: "plots",
+      pageTitle: "Plots Inventory & Search Page",
+      metaTitle: "Faisal Hills Plots for Sale | Interactive Inventory & Price Search",
+      metaDescription: "Search 14,500+ verified residential and commercial plots for sale in Faisal Hills Islamabad. Filter by block, size (5 Marla to 1 Kanal), street & facing.",
+      metaKeywords: "Faisal Hills plots for sale, buy plot in Faisal Hills, plot prices Taxila, 5 marla plot price, 10 marla plot price, 1 kanal plot price",
+      ogTitle: "Faisal Hills Plots for Sale | Interactive Inventory",
+      ogDescription: "Search verified residential and commercial plots for sale in Faisal Hills Islamabad with instant pricing.",
+      ogImage: "/images/faisal-park.jpg",
+      canonicalUrl: "https://faisalhills.com/plots",
+      author: "Faisal Hills Sales Desk"
+    },
+    {
+      pageSlug: "blogs",
+      pageTitle: "News & Blog Articles Page",
+      metaTitle: "Faisal Hills News, Market Updates & Real Estate Blog 2026",
+      metaDescription: "Stay updated with Faisal Hills development progress, NOC approvals, balloting results, market trends, and expert investment guides.",
+      metaKeywords: "Faisal Hills news, Faisal Hills blog, real estate updates Islamabad, balloting 2026, NOC status",
+      ogTitle: "Faisal Hills News & Real Estate Blog 2026",
+      ogDescription: "Stay updated with Faisal Hills development progress, NOC approvals, and market trends.",
+      ogImage: "/images/faisal-roots-school.jpg",
+      canonicalUrl: "https://faisalhills.com/blogs",
+      author: "Faisal Hills Editorial Team"
+    },
+    {
+      pageSlug: "contact",
+      pageTitle: "Contact Us & Helpline Page",
+      metaTitle: "Contact Faisal Hills Official Sales Desk & Head Office",
+      metaDescription: "Get in touch with Faisal Hills official sales desk, helpline 03410472229, head office in Faisal Tower, and site office at GT Road Taxila entrance.",
+      metaKeywords: "Faisal Hills contact, Faisal Hills phone number, sales desk, site office, head office Rawalpindi",
+      ogTitle: "Contact Faisal Hills Official Sales Desk",
+      ogDescription: "Get in touch with Faisal Hills official sales desk, helpline, and site office.",
+      ogImage: "/images/faisalhillarc.jpg",
+      canonicalUrl: "https://faisalhills.com/contact",
+      author: "Faisal Hills Support Team"
+    },
+    {
+      pageSlug: "terms-of-service",
+      pageTitle: "Terms of Service Page",
+      metaTitle: "Terms of Service | Faisal Hills Official Portal",
+      metaDescription: "Official terms of service, plot booking rules, payment schedules, and usage guidelines for Faisal Hills website and services.",
+      metaKeywords: "Faisal Hills terms of service, booking terms, Zedem international policies",
+      ogTitle: "Terms of Service | Faisal Hills Official Portal",
+      ogDescription: "Official terms of service and plot booking policies for Faisal Hills.",
+      ogImage: "/images/faisalhillarc.jpg",
+      canonicalUrl: "https://faisalhills.com/terms-of-service",
+      author: "Faisal Hills Legal Department"
+    },
+    {
+      pageSlug: "privacy-policy",
+      pageTitle: "Privacy Policy Page",
+      metaTitle: "Privacy Policy | Faisal Hills Official Portal",
+      metaDescription: "Privacy Policy for Faisal Hills portal. Learn how we handle customer inquiry information, cookies, and data protection compliance.",
+      metaKeywords: "Faisal Hills privacy policy, customer data protection, privacy guidelines",
+      ogTitle: "Privacy Policy | Faisal Hills Official Portal",
+      ogDescription: "Privacy Policy and data protection standards for Faisal Hills visitors.",
+      ogImage: "/images/faisalhillarc.jpg",
+      canonicalUrl: "https://faisalhills.com/privacy-policy",
+      author: "Faisal Hills Compliance Team"
     }
   ]
 };
@@ -1190,10 +1316,19 @@ export function mapBlogToCamel(blog: any): BlogItem {
   if (!blog) return blog;
   return {
     ...blog,
+    h1: blog.h1 || blog.title,
     imageUrl: blog.image_url || blog.imageUrl,
+    imageAlt: blog.image_alt || blog.imageAlt || blog.title,
     readTime: blog.read_time || blog.readTime,
     metaTitle: blog.meta_title || blog.metaTitle,
     metaDescription: blog.meta_description || blog.metaDescription,
+    canonicalUrl: blog.canonical_url || blog.canonicalUrl,
+    robotsIndex: blog.robots_index !== undefined ? !!blog.robots_index : (blog.robotsIndex !== undefined ? !!blog.robotsIndex : true),
+    robotsFollow: blog.robots_follow !== undefined ? !!blog.robots_follow : (blog.robotsFollow !== undefined ? !!blog.robotsFollow : true),
+    primaryKeyword: blog.primary_keyword || blog.primaryKeyword || '',
+    secondaryKeywords: blog.secondary_keywords || blog.secondaryKeywords || '',
+    ogImage: blog.og_image || blog.ogImage || blog.image_url || blog.imageUrl,
+    twitterImage: blog.twitter_image || blog.twitterImage || blog.image_url || blog.imageUrl,
     createdAt: blog.created_at || blog.createdAt,
     updatedAt: blog.updated_at || blog.updatedAt,
     published: blog.published !== undefined ? !!blog.published : true,
@@ -1206,12 +1341,18 @@ export function mapBlogToCamel(blog: any): BlogItem {
 // -------------------------------------------------------------
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-export async function fetchBlocks(): Promise<BlockInfo[]> {
+let _cachedBlocks: BlockInfo[] = [];
+
+export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
+  if (!forceRefresh && _cachedBlocks.length > 0) {
+    return _cachedBlocks;
+  }
   try {
-    const res = await fetch(`${API_URL}/blocks`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/blocks`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch blocks');
     const data = await res.json();
-    return data.map(mapBlockToCamel);
+    _cachedBlocks = data.map(mapBlockToCamel);
+    return _cachedBlocks;
   } catch (e) {
     console.error(e);
     return blocksData; // fallback
@@ -1220,7 +1361,7 @@ export async function fetchBlocks(): Promise<BlockInfo[]> {
 
 export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
   try {
-    const res = await fetch(`${API_URL}/blocks/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/blocks/${slug}`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch block');
     const data = await res.json();
     return mapBlockToCamel(data);
@@ -1234,19 +1375,11 @@ let _cachedPlots: PlotItem[] = [];
 
 export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
   if (!forceRefresh && _cachedPlots.length > 0) {
-    fetch(`${API_URL}/plots`, { cache: 'no-store' })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && Array.isArray(data)) {
-          _cachedPlots = data.map(mapPlotToCamel);
-        }
-      })
-      .catch(() => { });
     return _cachedPlots;
   }
 
   try {
-    const res = await fetch(`${API_URL}/plots`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/plots`, { next: { revalidate: 120 } });
     if (!res.ok) throw new Error('Failed to fetch plots');
     const data = await res.json();
     _cachedPlots = Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : []);
@@ -1257,12 +1390,18 @@ export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
   }
 }
 
-export async function fetchGallery(): Promise<GalleryItem[]> {
+let _cachedGallery: GalleryItem[] = [];
+
+export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]> {
+  if (!forceRefresh && _cachedGallery.length > 0) {
+    return _cachedGallery;
+  }
   try {
-    const res = await fetch(`${API_URL}/gallery`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/gallery`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch gallery');
     const data = await res.json();
-    return data.map(mapGalleryToCamel);
+    _cachedGallery = data.map(mapGalleryToCamel);
+    return _cachedGallery;
   } catch (e) {
     console.error(e);
     return initialGalleryData; // fallback
@@ -1657,16 +1796,26 @@ export async function apiFetchAllBlogs(token: string): Promise<BlogItem[]> {
 export async function apiCreateBlog(blog: Partial<BlogItem>, token: string): Promise<BlogItem> {
   const payload = {
     title: blog.title,
+    h1: blog.h1 || blog.title,
+    slug: blog.slug,
     content: blog.content,
     summary: blog.summary,
     image_url: blog.imageUrl,
+    image_alt: blog.imageAlt || blog.title,
     author: blog.author,
     category: blog.category,
     read_time: blog.readTime,
-    published: blog.published,
-    meta_title: blog.metaTitle,
-    meta_description: blog.metaDescription,
+    published: blog.published !== undefined ? blog.published : true,
+    meta_title: blog.metaTitle || blog.title,
+    meta_description: blog.metaDescription || blog.summary,
+    canonical_url: blog.canonicalUrl,
+    robots_index: blog.robotsIndex !== undefined ? blog.robotsIndex : true,
+    robots_follow: blog.robotsFollow !== undefined ? blog.robotsFollow : true,
     keywords: blog.keywords,
+    primary_keyword: blog.primaryKeyword,
+    secondary_keywords: blog.secondaryKeywords,
+    og_image: blog.ogImage || blog.imageUrl,
+    twitter_image: blog.twitterImage || blog.imageUrl,
     faqs: blog.faqs
   };
 
@@ -1684,20 +1833,31 @@ export async function apiCreateBlog(blog: Partial<BlogItem>, token: string): Pro
   return mapBlogToCamel(data);
 }
 
-export async function apiUpdateBlog(id: string, blog: Partial<BlogItem>, token: string): Promise<BlogItem> {
+export async function apiUpdateBlog(id: string, blog: Partial<BlogItem> & { create_redirect?: boolean }, token: string): Promise<BlogItem> {
   const payload: any = {};
   if (blog.title !== undefined) payload.title = blog.title;
+  if (blog.h1 !== undefined) payload.h1 = blog.h1;
+  if (blog.slug !== undefined) payload.slug = blog.slug;
   if (blog.content !== undefined) payload.content = blog.content;
   if (blog.summary !== undefined) payload.summary = blog.summary;
   if (blog.imageUrl !== undefined) payload.image_url = blog.imageUrl;
+  if (blog.imageAlt !== undefined) payload.image_alt = blog.imageAlt;
   if (blog.author !== undefined) payload.author = blog.author;
   if (blog.category !== undefined) payload.category = blog.category;
   if (blog.readTime !== undefined) payload.read_time = blog.readTime;
   if (blog.published !== undefined) payload.published = blog.published;
   if (blog.metaTitle !== undefined) payload.meta_title = blog.metaTitle;
   if (blog.metaDescription !== undefined) payload.meta_description = blog.metaDescription;
+  if (blog.canonicalUrl !== undefined) payload.canonical_url = blog.canonicalUrl;
+  if (blog.robotsIndex !== undefined) payload.robots_index = blog.robotsIndex;
+  if (blog.robotsFollow !== undefined) payload.robots_follow = blog.robotsFollow;
   if (blog.keywords !== undefined) payload.keywords = blog.keywords;
+  if (blog.primaryKeyword !== undefined) payload.primary_keyword = blog.primaryKeyword;
+  if (blog.secondaryKeywords !== undefined) payload.secondary_keywords = blog.secondaryKeywords;
+  if (blog.ogImage !== undefined) payload.og_image = blog.ogImage;
+  if (blog.twitterImage !== undefined) payload.twitter_image = blog.twitterImage;
   if (blog.faqs !== undefined) payload.faqs = blog.faqs;
+  if (blog.create_redirect !== undefined) payload.create_redirect = blog.create_redirect;
 
   const res = await fetch(`${API_URL}/blogs/${id}`, {
     method: 'PUT',
@@ -1723,6 +1883,133 @@ export async function apiDeleteBlog(id: string, token: string): Promise<any> {
   });
   if (!res.ok) throw new Error('Failed to delete blog');
   return await res.json();
+}
+
+// -------------------------------------------------------------
+// Redirects API Helpers
+// -------------------------------------------------------------
+
+export async function apiFetchRedirects(token: string): Promise<RedirectItem[]> {
+  const res = await fetch(`${API_URL}/redirects`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'cache-control': 'no-cache',
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) throw new Error('Failed to fetch redirects');
+  return await res.json();
+}
+
+export async function apiCreateRedirect(data: Partial<RedirectItem>, token: string): Promise<RedirectItem> {
+  const res = await fetch(`${API_URL}/redirects`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to create redirect');
+  }
+  const result = await res.json();
+  return result.redirect;
+}
+
+export async function apiUpdateRedirect(id: number, data: Partial<RedirectItem>, token: string): Promise<RedirectItem> {
+  const res = await fetch(`${API_URL}/redirects/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to update redirect');
+  }
+  const result = await res.json();
+  return result.redirect;
+}
+
+export async function apiDeleteRedirect(id: number, token: string): Promise<any> {
+  const res = await fetch(`${API_URL}/redirects/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) throw new Error('Failed to delete redirect');
+  return await res.json();
+}
+
+export async function fetchActiveRedirects(): Promise<{ source_url: string; destination_url: string; status_code: number }[]> {
+  try {
+    const res = await fetch(`${API_URL}/redirects/active`, { next: { revalidate: 60 } });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (e) {
+    console.error('Failed to fetch active redirects:', e);
+    return [];
+  }
+}
+
+export async function fetchSitemapRoutes(): Promise<{ url: string; changefreq: string; priority: number; lastmod: string }[]> {
+  try {
+    const res = await fetch(`${API_URL}/sitemap-routes`, { next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.routes || [];
+  } catch (e) {
+    console.error('Failed to fetch sitemap routes:', e);
+    return [];
+  }
+}
+
+export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
+  try {
+    const res = await fetch(`${API_URL}/seo`, { next: { revalidate: 60 } });
+    if (!res.ok) return initialSeoConfig;
+    const data = await res.json();
+    return {
+      ...initialSeoConfig,
+      ...(data.global || {}),
+      siteName: data.global?.siteName || data.siteName || initialSeoConfig.siteName,
+      defaultMetaDescription: data.global?.defaultMetaDescription || data.defaultMetaDescription || initialSeoConfig.defaultMetaDescription,
+      defaultMetaKeywords: data.global?.defaultKeywords || data.defaultKeywords || initialSeoConfig.defaultMetaKeywords,
+      pages: (data.pages || []).map((p: any) => ({
+        pageSlug: p.page_slug,
+        pageTitle: p.title,
+        metaTitle: p.title,
+        h1Heading: p.h1_heading || '',
+        metaDescription: p.meta_description,
+        canonicalUrl: p.canonical_url || '',
+        robotsIndex: p.robots_index !== false,
+        robotsFollow: p.robots_follow !== false,
+        metaKeywords: p.keywords || '',
+        focusKeyword: p.focus_keyword || '',
+        secondaryKeywords: p.secondary_keywords || '',
+        ogTitle: p.og_title || p.title,
+        ogDescription: p.og_description || p.meta_description,
+        ogImage: p.og_image || '',
+        twitterTitle: p.twitter_title || p.og_title || p.title,
+        twitterDescription: p.twitter_description || p.og_description || p.meta_description,
+        twitterImage: p.twitter_image || p.og_image || '',
+        schemaType: p.schema_type || 'WebPage',
+        customSchemaJson: p.custom_schema_json || '',
+        author: p.author || 'Faisal Hills Team'
+      }))
+    };
+  } catch (e) {
+    console.error('Failed to fetch global SEO settings:', e);
+    return initialSeoConfig;
+  }
 }
 
 // -------------------------------------------------------------

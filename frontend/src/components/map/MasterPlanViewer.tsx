@@ -25,17 +25,22 @@ export default function MasterPlanViewer({
   const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
 
-  React.useEffect(() => {
-    // Preload optimized high-res WebP map in background
-    const img = new Image();
-    img.src = '/images/faisal-hills-master-plan-map-opt.webp';
-    img.onload = () => {
-      setImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
-      setIsHighResLoaded(true);
-    };
-  }, []);
+  // Only load the 8.6MB high-res WebP on demand when the user zooms in or opens fullscreen
+  const loadHighResIfNeeded = React.useCallback(() => {
+    if (!isHighResLoaded) {
+      const img = new Image();
+      img.src = '/images/faisal-hills-master-plan-map-opt.webp';
+      img.onload = () => {
+        setImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
+        setIsHighResLoaded(true);
+      };
+    }
+  }, [isHighResLoaded]);
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.8, 12.0));
+  const handleZoomIn = () => {
+    loadHighResIfNeeded();
+    setZoomLevel((prev) => Math.min(prev + 0.8, 12.0));
+  };
   const handleZoomOut = () => {
     setZoomLevel((prev) => {
       const next = Math.max(prev - 0.8, 1.0);
@@ -119,30 +124,38 @@ export default function MasterPlanViewer({
             {/* Zoom Controls */}
             <div className="flex items-center bg-slate-800/90 border border-slate-700/80 rounded-xl p-0.5 sm:p-1 shadow-inner backdrop-blur-sm">
               <button
+                type="button"
                 onClick={handleZoomIn}
                 className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg transition cursor-pointer"
                 title="Zoom In (up to 1200%)"
+                aria-label="Zoom in on master plan map"
               >
                 <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
+                type="button"
                 onClick={handleZoomOut}
                 className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer"
                 title="Zoom Out"
+                aria-label="Zoom out on master plan map"
               >
                 <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
+                type="button"
                 onClick={handleResetZoom}
                 className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer"
                 title="Reset View"
+                aria-label="Reset master plan map view"
               >
                 <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
+                type="button"
                 onClick={() => setIsFullscreen(!isFullscreen)}
                 className="p-1 sm:p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg border-l border-slate-700 transition cursor-pointer hidden sm:block"
                 title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                aria-label={isFullscreen ? 'Exit full screen map' : 'View full screen map'}
               >
                 <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
@@ -175,6 +188,9 @@ export default function MasterPlanViewer({
             <img
               src={imageSrc}
               alt="Faisal Hills High Resolution Master Plan Blueprint Map"
+              width={1200}
+              height={764}
+              loading="lazy"
               className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl pointer-events-none select-none transition-opacity duration-500 ${
                 isHighResLoaded ? 'opacity-100' : 'opacity-90 blur-[0.5px]'
               }`}

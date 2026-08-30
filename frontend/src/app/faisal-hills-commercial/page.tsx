@@ -15,19 +15,48 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { CommercialPlotsExplorer } from '@/components/commercial/CommercialPlotsExplorer';
 import { CommercialAboutSection } from '@/components/commercial/CommercialAboutSection';
 
-export const metadata: Metadata = {
-  title: "Faisal Hills Commercial Plots for Sale 2026 | Prices & Payment Plan",
-  description: "Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare 4, 5.33, 8, 10 and 12 marla prices, Executive and A–D Block options, and easy installment plans. Book today.",
-  keywords: "Faisal Hills Commercial, Faisal Hills commercial plot price, Faisal Hills commercial payment plan, Faisal Hills Executive Block commercial, Faisal Hills commercial plots on installments, Faisal Hills D Block commercial plots, Faisal Hills 5 marla commercial, Faisal Hills 8 marla commercial",
-  openGraph: {
-    title: "Faisal Hills Commercial Plots for Sale 2026",
-    description: "Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare prices, blocks, and installment plans.",
-    images: ["/images/commercial/flagship-store.jpg"],
-  },
-  alternates: {
-    canonical: "https://faisalhills.com/faisal-hills-commercial",
-  }
-};
+import { fetchSeo } from '@/data/faisalHillsData';
+import { JsonLd, generateBreadcrumbSchema, generateFaqSchema } from '@/components/seo/JsonLd';
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeo('faisal-hills-commercial') || await fetchSeo('commercial');
+
+  const title = seo?.title || 'Faisal Hills Commercial Plots for Sale 2026 | Prices & Payment Plan';
+  const description = seo?.meta_description || 'Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare 2, 4, 5.33, 8, 10 and 12 marla prices, Executive and A–D Block options, and easy installment plans. Book today.';
+  const canonical = seo?.canonical_url || `${BASE_URL}/faisal-hills-commercial`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/commercial/flagship-store.jpg`;
+  const keywords = seo?.keywords 
+    ? seo.keywords.split(',').map((k: string) => k.trim()) 
+    : ['Faisal Hills Commercial', 'Faisal Hills commercial plot price', 'Faisal Hills commercial payment plan', 'Faisal Hills Executive Block commercial', 'Faisal Hills commercial plots on installments'];
+
+  return {
+    title: `${title} | Faisal Hills Real Estate`,
+    description: description,
+    keywords: keywords,
+    alternates: {
+      canonical: canonical,
+    },
+    robots: {
+      index: seo?.robots_index !== false,
+      follow: seo?.robots_follow !== false,
+    },
+    openGraph: {
+      title: seo?.og_title || title,
+      description: seo?.og_description || description,
+      url: canonical,
+      type: 'website',
+      images: [{ url: ogImg, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seo?.twitter_title || seo?.og_title || title,
+      description: seo?.twitter_description || seo?.og_description || description,
+      images: [seo?.twitter_image || ogImg],
+    },
+  };
+}
 
 const blockCommercials = [
   {
@@ -175,37 +204,18 @@ const faqs = [
 ];
 
 export default function FaisalHillsCommercialPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: BASE_URL },
+    { name: 'Commercial Plots', url: `${BASE_URL}/faisal-hills-commercial` },
+  ]);
+
+  const faqSchema = generateFaqSchema(
+    faqs.map(f => ({ question: f.q, answer: f.a }))
+  );
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* JSON-LD Schemas */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@graph": [
-              {
-                "@type": "BreadcrumbList",
-                "itemListElement": [
-                  { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://faisalhillsislamabadfh.com/" },
-                  { "@type": "ListItem", "position": 2, "name": "Commercial", "item": "https://faisalhillsislamabadfh.com/faisal-hills-commercial" }
-                ]
-              },
-              {
-                "@type": "FAQPage",
-                "mainEntity": faqs.map(faq => ({
-                  "@type": "Question",
-                  "name": faq.q,
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": faq.a
-                  }
-                }))
-              }
-            ]
-          })
-        }}
-      />
+      <JsonLd data={[breadcrumbSchema, faqSchema]} />
 
       {/* Hero Section with Luxury Commercial Background Image & Crisp White Typography */}
       <section className="relative overflow-hidden pt-28 sm:pt-36 lg:pt-40 pb-16 lg:pb-24 text-white border-b border-slate-200">

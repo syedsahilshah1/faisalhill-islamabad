@@ -133,16 +133,12 @@ export default function ExpandingProjectsShowcase({
     if (!isAutoPlaying || displayItems.length <= 1) return;
 
     const timer = setInterval(() => {
-      setInternalMobileIndex((prev) => {
-        const next = (prev + 1) % displayItems.length;
-        if (onActiveIndexChange) onActiveIndexChange(next);
-        return next;
-      });
+      setInternalMobileIndex((prev) => (prev + 1) % displayItems.length);
       setInternalHoveredIndex((prev) => ((prev ?? 0) + 1) % displayItems.length);
     }, autoPlayInterval);
 
     return () => clearInterval(timer);
-  }, [isAutoPlaying, displayItems.length, autoPlayInterval, onActiveIndexChange]);
+  }, [isAutoPlaying, displayItems.length, autoPlayInterval]);
 
   const currentMobileItem = displayItems[currentMobileIndex] || displayItems[0];
 
@@ -289,6 +285,7 @@ export default function ExpandingProjectsShowcase({
                   <img
                     src={item.image}
                     alt={item.title}
+                    loading="lazy"
                     className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
                       isHovered ? 'scale-110 brightness-95' : 'scale-100 brightness-85 group-hover:scale-105'
                     }`}

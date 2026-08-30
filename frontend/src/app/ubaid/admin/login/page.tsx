@@ -10,6 +10,7 @@ import {
   Loader2
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
+import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
 import {
   formatPKR,
   formatPriceRange,
@@ -218,17 +219,25 @@ export default function AdminLoginPage() {
 
   // Blog Form states
   const [blogTitle, setBlogTitle] = useState('');
+  const [blogH1, setBlogH1] = useState('');
+  const [blogSlug, setBlogSlug] = useState('');
   const [blogContent, setBlogContent] = useState('');
   const [blogSummary, setBlogSummary] = useState('');
   const [blogImageUrl, setBlogImageUrl] = useState('');
+  const [blogImageAlt, setBlogImageAlt] = useState('');
   const [blogAuthor, setBlogAuthor] = useState('Admin');
   const [blogCategory, setBlogCategory] = useState('Market Update');
   const [blogReadTime, setBlogReadTime] = useState('3 min read');
   const [blogPublished, setBlogPublished] = useState(true);
   const [blogMetaTitle, setBlogMetaTitle] = useState('');
   const [blogMetaDescription, setBlogMetaDescription] = useState('');
+  const [blogCanonicalUrl, setBlogCanonicalUrl] = useState('');
+  const [blogRobotsIndex, setBlogRobotsIndex] = useState(true);
+  const [blogRobotsFollow, setBlogRobotsFollow] = useState(true);
   const [blogKeywords, setBlogKeywords] = useState('');
   const [blogFocusKeyword, setBlogFocusKeyword] = useState('');
+  const [blogSecondaryKeywords, setBlogSecondaryKeywords] = useState('');
+  const [blogCreateRedirect, setBlogCreateRedirect] = useState(true);
   const [blogFaqs, setBlogFaqs] = useState<{ question: string; answer: string }[]>([]);
   const [isBlogCoverGalleryOpen, setIsBlogCoverGalleryOpen] = useState(false);
 
@@ -610,7 +619,19 @@ export default function AdminLoginPage() {
   const handleSeoFieldChange = (field: keyof SeoPageConfig, value: string) => {
     setSeoSettings(prev => ({
       ...prev,
-      pages: prev.pages.map(p => p.pageSlug === selectedSeoPageSlug ? { ...p, [field]: value } : p)
+      pages: prev.pages.map(p => {
+        if (p.pageSlug === selectedSeoPageSlug) {
+          const updated = { ...p, [field]: value };
+          if (field === 'metaTitle') {
+            updated.ogTitle = value;
+          }
+          if (field === 'metaDescription') {
+            updated.ogDescription = value;
+          }
+          return updated;
+        }
+        return p;
+      })
     }));
   };
 
@@ -918,8 +939,9 @@ export default function AdminLoginPage() {
       title: p.metaTitle || p.pageTitle,
       meta_description: p.metaDescription,
       keywords: p.metaKeywords,
-      og_title: p.ogTitle,
-      og_description: p.ogDescription
+      og_title: p.metaTitle || p.pageTitle,
+      og_description: p.metaDescription,
+      canonical_url: p.canonicalUrl
     }, token));
 
     // Save global SEO settings
@@ -934,8 +956,10 @@ export default function AdminLoginPage() {
         setSaveNotification(true);
         setTimeout(() => setSaveNotification(false), 3000);
         if (typeof window !== 'undefined') {
+          localStorage.setItem('faisal_seo_settings', JSON.stringify(seoSettings));
           window.dispatchEvent(new Event('faisal_verified_date_updated'));
           window.dispatchEvent(new Event('faisal_plots_updated'));
+          window.dispatchEvent(new Event('faisal_seo_updated'));
         }
       })
       .catch(err => {
@@ -987,16 +1011,26 @@ export default function AdminLoginPage() {
 
     const blogPayload: Partial<BlogItem> = {
       title: blogTitle.trim(),
+      h1: blogH1.trim() || blogTitle.trim(),
+      slug: blogSlug.trim() || undefined,
       content: blogContent,
       summary: blogSummary.trim() || undefined,
-      imageUrl: blogImageUrl.trim() || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
-      author: blogAuthor || 'Admin',
-      category: blogCategory || 'Market Update',
-      readTime: blogReadTime || '3 min read',
+      imageUrl: blogImageUrl || undefined,
+      imageAlt: blogImageAlt.trim() || blogTitle.trim(),
+      author: blogAuthor.trim() || 'Admin',
+      category: blogCategory,
+      readTime: blogReadTime.trim() || '3 min read',
       published: blogPublished,
       metaTitle: blogMetaTitle.trim() || blogTitle.trim(),
       metaDescription: blogMetaDescription.trim() || blogSummary.trim() || undefined,
+      canonicalUrl: blogCanonicalUrl.trim() || undefined,
+      robotsIndex: blogRobotsIndex,
+      robotsFollow: blogRobotsFollow,
       keywords: blogKeywords.trim() || undefined,
+      primaryKeyword: blogFocusKeyword.trim() || undefined,
+      secondaryKeywords: blogSecondaryKeywords.trim() || undefined,
+      ogImage: blogImageUrl || undefined,
+      twitterImage: blogImageUrl || undefined,
       focusKeyword: blogFocusKeyword.trim() || undefined,
       faqs: blogFaqs
     };
@@ -1008,18 +1042,25 @@ export default function AdminLoginPage() {
       } else {
         createdBlog = {
           id: `blog-${Date.now()}`,
-          slug: blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          slug: blogSlug.trim() || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
           title: blogTitle,
+          h1: blogH1 || blogTitle,
           content: blogContent,
           summary: blogSummary || '',
           imageUrl: blogImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+          imageAlt: blogImageAlt || blogTitle,
           author: blogAuthor,
           category: blogCategory,
           readTime: blogReadTime,
           published: blogPublished,
           metaTitle: blogMetaTitle || blogTitle,
           metaDescription: blogMetaDescription || blogSummary || '',
+          canonicalUrl: blogCanonicalUrl || undefined,
+          robotsIndex: blogRobotsIndex,
+          robotsFollow: blogRobotsFollow,
           keywords: blogKeywords || '',
+          primaryKeyword: blogFocusKeyword || '',
+          secondaryKeywords: blogSecondaryKeywords || '',
           focusKeyword: blogFocusKeyword || '',
           faqs: blogFaqs,
           createdAt: new Date().toISOString()
@@ -1035,17 +1076,24 @@ export default function AdminLoginPage() {
 
       // Reset states
       setBlogTitle('');
+      setBlogH1('');
+      setBlogSlug('');
       setBlogContent('');
       setBlogSummary('');
       setBlogImageUrl('');
+      setBlogImageAlt('');
       setBlogAuthor('Admin');
       setBlogCategory('Market Update');
       setBlogReadTime('3 min read');
       setBlogPublished(true);
       setBlogMetaTitle('');
       setBlogMetaDescription('');
+      setBlogCanonicalUrl('');
+      setBlogRobotsIndex(true);
+      setBlogRobotsFollow(true);
       setBlogKeywords('');
       setBlogFocusKeyword('');
+      setBlogSecondaryKeywords('');
       setBlogFaqs([]);
 
       setNotificationMsg(`Blog post "${createdBlog.title}" published successfully!`);
@@ -1056,18 +1104,25 @@ export default function AdminLoginPage() {
       // Fallback save to state
       const fallbackBlog: BlogItem = {
         id: `blog-${Date.now()}`,
-        slug: blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        slug: blogSlug.trim() || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
         title: blogTitle,
+        h1: blogH1 || blogTitle,
         content: blogContent,
         summary: blogSummary || '',
         imageUrl: blogImageUrl || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
+        imageAlt: blogImageAlt || blogTitle,
         author: blogAuthor,
         category: blogCategory,
         readTime: blogReadTime,
         published: blogPublished,
         metaTitle: blogMetaTitle || blogTitle,
         metaDescription: blogMetaDescription || blogSummary || '',
+        canonicalUrl: blogCanonicalUrl || undefined,
+        robotsIndex: blogRobotsIndex,
+        robotsFollow: blogRobotsFollow,
         keywords: blogKeywords || '',
+        primaryKeyword: blogFocusKeyword || '',
+        secondaryKeywords: blogSecondaryKeywords || '',
         focusKeyword: blogFocusKeyword || '',
         faqs: blogFaqs,
         createdAt: new Date().toISOString()
@@ -1087,17 +1142,25 @@ export default function AdminLoginPage() {
   const handleOpenEditBlogModal = (blog: BlogItem) => {
     setEditingBlogId(blog.id);
     setBlogTitle(blog.title);
+    setBlogH1(blog.h1 || blog.title);
+    setBlogSlug(blog.slug);
     setBlogContent(blog.content);
     setBlogSummary(blog.summary);
     setBlogImageUrl(blog.imageUrl);
+    setBlogImageAlt(blog.imageAlt || blog.title);
     setBlogAuthor(blog.author);
     setBlogCategory(blog.category);
     setBlogReadTime(blog.readTime);
     setBlogPublished(blog.published);
     setBlogMetaTitle(blog.metaTitle);
     setBlogMetaDescription(blog.metaDescription);
+    setBlogCanonicalUrl(blog.canonicalUrl || '');
+    setBlogRobotsIndex(blog.robotsIndex !== false);
+    setBlogRobotsFollow(blog.robotsFollow !== false);
     setBlogKeywords(blog.keywords);
-    setBlogFocusKeyword(blog.focusKeyword || '');
+    setBlogFocusKeyword(blog.primaryKeyword || blog.focusKeyword || '');
+    setBlogSecondaryKeywords(blog.secondaryKeywords || '');
+    setBlogCreateRedirect(true);
     setBlogFaqs(blog.faqs || []);
     setIsEditBlogModalOpen(true);
   };
@@ -1108,19 +1171,30 @@ export default function AdminLoginPage() {
 
     const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
 
-    const updatePayload: Partial<BlogItem> = {
+    const updatePayload: Partial<BlogItem> & { create_redirect?: boolean } = {
       title: blogTitle,
+      h1: blogH1 || blogTitle,
+      slug: blogSlug || undefined,
       content: blogContent,
       summary: blogSummary,
       imageUrl: blogImageUrl,
+      imageAlt: blogImageAlt || blogTitle,
       author: blogAuthor,
       category: blogCategory,
       readTime: blogReadTime,
       published: blogPublished,
       metaTitle: blogMetaTitle,
       metaDescription: blogMetaDescription,
+      canonicalUrl: blogCanonicalUrl || undefined,
+      robotsIndex: blogRobotsIndex,
+      robotsFollow: blogRobotsFollow,
       keywords: blogKeywords,
+      primaryKeyword: blogFocusKeyword || undefined,
+      secondaryKeywords: blogSecondaryKeywords || undefined,
+      ogImage: blogImageUrl || undefined,
+      twitterImage: blogImageUrl || undefined,
       focusKeyword: blogFocusKeyword || undefined,
+      create_redirect: blogCreateRedirect,
       faqs: blogFaqs
     };
 
@@ -1134,18 +1208,25 @@ export default function AdminLoginPage() {
           ...(found || {}),
           ...updatePayload,
           id: editingBlogId,
-          slug: found?.slug || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+          slug: blogSlug || found?.slug || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
           title: blogTitle,
+          h1: blogH1 || blogTitle,
           content: blogContent,
           summary: blogSummary || '',
           imageUrl: blogImageUrl || '',
+          imageAlt: blogImageAlt || blogTitle,
           author: blogAuthor,
           category: blogCategory,
           readTime: blogReadTime,
           published: blogPublished,
           metaTitle: blogMetaTitle || blogTitle,
           metaDescription: blogMetaDescription || blogSummary || '',
+          canonicalUrl: blogCanonicalUrl || undefined,
+          robotsIndex: blogRobotsIndex,
+          robotsFollow: blogRobotsFollow,
           keywords: blogKeywords || '',
+          primaryKeyword: blogFocusKeyword || '',
+          secondaryKeywords: blogSecondaryKeywords || '',
           faqs: blogFaqs
         } as BlogItem;
       }
@@ -1160,15 +1241,6 @@ export default function AdminLoginPage() {
 
       // Reset states
       setBlogTitle('');
-      setBlogContent('');
-      setBlogSummary('');
-      setBlogImageUrl('');
-      setBlogAuthor('Admin');
-      setBlogCategory('Market Update');
-      setBlogReadTime('3 min read');
-      setBlogPublished(true);
-      setBlogMetaTitle('');
-      setBlogMetaDescription('');
       setBlogKeywords('');
       setBlogFocusKeyword('');
       setBlogFaqs([]);
@@ -2985,312 +3057,21 @@ export default function AdminLoginPage() {
         </div>
       )}
 
-      {/* TAB 2: SEO & META TAGS MANAGER */}
+      {/* TAB: SEO & TECHNICAL METADATA CONTROL PANEL */}
       {activeTab === 'seo' && (
-        <div className="space-y-8">
-          
-          {/* SEO Header Banner */}
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
-                <Globe className="w-4 h-4 text-[#7b002c]" />
-                <span>Search Engine Optimization & Social Sharing Metadata</span>
-              </div>
-              <h2 className="font-serif text-2xl font-bold text-slate-900">
-                Page Meta Tags & OpenGraph Control Panel
-              </h2>
-              <p className="text-slate-600 text-xs max-w-2xl">
-                Edit Meta Titles, Meta Descriptions, Meta Keywords, and OpenGraph social cards across your website pages to boost Google search rankings and social media previews.
-              </p>
-            </div>
-
-            <button
-              onClick={triggerSave}
-              className="px-5 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow flex items-center gap-2 transition shrink-0 cursor-pointer"
-            >
-              <Save className="w-4 h-4 text-white" />
-              <span>Save & Publish All Meta Tags</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Controls Column */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              {/* Page Selection Bar */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Select Page to Edit SEO Meta Tags:
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {seoSettings.pages.map((p) => (
-                    <button
-                      key={p.pageSlug}
-                      type="button"
-                      onClick={() => setSelectedSeoPageSlug(p.pageSlug)}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition text-center cursor-pointer ${
-                        selectedSeoPageSlug === p.pageSlug
-                          ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-sm'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      {p.pageTitle}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Editable Fields Card */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="font-serif font-bold text-lg text-[#7b002c] flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-[#7b002c]" />
-                    <span>Editing SEO Meta Tags: {selectedPageSeo.pageTitle}</span>
-                  </h3>
-                  <span className="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold border border-slate-200">
-                    URL: {selectedPageSeo.pageSlug}
-                  </span>
-                </div>
-
-                {/* 1. Meta Title */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
-                    <label className="font-bold text-slate-800">Meta Title (`&lt;title&gt;` Tag)</label>
-                    <span className={`font-bold ${
-                      selectedPageSeo.metaTitle.length >= 50 && selectedPageSeo.metaTitle.length <= 65
-                        ? 'text-emerald-600'
-                        : 'text-amber-600'
-                    }`}>
-                      {selectedPageSeo.metaTitle.length} / 60 characters (Recommended: 50-60)
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    value={selectedPageSeo.metaTitle}
-                    onChange={(e) => handleSeoFieldChange('metaTitle', e.target.value)}
-                    placeholder="Page Title for Search Engines"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    The primary title displayed on Google Search Result pages and browser tabs.
-                  </p>
-                </div>
-
-                {/* 2. Meta Description */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
-                    <label className="font-bold text-slate-800">Meta Description (`&lt;meta name="description"&gt;`)</label>
-                    <span className={`font-bold ${
-                      selectedPageSeo.metaDescription.length >= 120 && selectedPageSeo.metaDescription.length <= 160
-                        ? 'text-emerald-600'
-                        : 'text-amber-600'
-                    }`}>
-                      {selectedPageSeo.metaDescription.length} / 160 characters (Recommended: 150-160)
-                    </span>
-                  </div>
-                  <textarea
-                    rows={3}
-                    value={selectedPageSeo.metaDescription}
-                    onChange={(e) => handleSeoFieldChange('metaDescription', e.target.value)}
-                    placeholder="Short informative description for Google search snippets"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Short snippet shown under the title on search engines. High CTR descriptions attract more clicks.
-                  </p>
-                </div>
-
-                {/* 3. Meta Keywords */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Meta Keywords (`&lt;meta name="keywords"&gt;`)</label>
-                  <input
-                    type="text"
-                    value={selectedPageSeo.metaKeywords}
-                    onChange={(e) => handleSeoFieldChange('metaKeywords', e.target.value)}
-                    placeholder="Faisal Hills, Plot Prices, Taxila, Executive Block"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Target search terms separated by commas for indexers & directory crawlers.
-                  </p>
-                </div>
-
-                {/* 4. OpenGraph Social Title & Description */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-800">OpenGraph Title (`og:title`)</label>
-                    <input
-                      type="text"
-                      value={selectedPageSeo.ogTitle}
-                      onChange={(e) => handleSeoFieldChange('ogTitle', e.target.value)}
-                      placeholder="Title for WhatsApp / Facebook"
-                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-800">Canonical URL (`rel="canonical"`)</label>
-                    <input
-                      type="text"
-                      value={selectedPageSeo.canonicalUrl}
-                      onChange={(e) => handleSeoFieldChange('canonicalUrl', e.target.value)}
-                      placeholder="https://faisalhills.com/page"
-                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">OpenGraph Description (`og:description`)</label>
-                  <input
-                    type="text"
-                    value={selectedPageSeo.ogDescription}
-                    onChange={(e) => handleSeoFieldChange('ogDescription', e.target.value)}
-                    placeholder="Social sharing card summary"
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                <button
-                  onClick={triggerSave}
-                  className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow flex items-center justify-center gap-2 transition cursor-pointer"
-                >
-                  <Save className="w-4 h-4 text-white" />
-                  <span>Update Page Meta Tags</span>
-                </button>
-
-              </div>
-
-              {/* Global Search Verification Tags */}
-              <div className="bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-lg space-y-5">
-                <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                  <Code className="w-5 h-5 text-amber-400" />
-                  <h3 className="font-serif font-bold text-lg text-white">Global Search Console Verification Tags</h3>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-bold text-slate-300">Google Site Verification ID</label>
-                    <input
-                      type="text"
-                      value={seoSettings.googleSiteVerification}
-                      onChange={(e) => handleGlobalSeoChange('googleSiteVerification', e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-bold text-slate-300">Bing Webmaster Verification ID</label>
-                    <input
-                      type="text"
-                      value={seoSettings.bingSiteVerification}
-                      onChange={(e) => handleGlobalSeoChange('bingSiteVerification', e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-bold text-slate-300">Facebook App ID (og:app_id)</label>
-                    <input
-                      type="text"
-                      value={seoSettings.facebookAppId}
-                      onChange={(e) => handleGlobalSeoChange('facebookAppId', e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-bold text-slate-300">Twitter Handle (@username)</label>
-                    <input
-                      type="text"
-                      value={seoSettings.twitterHandle}
-                      onChange={(e) => handleGlobalSeoChange('twitterHandle', e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Live Snippet Previews Column */}
-            <div className="lg:col-span-5 space-y-6">
-              
-              {/* 1. Google Search Live Result Preview Simulation */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <Search className="w-4 h-4 text-[#7b002c]" />
-                  <h3 className="font-serif font-bold text-base text-slate-900">
-                    Live Google Search Snippet Simulation
-                  </h3>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <div className="w-4 h-4 rounded-full bg-[#7b002c] text-white flex items-center justify-center font-bold text-[9px]">
-                      F
-                    </div>
-                    <span className="font-semibold text-slate-700">Faisal Hills Real Estate</span>
-                    <span className="text-slate-400">›</span>
-                    <span className="text-slate-500 text-[11px] truncate max-w-[200px]">{selectedPageSeo.canonicalUrl}</span>
-                  </div>
-
-                  <h4 className="text-blue-800 hover:underline font-normal text-lg cursor-pointer leading-snug line-clamp-2">
-                    {selectedPageSeo.metaTitle || 'Meta Title Placeholder'}
-                  </h4>
-
-                  <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                    {selectedPageSeo.metaDescription || 'Meta description snippet placeholder. Add a compelling description for higher search clicks.'}
-                  </p>
-                </div>
-
-                <div className="text-[11px] text-slate-500 flex items-center gap-2 bg-amber-50 p-3 rounded-lg border border-amber-200/80">
-                  <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Google typically displays up to 60 characters for titles and 160 characters for meta descriptions.</span>
-                </div>
-              </div>
-
-              {/* 2. Social Card (WhatsApp / Facebook) Preview */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <Share2 className="w-4 h-4 text-[#7b002c]" />
-                  <h3 className="font-serif font-bold text-base text-slate-900">
-                    Social Sharing Card Preview (WhatsApp / FB)
-                  </h3>
-                </div>
-
-                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-slate-50">
-                  <div 
-                    className="h-40 bg-cover bg-center bg-slate-800 relative"
-                    style={{ backgroundImage: `url('${selectedPageSeo.ogImage}')` }}
-                  >
-                    <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                      faisalhills.com
-                    </span>
-                  </div>
-
-                  <div className="p-4 space-y-1 bg-white">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">FAISALHILLS.COM</span>
-                    <h5 className="font-bold text-sm text-slate-900 truncate">
-                      {selectedPageSeo.ogTitle || selectedPageSeo.metaTitle}
-                    </h5>
-                    <p className="text-xs text-slate-600 line-clamp-2">
-                      {selectedPageSeo.ogDescription || selectedPageSeo.metaDescription}
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
+        <SeoDashboardTab
+          seoSettings={seoSettings}
+          setSeoSettings={setSeoSettings}
+          selectedSeoPageSlug={selectedSeoPageSlug}
+          setSelectedSeoPageSlug={setSelectedSeoPageSlug}
+          token={token}
+          galleryList={galleryList}
+          onNotify={(msg) => {
+            setNotificationMsg(msg);
+            setSaveNotification(true);
+            setTimeout(() => setSaveNotification(false), 3500);
+          }}
+        />
       )}
 
       {/* TAB: PHOTO GALLERY MANAGER */}
@@ -4999,7 +4780,27 @@ export default function AdminLoginPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-700">Meta Title</label>
+                      <label className="block text-xs font-bold text-slate-700">H1 Heading (On-Page Header)</label>
+                      <input 
+                        type="text" 
+                        value={blogH1}
+                        onChange={(e) => setBlogH1(e.target.value)}
+                        placeholder={blogTitle || "Primary heading inside the blog article"}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Image Alt Text (SEO)</label>
+                      <input 
+                        type="text" 
+                        value={blogImageAlt}
+                        onChange={(e) => setBlogImageAlt(e.target.value)}
+                        placeholder={blogTitle || "Descriptive alt text for Google Image SEO"}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Meta Title (`&lt;title&gt;`)</label>
                       <input 
                         type="text" 
                         value={blogMetaTitle}
@@ -5009,12 +4810,12 @@ export default function AdminLoginPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-700">Meta Keywords</label>
+                      <label className="block text-xs font-bold text-slate-700">Secondary Keywords</label>
                       <input 
                         type="text" 
-                        value={blogKeywords}
-                        onChange={(e) => setBlogKeywords(e.target.value)}
-                        placeholder="Comma-separated keywords (e.g. faisal hills, plots, payment plan)"
+                        value={blogSecondaryKeywords}
+                        onChange={(e) => setBlogSecondaryKeywords(e.target.value)}
+                        placeholder="e.g. installment schedule, taxila plots"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
                     </div>
@@ -5024,9 +4825,40 @@ export default function AdminLoginPage() {
                         rows={2}
                         value={blogMetaDescription}
                         onChange={(e) => setBlogMetaDescription(e.target.value)}
-                        placeholder="Summary description for Google search result snippets"
+                        placeholder="Summary description for Google search result snippets (140-160 chars)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Custom Canonical URL (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={blogCanonicalUrl}
+                        onChange={(e) => setBlogCanonicalUrl(e.target.value)}
+                        placeholder="Leave empty for auto-generated canonical URL"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Robots Indexing</label>
+                      <div className="flex items-center gap-4 pt-1">
+                        <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={blogRobotsIndex === true}
+                            onChange={() => setBlogRobotsIndex(true)}
+                          />
+                          <span>Index</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-red-600 cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={blogRobotsIndex === false}
+                            onChange={() => setBlogRobotsIndex(false)}
+                          />
+                          <span>Noindex</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5333,7 +5165,37 @@ export default function AdminLoginPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-700">Meta Title</label>
+                      <label className="block text-xs font-bold text-slate-700">URL Slug</label>
+                      <input 
+                        type="text" 
+                        value={blogSlug}
+                        onChange={(e) => setBlogSlug(e.target.value)}
+                        placeholder="e.g. faisal-hills-noc-approval-update"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">H1 Heading (On-Page Header)</label>
+                      <input 
+                        type="text" 
+                        value={blogH1}
+                        onChange={(e) => setBlogH1(e.target.value)}
+                        placeholder={blogTitle || "Primary heading inside the blog article"}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Image Alt Text (SEO)</label>
+                      <input 
+                        type="text" 
+                        value={blogImageAlt}
+                        onChange={(e) => setBlogImageAlt(e.target.value)}
+                        placeholder={blogTitle || "Descriptive alt text for Google Image SEO"}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Meta Title (`&lt;title&gt;`)</label>
                       <input 
                         type="text" 
                         value={blogMetaTitle}
@@ -5343,13 +5205,23 @@ export default function AdminLoginPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="block text-xs font-bold text-slate-700">Meta Keywords</label>
+                      <label className="block text-xs font-bold text-slate-700">Secondary Keywords</label>
                       <input 
                         type="text" 
-                        value={blogKeywords}
-                        onChange={(e) => setBlogKeywords(e.target.value)}
-                        placeholder="Comma-separated keywords (e.g. faisal hills, plots, payment plan)"
+                        value={blogSecondaryKeywords}
+                        onChange={(e) => setBlogSecondaryKeywords(e.target.value)}
+                        placeholder="e.g. installment schedule, taxila plots"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Custom Canonical URL (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={blogCanonicalUrl}
+                        onChange={(e) => setBlogCanonicalUrl(e.target.value)}
+                        placeholder="Leave empty for auto-generated canonical URL"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono"
                       />
                     </div>
                     <div className="sm:col-span-2 space-y-1">
@@ -5358,9 +5230,42 @@ export default function AdminLoginPage() {
                         rows={2}
                         value={blogMetaDescription}
                         onChange={(e) => setBlogMetaDescription(e.target.value)}
-                        placeholder="Summary description for Google search result snippets"
+                        placeholder="Summary description for Google search result snippets (140-160 chars)"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
                       />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">Robots Indexing</label>
+                      <div className="flex items-center gap-4 pt-1">
+                        <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={blogRobotsIndex === true}
+                            onChange={() => setBlogRobotsIndex(true)}
+                          />
+                          <span>Index</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-red-600 cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={blogRobotsIndex === false}
+                            onChange={() => setBlogRobotsIndex(false)}
+                          />
+                          <span>Noindex</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-700">301 Redirect on Slug Change</label>
+                      <label className="flex items-center gap-2 pt-1 text-xs text-slate-800 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={blogCreateRedirect}
+                          onChange={(e) => setBlogCreateRedirect(e.target.checked)}
+                          className="w-4 h-4 text-[#7b002c] rounded"
+                        />
+                        <span>Auto-create 301 redirect if slug changes</span>
+                      </label>
                     </div>
                   </div>
                 </div>

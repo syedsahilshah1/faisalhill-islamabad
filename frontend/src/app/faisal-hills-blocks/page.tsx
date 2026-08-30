@@ -9,19 +9,48 @@ import {
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 
-export const metadata: Metadata = {
-  title: "Faisal Hills Blocks | All Sectors  FH Islamabad",
-  description: "Explore all Faisal Hills Blocks  Executive, Prime, A, B, C, D  Golf. RDA-approved plots near GT Road, Taxila. Invest or live today",
-  keywords: "Faisal Hills Blocks, Faisal Hills Executive Block, Faisal Hills Prime Block, Faisal Hills A Block, Faisal Hills B Block, Faisal Hills C Block, Faisal Hills D Block, Golf Block, plot investment, Zedem International, RDA approved housing society Islamabad",
-  openGraph: {
-    title: "Faisal Hills Blocks | All Sectors  FH Islamabad",
-    description: "Explore all Faisal Hills Blocks  Executive, Prime, A, B, C, D  Golf. RDA-approved plots near GT Road, Taxila.",
-    images: ["https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80"],
-  },
-  alternates: {
-    canonical: "https://faisalhillsislamabadfh.com/faisal-hills-blocks/",
-  }
-};
+import { fetchSeo } from '@/data/faisalHillsData';
+import { JsonLd, generateBreadcrumbSchema } from '@/components/seo/JsonLd';
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeo('faisal-hills-blocks') || await fetchSeo('blocks');
+
+  const title = seo?.title || 'Faisal Hills Blocks | Executive, Prime, Block A, B, C & D Sectors';
+  const description = seo?.meta_description || 'Explore all Faisal Hills Blocks: Executive, Prime, Block A, Block B, B-1 Extension, Block C, and Block D. Compare possession status, plot sizes, and master plan maps.';
+  const canonical = seo?.canonical_url || `${BASE_URL}/faisal-hills-blocks`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const keywords = seo?.keywords 
+    ? seo.keywords.split(',').map((k: string) => k.trim()) 
+    : ['Faisal Hills Blocks', 'Faisal Hills Executive Block', 'Faisal Hills Prime Block', 'Faisal Hills A Block', 'Faisal Hills B Block', 'Faisal Hills C Block', 'Faisal Hills D Block'];
+
+  return {
+    title: `${title} | Faisal Hills Real Estate`,
+    description: description,
+    keywords: keywords,
+    alternates: {
+      canonical: canonical,
+    },
+    robots: {
+      index: seo?.robots_index !== false,
+      follow: seo?.robots_follow !== false,
+    },
+    openGraph: {
+      title: seo?.og_title || title,
+      description: seo?.og_description || description,
+      url: canonical,
+      type: 'website',
+      images: [{ url: ogImg, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seo?.twitter_title || seo?.og_title || title,
+      description: seo?.twitter_description || seo?.og_description || description,
+      images: [seo?.twitter_image || ogImg],
+    },
+  };
+}
 
 interface BlockListItem {
   name: string;
@@ -130,30 +159,21 @@ const schemaMarkup = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://faisalhillsislamabadfh.com/faisal-hills-blocks/#webpage",
-      "url": "https://faisalhillsislamabadfh.com/faisal-hills-blocks/",
-      "name": "Faisal Hills Blocks | All Sectors  FH Islamabad",
-      "description": "Explore all Faisal Hills Blocks  Executive, Prime, A, B, C, D  Golf. RDA-approved plots near GT Road, Taxila. Invest or live today",
+      "@id": `${BASE_URL}/faisal-hills-blocks/#webpage`,
+      "url": `${BASE_URL}/faisal-hills-blocks`,
+      "name": "Faisal Hills Blocks | All Sectors FH Islamabad",
+      "description": "Explore all Faisal Hills Blocks — Executive, Prime, Block A, Block B, B Extension, Block C, Block D. RDA-approved plots near GT Road, Taxila.",
       "breadcrumb": {
-        "@id": "https://faisalhillsislamabadfh.com/faisal-hills-blocks/#breadcrumb"
+        "@id": `${BASE_URL}/faisal-hills-blocks/#breadcrumb`
       }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://faisalhillsislamabadfh.com/faisal-hills-blocks/#breadcrumb",
+      "@id": `${BASE_URL}/faisal-hills-blocks/#breadcrumb`,
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://faisalhillsislamabadfh.com/" },
-        { "@type": "ListItem", "position": 2, "name": "Blocks", "item": "https://faisalhillsislamabadfh.com/faisal-hills-blocks/" }
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL },
+        { "@type": "ListItem", "position": 2, "name": "Faisal Hills Blocks", "item": `${BASE_URL}/faisal-hills-blocks` }
       ]
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://faisalhillsislamabadfh.com/#organization",
-      "name": "Faisal Hills Islamabad",
-      "url": "https://faisalhillsislamabadfh.com/",
-      "logo": "https://faisalhillsislamabadfh.com/logo.png",
-      "areaServed": ["Islamabad", "Rawalpindi", "Taxila"],
-      "sameAs": ["https://www.facebook.com/faisalhills"]
     },
     {
       "@type": "FAQPage",
@@ -183,7 +203,9 @@ const schemaMarkup = {
 
 export default function FaisalHillsBlocksPage() {
   return (
-    <div className="bg-[#fff8f6] min-h-screen text-slate-900 font-sans space-y-16 pb-16 selection:bg-[#7b002c] selection:text-white font-sans">
+    <>
+      <JsonLd data={schemaMarkup} />
+      <div className="bg-[#fff8f6] min-h-screen text-slate-900 font-sans space-y-16 pb-16 selection:bg-[#7b002c] selection:text-white font-sans">
       
       {/* 1. HERO BANNER */}
       <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
@@ -523,17 +545,11 @@ export default function FaisalHillsBlocksPage() {
           <div className="text-[10px] text-slate-400 font-mono tracking-widest pt-4 uppercase relative z-10 flex flex-wrap justify-center gap-6">
             <Link href="/about-us" className="hover:text-amber-400 transition-colors">→ About Faisal Hills</Link>
             <Link href="/plots" className="hover:text-amber-400 transition-colors">→ Search plot inventory</Link>
-            <span>→ Website: faisalhillsislamabadfh.com</span>
+            <span>→ Website: faisaltown.org</span>
           </div>
         </div>
       </section>
-
-      {/* Dynamic Schema Injection */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
-      />
-
     </div>
+    </>
   );
 }

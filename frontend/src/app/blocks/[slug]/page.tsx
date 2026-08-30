@@ -94,16 +94,34 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: BlockPageProps): Promise<Metadata> {
+  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
   const seo = await fetchSeo(params.slug);
   if (seo) {
+    const canonical = seo.canonical_url || `${BASE_URL}/blocks/${params.slug}`;
+    const ogImg = seo.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
     return {
-      title: seo.title,
+      title: `${seo.title} | Faisal Hills`,
       description: seo.meta_description,
-      keywords: seo.keywords || undefined,
+      keywords: seo.keywords ? seo.keywords.split(',').map((k: string) => k.trim()) : undefined,
+      alternates: {
+        canonical: canonical,
+      },
+      robots: {
+        index: seo.robots_index !== false,
+        follow: seo.robots_follow !== false,
+      },
       openGraph: {
         title: seo.og_title || seo.title,
         description: seo.og_description || seo.meta_description,
-      }
+        url: canonical,
+        images: [{ url: ogImg }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: seo.twitter_title || seo.og_title || seo.title,
+        description: seo.twitter_description || seo.og_description || seo.meta_description,
+        images: [seo.twitter_image || ogImg],
+      },
     };
   }
 

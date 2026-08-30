@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface CountUpNumberProps {
   end: number;
@@ -15,25 +15,26 @@ export default function CountUpNumber({
   end,
   suffix = '',
   prefix = '',
-  duration = 2000,
+  duration = 1500,
   decimals = 0,
   className = ''
 }: CountUpNumberProps) {
-  const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const animatedRef = useRef(false);
 
   useEffect(() => {
+    const el = spanRef.current;
+    if (!el) return;
+
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
-      setCount(end);
-      setHasAnimated(true);
+      el.textContent = `${prefix}${end.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`;
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
+        if (entry.isIntersecting && !animatedRef.current) {
+          animatedRef.current = true;
           let startTime: number | null = null;
 
           const animate = (currentTime: number) => {
@@ -44,36 +45,42 @@ export default function CountUpNumber({
             const easeOutProgress = 1 - Math.pow(1 - progress, 3);
             const currentCount = easeOutProgress * end;
 
-            setCount(currentCount);
+            if (el) {
+              const formatted = decimals > 0 
+                ? currentCount.toFixed(decimals) 
+                : Math.floor(currentCount).toLocaleString();
+              el.textContent = `${prefix}${formatted}${suffix}`;
+            }
 
             if (progress < 1) {
               requestAnimationFrame(animate);
-            } else {
-              setCount(end);
+            } else if (el) {
+              const finalFormatted = decimals > 0 
+                ? end.toFixed(decimals) 
+                : end.toLocaleString();
+              el.textContent = `${prefix}${finalFormatted}${suffix}`;
             }
           };
 
           requestAnimationFrame(animate);
-          if (ref.current) observer.unobserve(ref.current);
+          observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    observer.observe(el);
 
     return () => {
-      if (ref.current) observer.unobserve(ref.current);
+      observer.disconnect();
     };
-  }, [end, duration, hasAnimated]);
+  }, [end, suffix, prefix, duration, decimals]);
 
-  const formattedValue = decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toString();
+  const initialFormatted = decimals > 0 ? end.toFixed(decimals) : end.toLocaleString();
 
   return (
-    <span ref={ref} className={className}>
-      {prefix}{hasAnimated ? formattedValue : '0'}{suffix}
+    <span ref={spanRef} className={className}>
+      {prefix}{initialFormatted}{suffix}
     </span>
   );
 }

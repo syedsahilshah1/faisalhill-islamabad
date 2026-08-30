@@ -9,7 +9,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\BlogController;
-
+use App\Http\Controllers\RedirectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,12 +39,15 @@ Route::get('/settings', [SettingController::class, 'index']);
 Route::get('/settings/{key}', [SettingController::class, 'show']);
 Route::get('/seo', [SeoController::class, 'index']);
 Route::get('/seo/{page_slug}', [SeoController::class, 'show']);
+Route::get('/sitemap-routes', [SeoController::class, 'sitemapData']);
+
+// Public Active Redirects (For Next.js dynamic 301 middleware)
+Route::get('/redirects/active', [RedirectController::class, 'active']);
+Route::post('/redirects/hit', [RedirectController::class, 'incrementHit']);
 
 // Public Blogs
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{slug}', [BlogController::class, 'show']);
-
-
 
 // Protected Routes (Admin Only)
 Route::middleware('auth:sanctum')->group(function () {
@@ -74,6 +77,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // SEO Admin
     Route::put('/seo/global', [SeoController::class, 'updateGlobal']);
     Route::put('/seo/{page_slug}', [SeoController::class, 'update']);
+
+    // Redirects Admin
+    Route::get('/redirects', [RedirectController::class, 'index']);
+    Route::post('/redirects', [RedirectController::class, 'store']);
+    Route::put('/redirects/{id}', [RedirectController::class, 'update']);
+    Route::delete('/redirects/{id}', [RedirectController::class, 'destroy']);
 
     // Blogs Admin
     Route::get('/admin/blogs', [BlogController::class, 'adminIndex']);

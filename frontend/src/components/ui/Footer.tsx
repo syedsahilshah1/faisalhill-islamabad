@@ -46,8 +46,11 @@ export default function Footer() {
       <div className="max-w-[1440px] mx-auto px-6 sm:px-10 pt-12 pb-8 text-center space-y-4 border-b border-white/10 flex flex-col items-center">
         <Link href="/" className="inline-block py-2">
           <img
-            src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+            src="/images/faisal-town-logo.webp"
             alt="Faisal Town Group"
+            width={240}
+            height={72}
+            loading="lazy"
             className="h-16 sm:h-20 lg:h-24 w-auto object-contain brightness-0 invert opacity-95 hover:opacity-100 transition-opacity"
           />
         </Link>
@@ -77,14 +80,13 @@ export default function Footer() {
                   ))
                 ) : (
                   <>
-                    <p><strong className="text-white font-semibold">Head Office:</strong> 051-111-324-725</p>
-                    <p><strong className="text-white font-semibold">Faisal Hills:</strong> 051-450000-2</p>
+                  
                   </>
                 )}
                 <p className="pt-1">
                   <strong className="text-white font-semibold">Sales Hotline & WhatsApp:</strong>{' '}
-                  <a href={`tel:${(contact.salesHotline || '+923044811717').replace(/\s+/g, '')}`} className="underline font-bold text-white hover:text-amber-300">
-                    {contact.salesHotline || '+92 304 4811 717'}
+                  <a href={`tel:${(contact.salesHotline || '+923331113177').replace(/\s+/g, '')}`} className="underline font-bold text-white hover:text-amber-300">
+                    {contact.salesHotline || '+923331113177'}
                   </a>
                 </p>
               </div>

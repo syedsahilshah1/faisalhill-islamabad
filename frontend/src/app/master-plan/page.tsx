@@ -1,46 +1,59 @@
-'use client';
+import React from 'react';
+import type { Metadata } from 'next';
+import { fetchSeo } from '@/data/faisalHillsData';
+import { JsonLd, generateBreadcrumbSchema } from '@/components/seo/JsonLd';
+import MasterPlanClient from './MasterPlanClient';
 
-import React, { useState } from 'react';
-import MasterPlanViewer from '@/components/map/MasterPlanViewer';
-import MapDownloadModal from '@/components/ui/MapDownloadModal';
-import { Download } from 'lucide-react';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchSeo('master-plan');
+
+  const title = seo?.title || 'Faisal Hills Master Plan Map – High-Res Interactive Map';
+  const description = seo?.meta_description || 'Explore the official high-resolution Faisal Hills master plan map. Zoom up to 1200% into Block A, Block B, Block C, Block D, Executive Block & Prime Block roads, parks, and plots.';
+  const canonical = seo?.canonical_url || `${BASE_URL}/master-plan`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const keywords = seo?.keywords 
+    ? seo.keywords.split(',').map((k: string) => k.trim()) 
+    : ['Faisal Hills Master Plan', 'Faisal Hills Map', 'Faisal Hills High Resolution Map', 'Faisal Hills Executive Block Map', 'Faisal Hills Block A Map', 'Faisal Hills PDF Map'];
+
+  return {
+    title: `${title} | Faisal Hills Real Estate`,
+    description: description,
+    keywords: keywords,
+    alternates: {
+      canonical: canonical,
+    },
+    robots: {
+      index: seo?.robots_index !== false,
+      follow: seo?.robots_follow !== false,
+    },
+    openGraph: {
+      title: seo?.og_title || title,
+      description: seo?.og_description || description,
+      url: canonical,
+      type: 'website',
+      images: [{ url: ogImg, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seo?.twitter_title || seo?.og_title || title,
+      description: seo?.twitter_description || seo?.og_description || description,
+      images: [seo?.twitter_image || ogImg],
+    },
+  };
+}
 
 export default function MasterPlanPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: BASE_URL },
+    { name: 'Master Plan', url: `${BASE_URL}/master-plan` },
+  ]);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-24 sm:pt-28 lg:pt-32 pb-12 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
-        <div className="space-y-2">
-          <span className="label-caps text-[#7b002c] font-bold block">Society Navigation</span>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#7b002c]">
-            Faisal Hills Master Plan Map
-          </h1>
-          <p className="text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
-            Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer"
-        >
-          <Download className="w-4 h-4 text-white" />
-          <span>Download High-Res PDF Map</span>
-        </button>
-      </div>
-
-      {/* Clean Interactive Deep Zoom Master Plan Viewer */}
-      <MasterPlanViewer 
-        heightClass="h-[480px] sm:h-[620px] lg:h-[750px]" 
-        onDownloadClick={() => setIsModalOpen(true)}
-      />
-
-      {/* Lead Gated Map Download Modal */}
-      <MapDownloadModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>
+    <>
+      <JsonLd data={[breadcrumbSchema]} />
+      <MasterPlanClient />
+    </>
   );
 }

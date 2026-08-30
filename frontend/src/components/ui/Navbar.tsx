@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -72,7 +72,7 @@ export default function Navbar() {
   // Scroll visibility & scroll position state
   const [isVisible, setIsVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
 
   // Auto-close dropdowns when route changes
   useEffect(() => {
@@ -84,33 +84,35 @@ export default function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const prevScrollY = lastScrollYRef.current;
 
-      // 1. Detect if scrolled past top hero section threshold
-      if (currentScrollY > 80) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+          // 1. Detect if scrolled past top hero section threshold
+          setIsScrolled(currentScrollY > 80);
+
+          // 2. Hide on scroll down, reveal on scroll up
+          if (currentScrollY <= 80) {
+            setIsVisible(true);
+          } else if (currentScrollY > prevScrollY + 6) {
+            setIsVisible(false);
+          } else if (currentScrollY < prevScrollY - 6) {
+            setIsVisible(true);
+          }
+
+          lastScrollYRef.current = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      // 2. Hide on scroll down, reveal on scroll up
-      if (currentScrollY <= 80) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY + 5) {
-        // Scrolling DOWN -> Hide navbar
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY - 5) {
-        // Scrolling UP -> Show navbar
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const isKnownBlockPage = Boolean(
     pathname?.startsWith('/blocks/') && blocksData.some((b) => `/blocks/${b.slug}` === pathname)
@@ -335,10 +337,12 @@ export default function Navbar() {
 
           {/* CENTER: Official FAISALTOWN GROUP FT Emblem */}
           <div className="flex items-center justify-center shrink-0 px-3 sm:px-5 lg:px-6 py-1">
-            <Link href="/" className="flex items-center justify-center group shrink-0">
+            <Link href="/" className="flex items-center justify-center group shrink-0" aria-label="Faisal Hills Homepage">
               <img
-                src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+                src="/images/faisal-town-logo.webp"
                 alt="Faisal Town Group"
+                width={180}
+                height={55}
                 className={`w-auto object-contain transition-all duration-300 ${
                   isSolidNav
                     ? 'h-9 sm:h-10 lg:h-11 xl:h-13 filter-none'
@@ -463,11 +467,11 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               className={`xl:hidden p-2 sm:p-2.5 rounded-full flex items-center justify-center transition-all active:scale-95 shrink-0 z-50 cursor-pointer ${isSolidNav
                 ? 'text-[#7b002c] bg-slate-100 hover:bg-slate-200 border border-slate-200'
                 : 'text-white bg-white/10 hover:bg-white/20 border border-white/20'
                 }`}
-              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? (
                 <X className={`w-5 h-5 sm:w-6 sm:h-6 ${isSolidNav ? 'text-[#7b002c]' : 'text-white'}`} />
