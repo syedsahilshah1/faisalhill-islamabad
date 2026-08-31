@@ -8,45 +8,50 @@ use App\Models\Block;
 use App\Models\Blog;
 use App\Models\Plot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SeoController extends Controller
 {
     public function index()
     {
-        $global = SiteSetting::where('key', 'seo_global')->first();
-        $pages = SeoConfig::all();
-        
-        $globalDefaults = [
-            'siteName' => 'Faisal Hills',
-            'siteUrl' => 'https://faisalhills.com.pk',
-            'titleSeparator' => '|',
-            'defaultMetaTitle' => 'Faisal Hills Taxila & Islamabad | Master Plan, Plots & Prices',
-            'defaultMetaDescription' => 'Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot maps, RDA NOC status, block prices, payment plans and real estate investments.',
-            'defaultKeywords' => 'Faisal Hills, Faisal Hills Taxila, Executive Block, Block A, Plot Prices, RDA Approved',
-            'defaultOgImage' => '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
-            'googleSiteVerification' => '',
-            'bingSiteVerification' => '',
-            'gtmId' => '',
-            'gaMeasurementId' => '',
-            'facebookAppId' => '',
-            'twitterHandle' => '@FaisalHillsPK',
-            'organizationName' => 'Zedem International (Pvt) Ltd - Faisal Hills',
-            'organizationPhone' => '+92 304 4811717',
-            'organizationEmail' => 'info@faisalhills.com.pk',
-            'organizationAddress' => 'Main GT Road, Near MPCHS Interchange, Taxila / Rawalpindi',
-            'defaultRobotsIndex' => true,
-            'defaultRobotsFollow' => true,
-        ];
+        $cachedData = Cache::remember('fh_seo_all', 3600, function () {
+            $global = SiteSetting::where('key', 'seo_global')->first();
+            $pages = SeoConfig::all();
+            
+            $globalDefaults = [
+                'siteName' => 'Faisal Hills',
+                'siteUrl' => 'https://faisalhills.com.pk',
+                'titleSeparator' => '|',
+                'defaultMetaTitle' => 'Faisal Hills Taxila & Islamabad | Master Plan, Plots & Prices',
+                'defaultMetaDescription' => 'Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot maps, RDA NOC status, block prices, payment plans and real estate investments.',
+                'defaultKeywords' => 'Faisal Hills, Faisal Hills Taxila, Executive Block, Block A, Plot Prices, RDA Approved',
+                'defaultOgImage' => '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+                'googleSiteVerification' => '',
+                'bingSiteVerification' => '',
+                'gtmId' => '',
+                'gaMeasurementId' => '',
+                'facebookAppId' => '',
+                'twitterHandle' => '@FaisalHillsPK',
+                'organizationName' => 'Zedem International (Pvt) Ltd - Faisal Hills',
+                'organizationPhone' => '+92 304 4811717',
+                'organizationEmail' => 'info@faisalhills.com.pk',
+                'organizationAddress' => 'Main GT Road, Near MPCHS Interchange, Taxila / Rawalpindi',
+                'defaultRobotsIndex' => true,
+                'defaultRobotsFollow' => true,
+            ];
 
-        $globalSettings = $global ? array_merge($globalDefaults, $global->value ?? []) : $globalDefaults;
+            $globalSettings = $global ? array_merge($globalDefaults, $global->value ?? []) : $globalDefaults;
 
-        return response()->json([
-            'global' => $globalSettings,
-            'siteName' => $globalSettings['siteName'],
-            'defaultMetaDescription' => $globalSettings['defaultMetaDescription'],
-            'defaultKeywords' => $globalSettings['defaultKeywords'],
-            'pages' => $pages
-        ]);
+            return [
+                'global' => $globalSettings,
+                'siteName' => $globalSettings['siteName'],
+                'defaultMetaDescription' => $globalSettings['defaultMetaDescription'],
+                'defaultKeywords' => $globalSettings['defaultKeywords'],
+                'pages' => $pages
+            ];
+        });
+
+        return response()->json($cachedData);
     }
 
     public function show(string $pageSlug)
@@ -110,6 +115,8 @@ class SeoController extends Controller
             $validated
         );
 
+        Cache::forget('fh_seo_all');
+
         return response()->json([
             'message' => 'SEO Configuration updated successfully',
             'seo' => $seo
@@ -144,6 +151,8 @@ class SeoController extends Controller
             ['key' => 'seo_global'],
             ['value' => $validated]
         );
+
+        Cache::forget('fh_seo_all');
 
         return response()->json([
             'message' => 'Global SEO settings updated successfully',

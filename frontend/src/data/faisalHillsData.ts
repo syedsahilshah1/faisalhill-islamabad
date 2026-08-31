@@ -1410,7 +1410,7 @@ export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]>
 
 export async function fetchSettings(): Promise<Record<string, any>> {
   try {
-    const res = await fetch(`${API_URL}/settings`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/settings`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch settings');
     return await res.json();
   } catch (e) {
@@ -1424,7 +1424,7 @@ export async function fetchSettings(): Promise<Record<string, any>> {
 
 export async function fetchSeo(pageSlug: string): Promise<any> {
   try {
-    const res = await fetch(`${API_URL}/seo/${pageSlug}`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/seo/${pageSlug}`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch SEO');
     return await res.json();
   } catch (e) {
@@ -1907,7 +1907,7 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
   }
 
   try {
-    const res = await fetch(`${API_URL}/blogs`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/blogs`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch blogs');
     const data = await res.json();
     const mapped = Array.isArray(data) ? data.map(mapBlogToCamel) : [];
@@ -1946,7 +1946,7 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
   }
 
   try {
-    const res = await fetch(`${API_URL}/blogs/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/blogs/${slug}`, { next: { revalidate: 60 } });
     if (res.ok) {
       const data = await res.json();
       return mapBlogToCamel(data);
@@ -2326,7 +2326,7 @@ export const defaultContactInfo: ContactInfoData = {
 
 export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}/settings/${key}`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/settings/${key}`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return await res.json();
   } catch (e) {

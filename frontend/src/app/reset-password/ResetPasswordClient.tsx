@@ -8,8 +8,25 @@ import { apiResetPassword } from '@/data/faisalHillsData';
 
 export default function ResetPasswordClient() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token') || '';
-  const email = searchParams.get('email') || '';
+  const [mounted, setMounted] = React.useState(false);
+  const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
+
+  React.useEffect(() => {
+    setMounted(true);
+    const paramToken = searchParams?.get('token') || '';
+    const paramEmail = searchParams?.get('email') || '';
+
+    if (paramToken) setToken(paramToken);
+    if (paramEmail) setEmail(paramEmail);
+
+    // Fallback direct URL query check if needed
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (!paramToken && urlParams.get('token')) setToken(urlParams.get('token') || '');
+      if (!paramEmail && urlParams.get('email')) setEmail(urlParams.get('email') || '');
+    }
+  }, [searchParams]);
 
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -53,6 +70,14 @@ export default function ResetPasswordClient() {
       setLoading(false);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
+        <div className="text-sm font-sans animate-pulse">Loading recovery portal...</div>
+      </div>
+    );
+  }
 
   const isLinkInvalid = !token || !email;
 

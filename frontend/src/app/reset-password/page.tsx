@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import ResetPasswordClient from './ResetPasswordClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Reset Password | Faisal Hills Executive Portal',
   description: 'Set your new administrator password securely.',

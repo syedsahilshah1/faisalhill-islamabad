@@ -120,8 +120,13 @@ export default function Navbar() {
   const isDarkHeroPage = pathname === '/' || isKnownBlockPage;
   const isSolidNav = isScrolled || !isDarkHeroPage;
 
-  // Hide main website navbar on Admin / Dashboard routes
-  if (pathname?.startsWith('/ubaid') || pathname?.startsWith('/admin')) {
+  // Hide main website navbar on Admin / Dashboard / Auth Recovery routes
+  if (
+    pathname?.startsWith('/ubaid') ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/forgot-password') ||
+    pathname?.startsWith('/reset-password')
+  ) {
     return null;
   }
 

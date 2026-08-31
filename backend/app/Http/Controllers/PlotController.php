@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Plot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class PlotController extends Controller
 {
     public function index(Request $request)
     {
+        $hasFilters = $request->filled('block') || $request->filled('property_type') || $request->filled('category') || $request->filled('search');
+
+        if (!$hasFilters) {
+            $cached = Cache::remember('fh_plots_all', 300, function () {
+                return Plot::orderBy('display_order', 'asc')
+                           ->orderBy('created_at', 'desc')
+                           ->get();
+            });
+            return response()->json($cached);
+        }
         $query = Plot::query();
 
         // Optional block filter
@@ -133,6 +144,8 @@ class PlotController extends Controller
             'display_order' => $validated['display_order'] ?? 0
         ]);
 
+        Cache::forget('fh_plots_all');
+
         return response()->json($plot, 201);
     }
 
@@ -203,6 +216,7 @@ class PlotController extends Controller
         }
 
         $plot->update($validated);
+        Cache::forget('fh_plots_all');
 
         return response()->json($plot);
     }
@@ -215,6 +229,7 @@ class PlotController extends Controller
         }
 
         $plot->delete();
+        Cache::forget('fh_plots_all');
 
         return response()->json(['message' => 'Plot deleted successfully']);
     }

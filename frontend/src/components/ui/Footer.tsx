@@ -2,15 +2,27 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Phone, Mail, MapPin, Facebook, Instagram, MessageSquare, Linkedin, Youtube, ShieldCheck, ArrowUpRight
 } from 'lucide-react';
 import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey } from '@/data/faisalHillsData';
 
 export default function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
   const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+
+  // Hide footer on admin and auth recovery routes
+  if (
+    pathname?.startsWith('/ubaid') ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/forgot-password') ||
+    pathname?.startsWith('/reset-password')
+  ) {
+    return null;
+  }
 
   useEffect(() => {
     const syncContact = () => {

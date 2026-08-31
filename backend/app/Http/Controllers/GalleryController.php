@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\GalleryItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GalleryController extends Controller
 {
     public function index()
     {
-        return response()->json(GalleryItem::orderBy('created_at', 'desc')->get());
+        $items = Cache::remember('fh_gallery_all', 3600, function () {
+            return GalleryItem::orderBy('created_at', 'desc')->get();
+        });
+        return response()->json($items);
     }
 
     public function store(Request $request)
@@ -32,6 +36,8 @@ class GalleryController extends Controller
             'date_added' => now()->format('F Y'),
         ]);
 
+        Cache::forget('fh_gallery_all');
+
         return response()->json($item, 201);
     }
 
@@ -43,6 +49,7 @@ class GalleryController extends Controller
         }
 
         $item->delete();
+        Cache::forget('fh_gallery_all');
 
         return response()->json(['message' => 'Gallery image deleted successfully']);
     }

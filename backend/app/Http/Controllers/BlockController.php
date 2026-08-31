@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Block;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class BlockController extends Controller
 {
     public function index()
     {
-        return response()->json(Block::all());
+        $blocks = Cache::remember('fh_blocks_all', 3600, function () {
+            return Block::all();
+        });
+        return response()->json($blocks);
     }
 
     private function findBlock(string $identifier)
@@ -64,6 +68,7 @@ class BlockController extends Controller
         ]);
 
         $block->update($validated);
+        Cache::forget('fh_blocks_all');
 
         return response()->json($block);
     }
