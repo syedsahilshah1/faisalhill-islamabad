@@ -815,7 +815,7 @@ export default function BlockCContent() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={() => setIsMapModalOpen(true)}
@@ -904,6 +904,18 @@ export default function BlockCContent() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mobile Download Button - Below Master Plan in Mobile View */}
+        <div className="sm:hidden flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setIsMapModalOpen(true)}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold transition-all shadow-xs cursor-pointer text-center"
+          >
+            <Download className="w-4 h-4 text-white" />
+            <span>Download PDF Map</span>
+          </button>
         </div>
       </section>
 

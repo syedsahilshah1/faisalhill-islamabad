@@ -23,7 +23,7 @@ export default function MasterPlanClient() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer"
+          className="hidden md:inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 shrink-0 cursor-pointer"
         >
           <Download className="w-4 h-4 text-white" />
           <span>Download High-Res PDF Map</span>
@@ -35,6 +35,17 @@ export default function MasterPlanClient() {
         heightClass="h-[480px] sm:h-[620px] lg:h-[750px]" 
         onDownloadClick={() => setIsModalOpen(true)}
       />
+
+      {/* Mobile Download Button - Below Master Plan in Mobile View */}
+      <div className="md:hidden flex justify-center pt-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all active:scale-95 cursor-pointer text-center"
+        >
+          <Download className="w-4 h-4 text-white" />
+          <span>Download High-Res PDF Map</span>
+        </button>
+      </div>
 
       {/* Lead Gated Map Download Modal */}
       <MapDownloadModal

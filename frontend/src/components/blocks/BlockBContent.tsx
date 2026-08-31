@@ -617,16 +617,6 @@ export default function BlockBContent() {
                 </strong>
                 <span className="text-[11px] text-slate-500 block">225ft Grand Boulevard, Faisal Hills</span>
               </div>
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=Faisal+Hills+Taxila+Block+B"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl shadow-xs transition-all hover:scale-105 shrink-0 cursor-pointer"
-              >
-                <Navigation className="w-3 h-3" />
-                <span>Open Map</span>
-                <ExternalLink className="w-2.5 h-2.5 text-white/80" />
-              </a>
             </div>
 
             <div className="relative w-full h-[320px] sm:h-[360px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
@@ -660,7 +650,7 @@ export default function BlockBContent() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={() => setIsMapModalOpen(true)}
@@ -715,6 +705,18 @@ export default function BlockBContent() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mobile Download Button - Below Master Plan in Mobile View */}
+        <div className="sm:hidden flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setIsMapModalOpen(true)}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold transition-all shadow-xs cursor-pointer text-center"
+          >
+            <Download className="w-4 h-4 text-white" />
+            <span>Download PDF Map</span>
+          </button>
         </div>
       </section>
 
