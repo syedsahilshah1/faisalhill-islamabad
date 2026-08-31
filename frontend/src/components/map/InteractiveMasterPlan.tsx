@@ -154,6 +154,48 @@ export default function InteractiveMasterPlan({
 
   const handleMouseUp = () => setIsDragging(false);
 
+  const touchStartDistRef = React.useRef<number | null>(null);
+  const touchStartZoomRef = React.useRef<number>(1);
+
+  const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - pan.x,
+        y: e.touches[0].clientY - pan.y
+      });
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      touchStartDistRef.current = getTouchDistance(e.touches[0], e.touches[1]);
+      touchStartZoomRef.current = zoomLevel;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging && zoomLevel > 1) {
+      setPan({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y
+      });
+    } else if (e.touches.length === 2 && touchStartDistRef.current) {
+      const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
+      const scaleFactor = currentDist / touchStartDistRef.current;
+      const newZoom = Math.min(Math.max(Number((touchStartZoomRef.current * scaleFactor).toFixed(1)), 1.0), 12.0);
+      setZoomLevel(newZoom);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchStartDistRef.current = null;
+  };
+
   const [mapImageSrc, setMapImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
 
   React.useEffect(() => {
@@ -314,7 +356,11 @@ export default function InteractiveMasterPlan({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className={`flex-grow relative bg-slate-950 overflow-hidden flex items-center justify-center p-6 min-h-[420px] lg:w-2/3 border-b lg:border-b-0 lg:border-r border-slate-800 select-none ${
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          className={`flex-grow relative bg-slate-950 overflow-hidden flex items-center justify-center p-3 sm:p-6 min-h-[360px] sm:min-h-[420px] lg:w-2/3 border-b lg:border-b-0 lg:border-r border-slate-800 select-none touch-none ${
             isDragging ? 'cursor-grabbing' : zoomLevel > 1 ? 'cursor-grab' : 'cursor-default'
           }`}
         >
