@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { fetchPlots, PlotItem, formatPlotPrice } from '@/data/faisalHillsData';
 import {
   Building2,
   MapPin,
@@ -554,10 +555,81 @@ export const CommercialPlotsExplorer: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [selectedPlotModal, setSelectedPlotModal] = useState<CommercialPlotDetail | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
+  const [liveCommercialPlots, setLiveCommercialPlots] = useState<CommercialPlotDetail[]>(COMMERCIAL_PLOTS_INVENTORY);
+
+  // Sync dynamic plots uploaded from Admin panel via API
+  useEffect(() => {
+    const syncPlots = () => {
+      fetchPlots().then((plots: PlotItem[]) => {
+        if (!plots || plots.length === 0) return;
+
+        const dbCommercial = plots
+          .filter((p) => p.category === 'Commercial' || p.propertyType === 'Commercial')
+          .map((p) => {
+            const rawPrice = p.price || 0;
+            const sizeNumeric = parseFloat(p.size) || 5;
+
+            return {
+              id: p.id,
+              plotNumber: p.plotNumber || `COM-${p.id}`,
+              title: p.description || `${p.size} Commercial Plot in ${p.blockName}`,
+              blockSlug: p.blockSlug,
+              blockName: p.blockName,
+              category: 'Sector Commercial' as const,
+              sizeMarla: sizeNumeric,
+              sizeLabel: p.size,
+              dimensions: p.dimensions || 'Standard Commercial Cut',
+              roadWidth: p.location || p.facing || 'Main Avenue / Boulevard',
+              facing: p.facing || 'Main Road',
+              heightPermission: 'G + 4 Storeys Approved',
+              pricePKR: rawPrice,
+              priceFormatted: p.priceFormatted || formatPlotPrice(rawPrice),
+              priceRangeFormatted: p.priceFormatted || formatPlotPrice(rawPrice),
+              capitalGrowth: p.priceHistoryTrend || '+28% Annual Appreciation',
+              possessionStatus: p.status === 'Available' ? 'Possession Ready' : (p.status as any),
+              installmentAvailable: p.status !== 'Sold',
+              image: p.image || '/images/commercial-boulevard-1.jpg',
+              galleryImages: [
+                p.image || '/images/commercial-boulevard-1.jpg',
+                '/images/faisal-hills-master-plan-map-opt.webp',
+                '/images/faisalexecutivemap.png'
+              ],
+              features: p.features && p.features.length > 0 ? p.features : [
+                'Direct Commercial Corridor Link',
+                'Approved Ground + 4 Commercial Zoning',
+                'High Footfall Commercial Strip',
+                'Immediate Allotment & Demarcation'
+              ],
+              description: p.description || `Prime commercial plot in ${p.blockName}, Faisal Hills. Ready for investment or plaza construction.`,
+              suitableFor: [
+                'Commercial Retail & Office Plaza',
+                'Supermarket / Pharmacy / Food Chain',
+                'Corporate Workspace & Business Suites'
+              ],
+              badge: p.featured ? 'Featured Plot' : undefined
+            } as CommercialPlotDetail;
+          });
+
+        if (dbCommercial.length > 0) {
+          // Merge unique by ID / plotNumber
+          const existingIds = new Set(dbCommercial.map((c) => c.id));
+          const existingPlotNums = new Set(dbCommercial.map((c) => c.plotNumber.toLowerCase()));
+          const staticRemain = COMMERCIAL_PLOTS_INVENTORY.filter(
+            (s) => !existingIds.has(s.id) && !existingPlotNums.has(s.plotNumber.toLowerCase())
+          );
+          setLiveCommercialPlots([...dbCommercial, ...staticRemain]);
+        }
+      }).catch(console.error);
+    };
+
+    syncPlots();
+    window.addEventListener('faisal_plots_updated', syncPlots);
+    return () => window.removeEventListener('faisal_plots_updated', syncPlots);
+  }, []);
 
   // Filtered & Sorted Plots
   const filteredPlots = useMemo(() => {
-    return COMMERCIAL_PLOTS_INVENTORY.filter((plot) => {
+    return liveCommercialPlots.filter((plot) => {
       // Block filter
       if (selectedBlock !== 'all' && plot.blockSlug !== selectedBlock) {
         return false;
@@ -596,7 +668,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
       if (sortBy === 'size-desc') return b.sizeMarla - a.sizeMarla;
       return 0; // featured default order
     });
-  }, [selectedBlock, selectedSize, selectedStatus, searchQuery, sortBy]);
+  }, [liveCommercialPlots, selectedBlock, selectedSize, selectedStatus, searchQuery, sortBy]);
 
   const handleOpenModal = (plot: CommercialPlotDetail) => {
     setSelectedPlotModal(plot);
