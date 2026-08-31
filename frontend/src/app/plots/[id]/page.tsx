@@ -318,10 +318,10 @@ export default function PlotDetailPage() {
                   <span className="label-caps text-[#7b002c] font-bold block mb-1">Geographic Location Map</span>
                   <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-[#7b002c]" />
-                    <span>{currentPlot.blockName} Master Plan & Plot Position</span>
+                    <span>{currentPlot.blockName} Master Plan Layout</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Explore the high-resolution master layout, sector avenues, and surrounding infrastructure for Plot #{currentPlot.plotNumber}.
+                    Explore the official high-resolution master blueprint, road networks, and sector avenues.
                   </p>
                 </div>
 

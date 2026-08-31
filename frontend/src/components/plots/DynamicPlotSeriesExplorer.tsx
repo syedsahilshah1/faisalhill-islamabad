@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Home,
   Building2,
@@ -13,6 +14,9 @@ import {
   ShieldCheck,
   ChevronRight,
   Filter,
+  ArrowRight,
+  ExternalLink,
+  FileText
 } from 'lucide-react';
 import {
   PlotItem,
@@ -366,62 +370,93 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
               {/* Individual Available Plots Drill-Down Chips in this Series */}
               {activeSeries.plots.length > 0 ? (
                 <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                      Verified Plots in Series {activeSeries.label}
-                    </span>
-                    <span className="text-[11px] text-slate-500">
-                      Real-time inventory from database
-                    </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                        Verified Plots in Series {activeSeries.label}
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        Top real-time listings from database
+                      </span>
+                    </div>
+
+                    {/* See All Plots / Full Inventory Redirect Button */}
+                    <Link
+                      href={`/plots?block=${encodeURIComponent(blockSlug || '')}&size=${encodeURIComponent(selectedSize || '')}`}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#7b002c]/10 hover:bg-[#7b002c] text-[#7b002c] hover:text-white rounded-xl text-xs font-bold transition-all shadow-xs border border-[#7b002c]/20 hover:border-[#7b002c] self-start sm:self-auto cursor-pointer group"
+                    >
+                      <span>See All Plots in Inventory ({activeSeries.plots.length} Available)</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {activeSeries.plots.map((plot) => (
-                      <div
-                        key={plot.id}
-                        className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-[#7b002c] shadow-xs group hover:shadow-md transition-all flex flex-col justify-between gap-3"
-                      >
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <span className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors">
-                              {(plot as any).displayNumber || `Plot #${plot.plotNumber}`}
-                            </span>
-                            <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                plot.locationType === 'Corner + Park'
-                                  ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                                  : plot.locationType === 'Park Facing'
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                  : plot.locationType === 'Corner'
-                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                  : plot.locationType === 'Main Boulevard'
-                                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                                  : 'bg-slate-100 text-slate-700'
-                              }`}
-                            >
-                              {plot.locationType}
-                            </span>
-                          </div>
+                    {activeSeries.plots.slice(0, 3).map((plot) => {
+                      const plotDetailUrl = `/plots/${plot.id || plot.plotNumber}`;
+                      return (
+                        <div
+                          key={plot.id}
+                          className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-[#7b002c] shadow-xs group hover:shadow-md transition-all flex flex-col justify-between gap-3 relative"
+                        >
+                          {/* Clickable Card Header & Info */}
+                          <Link href={plotDetailUrl} className="space-y-1.5 block">
+                            <div className="flex items-center justify-between">
+                              <span className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors flex items-center gap-1.5">
+                                <span>{(plot as any).displayNumber || `Plot #${plot.plotNumber}`}</span>
+                                <span className="text-[10px] text-slate-400 font-normal">→ Details</span>
+                              </span>
+                              <span
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                  plot.locationType === 'Corner + Park'
+                                    ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                    : plot.locationType === 'Park Facing'
+                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                    : plot.locationType === 'Corner'
+                                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                    : plot.locationType === 'Main Boulevard'
+                                    ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                    : 'bg-slate-100 text-slate-700'
+                                }`}
+                              >
+                                {plot.locationType}
+                              </span>
+                            </div>
 
-                          <div className="flex items-center justify-between text-xs pt-1">
-                            <span className="text-slate-500 font-mono">{plot.dimensions}</span>
-                            <strong className="text-[#7b002c] font-serif font-bold text-sm">
-                              {plot.price > 0 ? formatPKR(plot.price) : 'Contact for Price'}
-                            </strong>
+                            <div className="flex items-center justify-between text-xs pt-1">
+                              <span className="text-slate-500 font-mono">{plot.dimensions}</span>
+                              <strong className="text-[#7b002c] font-serif font-bold text-sm">
+                                {plot.price > 0 ? formatPKR(plot.price) : 'Contact for Price'}
+                              </strong>
+                            </div>
+                            
+                            <p className="text-[11px] text-slate-500 line-clamp-1 pt-0.5">
+                              View plot specifications &amp; verified allotment details
+                            </p>
+                          </Link>
+
+                          {/* Action Buttons: View Details & WhatsApp */}
+                          <div className="grid grid-cols-2 gap-2 pt-1">
+                            <Link
+                              href={plotDetailUrl}
+                              className="py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 text-center"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-[#7b002c]" />
+                              <span>Details</span>
+                            </Link>
+
+                            <a
+                              href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 text-center cursor-pointer shadow-xs"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>Inquire</span>
+                            </a>
                           </div>
                         </div>
-
-                        <a
-                          href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full py-2 bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                        >
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          <span>Inquire {(plot as any).displayNumber || `Plot #${plot.plotNumber}`}</span>
-                        </a>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ) : (

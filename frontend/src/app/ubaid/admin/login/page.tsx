@@ -501,6 +501,20 @@ export default function AdminLoginPage() {
       }
     }
 
+    const getBlockDefaultCoords = (slug: string) => {
+      const s = (slug || '').toLowerCase();
+      if (s.includes('executive')) return { x: 20, y: 46 };
+      if (s.includes('block-a') || s === 'a') return { x: 38, y: 40 };
+      if (s.includes('b1') || s.includes('extension')) return { x: 44, y: 78 };
+      if (s.includes('block-b') || s === 'b') return { x: 46, y: 64 };
+      if (s.includes('block-c') || s === 'c') return { x: 64, y: 48 };
+      if (s.includes('block-d') || s === 'd') return { x: 84, y: 58 };
+      if (s.includes('prime')) return { x: 76, y: 24 };
+      if (s.includes('jewel')) return { x: 15, y: 44 };
+      if (s.includes('hills-walk')) return { x: 56, y: 48 };
+      return { x: 84, y: 58 };
+    };
+
     const plotData: Partial<PlotItem> = {
       plotNumber: plotForm.plotNumber.trim() || undefined,
       blockSlug: plotForm.blockSlug,
@@ -517,7 +531,8 @@ export default function AdminLoginPage() {
       description: plotForm.description.trim() || undefined,
       image: plotForm.image.trim() || undefined,
       featured: plotForm.featured,
-      displayOrder: Number(plotForm.displayOrder) || 0
+      displayOrder: Number(plotForm.displayOrder) || 0,
+      mapCoords: getBlockDefaultCoords(plotForm.blockSlug)
     };
 
     try {
@@ -2648,14 +2663,39 @@ export default function AdminLoginPage() {
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-800">Description (Optional)</label>
+                  {/* Description & Quick Status Tags */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-slate-800">Description &amp; File Status (Optional)</label>
+                      <span className="text-[10px] text-slate-400">Click quick tags below to insert</span>
+                    </div>
+
+                    {/* Quick NDC & Feature Shortcut Pills */}
+                    <div className="flex flex-wrap gap-1.5 pb-1">
+                      {['NDC Open', 'NDC Close', '60ft Road', 'MDR (Main Double Road)', 'Possession Ready', 'Direct Owner Allotment', 'Park Facing'].map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => {
+                            setPlotForm(prev => {
+                              const currentDesc = prev.description ? prev.description.trim() : '';
+                              if (currentDesc.includes(tag)) return prev;
+                              const updated = currentDesc ? `${currentDesc} • ${tag}` : tag;
+                              return { ...prev, description: updated };
+                            });
+                          }}
+                          className="px-2.5 py-1 bg-white hover:bg-rose-50 border border-slate-300 hover:border-[#7b002c] text-[11px] font-semibold text-slate-700 hover:text-[#7b002c] rounded-lg transition-all cursor-pointer shadow-2xs active:scale-95"
+                        >
+                          + {tag}
+                        </button>
+                      ))}
+                    </div>
+
                     <textarea 
                       rows={2}
                       value={plotForm.description}
                       onChange={(e) => setPlotForm(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Enter details, location highlights, possession info..."
+                      placeholder="e.g. NDC Open, 60ft Road, ready for immediate transfer..."
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
