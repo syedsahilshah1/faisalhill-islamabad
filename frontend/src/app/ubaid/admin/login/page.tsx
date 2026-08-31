@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
-  Trash2, Plus, Users, DollarSign, Calendar, Eye, Layers, ArrowUpRight, ArrowLeft,
+  Trash2, Plus, Users, DollarSign, Calendar, Eye, EyeOff, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
   CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X,
-  Loader2
+  Loader2, ChevronDown, Mail
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
@@ -123,8 +123,9 @@ function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise
 
 export default function AdminLoginPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('ubaid');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
@@ -685,23 +686,6 @@ export default function AdminLoginPage() {
       })
       .catch(err => {
         setErrorMsg(err.message || 'The provided credentials are incorrect.');
-      });
-  };
-
-  const handleQuickDemoLogin = () => {
-    adminLogin('ubaid', 'admin123')
-      .then(res => {
-        setToken(res.token);
-        setCurrentUser(res.user);
-        setIsAuthenticated(true);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('faisal_admin_token', res.token);
-          sessionStorage.setItem('faisal_admin_user', JSON.stringify(res.user));
-        }
-        setErrorMsg('');
-      })
-      .catch(err => {
-        setErrorMsg('Failed to login. Please ensure Laravel backend is running.');
       });
   };
 
@@ -1685,8 +1669,8 @@ export default function AdminLoginPage() {
   // -------------------------------------------------------------
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-sans">
-        <div className="max-w-md w-full bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-8 shadow-2xl relative overflow-hidden">
+      <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans relative z-10">
+        <div className="max-w-md w-full bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 sm:space-y-8 shadow-2xl relative overflow-hidden my-auto">
           
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#4c050d] via-[#7b002c] to-amber-600" />
 
@@ -1717,23 +1701,55 @@ export default function AdminLoginPage() {
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300">Admin Username or Email</label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="admin-username-input" className="block text-xs font-semibold text-slate-300 cursor-pointer">
+                  Admin Username or Email
+                </label>
+                {username && (
+                  <button
+                    type="button"
+                    onClick={() => setUsername('')}
+                    className="text-[11px] text-slate-400 hover:text-amber-400 font-medium transition cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <input
+                  id="admin-username-input"
+                  name="username"
                   type="text"
                   required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  autoComplete="username email"
+                  spellCheck="false"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username or Email (e.g. ubaid or ubaidnasir147.un@gmail.com)"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-[#7b002c] transition"
+                  onFocus={(e) => e.target.select()}
+                  placeholder="e.g. ubaidnasir147.un@gmail.com"
+                  className="w-full pl-10 pr-10 py-3 bg-slate-900 border border-slate-800 rounded-xl text-base sm:text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-[#7b002c] focus:ring-1 focus:ring-[#7b002c] transition select-text touch-manipulation"
                 />
-                <Shield className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Shield className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                {username && (
+                  <button
+                    type="button"
+                    onClick={() => setUsername('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition rounded-full cursor-pointer"
+                    title="Clear field"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-slate-300">Password / Security Key</label>
+                <label htmlFor="admin-password-input" className="block text-xs font-semibold text-slate-300 cursor-pointer">
+                  Password / Security Key
+                </label>
                 <Link
                   href="/forgot-password"
                   className="text-[11px] font-bold text-rose-300 hover:text-white transition-colors"
@@ -1743,14 +1759,26 @@ export default function AdminLoginPage() {
               </div>
               <div className="relative">
                 <input
-                  type="password"
+                  id="admin-password-input"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={(e) => e.target.select()}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-[#7b002c] transition"
+                  className="w-full pl-10 pr-10 py-3 bg-slate-900 border border-slate-800 rounded-xl text-base sm:text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-[#7b002c] focus:ring-1 focus:ring-[#7b002c] transition select-text touch-manipulation"
                 />
-                <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition rounded-full cursor-pointer"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </div>
 
@@ -1758,30 +1786,20 @@ export default function AdminLoginPage() {
               type="submit"
               className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 border border-white/10 cursor-pointer"
             >
-              <Lock className="w-4 h-4 text-white" />
+              <Lock className="w-4 h-4 text-white pointer-events-none" />
               <span>Login to Control Panel</span>
             </button>
           </form>
 
-          {/* Quick Demo Access Button */}
-          <div className="pt-4 border-t border-slate-900 text-center space-y-3">
-            <button
-              type="button"
-              onClick={handleQuickDemoLogin}
-              className="text-xs text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-4 cursor-pointer"
+          {/* Return link */}
+          <div className="pt-4 border-t border-slate-900 text-center">
+            <Link 
+              href="/" 
+              className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition"
             >
-              Instant Admin Authorization (1-Click Login)
-            </button>
-            
-            <div>
-              <Link 
-                href="/" 
-                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Return to Public Website</span>
-              </Link>
-            </div>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Public Website</span>
+            </Link>
           </div>
 
         </div>
@@ -1792,190 +1810,147 @@ export default function AdminLoginPage() {
   // -------------------------------------------------------------
   // 2. AUTHENTICATED ADMIN DASHBOARD
   // -------------------------------------------------------------
+  const dashboardTabs = [
+    { id: 'series', label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync' },
+    { id: 'plots', label: `Plots Inventory (${plots.length})`, icon: Layers },
+    { id: 'blocks', label: `Blocks & BG Images (${blocksList.length})`, icon: Building2 },
+    { id: 'legal', label: 'Legal Policies (Terms & Privacy)', icon: BookOpen },
+    { id: 'accounts', label: 'Bank Accounts & Contacts', icon: CreditCard },
+    { id: 'gallery', label: `Photo Gallery (${galleryList.length})`, icon: Camera },
+    { id: 'seo', label: `SEO & Meta Tags (${seoSettings.pages.length} Pages)`, icon: Globe },
+    { id: 'verification', label: 'Verification Date', icon: ShieldCheck },
+    { id: 'leads', label: `Inquiries Log (${leadsList.length})`, icon: Users },
+    { id: 'blogs', label: `Blogs CMS (${blogsList.length})`, icon: FileText },
+    ...(currentUser?.role === 'super_admin' ? [{ id: 'users', label: 'Administrators', icon: Users, badge: 'Super Admin' }] : []),
+    { id: 'security', label: 'Security & Password', icon: KeyRound },
+  ];
+
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-sans">
+    <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 font-sans">
       
       {/* Top Action Bar */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between gap-2 bg-white p-2.5 sm:p-3.5 rounded-2xl border border-slate-200/90 shadow-sm">
         <Link 
           href="/" 
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 transition-all hover:scale-105"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] bg-rose-50/80 hover:bg-rose-100/80 px-3 py-2 rounded-xl transition-all active:scale-95"
         >
-          <ArrowLeft className="w-4 h-4 text-[#7b002c]" />
-          <span>Back to Main Portal</span>
+          <ArrowLeft className="w-4 h-4 text-[#7b002c] shrink-0" />
+          <span className="hidden sm:inline">Back to Main Portal</span>
+          <span className="sm:hidden">Public Site</span>
         </Link>
 
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-red-600 bg-white border border-slate-200 px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Logout (Admin: {username})</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="hidden xs:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
+            <Shield className="w-3.5 h-3.5 text-[#7b002c]" />
+            <span className="truncate max-w-[120px] sm:max-w-[200px]">{currentUser?.name || username}</span>
+            {currentUser?.role === 'super_admin' && (
+              <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-[#7b002c] text-white">
+                Super Admin
+              </span>
+            )}
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-red-600 bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 px-3 py-2 rounded-xl transition-all cursor-pointer active:scale-95"
+            title="Logout from admin session"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
+        </div>
       </div>
 
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#4c050d] text-white p-5 sm:p-8 rounded-2xl border border-[#7b002c] shadow-xl relative overflow-hidden">
-        <div className="relative z-10 flex items-center gap-3.5">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white text-[#7b002c] rounded-xl font-bold flex items-center justify-center shadow-lg shrink-0">
-            <Database className="w-6 h-6 sm:w-7 sm:h-7 text-[#7b002c]" />
+      {/* Top Header Card */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 bg-gradient-to-br from-[#4c050d] via-[#61071e] to-[#7b002c] text-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#7b002c]/50 shadow-xl relative overflow-hidden">
+        <div className="relative z-10 flex items-start sm:items-center gap-3 sm:gap-4">
+          <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white/95 text-[#7b002c] rounded-xl sm:rounded-2xl font-bold flex items-center justify-center shadow-lg shrink-0">
+            <Database className="w-5 h-5 sm:w-7 sm:h-7 text-[#7b002c]" />
           </div>
           <div>
-            <span className="label-caps text-[10px] sm:text-xs text-slate-200 font-bold tracking-widest block">Management Control Panel • Logged in as: {username}</span>
-            <h1 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span className="text-[10px] sm:text-xs font-bold text-rose-200 uppercase tracking-widest block">
+                Management Control Panel
+              </span>
+              <span className="text-[10px] text-amber-300 font-semibold">• Live Online</span>
+            </div>
+            <h1 className="font-serif text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight mt-0.5">
               Faisal Hills Admin Dashboard
             </h1>
           </div>
         </div>
 
-        <div className="relative z-10 flex flex-wrap items-center justify-between md:justify-end gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-white/20">
-          <div className="text-left md:text-right text-xs">
-            <span className="text-slate-200 block text-[9px] sm:text-[10px] uppercase font-semibold">Data Verification Date</span>
-            <strong className="text-white font-bold text-xs">{verifiedDate}</strong>
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-white/15">
+          <div className="flex items-center justify-between sm:flex-col sm:items-end text-xs bg-black/20 sm:bg-transparent p-2.5 sm:p-0 rounded-xl">
+            <span className="text-slate-300 text-[10px] uppercase font-semibold">Verification Date</span>
+            <strong className="text-white font-bold text-xs sm:text-sm">{verifiedDate}</strong>
           </div>
           <button
             onClick={triggerSave}
-            className="px-4 sm:px-5 py-2.5 sm:py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 transition-all hover:scale-105 btn-shimmer active:scale-95 shrink-0 border border-white/20 cursor-pointer"
+            className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-white text-[#7b002c] hover:bg-rose-50 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
           >
-            <Save className="w-4 h-4 text-white" />
+            <Save className="w-4 h-4 text-[#7b002c]" />
             <span>Publish Updates</span>
           </button>
         </div>
       </div>
 
       {saveNotification && (
-        <div className="bg-slate-900 border border-[#7b002c] text-white px-4 sm:px-5 py-3.5 rounded-xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-sm">
+        <div className="bg-slate-900 border border-[#7b002c] text-white px-4 sm:px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-md">
           <CheckCircle2 className="w-4 h-4 text-[#22c55e] shrink-0" />
           <span>{notificationMsg}</span>
         </div>
       )}
 
-      {/* Tabs Bar */}
-      <div className="flex border-b border-slate-200 gap-1 sm:gap-4 text-xs font-bold overflow-x-auto pb-1 no-scrollbar">
-        <button
-          onClick={() => setActiveTab('series')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'series' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Sparkles className="w-4 h-4 text-[#7b002c]" />
-          <span>⚡ Plot Series & Prices (All Blocks)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('plots')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'plots' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Layers className="w-4 h-4 text-[#7b002c]" />
-          <span>Plots Inventory ({plots.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('blocks')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'blocks' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Building2 className="w-4 h-4 text-[#7b002c]" />
-          <span>Blocks & BG Images ({blocksList.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('legal')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'legal' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <BookOpen className="w-4 h-4 text-[#7b002c]" />
-          <span>Legal Policies (Terms & Privacy)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('accounts')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'accounts' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <CreditCard className="w-4 h-4 text-[#7b002c]" />
-          <span>Bank Accounts & Contacts</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('gallery')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'gallery' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Camera className="w-4 h-4 text-[#7b002c]" />
-          <span>Photo Gallery ({galleryList.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('seo')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'seo' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Globe className="w-4 h-4 text-[#7b002c]" />
-          <span>SEO & Meta Tags ({seoSettings.pages.length} Pages)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('verification')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'verification' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4 text-[#7b002c]" />
-          <span>Verification Date</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('leads')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'leads' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Users className="w-4 h-4 text-[#7b002c]" />
-          <span>Inquiries Log</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('blogs')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'blogs' ? 'border-[#7b002c] text-[#7b002c] font-bold' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <FileText className="w-4 h-4 text-[#7b002c]" />
-          <span>Blogs CMS ({blogsList.length})</span>
-        </button>
-
-        {currentUser?.role === 'super_admin' && (
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              activeTab === 'users' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+      {/* Mobile Tab Quick Switcher (Dropdown for compact mobile navigation) */}
+      <div className="lg:hidden bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm space-y-1.5">
+        <label htmlFor="mobile-tab-select" className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">
+          Jump to Management Section
+        </label>
+        <div className="relative">
+          <select
+            id="mobile-tab-select"
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value as any)}
+            className="w-full pl-3.5 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:ring-1 focus:ring-[#7b002c] transition appearance-none cursor-pointer"
           >
-            <Users className="w-4 h-4 text-[#7b002c]" />
-            <span>Administrators</span>
-            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-100 text-[#7b002c]">
-              Super Admin
-            </span>
-          </button>
-        )}
+            {dashboardTabs.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
+      </div>
 
-        <button
-          onClick={() => setActiveTab('security')}
-          className={`py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-            activeTab === 'security' ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/60 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <KeyRound className="w-4 h-4 text-[#7b002c]" />
-          <span>Security & Password</span>
-        </button>
+      {/* Horizontal Scrollable Tabs Strip */}
+      <div className="flex border-b border-slate-200 gap-1.5 sm:gap-2 text-xs font-bold overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
+        {dashboardTabs.map((tab) => {
+          const IconComp = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`py-2.5 sm:py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer rounded-t-xl text-xs ${
+                isActive
+                  ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/80 shadow-xs'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <IconComp className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#7b002c]' : 'text-slate-400'}`} />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
+                  isActive ? 'bg-[#7b002c] text-white' : 'bg-rose-100 text-[#7b002c]'
+                }`}>
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
 

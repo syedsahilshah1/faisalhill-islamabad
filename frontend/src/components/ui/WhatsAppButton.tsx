@@ -1,16 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { defaultSocialLinks, SocialLinksData, fetchSettingByKey, formatWhatsAppUrl } from '@/data/faisalHillsData';
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
 
   const defaultMessage = 'Hi, I am interested in Faisal Hills Islamabad. Please share details.';
+
+  // Hide WhatsApp floating widget on admin and auth recovery pages
+  if (
+    pathname?.startsWith('/ubaid') ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/forgot-password') ||
+    pathname?.startsWith('/reset-password')
+  ) {
+    return null;
+  }
 
   useEffect(() => {
     const syncSocials = () => {
