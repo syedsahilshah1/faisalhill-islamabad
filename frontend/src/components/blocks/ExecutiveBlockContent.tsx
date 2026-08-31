@@ -717,7 +717,7 @@ export default function ExecutiveBlockContent() {
                       </Link>
 
                       <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification details.`)}`}
+                        href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification details.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
@@ -748,7 +748,7 @@ export default function ExecutiveBlockContent() {
           </div>
 
           <a
-            href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Executive%20Block."
+            href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Executive%20Block."
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center justify-center gap-2 active:scale-95"
@@ -1138,7 +1138,7 @@ export default function ExecutiveBlockContent() {
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <a
-                href="https://wa.me/923044811717?text=Hi%2C%20I%20need%20official%20assistance%20with%20plot%20transfer%20in%20Faisal%20Hills%20Executive%20Block."
+                href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20official%20assistance%20with%20plot%20transfer%20in%20Faisal%20Hills%20Executive%20Block."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105"
@@ -1276,7 +1276,7 @@ export default function ExecutiveBlockContent() {
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. +92 304 4811717"
+                  placeholder="e.g. +92 333 1113177"
                   value={leadPhone}
                   onChange={(e) => setLeadPhone(e.target.value)}
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all"

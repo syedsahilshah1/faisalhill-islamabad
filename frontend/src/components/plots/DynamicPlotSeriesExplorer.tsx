@@ -229,7 +229,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     Prime Block offers guaranteed fixed launch rates without series fluctuations or hidden premiums.
                   </p>
                   <a
-                    href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Fixed%20Price%20Booking%20in%20Prime%20Block.`}
+                    href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Fixed%20Price%20Booking%20in%20Prime%20Block.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
@@ -412,7 +412,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                         </div>
 
                         <a
-                          href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
+                          href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full py-2 bg-slate-100 hover:bg-[#7b002c] text-slate-700 hover:text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
@@ -436,7 +436,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   Individual plot prices reflect exact road width, facing (Corner/Park), and immediate possession status.
                 </p>
                 <a
-                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Series%20${activeSeries.label}%20plots%20in%20${encodeURIComponent(blockName)}.`}
+                  href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Series%20${activeSeries.label}%20plots%20in%20${encodeURIComponent(blockName)}.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
@@ -513,7 +513,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     Direct commercial inventory near Faisal Jewel skyscraper and Roots International School.
                   </p>
                   <a
-                    href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedComPlot.size)}%20Commercial%20Plot%20in%20${encodeURIComponent(blockName)}.`}
+                    href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedComPlot.size)}%20Commercial%20Plot%20in%20${encodeURIComponent(blockName)}.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"

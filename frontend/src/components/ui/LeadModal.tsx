@@ -66,7 +66,7 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
     );
     
     // Open WhatsApp after brief delay
-    let whatsappNum = '923044811717';
+    let whatsappNum = '923331113177';
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem('faisal_social_links');

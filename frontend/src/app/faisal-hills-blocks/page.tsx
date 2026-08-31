@@ -524,7 +524,7 @@ export default function FaisalHillsBlocksPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
             <a
-              href="https://wa.me/923044811717"
+              href="https://wa.me/923331113177"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-sm shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer font-sans"
@@ -534,7 +534,7 @@ export default function FaisalHillsBlocksPage() {
             </a>
 
             <a
-              href="tel:+923044811717"
+              href="tel:+923331113177"
               className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-sm shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-95 border border-white/20 font-sans"
             >
               <PhoneCall className="w-4 h-4 text-white" />

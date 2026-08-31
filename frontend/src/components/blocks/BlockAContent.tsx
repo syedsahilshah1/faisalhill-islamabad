@@ -952,7 +952,7 @@ export default function BlockAContent() {
                       </Link>
 
                       <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(`Hi, I am interested in Block A Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share details.`)}`}
+                        href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in Block A Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share details.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-1.5 sm:px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
@@ -984,7 +984,7 @@ export default function BlockAContent() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
             <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20sell%2Frent%20my%20property%20in%20Faisal%20Hills%20Block%20A."
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20sell%2Frent%20my%20property%20in%20Faisal%20Hills%20Block%20A."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg hover:scale-105"
@@ -1023,7 +1023,7 @@ export default function BlockAContent() {
             </div>
 
             <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20need%20the%20latest%20Block%20A%20plot%20price%20quotation."
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20the%20latest%20Block%20A%20plot%20price%20quotation."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold transition shadow-sm self-start sm:self-auto"
@@ -1067,7 +1067,7 @@ export default function BlockAContent() {
                   <span className="font-serif font-bold text-sm text-[#7b002c]">{row.priceRange}</span>
                 </div>
                 <a
-                  href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
+                  href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#7b002c] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#9e1245] transition-all"
@@ -1118,7 +1118,7 @@ export default function BlockAContent() {
                       </td>
                       <td className="p-4 sm:p-5 text-right">
                         <a
-                          href={`https://wa.me/923044811717?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
+                          href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-[#7b002c] hover:text-white rounded-lg text-xs font-bold transition-all"

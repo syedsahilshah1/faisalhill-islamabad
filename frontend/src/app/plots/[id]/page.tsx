@@ -367,7 +367,7 @@ export default function PlotDetailPage() {
 
               {/* WhatsApp Direct Action Button */}
               <a
-                href={`https://wa.me/923044811717?text=${whatsappMessage}`}
+                href={`https://wa.me/923331113177?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold tracking-wider uppercase transition-all duration-300 hover:scale-102 active:scale-98 shadow-md cursor-pointer flex items-center justify-center gap-2"
@@ -378,11 +378,11 @@ export default function PlotDetailPage() {
 
               {/* Direct Call Button */}
               <a
-                href="tel:+923044811717"
+                href="tel:+923331113177"
                 className="w-full py-3 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold transition flex items-center justify-center gap-2"
               >
                 <Phone className="w-3.5 h-3.5 text-[#7b002c]" />
-                <span>Call +92 304 4811717</span>
+                <span>Call +92 333 1113177</span>
               </a>
 
               {/* Security Badges */}

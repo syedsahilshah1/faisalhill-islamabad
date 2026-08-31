@@ -905,7 +905,7 @@ export default function HillsWalkContent() {
                       </button>
 
                       <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                        href={`https://wa.me/923331113177?text=${encodeURIComponent(
                           `Hi! I am interested in booking Hills Walk Commercial Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
                         )}`}
                         target="_blank"
@@ -934,7 +934,7 @@ export default function HillsWalkContent() {
             </div>
 
             <a
-              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20commercial%20plot%20in%20Faisal%20Hills%20Walk."
+              href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20commercial%20plot%20in%20Faisal%20Hills%20Walk."
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
@@ -1167,7 +1167,7 @@ export default function HillsWalkContent() {
                     <span>View Available {selectedCalcSize} Plots</span>
                   </a>
                   <a
-                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                    href={`https://wa.me/923331113177?text=${encodeURIComponent(
                       `Hello! I am interested in verified ${selectedCalcSize} commercial plots listed for sale in Faisal Hills Walk.`
                     )}`}
                     target="_blank"
@@ -1282,7 +1282,7 @@ export default function HillsWalkContent() {
 
               <div className="pt-2">
                 <a
-                  href="https://wa.me/923044811717?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20commercial%20plaza%20plot%20in%20Faisal%20Hills%20Walk."
+                  href="https://wa.me/923331113177?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20commercial%20plaza%20plot%20in%20Faisal%20Hills%20Walk."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"

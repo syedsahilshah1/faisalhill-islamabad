@@ -47,7 +47,7 @@ export default function FHLocationPage() {
         `Hello Faisal Hills Team!\n\nI want to schedule a Free Site Visit.\nName: ${name}\nPhone: ${phone}\nPreferred Date: ${visitDate}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
         setName('');
         setPhone('');
         setVisitDate('');
@@ -242,7 +242,7 @@ export default function FHLocationPage() {
             <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block">Or Contact Directly</span>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <a
-                href="https://wa.me/923044811717"
+                href="https://wa.me/923331113177"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
@@ -251,7 +251,7 @@ export default function FHLocationPage() {
                 <span>WhatsApp</span>
               </a>
               <a
-                href="tel:+923044811717"
+                href="tel:+923331113177"
                 className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-slate-600" />

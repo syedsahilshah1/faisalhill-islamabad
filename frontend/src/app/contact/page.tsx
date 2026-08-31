@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('contact');
 
   const title = seo?.title || 'Contact Faisal Hills – Head Office Phone, WhatsApp & Site Office';
-  const description = seo?.meta_description || 'Contact Faisal Hills Islamabad & Taxila sales office. Call +92 331 3339997 or WhatsApp +92 304 4811717 for verified plot rates, booking forms, site visit schedules, and RDA NOC verification.';
+  const description = seo?.meta_description || 'Contact Faisal Hills Islamabad & Taxila sales office. Call +92 331 3339997 or WhatsApp +92 333 1113177 for verified plot rates, booking forms, site visit schedules, and RDA NOC verification.';
   const canonical = seo?.canonical_url || `${BASE_URL}/contact`;
   const ogImg = seo?.og_image || `${BASE_URL}/images/faisalhillarc.jpg`;
   const keywords = seo?.keywords 

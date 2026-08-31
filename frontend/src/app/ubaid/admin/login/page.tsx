@@ -4175,7 +4175,7 @@ export default function AdminLoginPage() {
                   type="text"
                   value={socialLinks.whatsapp || ''}
                   onChange={(e) => setSocialLinks(prev => ({ ...prev, whatsapp: e.target.value }))}
-                  placeholder="+923044811717"
+                  placeholder="+923331113177"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
                 />
               </div>
@@ -4251,7 +4251,7 @@ export default function AdminLoginPage() {
                   type="text"
                   value={contactInfo.salesHotline || ''}
                   onChange={(e) => setContactInfo(prev => ({ ...prev, salesHotline: e.target.value }))}
-                  placeholder="+92 304 4811 717"
+                  placeholder="+92 333 1113177"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
                 />
               </div>

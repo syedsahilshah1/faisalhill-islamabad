@@ -55,7 +55,7 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
         `Hi Faisal Hills Desk!\n\nI want rate list and available plots in *${blockName}*.\nName: ${name}\nPhone: ${phone}\nPlot Size: ${plotSize}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
       }, 700);
 
     } catch (err) {

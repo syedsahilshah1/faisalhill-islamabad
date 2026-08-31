@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   Phone, Mail, MapPin, Facebook, Instagram, MessageSquare, Linkedin, Youtube, ShieldCheck, ArrowUpRight
 } from 'lucide-react';
-import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey } from '@/data/faisalHillsData';
+import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl } from '@/data/faisalHillsData';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -32,7 +32,7 @@ export default function Footer() {
           if (cachedC) setContact(JSON.parse(cachedC));
           const cachedS = localStorage.getItem('faisal_social_links');
           if (cachedS) setSocials(JSON.parse(cachedS));
-        } catch (e) {}
+        } catch (e) { }
       }
     };
     syncContact();
@@ -86,15 +86,6 @@ export default function Footer() {
             <div className="flex items-start gap-3">
               <Phone className="w-4 h-4 text-white shrink-0 mt-0.5" />
               <div className="space-y-1">
-                {contact.phoneNumbers && contact.phoneNumbers.length > 0 ? (
-                  contact.phoneNumbers.map((num, i) => (
-                    <p key={i}><strong className="text-white font-semibold">Official Line {i + 1}:</strong> {num}</p>
-                  ))
-                ) : (
-                  <>
-                  
-                  </>
-                )}
                 <p className="pt-1">
                   <strong className="text-white font-semibold">Sales Hotline & WhatsApp:</strong>{' '}
                   <a href={`tel:${(contact.salesHotline || '+923331113177').replace(/\s+/g, '')}`} className="underline font-bold text-white hover:text-amber-300">
@@ -128,10 +119,7 @@ export default function Footer() {
                   <strong className="text-white font-semibold block">Head Office:</strong>
                   {contact.headOffice || 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.'}
                 </p>
-                <p>
-                  <strong className="text-white font-semibold block">Rawalpindi Sales Desk:</strong>
-                  {contact.salesDesk || 'Office #401 Noor Mall 6th Road Rawalpindi.'}
-                </p>
+
               </div>
             </div>
 
@@ -278,24 +266,49 @@ export default function Footer() {
 
           {/* Social Media Outline Icons Row */}
           <div className="flex items-center gap-2.5 pt-2">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors">
+            <a
+              href={socials.facebook || 'https://facebook.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors"
+              aria-label="Follow on Facebook"
+            >
               <Facebook className="w-4 h-4" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors">
+            <a
+              href={socials.instagram || 'https://instagram.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors"
+              aria-label="Follow on Instagram"
+            >
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="https://wa.me/923044811717" target="_blank" rel="noopener noreferrer"
-              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors">
+            <a
+              href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I am interested in Faisal Hills Islamabad.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors"
+              aria-label="Chat on WhatsApp"
+            >
               <MessageSquare className="w-4 h-4" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors">
+            <a
+              href={socials.linkedin || 'https://linkedin.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors"
+              aria-label="Connect on LinkedIn"
+            >
               <Linkedin className="w-4 h-4" />
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors">
+            <a
+              href={socials.youtube || 'https://youtube.com'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 border border-white/40 rounded flex items-center justify-center hover:bg-white hover:text-[#4c0215] text-white transition-colors"
+              aria-label="Watch on YouTube"
+            >
               <Youtube className="w-4 h-4" />
             </a>
           </div>

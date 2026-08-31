@@ -27,8 +27,8 @@ export function generateOrganizationSchema(siteUrl = 'https://faisalhills.com.pk
     'logo': `${siteUrl}/icon.svg`,
     'image': `${siteUrl}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`,
     'description': 'Official marketing & sales portal for Faisal Hills Rawalpindi / Taxila, an RDA-approved master-planned mega housing society on Main GT Road.',
-    'telephone': '+923044811717',
-    'email': 'info@faisalhills.com.pk',
+    'telephone': '+923331113177',
+    'email': 'info@faisalhillsislamabadfh.com',
     'address': {
       '@type': 'PostalAddress',
       'streetAddress': 'Main GT Road, Near MPCHS Interchange',
@@ -142,7 +142,7 @@ export function generateContactSchema(siteUrl = 'https://faisalhills.com.pk') {
       '@type': 'RealEstateAgent',
       'name': 'Faisal Hills Islamabad Sales Desk',
       'telephone': '+923313339997',
-      'email': 'info@faisalhills.com',
+      'email': 'info@faisalhillsislamabadfh.com',
       'address': {
         '@type': 'PostalAddress',
         'streetAddress': 'Main GT Road (N-5), near Taxila',

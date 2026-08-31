@@ -146,7 +146,7 @@ export default function PaymentPlanClient() {
     );
 
     setTimeout(() => {
-      window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+      window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
     }, 600);
   };
 
@@ -247,7 +247,7 @@ export default function PaymentPlanClient() {
             <ScrollReveal direction="up" delay={200}>
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
                 <a
-                  href="https://wa.me/923044811717"
+                  href="https://wa.me/923331113177"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
@@ -265,7 +265,7 @@ export default function PaymentPlanClient() {
             </ScrollReveal>
 
             <div className="pt-2 text-xs text-slate-400 font-medium">
-              Speak to a sales consultant: <a href="tel:+923044811717" className="text-amber-400 font-bold hover:underline">+92 304 4811717</a>
+              Speak to a sales consultant: <a href="tel:+923331113177" className="text-amber-400 font-bold hover:underline">+92 333 1113177</a>
             </div>
           </div>
 
@@ -779,7 +779,7 @@ export default function PaymentPlanClient() {
                     {item.savings}
                   </span>
                   <a
-                    href={`https://wa.me/923044811717?text=Hello%2C%20I%20would%20like%20the%20official%20schedule%20for%20${encodeURIComponent(item.size)}.`}
+                    href={`https://wa.me/923331113177?text=Hello%2C%20I%20would%20like%20the%20official%20schedule%20for%20${encodeURIComponent(item.size)}.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all inline-flex items-center gap-1.5"
@@ -1461,7 +1461,7 @@ export default function PaymentPlanClient() {
 
             <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 pt-2">
               <a
-                href="https://wa.me/923044811717"
+                href="https://wa.me/923331113177"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"

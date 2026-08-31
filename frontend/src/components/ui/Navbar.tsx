@@ -334,7 +334,7 @@ export default function Navbar() {
                 : 'text-white bg-white/10 hover:bg-white/20 border border-white/20'
                 }`}
               aria-label="Call Sales Desk"
-              title={`Call ${contact.salesHotline || '+92 304 4811 717'}`}
+              title={`Call ${contact.salesHotline || '+92 333 1113177'}`}
             >
               <Phone className="w-4 h-4 text-inherit" />
             </a>
@@ -455,7 +455,7 @@ export default function Navbar() {
                   ? 'bg-[#7b002c] hover:bg-[#9e1245] text-white'
                   : 'bg-[#7b002c] hover:bg-[#9e1245] text-white border border-white/10'
                   }`}
-                title={`Call Helpline: ${contact.salesHotline || '+92 304 4811 717'}`}
+                title={`Call Helpline: ${contact.salesHotline || '+92 333 1113177'}`}
               >
                 <Image
                   src="/images/girl-headphone-support.png"
@@ -464,7 +464,7 @@ export default function Navbar() {
                   height={20}
                   className="w-5 h-5 rounded-full object-cover shrink-0"
                 />
-                <span>{contact.salesHotline || '+92 304 4811 717'}</span>
+                <span>{contact.salesHotline || '+92 333 1113177'}</span>
               </a>
             </div>
 

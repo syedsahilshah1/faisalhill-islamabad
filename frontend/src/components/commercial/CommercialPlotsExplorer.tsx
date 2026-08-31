@@ -903,7 +903,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
                     </button>
 
                     <a
-                      href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20am%20interested%20in%20commercial%20plot%20${plot.plotNumber}%20(${plot.sizeLabel}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details%20and%20payment%20plan.`}
+                      href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20am%20interested%20in%20commercial%20plot%20${plot.plotNumber}%20(${plot.sizeLabel}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details%20and%20payment%20plan.`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-1.5 sm:py-2.5 px-2 sm:px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all cursor-pointer"
@@ -1196,7 +1196,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
                 </button>
 
                 <a
-                  href={`https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20want%20to%20reserve/book%20commercial%20plot%20${selectedPlotModal.plotNumber}%20(${selectedPlotModal.sizeLabel}%20in%20${selectedPlotModal.blockName}).%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
+                  href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20want%20to%20reserve/book%20commercial%20plot%20${selectedPlotModal.plotNumber}%20(${selectedPlotModal.sizeLabel}%20in%20${selectedPlotModal.blockName}).%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"

@@ -80,13 +80,13 @@ export default function NotFound() {
           <p className="text-[11px] text-slate-500">
             Need urgent help finding a specific sector?{' '}
             <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20got%20a%20404%20error%20and%20need%20help%20finding%20information%20on%20Faisal%20Hills."
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20got%20a%20404%20error%20and%20need%20help%20finding%20information%20on%20Faisal%20Hills."
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1"
             >
               <MessageSquare className="w-3 h-3" />
-              Chat on WhatsApp (+92 304 4811717)
+              Chat on WhatsApp (+92 333 1113177)
             </a>
           </p>
         </div>

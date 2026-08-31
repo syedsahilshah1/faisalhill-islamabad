@@ -735,7 +735,7 @@ export default function AboutUsClient() {
             </button>
 
             <a
-              href="https://wa.me/923044811717?text=Hello%2C%20I%20would%20like%20to%20consult%20with%20the%20Faisal%20Hills%20advisory%20team%20regarding%20plot%20options."
+              href="https://wa.me/923331113177?text=Hello%2C%20I%20would%20like%20to%20consult%20with%20the%20Faisal%20Hills%20advisory%20team%20regarding%20plot%20options."
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all hover:scale-105"

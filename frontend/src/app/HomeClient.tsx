@@ -1272,7 +1272,7 @@ export default function HomeClient() {
 
             <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
               <a
-                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20looking%20for%20available%20plots%20for%20sale%20in%20Faisal%20Hills."
+                href="https://wa.me/923331113177?text=Hi%2C%20I%20am%20looking%20for%20available%20plots%20for%20sale%20in%20Faisal%20Hills."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
@@ -1804,7 +1804,7 @@ export default function HomeClient() {
 
           <ScrollReveal direction="up" delay={150} className="flex items-center justify-center lg:justify-end gap-3">
             <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20know%20more%20about%20Faisal%20Hills%20Infrastructure%20and%20Landmarks."
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20know%20more%20about%20Faisal%20Hills%20Infrastructure%20and%20Landmarks."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105"
@@ -2305,7 +2305,7 @@ export default function HomeClient() {
               </a>
 
               <a
-                href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20ready%20to%20secure%20my%20plot%20in%20Faisal%20Hills."
+                href="https://wa.me/923331113177?text=Hi%2C%20I%20am%20ready%20to%20secure%20my%20plot%20in%20Faisal%20Hills."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
@@ -2356,7 +2356,7 @@ export default function HomeClient() {
       {/* Floating Luxury Quick Contact Widget (As in reference screenshot) */}
       <div className="fixed bottom-6 right-6 z-[990] flex items-center gap-3">
         <a
-          href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills."
+          href="https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills."
           target="_blank"
           rel="noopener noreferrer"
           className="w-12 h-12 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 border border-white/30 cursor-pointer"

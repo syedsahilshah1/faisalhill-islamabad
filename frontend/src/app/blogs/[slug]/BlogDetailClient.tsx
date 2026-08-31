@@ -66,7 +66,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
         `Hello Faisal Hills Team!\n\nI am requesting a Free Consultation.\nName: ${consultName}\nPhone: ${consultPhone}\nLocation: ${consultLocation}\nArticle: ${blog.title}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
         setConsultName('');
         setConsultPhone('');
         setConsultLocation('');
@@ -114,7 +114,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
         `Hello Faisal Hills Team!\n\nI want to send you a message:\nName: ${sidebarName}\nPhone: ${sidebarPhone}\nEmail: ${sidebarEmail}\nArticle: ${blog.title}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923044811717?text=${waText}`, '_blank');
+        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
         setSidebarName('');
         setSidebarPhone('');
         setSidebarEmail('');

@@ -317,7 +317,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                   <span>Call Sales Desk</span>
                 </a>
                 <a
-                  href="https://wa.me/923044811717?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
+                  href="https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
@@ -1525,7 +1525,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
                 <a
-                  href="https://wa.me/923044811717"
+                  href="https://wa.me/923331113177"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
@@ -1941,7 +1941,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                           <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
                         </div>
                         <a
-                          href={`https://wa.me/923044811717?text=I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`}
+                          href={`https://wa.me/923331113177?text=I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1.5"
@@ -2424,7 +2424,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <a
-                href="https://wa.me/923044811717"
+                href="https://wa.me/923331113177"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
@@ -2434,11 +2434,11 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               </a>
 
               <a
-                href="tel:+923044811717"
+                href="tel:+923331113177"
                 className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20"
               >
                 <PhoneCall className="w-4 h-4 text-white" />
-                <span>CALL +92 304 4811 717</span>
+                <span>CALL +92 333 1113177</span>
               </a>
             </div>
           </div>

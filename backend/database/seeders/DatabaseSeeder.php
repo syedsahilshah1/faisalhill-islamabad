@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
             SiteSetting::create([
                 'key' => 'social_links',
                 'value' => [
-                    'whatsapp' => '+923044811717',
+                    'whatsapp' => '+923331113177',
                     'facebook' => 'https://facebook.com',
                     'instagram' => 'https://instagram.com',
                     'youtube' => 'https://youtube.com',
@@ -180,9 +180,9 @@ class DatabaseSeeder extends Seeder
                 'value' => [
                     'headOffice' => 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.',
                     'siteOffice' => 'Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad',
-                    'salesDesk' => 'Office #401 Noor Mall 6th Road Rawalpindi.',
-                    'phoneNumbers' => ['051-111-324-725', '051-2720504-5', '051-450000-2', '051-5443746-7'],
-                    'salesHotline' => '+92 304 4811 717',
+                    'salesDesk' => null,
+                    'phoneNumbers' => [],
+                    'salesHotline' => '+92 333 1113177',
                     'email' => 'info@faisalhillsislamabadfh.com'
                 ]
             ]);

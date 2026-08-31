@@ -9,7 +9,7 @@ import {
   Globe2, Check, HelpCircle, PhoneCall, ExternalLink, Calendar,
   ArrowUpRight, AlertCircle, Sparkles, ChevronRight, Home, Store
 } from 'lucide-react';
-import { blocksData, submitLead } from '@/data/faisalHillsData';
+import { blocksData, submitLead, fetchSettingByKey, formatWhatsAppUrl, defaultSocialLinks, SocialLinksData } from '@/data/faisalHillsData';
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -18,6 +18,13 @@ export default function ContactClient() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isHeroSeeMoreOpen, setIsHeroSeeMoreOpen] = useState(false);
   const [isAboutSeeMoreOpen, setIsAboutSeeMoreOpen] = useState(false);
+  const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
+
+  React.useEffect(() => {
+    fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
+      if (data) setSocials(data);
+    }).catch(console.error);
+  }, []);
 
   // Interactive Mobile/Desktop Tab States
   const [selectedBlockTab, setSelectedBlockTab] = useState<string>('executive');
@@ -44,11 +51,9 @@ export default function ContactClient() {
       message: `[Country: ${country}] [Budget: ${budgetRange}] [Email: ${email}] Message: ${message}`
     }).then(() => {
       setIsSubmitted(true);
-      const waMessage = encodeURIComponent(
-        `Hi Faisal Hills Sales Desk!\n\nI submitted a Contact Inquiry:\nName: ${fullName}\nPhone/WhatsApp: ${phone}\nCountry: ${country}\nBlock: ${preferredBlock}\nPlot Size: ${plotSize}\nBudget: ${budgetRange}\nPurpose: ${purpose}\n${message ? `Query: ${message}` : ''}`
-      );
+      const waMessage = `Hi Faisal Hills Sales Desk!\n\nI submitted a Contact Inquiry:\nName: ${fullName}\nPhone/WhatsApp: ${phone}\nCountry: ${country}\nBlock: ${preferredBlock}\nPlot Size: ${plotSize}\nBudget: ${budgetRange}\nPurpose: ${purpose}\n${message ? `Query: ${message}` : ''}`;
       setTimeout(() => {
-        window.open(`https://wa.me/923044811717?text=${waMessage}`, '_blank');
+        window.open(formatWhatsAppUrl(socials.whatsapp, waMessage), '_blank');
       }, 600);
     }).catch(err => {
       console.error(err);
@@ -175,7 +180,7 @@ export default function ContactClient() {
     },
     {
       q: "What are the official sales office timings?",
-      a: "Our sales and advisory desk operates Monday to Saturday from 10:00 AM to 6:00 PM. Our digital WhatsApp lines (+92 304 4811717) are active 24/7 for overseas time zones."
+      a: "Our sales and advisory desk operates Monday to Saturday from 10:00 AM to 6:00 PM. Our digital WhatsApp lines (+92 333 1113177) are active 24/7 for overseas time zones."
     }
   ];
 
@@ -229,7 +234,7 @@ export default function ContactClient() {
               </a>
 
               <a
-                href="https://wa.me/923044811717?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20looking%20for%20verified%20plot%20rates%20and%20booking%20details."
+                href="https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20looking%20for%20verified%20plot%20rates%20and%20booking%20details."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer"
@@ -282,7 +287,7 @@ export default function ContactClient() {
           </a>
 
           <a
-            href="https://wa.me/923044811717?text=Hi%20Faisal%20Hills,%20I%20need%20plot%20details."
+            href="https://wa.me/923331113177?text=Hi%20Faisal%20Hills,%20I%20need%20plot%20details."
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-emerald-500 transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
@@ -298,13 +303,13 @@ export default function ContactClient() {
             <div>
               <span className="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">WhatsApp Desk</span>
               <strong className="text-xs sm:text-base font-serif font-bold text-slate-900 group-hover:text-emerald-600 transition-colors block truncate">
-                +92 304 4811717
+                +92 333 1113177
               </strong>
             </div>
           </a>
 
           <a
-            href="mailto:info@faisalhills.com"
+            href="mailto:info@faisalhillsislamabadfh.com"
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-amber-500 transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
           >
             <div className="flex items-center justify-between">
@@ -318,7 +323,7 @@ export default function ContactClient() {
             <div>
               <span className="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Official Email</span>
               <strong className="text-xs sm:text-base font-serif font-bold text-slate-900 group-hover:text-amber-600 transition-colors block truncate">
-                info@faisalhills.com
+                info@faisalhillsislamabadfh.com
               </strong>
             </div>
           </a>
@@ -608,7 +613,7 @@ export default function ContactClient() {
                 <div>
                   <strong className="text-xs font-bold text-slate-900 block">On WhatsApp</strong>
                   <p className="text-[11px] text-slate-600">Preferred for digital maps, NOCs, and payment plans.</p>
-                  <a href="https://wa.me/923044811717" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-emerald-600 hover:underline mt-1 block">+92 304 4811717</a>
+                  <a href="https://wa.me/923331113177" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-emerald-600 hover:underline mt-1 block">+92 333 1113177</a>
                 </div>
               </div>
 
@@ -617,7 +622,7 @@ export default function ContactClient() {
                 <div>
                   <strong className="text-xs font-bold text-slate-900 block">By Email</strong>
                   <p className="text-[11px] text-slate-600">Formal written quotations and documentation requests.</p>
-                  <a href="mailto:info@faisalhills.com" className="text-xs font-bold text-amber-600 hover:underline mt-1 block">info@faisalhills.com</a>
+                  <a href="mailto:info@faisalhillsislamabadfh.com" className="text-xs font-bold text-amber-600 hover:underline mt-1 block">info@faisalhillsislamabadfh.com</a>
                 </div>
               </div>
 
@@ -862,7 +867,7 @@ export default function ContactClient() {
             </a>
 
             <a
-              href="https://wa.me/923044811717?text=Hi%2C%20I%20want%20to%20get%20in%20touch%20with%20Faisal%20Hills."
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20get%20in%20touch%20with%20Faisal%20Hills."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 sm:px-6 sm:py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105 cursor-pointer"
@@ -872,7 +877,7 @@ export default function ContactClient() {
             </a>
 
             <a
-              href="mailto:info@faisalhills.com"
+              href="mailto:info@faisalhillsislamabadfh.com"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 sm:px-6 sm:py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105 cursor-pointer"
             >
               <Mail className="w-3.5 h-3.5" />

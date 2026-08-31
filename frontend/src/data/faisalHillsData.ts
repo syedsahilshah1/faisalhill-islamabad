@@ -491,13 +491,13 @@ export const blocksData: BlockInfo[] = [
       { question: "What is Faisal Jewel Islamabad?", answer: "Faisal Jewel Islamabad is a 27-storey mixed-use high-rise development located in Faisal Hills, at the intersection of Margalla Avenue, GT Road, and the M1 Motorway. The project includes 250 luxury residential apartments, 350+ commercial shops, 3 basement parking levels with 1,000+ spaces, and a 4-star hotel. It is being developed by Zedem Properties Pvt. Ltd. and CAM Construction, with a projected completion of Q4 2027." },
       { question: "Where is Faisal Jewel located?", answer: "Faisal Jewel is located in Faisal Hills, Rawalpindi/Islamabad, at the strategic crossroads of Margalla Avenue, the Grand Trunk (GT) Road, and the M1 Motorway. The site is approximately 30–35 minutes from Islamabad International Airport and provides easy access to key areas including Blue Area Islamabad, Sector F-10, Taxila City, Wah Cantt, and HiTech University." },
       { question: "What is the starting price of apartments in Faisal Jewel?", answer: "Apartments in Faisal Jewel start at PKR 580,000. The entry-level option is a one-bedroom apartment with a total area of 1,295 sq. ft., which includes a 200 sq. ft. living room, 150 sq. ft. bedroom, 100 sq. ft. kitchen, and 50 sq. ft. bathroom. Prices vary by floor level and unit type. Contact the sales team for a current pricing schedule." },
-      { question: "What is the payment plan for Faisal Jewel apartments and shops?", answer: "Faisal Jewel offers a flexible installment plan to make the purchase accessible. The structure typically involves a down payment of 20–30% at booking, quarterly instalments spread across the construction period, and a final payment of approximately 10% on possession in Q4 2027. Exact terms depend on the unit type and floor. Contact our team at +92 304 4811 717 for a personalised payment schedule." },
+      { question: "What is the payment plan for Faisal Jewel apartments and shops?", answer: "Faisal Jewel offers a flexible installment plan to make the purchase accessible. The structure typically involves a down payment of 20–30% at booking, quarterly instalments spread across the construction period, and a final payment of approximately 10% on possession in Q4 2027. Exact terms depend on the unit type and floor. Contact our team at +92 333 1113177 for a personalised payment schedule." },
       { question: "Who is the developer of Faisal Jewel?", answer: "Faisal Jewel is a joint venture between Zedem Properties Pvt. Ltd. and CAM Construction — two of Pakistan's most reputable names in real estate development and high-rise construction. Zedem Properties brings project development and commercial expertise, while CAM Construction handles the structural engineering and build quality." },
       { question: "When will Faisal Jewel be completed?", answer: "The targeted completion date for Faisal Jewel is Q4 2027. The project is currently under active construction, and regular updates are shared through the official website and sales team communications. Buyers are encouraged to register their details to receive project milestone notifications." },
       { question: "Is Faisal Jewel approved by the RDA?", answer: "Faisal Jewel is situated within the Faisal Hills development, which operates under the framework of an RDA-approved community. Buyers are advised to confirm the latest NOC and approval status directly with the developer's sales team, as documentation can be provided upon request." },
       { question: "What amenities does Faisal Jewel offer?", answer: "Faisal Jewel provides a comprehensive range of world-class amenities including a rooftop swimming pool, fully equipped fitness centre, rooftop lounge, gaming room, 24/7 security surveillance, in-building cafés, retail outlets on commercial floors, a business centre, and three levels of basement parking with over 1,000 spaces. Hotel residents also benefit from concierge services, restaurant dining, and WiFi throughout." },
       { question: "Can I invest in commercial shops in Faisal Jewel?", answer: "Yes. Faisal Jewel offers 350+ commercial shops across its six commercial floors, making it one of the largest commercial investment opportunities in the Faisal Hills area. Shops are available for sale on an instalment plan and are expected to generate strong rental yields due to the project's high-footfall location and the in-building hotel and apartment population. Contact the investment team for available inventory and pricing." },
-      { question: "How do I book a unit in Faisal Jewel Islamabad?", answer: "Booking a unit in Faisal Jewel Islamabad is straightforward. You can call or WhatsApp the sales team at +92 304 4811 717, visit the official website at faisalhillsislamabadfh.com, or send an email to info@faisalhillsislamabadfh.com. The team will share available inventory, floor plans, payment plan options, and guide you through the booking process step by step." }
+      { question: "How do I book a unit in Faisal Jewel Islamabad?", answer: "Booking a unit in Faisal Jewel Islamabad is straightforward. You can call or WhatsApp the sales team at +92 333 1113177, visit the official website at faisalhillsislamabadfh.com, or send an email to info@faisalhillsislamabadfh.com. The team will share available inventory, floor plans, payment plan options, and guide you through the booking process step by step." }
     ],
     developmentUpdates: [
       { title: "Floor 14 Slab Concrete Pouring", date: "August 2026", image: "/faisal-jewel.jpg", progress: 60, text: "High-strength RCC structure progressing smoothly." }
@@ -1903,7 +1903,7 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
       if (stored) {
         localBlogs = JSON.parse(stored);
       }
-    } catch {}
+    } catch { }
   }
 
   try {
@@ -1911,7 +1911,7 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
     if (!res.ok) throw new Error('Failed to fetch blogs');
     const data = await res.json();
     const mapped = Array.isArray(data) ? data.map(mapBlogToCamel) : [];
-    
+
     // Combine local custom blogs with API results (no dummy data)
     const combined = [...localBlogs, ...mapped];
     const seen = new Set<string>();
@@ -1942,7 +1942,7 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
         const found = localBlogs.find(b => b.slug === slug || b.id === slug);
         if (found) return found;
       }
-    } catch {}
+    } catch { }
   }
 
   try {
@@ -2303,7 +2303,7 @@ export const defaultBankAccounts: BankAccountItem[] = [
 ];
 
 export const defaultSocialLinks: SocialLinksData = {
-  whatsapp: '+923044811717',
+  whatsapp: '+923331113177',
   facebook: 'https://facebook.com',
   instagram: 'https://instagram.com',
   youtube: 'https://youtube.com',
@@ -2314,9 +2314,9 @@ export const defaultSocialLinks: SocialLinksData = {
 export const defaultContactInfo: ContactInfoData = {
   headOffice: 'Faisal Tower, Faisal Town Main Fateh Jang Road N-80 near Tarnol Interchange Motorway M-1, Rawalpindi Pakistan.',
   siteOffice: 'Main Gate Entrance, N-5 GT Road, Near Taxila Bypass, Rawalpindi / Islamabad',
-  salesDesk: 'Office #401 Noor Mall 6th Road Rawalpindi.',
-  phoneNumbers: ['051-111-324-725', '051-2720504-5', '051-450000-2', '051-5443746-7'],
-  salesHotline: '+92 304 4811 717',
+  salesDesk: '',
+  phoneNumbers: [],
+  salesHotline: '+92 333 1113177',
   email: 'info@faisalhillsislamabadfh.com'
 };
 
@@ -2337,8 +2337,8 @@ export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
 
 export function formatWhatsAppUrl(rawNumber?: string, message?: string): string {
   const defaultText = message ? `?text=${encodeURIComponent(message)}` : '';
-  if (!rawNumber || !rawNumber.trim()) return `https://wa.me/923044811717${defaultText}`;
-  
+  if (!rawNumber || !rawNumber.trim()) return `https://wa.me/923331113177${defaultText}`;
+
   let digits = rawNumber.replace(/\D/g, '');
   if (digits.startsWith('0092')) {
     digits = digits.slice(2);
@@ -2347,11 +2347,11 @@ export function formatWhatsAppUrl(rawNumber?: string, message?: string): string 
   } else if (!digits.startsWith('92') && (digits.length === 10 || digits.length === 11)) {
     digits = '92' + digits;
   }
-  return `https://wa.me/${digits || '923044811717'}${defaultText}`;
+  return `https://wa.me/${digits || '923331113177'}${defaultText}`;
 }
 
 export function formatTelUrl(rawNumber?: string): string {
-  if (!rawNumber || !rawNumber.trim()) return 'tel:+923044811717';
+  if (!rawNumber || !rawNumber.trim()) return 'tel:+923331113177';
   let cleaned = rawNumber.replace(/[^\d+]/g, '');
   if (cleaned.startsWith('03')) {
     cleaned = '+92' + cleaned.slice(1);
@@ -2360,7 +2360,7 @@ export function formatTelUrl(rawNumber?: string): string {
   } else if (!cleaned.startsWith('+') && cleaned.startsWith('92')) {
     cleaned = '+' + cleaned;
   }
-  return `tel:${cleaned || '+923044811717'}`;
+  return `tel:${cleaned || '+923331113177'}`;
 }
 
 

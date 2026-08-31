@@ -187,8 +187,8 @@ export default function SeoDashboardTab({
         facebookAppId: seoSettings.facebookAppId,
         twitterHandle: seoSettings.twitterHandle,
         organizationName: seoSettings.organizationName || 'Zedem International (Pvt) Ltd - Faisal Hills',
-        organizationPhone: seoSettings.organizationPhone || '+92 304 4811717',
-        organizationEmail: seoSettings.organizationEmail || 'info@faisalhills.com.pk',
+        organizationPhone: seoSettings.organizationPhone || '+92 333 1113177',
+        organizationEmail: seoSettings.organizationEmail || 'info@faisalhillsislamabadfh.com',
         organizationAddress: seoSettings.organizationAddress || 'Main GT Road, Taxila / Rawalpindi',
         defaultRobotsIndex: seoSettings.defaultRobotsIndex !== false,
         defaultRobotsFollow: seoSettings.defaultRobotsFollow !== false,
@@ -1187,7 +1187,7 @@ export default function SeoDashboardTab({
 
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2 font-mono">
                 <div><strong>Org:</strong> {seoSettings.organizationName || 'Zedem International'}</div>
-                <div><strong>Phone:</strong> {seoSettings.organizationPhone || '+92 304 4811717'}</div>
+                <div><strong>Phone:</strong> {seoSettings.organizationPhone || '+92 333 1113177'}</div>
                 <div><strong>Coordinates:</strong> 33.7431° N, 72.7844° E</div>
               </div>
             </div>

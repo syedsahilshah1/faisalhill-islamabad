@@ -1015,7 +1015,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                       </button>
 
                       <a
-                        href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                        href={`https://wa.me/923331113177?text=${encodeURIComponent(
                           `Hi! I am interested in booking Faisal Jewel Unit #${unit.unitNumber} (${unit.category} - ${unit.priceFormatted}). Please share verification & installment details.`
                         )}`}
                         target="_blank"
@@ -1044,7 +1044,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             </div>
 
             <a
-              href="https://wa.me/923044811717?text=Hello!%20I%20want%20to%20book%20a%20commercial%20shop%20or%20luxury%20apartment%20in%20Faisal%20Jewel%20Islamabad."
+              href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20book%20a%20commercial%20shop%20or%20luxury%20apartment%20in%20Faisal%20Jewel%20Islamabad."
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
@@ -1274,7 +1274,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                     <span>View Available {selectedCalcUnit} Units</span>
                   </a>
                   <a
-                    href={`https://wa.me/923044811717?text=${encodeURIComponent(
+                    href={`https://wa.me/923331113177?text=${encodeURIComponent(
                       `Hello! I am interested in booking a ${selectedCalcUnit} in Faisal Jewel Islamabad.`
                     )}`}
                     target="_blank"
@@ -1389,7 +1389,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
 
               <div className="pt-2">
                 <a
-                  href="https://wa.me/923044811717?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20unit%20in%20Faisal%20Jewel%20Islamabad."
+                  href="https://wa.me/923331113177?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20unit%20in%20Faisal%20Jewel%20Islamabad."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"
