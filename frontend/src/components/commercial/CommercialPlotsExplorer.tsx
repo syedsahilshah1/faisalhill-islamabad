@@ -644,9 +644,9 @@ export const CommercialPlotsExplorer: React.FC = () => {
       {/* Filter & Search Bar Controls */}
       <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         {/* Top Search & Filter Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-center">
           {/* Search Input */}
-          <div className="relative md:col-span-4">
+          <div className="relative sm:col-span-2 lg:col-span-4">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
@@ -666,7 +666,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
           </div>
 
           {/* Block Selector */}
-          <div className="md:col-span-3">
+          <div className="sm:col-span-1 lg:col-span-3">
             <select
               value={selectedBlock}
               onChange={(e) => setSelectedBlock(e.target.value)}
@@ -685,7 +685,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
           </div>
 
           {/* Size Filter */}
-          <div className="md:col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             <select
               value={selectedSize}
               onChange={(e) => setSelectedSize(e.target.value)}
@@ -701,7 +701,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
           </div>
 
           {/* Status Filter */}
-          <div className="md:col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
@@ -716,10 +716,10 @@ export const CommercialPlotsExplorer: React.FC = () => {
           </div>
 
           {/* View Mode Toggle */}
-          <div className="md:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
+          <div className="sm:col-span-2 lg:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all ${
+              className={`flex-1 sm:flex-initial p-2 rounded-lg transition-all flex items-center justify-center ${
                 viewMode === 'grid'
                   ? 'bg-white text-[#7b002c] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -730,7 +730,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-2 rounded-lg transition-all ${
+              className={`flex-1 sm:flex-initial p-2 rounded-lg transition-all flex items-center justify-center ${
                 viewMode === 'table'
                   ? 'bg-white text-[#7b002c] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -921,19 +921,19 @@ export const CommercialPlotsExplorer: React.FC = () => {
 
       {/* TABLE VIEW */}
       {viewMode === 'table' && (
-        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full min-w-[860px] text-left text-xs border-collapse">
               <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
                 <tr>
-                  <th className="p-4">Plot # & Name</th>
-                  <th className="p-4">Block</th>
-                  <th className="p-4">Size & Dims</th>
-                  <th className="p-4">Road Width</th>
-                  <th className="p-4">Height Bylaws</th>
-                  <th className="p-4">Price (PKR)</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-center">Action</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Plot # &amp; Name</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Block</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Size &amp; Dims</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Road Width</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Height Bylaws</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Price (PKR)</th>
+                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Status</th>
+                  <th className="p-3.5 sm:p-4 text-center whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">

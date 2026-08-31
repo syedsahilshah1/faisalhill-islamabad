@@ -447,6 +447,7 @@ export default function BlockDContent() {
   const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
   const [selectedAmenityFilter, setSelectedAmenityFilter] = useState<string>('all');
   const [activeWhyInvestOption, setActiveWhyInvestOption] = useState<number | null>(0);
+  const [activeLandmarkIndex, setActiveLandmarkIndex] = useState<number | null>(null);
   const [isSeeMoreOpen, setIsSeeMoreOpen] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -645,9 +646,12 @@ export default function BlockDContent() {
       <section id="location" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 border-b border-slate-200 pb-4">
-          
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Direct Road Access</span>
+            </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Block D Location, Distance Matrix & Motorway Connectivity
+              Block D Location & Live Coordinates
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
               Enjoy rapid dual commuting to Islamabad and Taxila via the Brahma Jhang Bahtar M-1 Interchange and 225ft Grand Boulevard.
@@ -655,60 +659,116 @@ export default function BlockDContent() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: 6 Distance Cards */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {blockDTravelTimes.map((dest, idx) => (
-              <ScrollReveal key={idx} direction="up" delay={idx * 40}>
-                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-serif font-bold text-sm text-slate-900">{dest.destination}</h4>
-                    <span className="text-xs font-bold text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 shrink-0">
+        <ScrollReveal direction="up" delay={100}>
+          <div className="relative w-full h-[320px] sm:h-[400px] lg:h-[460px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+            <iframe
+              title="Faisal Hills Block D Google Map Location"
+              src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
+            />
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 3. NEARBY LANDMARKS & COMMUTE DISTANCES                   */}
+      {/* ========================================================= */}
+      <section id="nearby-landmarks" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-5 sm:space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Nearby Landmarks & Commute Distances from Block D"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
+              Verified travel times and road connectivity distances from Block D to key interchanges, commercial hubs, and twin city landmarks:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Mobile View: Compact Options Accordion List */}
+        <div className="block sm:hidden space-y-2">
+          {blockDTravelTimes.map((dest, idx) => {
+            const isSelected = activeLandmarkIndex === idx;
+            return (
+              <div
+                key={idx}
+                onClick={() => setActiveLandmarkIndex(isSelected ? null : idx)}
+                className={`rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
+                  isSelected
+                    ? 'bg-rose-50/60 border-[#7b002c]/40 shadow-xs'
+                    : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/70'
+                }`}
+              >
+                <div className="p-3 flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors ${
+                      isSelected ? 'bg-[#7b002c] text-white' : 'bg-slate-200 text-slate-700'
+                    }`}>
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-serif font-bold text-xs text-slate-900 truncate">
+                      {dest.destination}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[10px] font-bold text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
                       {dest.time}
                     </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
-                    <span>
-                      Distance: <strong>{dest.distance}</strong>
-                    </span>
-                    <span className="italic text-[11px] text-slate-400 truncate max-w-[170px]">{dest.note}</span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${
+                        isSelected ? 'rotate-180 text-[#7b002c]' : ''
+                      }`}
+                    />
                   </div>
                 </div>
-              </ScrollReveal>
-            ))}
-          </div>
 
-          {/* Right Column: Live Interactive Google Map Embed */}
-          <div className="lg:col-span-5 space-y-3">
-            <div className="flex items-center justify-between gap-2 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-              <div className="space-y-0.5">
-                <strong className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
-                  <span>Block D Live Location Map</span>
-                </strong>
-                <span className="text-[11px] text-slate-500 block">Near Brahma Bahtar M-1 Interchange & Block C</span>
+                {isSelected && (
+                  <div className="px-3.5 pb-3 pt-1 text-[11px] text-slate-600 border-t border-rose-100/80 flex items-center justify-between animate-fadeIn bg-white/60">
+                    <span>Distance: <strong className="text-slate-900 font-semibold">{dest.distance}</strong></span>
+                    <span className="italic text-slate-500">{dest.note}</span>
+                  </div>
+                )}
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-            <div className="relative w-full h-[320px] sm:h-[360px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
-              <iframe
-                title="Faisal Hills Block D Google Map Location"
-                src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full"
-              />
-            </div>
-          </div>
+        {/* Desktop & Tablet View: Grid Cards */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+          {blockDTravelTimes.map((dest, idx) => (
+            <ScrollReveal key={idx} direction="up" delay={idx * 40}>
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-[#7b002c]/40 hover:bg-white hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="font-serif font-bold text-sm text-slate-900">{dest.destination}</h4>
+                  <span className="text-xs font-bold text-[#7b002c] bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 shrink-0">
+                    {dest.time}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500 pt-1.5 border-t border-slate-200/60">
+                  <span>
+                    Distance: <strong className="text-slate-900">{dest.distance}</strong>
+                  </span>
+                  <span className="italic text-[11px] text-slate-400 truncate max-w-[170px]">{dest.note}</span>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 3. MASTER PLAN & SECTOR LAYOUT                            */}
+      {/* 4. MASTER PLAN & SECTOR LAYOUT                            */}
       {/* ========================================================= */}
       <section id="master-plan" className="scroll-mt-28 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
