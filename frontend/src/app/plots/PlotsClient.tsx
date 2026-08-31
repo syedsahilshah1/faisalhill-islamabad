@@ -203,7 +203,7 @@ function PlotSearchContent() {
       <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 items-center">
           {/* Search Input */}
-          <div className="relative sm:col-span-2 lg:col-span-4">
+          <div className="relative sm:col-span-2 lg:col-span-5">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
@@ -273,12 +273,49 @@ function PlotSearchContent() {
               <option value="Apartment">Luxury Flats &amp; Suites</option>
             </select>
           </div>
+        </div>
+      </div>
 
-          {/* View Mode Toggle */}
-          <div className="sm:col-span-2 lg:col-span-1 flex items-center justify-end gap-1 bg-slate-100 p-1 rounded-xl">
+      {/* 3. RESULTS COUNT, SORT SELECTOR & VIEW MODE TOGGLE */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span>
+            Showing <strong className="text-slate-900 font-bold">{filteredPlots.length}</strong> of{' '}
+            <strong>{allPlots.length}</strong> verified properties
+          </span>
+          {hasActiveFilters && (
+            <button
+              onClick={resetFilters}
+              className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              Reset all filters
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400 font-semibold">Sort by:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort plots"
+              className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer text-xs"
+            >
+              <option value="featured">Featured / Best Deal</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="size-asc">Size: Small to Large</option>
+              <option value="size-desc">Size: Large to Small</option>
+            </select>
+          </div>
+
+          {/* Clean View Toggle */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0">
             <button
               onClick={() => setViewMode('grid')}
-              className={`flex-1 sm:flex-initial p-2 rounded-lg transition-all cursor-pointer flex items-center justify-center ${
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                 viewMode === 'grid'
                   ? 'bg-white text-[#7b002c] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -289,7 +326,7 @@ function PlotSearchContent() {
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`flex-1 sm:flex-initial p-2 rounded-lg transition-all cursor-pointer flex items-center justify-center ${
+              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                 viewMode === 'table'
                   ? 'bg-white text-[#7b002c] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -299,40 +336,6 @@ function PlotSearchContent() {
               <List className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* 3. RESULTS COUNT & SORT SELECTOR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 font-sans px-1">
-        <div className="flex items-center gap-3">
-          <span>
-            Showing <strong className="text-slate-900 font-bold">{filteredPlots.length}</strong> of{' '}
-            <strong>{allPlots.length}</strong> verified properties
-          </span>
-          {hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              className="text-[#7b002c] font-bold hover:underline flex items-center gap-1 cursor-pointer ml-2"
-            >
-              <X className="w-3.5 h-3.5" />
-              Reset all filters
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-slate-400 font-semibold">Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            aria-label="Sort plots"
-            className="bg-transparent font-bold text-[#7b002c] focus:outline-none cursor-pointer"
-          >
-            <option value="featured">Featured / Recommended</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Plot Number</option>
-          </select>
         </div>
       </div>
 
@@ -469,24 +472,29 @@ function PlotSearchContent() {
       {/* 5. TABLE VIEW MATRIX */}
       {viewMode === 'table' && (
         <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+          {/* Mobile Scroll Tip */}
+          <div className="sm:hidden px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
+            <span>👉 Swipe horizontally to view all columns &amp; prices</span>
+          </div>
+
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-left text-xs border-collapse">
+            <table className="w-full min-w-[1100px] text-left text-xs border-collapse">
               <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
                 <tr>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Plot # &amp; Title</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Block</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Size &amp; Dims</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Category</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Facing</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Demand Price</th>
-                  <th className="p-3.5 sm:p-4 whitespace-nowrap">Status</th>
-                  <th className="p-3.5 sm:p-4 text-center whitespace-nowrap">Action</th>
+                  <th className="p-4 w-[280px] min-w-[280px] whitespace-nowrap">Plot # &amp; Title</th>
+                  <th className="p-4 w-[140px] min-w-[140px] whitespace-nowrap">Block</th>
+                  <th className="p-4 w-[130px] min-w-[130px] whitespace-nowrap">Size &amp; Dims</th>
+                  <th className="p-4 w-[130px] min-w-[130px] whitespace-nowrap">Category</th>
+                  <th className="p-4 w-[150px] min-w-[150px] whitespace-nowrap">Facing</th>
+                  <th className="p-4 w-[140px] min-w-[140px] whitespace-nowrap">Demand Price</th>
+                  <th className="p-4 w-[140px] min-w-[140px] whitespace-nowrap">Status</th>
+                  <th className="p-4 w-[100px] min-w-[100px] text-center whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {filteredPlots.map((plot) => (
                   <tr key={plot.id} className="hover:bg-rose-50/40 transition-colors">
-                    <td className="p-4">
+                    <td className="p-4 w-[280px] min-w-[280px]">
                       <div
                         onClick={() => setActivePlotForModal(plot)}
                         className="flex items-center gap-3 cursor-pointer group/item"
@@ -495,38 +503,38 @@ function PlotSearchContent() {
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
                           <img src={plot.image} alt={plot.plotNumber} className="w-full h-full object-cover" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <span className="font-mono font-bold text-xs text-[#7b002c]">#{plot.plotNumber}</span>
-                          <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 max-w-[200px] group-hover/item:text-[#7b002c] transition-colors">
+                          <strong className="block font-serif font-bold text-slate-900 text-xs line-clamp-1 group-hover/item:text-[#7b002c] transition-colors">
                             {plot.size} {plot.category}
                           </strong>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 font-semibold text-slate-800">{plot.blockName}</td>
-                    <td className="p-4 font-sans">
+                    <td className="p-4 w-[140px] min-w-[140px] font-semibold text-slate-800 whitespace-nowrap">{plot.blockName}</td>
+                    <td className="p-4 w-[130px] min-w-[130px] font-sans whitespace-nowrap">
                       <strong className="block text-slate-900">{plot.size}</strong>
-                      <span className="text-[10px] text-slate-400">{plot.dimensions}</span>
+                      <span className="text-[10px] text-slate-400 block">{plot.dimensions}</span>
                     </td>
-                    <td className="p-4 font-sans text-slate-600">
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px]">
+                    <td className="p-4 w-[130px] min-w-[130px] font-sans whitespace-nowrap">
+                      <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px] inline-block">
                         {plot.category}
                       </span>
                     </td>
-                    <td className="p-4 font-sans text-slate-600">{plot.facing}</td>
-                    <td className="p-4 font-serif font-bold text-[#7b002c] text-sm whitespace-nowrap">
+                    <td className="p-4 w-[150px] min-w-[150px] font-sans text-slate-600 truncate">{plot.facing}</td>
+                    <td className="p-4 w-[140px] min-w-[140px] font-serif font-bold text-[#7b002c] text-sm whitespace-nowrap">
                       {plot.priceFormatted}
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 w-[140px] min-w-[140px] whitespace-nowrap">
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full whitespace-nowrap">
                         <Check className="w-3 h-3 text-emerald-600" />
                         {plot.status}
                       </span>
                     </td>
-                    <td className="p-4 text-center">
+                    <td className="p-4 w-[100px] min-w-[100px] text-center whitespace-nowrap">
                       <button
                         onClick={() => setActivePlotForModal(plot)}
-                        className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                        className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                       >
                         View Specs
                       </button>
