@@ -25,7 +25,6 @@ import {
   Layers,
   HelpCircle,
   Clock,
-  Compass,
   MessageSquare,
   Home,
   ShoppingBag,
@@ -35,13 +34,11 @@ import {
   Award,
   Send,
   BadgeCheck,
-  ExternalLink,
   Calendar,
   Building,
   Percent,
   Filter,
-  Shield,
-  Navigation
+  Shield
 } from 'lucide-react';
 import LeadModal from '@/components/ui/LeadModal';
 import {
@@ -736,47 +733,22 @@ export default function BlockDContent() {
           </div>
         </div>
 
-        {/* Blueprint Preview Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-8 rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 relative group">
-            <img
-              src="/images/faisal-hills-master-plan-map-opt.webp"
-              alt="Faisal Hills Block D Master Layout Plan"
-              className="w-full h-auto object-cover max-h-[500px]"
-            />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsMapModalOpen(true)}
-                className="px-5 py-2.5 bg-white text-slate-900 rounded-xl text-xs font-bold shadow-lg hover:bg-slate-100 flex items-center gap-1.5 cursor-pointer"
-              >
-                <Maximize2 className="w-4 h-4" />
-                <span>Expand Full Map</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 space-y-4">
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-              <h4 className="font-serif font-bold text-base text-slate-900 flex items-center gap-2">
-                <Compass className="w-4 h-4 text-[#7b002c]" />
-                <span>Sector D Master Key Features</span>
-              </h4>
-              <div className="space-y-2 text-xs text-slate-600">
-                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
-                  <strong>• 50ft & 60ft Street Network:</strong> Wide paved avenues facilitating effortless two-way vehicular transit.
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
-                  <strong>• Scenic Eco Reserve & Green Belts:</strong> Dedicated green open spaces and parks across Sector D.
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-slate-100">
-                  <strong>• Future Medical City Site:</strong> High-density healthcare zone planned for regional medical centers.
-                </div>
-                <div className="p-2.5 rounded-xl bg-rose-50/60 border border-rose-100 text-slate-700">
-                  <strong>• Brahma M-1 Interchange:</strong> 5-minute direct route to the upcoming dedicated motorway ramp.
-                </div>
-              </div>
-            </div>
+        {/* Blueprint Preview Card (Full Width) */}
+        <div className="w-full rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 relative group">
+          <img
+            src="/images/faisal-hills-master-plan-map-opt.webp"
+            alt="Faisal Hills Block D Master Layout Plan"
+            className="w-full h-auto object-cover max-h-[500px]"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMapModalOpen(true)}
+              className="px-5 py-2.5 bg-white text-slate-900 rounded-xl text-xs font-bold shadow-lg hover:bg-slate-100 flex items-center gap-1.5 cursor-pointer"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>Expand Full Map</span>
+            </button>
           </div>
         </div>
 
@@ -974,21 +946,23 @@ export default function BlockDContent() {
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
-              {(['all', 'nature', 'lifestyle', 'infrastructure', 'utilities', 'security'] as const).map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedAmenityFilter(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
-                    selectedAmenityFilter === cat
-                      ? 'bg-[#7b002c] text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="w-full sm:w-auto overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+              <div className="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 min-w-max">
+                {(['all', 'nature', 'lifestyle', 'infrastructure', 'utilities', 'security'] as const).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedAmenityFilter(cat)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                      selectedAmenityFilter === cat
+                        ? 'bg-[#7b002c] text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </ScrollReveal>

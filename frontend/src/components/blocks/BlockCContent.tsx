@@ -939,21 +939,23 @@ export default function BlockCContent() {
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
-              {(['all', 'utilities', 'lifestyle', 'infrastructure', 'nature', 'security'] as const).map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedAmenityFilter(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
-                    selectedAmenityFilter === cat
-                      ? 'bg-[#7b002c] text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="w-full sm:w-auto overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+              <div className="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 min-w-max">
+                {(['all', 'utilities', 'lifestyle', 'infrastructure', 'nature', 'security'] as const).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedAmenityFilter(cat)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                      selectedAmenityFilter === cat
+                        ? 'bg-[#7b002c] text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </ScrollReveal>
