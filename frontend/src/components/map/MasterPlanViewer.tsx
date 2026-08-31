@@ -20,43 +20,41 @@ export default function MasterPlanViewer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Image resolution state
-  const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
-  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+  // Image resolution state - direct load of full 9,900px blueprint
+  const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map.jpg');
+  const [isHighResLoaded, setIsHighResLoaded] = useState(true);
   const [isHighResLoading, setIsHighResLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartDistRef = useRef<number | null>(null);
   const touchStartZoomRef = useRef<number>(1);
 
-  // Preload high-res Ultra-HD map in background
+  // Preload high-res Ultra-HD (9,900 x 6,300px) master blueprint in background
   const loadHighResMap = useCallback(() => {
     if (isHighResLoaded || isHighResLoading) return;
     setIsHighResLoading(true);
 
     const img = new Image();
-    img.src = '/images/faisal-hills-master-plan-map-opt.webp';
+    img.src = '/images/faisal-hills-master-plan-map.jpg';
     img.onload = () => {
-      setImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
+      setImageSrc('/images/faisal-hills-master-plan-map.jpg');
       setIsHighResLoaded(true);
       setIsHighResLoading(false);
     };
     img.onerror = () => {
+      setImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
       setIsHighResLoading(false);
     };
   }, [isHighResLoaded, isHighResLoading]);
 
-  // Load high-res map automatically on mount after a slight delay
+  // Ensure high-res blueprint is active immediately
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadHighResMap();
-    }, 800);
-    return () => clearTimeout(timer);
+    loadHighResMap();
   }, [loadHighResMap]);
 
   const handleZoomIn = () => {
     loadHighResMap();
-    setZoomLevel((prev) => Math.min(Number((prev + 1.2).toFixed(1)), 12.0));
+    setZoomLevel((prev) => Math.min(Number((prev + 1.2).toFixed(1)), 16.0));
   };
 
   const handleZoomOut = () => {
@@ -79,7 +77,7 @@ export default function MasterPlanViewer({
   };
 
   const handlePan = (direction: 'up' | 'down' | 'left' | 'right') => {
-    const step = Math.max(60, Math.round(zoomLevel * 30));
+    const step = Math.max(80, Math.round(zoomLevel * 45));
     setPan((prev) => {
       switch (direction) {
         case 'up': return { ...prev, y: prev.y + step };
@@ -138,7 +136,6 @@ export default function MasterPlanViewer({
         y: e.touches[0].clientY - pan.y
       });
     } else if (e.touches.length === 2) {
-      loadHighResMap();
       setIsDragging(false);
       touchStartDistRef.current = getTouchDistance(e.touches[0], e.touches[1]);
       touchStartZoomRef.current = zoomLevel;
@@ -154,7 +151,7 @@ export default function MasterPlanViewer({
     } else if (e.touches.length === 2 && touchStartDistRef.current) {
       const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
       const scaleFactor = currentDist / touchStartDistRef.current;
-      const newZoom = Math.min(Math.max(Number((touchStartZoomRef.current * scaleFactor).toFixed(1)), 1.0), 12.0);
+      const newZoom = Math.min(Math.max(Number((touchStartZoomRef.current * scaleFactor).toFixed(1)), 1.0), 16.0);
       setZoomLevel(newZoom);
     }
   };
@@ -172,30 +169,21 @@ export default function MasterPlanViewer({
         }`}
         onContextMenu={(e) => e.preventDefault()}
       >
-        {/* Desktop Header Toolbar (Hidden on small mobile screens to keep view clean) */}
+        {/* Desktop Header Toolbar */}
         <div className="hidden sm:flex bg-slate-900/90 backdrop-blur-md text-white px-4 py-2.5 sm:px-6 items-center justify-between gap-3 border-b border-slate-800/80">
           {/* Resolution Badge */}
           <div className="flex items-center gap-2">
-            {isHighResLoading ? (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full animate-pulse">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Buffering Ultra-HD Map...</span>
-              </span>
-            ) : isHighResLoaded ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full">
-                <Sparkles className="w-3 h-3 text-emerald-400" />
-                <span>Ultra-HD 8K Map Ready</span>
-              </span>
-            ) : (
-              <span className="text-[11px] text-slate-400">Interactive Blueprint</span>
-            )}
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+              <Sparkles className="w-3 h-3 text-emerald-400" />
+              <span>Ultra-HD 9,900px Blueprint Active</span>
+            </span>
           </div>
 
           {/* Desktop Zoom Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Quick Zoom Presets */}
             <div className="flex items-center gap-1 bg-slate-800/60 p-0.5 rounded-lg border border-slate-700/60">
-              {[1, 3, 6, 12].map((lvl) => (
+              {[1, 3, 6, 12, 16].map((lvl) => (
                 <button
                   key={lvl}
                   type="button"
@@ -222,7 +210,7 @@ export default function MasterPlanViewer({
                 type="button"
                 onClick={handleZoomIn}
                 className="p-1.5 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-lg transition cursor-pointer"
-                title="Zoom In (up to 1200%)"
+                title="Zoom In (up to 1600%)"
               >
                 <ZoomIn className="w-4 h-4" />
               </button>
@@ -273,25 +261,24 @@ export default function MasterPlanViewer({
           }`}
         >
           <div 
-            className="w-full h-full flex items-center justify-center transition-transform duration-100 ease-out origin-center"
+            className="flex items-center justify-center transition-transform duration-75 ease-out shrink-0"
             style={{ 
-              transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomLevel})`,
-              transformOrigin: 'center center'
+              transform: `translate3d(${pan.x}px, ${pan.y}px, 0)`,
+              width: zoomLevel > 1 ? `${Math.round(zoomLevel * 100)}%` : '100%',
+              height: zoomLevel > 1 ? `${Math.round(zoomLevel * 100)}%` : '100%',
+              maxWidth: zoomLevel > 1 ? 'none' : '100%',
+              maxHeight: zoomLevel > 1 ? 'none' : '100%',
             }}
           >
             <img
               src={imageSrc}
-              alt="Faisal Hills Master Plan High-Resolution Map"
-              width={2400}
-              height={1528}
+              alt="Faisal Hills Master Plan Ultra-HD High-Resolution Blueprint"
               loading="eager"
-              decoding="async"
-              className={`max-w-full max-h-full object-contain rounded-lg pointer-events-none select-none transition-opacity duration-300 ${
-                isHighResLoaded ? 'opacity-100' : 'opacity-95'
-              }`}
+              decoding="sync"
+              className="w-full h-full object-contain pointer-events-none select-none"
               style={{
-                imageRendering: zoomLevel > 2 ? '-webkit-optimize-contrast' : 'auto',
-                willChange: 'transform'
+                imageRendering: 'auto',
+                filter: 'contrast(1.05) brightness(1.02)'
               }}
               onContextMenu={(e) => e.preventDefault()}
               onDragStart={(e) => e.preventDefault()}
@@ -367,19 +354,20 @@ export default function MasterPlanViewer({
         <div className="sm:hidden bg-slate-900 border-t border-slate-800 p-2.5 flex flex-col gap-2">
           
           {/* Quick Zoom Presets Bar */}
-          <div className="flex items-center justify-between gap-1">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between gap-1 overflow-x-auto pb-1">
+            <div className="flex items-center gap-1 shrink-0">
               {[
                 { label: 'Fit', val: 1 },
                 { label: '300%', val: 3 },
                 { label: '600%', val: 6 },
-                { label: '1200%', val: 12 }
+                { label: '1200%', val: 12 },
+                { label: '1600%', val: 16 }
               ].map((item) => (
                 <button
                   key={item.val}
                   type="button"
                   onClick={() => handleSetQuickZoom(item.val)}
-                  className={`text-[11px] font-bold px-2.5 py-1.5 rounded-lg border transition active:scale-95 cursor-pointer ${
+                  className={`text-[11px] font-bold px-2 py-1.5 rounded-lg border transition active:scale-95 cursor-pointer shrink-0 ${
                     Math.round(zoomLevel) === item.val
                       ? 'bg-[#7b002c] border-[#7b002c] text-white shadow'
                       : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
@@ -391,7 +379,7 @@ export default function MasterPlanViewer({
             </div>
 
             {/* Current Zoom Badge */}
-            <span className="text-xs font-mono font-extrabold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-1 rounded-lg">
+            <span className="text-xs font-mono font-extrabold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-1 rounded-lg shrink-0">
               {Math.round(zoomLevel * 100)}%
             </span>
           </div>

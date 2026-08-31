@@ -196,12 +196,12 @@ export default function InteractiveMasterPlan({
     touchStartDistRef.current = null;
   };
 
-  const [mapImageSrc, setMapImageSrc] = useState('/images/faisal-hills-master-plan-map-preview.webp');
+  const [mapImageSrc, setMapImageSrc] = useState('/images/faisal-hills-master-plan-map-opt.webp');
 
   React.useEffect(() => {
     const img = new Image();
-    img.src = '/images/faisal-hills-master-plan-map-opt.webp';
-    img.onload = () => setMapImageSrc('/images/faisal-hills-master-plan-map-opt.webp');
+    img.src = '/images/faisal-hills-master-plan-map.jpg';
+    img.onload = () => setMapImageSrc('/images/faisal-hills-master-plan-map.jpg');
   }, []);
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -211,7 +211,7 @@ export default function InteractiveMasterPlan({
     }
     e.preventDefault();
     if (e.deltaY < 0) {
-      setZoomLevel((prev) => Math.min(prev + 0.6, 12.0));
+      setZoomLevel((prev) => Math.min(prev + 0.6, 16.0));
     } else {
       setZoomLevel((prev) => {
         const next = Math.max(prev - 0.6, 1.0);

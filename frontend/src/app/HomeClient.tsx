@@ -9,8 +9,8 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import {
-  blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem, type PlotItem,
-  fetchBlocks, fetchPlots, fetchGallery, fetchSettings, submitLead,
+  blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem, type PlotItem, type BlogItem,
+  fetchBlocks, fetchPlots, fetchGallery, fetchSettings, fetchBlogs, submitLead,
   formatPlotPrice
 } from '@/data/faisalHillsData';
 import dynamic from 'next/dynamic';
@@ -71,10 +71,12 @@ export default function HomeClient() {
   // Dynamic API state loading
   const [blocks, setBlocks] = useState(blocksData);
   const [plots, setPlots] = useState<PlotItem[]>([]);
+  const [blogs, setBlogs] = useState<BlogItem[]>([]);
 
   React.useEffect(() => {
     fetchBlocks().then(data => setBlocks(data)).catch(console.error);
     fetchPlots().then(data => setPlots(data)).catch(console.error);
+    fetchBlogs().then(data => setBlogs(data || [])).catch(console.error);
 
     const syncGallery = () => {
       if (typeof window !== 'undefined') {
@@ -2163,95 +2165,70 @@ export default function HomeClient() {
           </ScrollReveal>
         </div>
 
-        {/* Blog Cards - 1 Blog in Mobile, 3 in Desktop */}
-        <div>
-          {/* Mobile View: 1 Single Blog Post */}
-          <div className="block md:hidden">
-            {[
-              {
-                title: "Faisal Hills Plots on Installments: Complete Bank Transfer Guide from Saudi Arabia to Pakistan",
-                desc: "For thousands of overseas Pakistanis working in the Gulf, owning land back home is more accessible than ever with secure bank transfer options...",
-                tag: "Saudi Arabia Guide",
-                img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
-                href: "/blogs/faisal-hills-plots-installments-bank-transfer-guide-saudi-arabia-pakistan"
-              }
-            ].map((blog, idx) => (
-              <ScrollReveal key={idx} direction="up" delay={100}>
-                <Link href={blog.href} className="group flex flex-col space-y-3 cursor-pointer">
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/10] bg-slate-100">
-                    <img
-                      src={blog.img}
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                      {blog.tag}
+        {/* Blog Cards - Rendered from Live Database */}
+        {blogs.length > 0 ? (
+          <div>
+            {/* Mobile View: 1 Single Blog Post */}
+            <div className="block md:hidden">
+              {blogs.slice(0, 1).map((blog, idx) => (
+                <ScrollReveal key={blog.id || idx} direction="up" delay={100}>
+                  <Link href={`/blogs/${blog.slug}`} className="group flex flex-col space-y-3 cursor-pointer">
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/10] bg-slate-100">
+                      <img
+                        src={blog.imageUrl || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                        {blog.category || 'Article'}
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
-                      {blog.title}
-                    </h3>
-                    <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 font-sans">
-                      {blog.desc}
-                    </p>
-                  </div>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-
-          {/* Desktop View: All 3 Blog Cards */}
-          <div className="hidden md:grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Faisal Hills Plots on Installments: Complete Bank Transfer Guide from Saudi Arabia to Pakistan",
-                desc: "For thousands of overseas Pakistanis working in the Gulf, owning land back home is more accessible than ever with secure bank transfer options...",
-                tag: "Saudi Arabia Guide",
-                img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
-                href: "/blogs/faisal-hills-plots-installments-bank-transfer-guide-saudi-arabia-pakistan"
-              },
-              {
-                title: "Faisal Hills Residential & Commercial Plots for Sale — Buyer Checklist for Riyadh, Jeddah & Dammam",
-                desc: "For thousands of Pakistanis working in Riyadh, Jeddah, and Dammam, owning a piece of land requires a structured verification process...",
-                tag: "Buyer Checklist",
-                img: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80",
-                href: "/blogs/faisal-hills-residential-commercial-plots-sale-buyer-checklist-riyadh-jeddah-dammam"
-              },
-              {
-                title: "Faisal Hills NOC Verification Guide for Saudi Pakistanis Plot Buying",
-                desc: "Buying property in Pakistan while living thousands of miles away in Riyadh, Jeddah, or Dammam demands verifiable regulatory clearances...",
-                tag: "NOC Verification",
-                img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
-                href: "/blogs/faisal-hills-noc-verification-guide-saudi-pakistanis-plot-buying"
-              },
-            ].map((blog, idx) => (
-              <ScrollReveal key={idx} direction="right" delay={idx * 120}>
-                <Link href={blog.href} className="group flex flex-col space-y-4 cursor-pointer h-full">
-                  <div className="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/10] bg-slate-100">
-                    <img
-
-                      src={blog.img}
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                      {blog.tag}
+                    <div className="space-y-1.5">
+                      <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                        {blog.title}
+                      </h3>
+                      <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 font-sans">
+                        {blog.summary || blog.metaDescription || ''}
+                      </p>
                     </div>
-                  </div>
-                  <div className="space-y-2 flex-1 flex flex-col justify-between">
-                    <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
-                      {blog.title}
-                    </h3>
-                    <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
-                      {blog.desc}
-                    </p>
-                  </div>
-                </Link>
-              </ScrollReveal>
-            ))}
+                  </Link>
+                </ScrollReveal>
+              ))}
+            </div>
+
+            {/* Desktop View: Up to 3 Real Database Blog Cards */}
+            <div className="hidden md:grid md:grid-cols-3 gap-8">
+              {blogs.slice(0, 3).map((blog, idx) => (
+                <ScrollReveal key={blog.id || idx} direction="right" delay={idx * 120}>
+                  <Link href={`/blogs/${blog.slug}`} className="group flex flex-col space-y-4 cursor-pointer h-full">
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-200 aspect-[16/10] bg-slate-100">
+                      <img
+                        src={blog.imageUrl || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                        {blog.category || 'Article'}
+                      </div>
+                    </div>
+                    <div className="space-y-2 flex-1 flex flex-col justify-between">
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900 group-hover:text-[#7b002c] transition-colors leading-snug">
+                        {blog.title}
+                      </h3>
+                      <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 font-sans">
+                        {blog.summary || blog.metaDescription || ''}
+                      </p>
+                    </div>
+                  </Link>
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="py-8 text-center text-slate-400 text-sm italic">
+            Articles and market guides will be published soon.
+          </div>
+        )}
 
       </section>
 

@@ -5,26 +5,18 @@ const SERIES_CONFIG_STORAGE_KEY = 'faisal_hills_series_configs_v1';
 
 export function getStoredPlots(): PlotItem[] {
   if (typeof window === 'undefined') {
-    return INITIAL_PLOTS_INVENTORY;
+    return [];
   }
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PLOTS_INVENTORY));
-      return INITIAL_PLOTS_INVENTORY;
+      return [];
     }
     const parsed: PlotItem[] = JSON.parse(data);
-    const existingIds = new Set(parsed.map((p) => p.id));
-    const missingDefaults = INITIAL_PLOTS_INVENTORY.filter((p) => !existingIds.has(p.id));
-    if (missingDefaults.length > 0) {
-      const merged = [...parsed, ...missingDefaults];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      return merged;
-    }
-    return parsed;
+    return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     console.error('Error reading plots from localStorage', e);
-    return INITIAL_PLOTS_INVENTORY;
+    return [];
   }
 }
 

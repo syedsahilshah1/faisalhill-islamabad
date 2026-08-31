@@ -78,13 +78,9 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
 
     const loadAll = () => {
       fetchPlots().then((dbPlots) => {
-        if (dbPlots && dbPlots.length > 0) {
-          setAllPlots([...getStoredPlots(), ...dbPlots]);
-        } else {
-          setAllPlots(getStoredPlots());
-        }
+        setAllPlots(dbPlots || []);
       }).catch(() => {
-        setAllPlots(getStoredPlots());
+        setAllPlots([]);
       });
       setStoredConfigs(getStoredBlockConfigs());
     };
