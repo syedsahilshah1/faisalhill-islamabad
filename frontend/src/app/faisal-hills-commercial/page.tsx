@@ -460,8 +460,8 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Services Grid: 3 in line */}
-      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-8 bg-white border-y border-slate-200">
+      {/* Services Grid: Landscape on mobile, 3-in-line on desktop */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-10 sm:py-12 space-y-6 sm:space-y-8 bg-white border-y border-slate-200">
         <ScrollReveal direction="up" delay={50}>
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="label-caps text-[#7b002c] font-bold block">Our Services</span>
@@ -474,7 +474,59 @@ export default function FaisalHillsCommercialPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-4">
+        {/* Mobile View: Clean Landscape / Horizontal Cards */}
+        <div className="block sm:hidden space-y-3 pt-2">
+          {[
+            {
+              icon: Building2,
+              title: "Commercial Plot Booking",
+              desc: "Fresh bookings in open commercial blocks with transparent society fee verification, NOC checks, and payment schedules."
+            },
+            {
+              icon: ShoppingBag,
+              title: "Verified Resale Listings",
+              desc: "Live inventory of commercial plots and plaza files from verified direct owners with complete ownership audit."
+            },
+            {
+              icon: SlidersHorizontal,
+              title: "Installment Plan Guidance",
+              desc: "Clear breakdown of quarterly payments, possession-linked dues, and transfer fee structures."
+            },
+            {
+              icon: LayoutGrid,
+              title: "Block & Location Advisory",
+              desc: "Honest analysis on footfall density, road widths, and commercial tenant demand tailored to your business model."
+            },
+            {
+              icon: ShieldCheck,
+              title: "Transfer & Documentation",
+              desc: "Direct coordination with Faisal Hills Head Office for dues clearance, NOC validation, and official allotment letters."
+            },
+            {
+              icon: TrendingUp,
+              title: "Rental Yield & ROI Modeling",
+              desc: "Projected rental return calculations, construction cost estimates, and commercial leasing support for plaza owners."
+            }
+          ].map((srv, sIdx) => {
+            const IconComp = srv.icon;
+            return (
+              <ScrollReveal key={sIdx} direction="up" delay={sIdx * 40}>
+                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-start gap-3.5 hover:bg-white hover:shadow-sm transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-[#7b002c] shrink-0 mt-0.5 shadow-2xs">
+                    <IconComp className="w-4 h-4" />
+                  </div>
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <h3 className="font-serif font-bold text-sm text-slate-900 leading-snug">{srv.title}</h3>
+                    <p className="text-xs text-slate-600 font-sans leading-relaxed">{srv.desc}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            );
+          })}
+        </div>
+
+        {/* Desktop & Tablet View: 3 Column Grid Cards */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-4">
           {[
             {
               icon: Building2,
@@ -525,8 +577,8 @@ export default function FaisalHillsCommercialPage() {
         </div>
       </section>
 
-      {/* Booking Process stepper */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-white rounded-3xl border border-slate-200 my-10 space-y-6">
+      {/* Booking Process stepper: Landscape on mobile, 5-in-line on desktop */}
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-10 sm:py-12 bg-white rounded-3xl border border-slate-200 my-8 sm:my-10 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="label-caps text-[#7b002c] font-bold block">5-Step Purchase Process</span>
@@ -536,7 +588,44 @@ export default function FaisalHillsCommercialPage() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 pt-4">
+        {/* Mobile View: Section-Based Landscape Timeline */}
+        <div className="block sm:hidden space-y-3 pt-2">
+          {[
+            { step: '01', label: 'Step 1', title: 'Define Business Use', desc: 'Identify required dimensions (4, 5.33, 8, 10, or 12 Marla) and building height needs.' },
+            { step: '02', label: 'Step 2', title: 'Inventory Selection', desc: 'Review verified on-ground boulevard options, road widths, and corner premium plots.' },
+            { step: '03', label: 'Step 3', title: 'Ground Inspection', desc: 'Inspect physical ground level, neighboring landmarks, and utility line connectivity.' },
+            { step: '04', label: 'Step 4', title: 'Select Terms', desc: 'Choose between lump-sum cash transfer discount or structured quarterly installments.' },
+            { step: '05', label: 'Final Step', title: 'Execute Transfer', desc: 'Submit official booking documents, clear society dues, and receive transfer letter.', highlight: true }
+          ].map((st, sIdx) => (
+            <ScrollReveal key={sIdx} direction="up" delay={sIdx * 40}>
+              <div className={`p-4 rounded-2xl transition-all duration-300 flex items-start gap-3.5 ${
+                st.highlight
+                  ? 'bg-[#7b002c] text-white shadow-md'
+                  : 'bg-slate-50 border border-slate-200/80 hover:bg-white'
+              }`}>
+                <span className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+                  st.highlight ? 'bg-white text-[#7b002c]' : 'bg-[#7b002c] text-white shadow-2xs'
+                }`}>
+                  {st.step}
+                </span>
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className={`font-serif font-bold text-sm ${st.highlight ? 'text-white' : 'text-slate-900'}`}>{st.title}</h3>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider font-sans ${
+                      st.highlight ? 'text-rose-200' : 'text-[#7b002c]'
+                    }`}>
+                      {st.label}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-sans leading-relaxed pt-0.5 ${st.highlight ? 'text-rose-100' : 'text-slate-600'}`}>{st.desc}</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {/* Desktop & Tablet View: 5-Column Stepper */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-5 pt-4">
           {[
             { step: '01', label: 'Step 1', title: 'Define Business Use', desc: 'Identify required dimensions (4, 5.33, 8, 10, or 12 Marla) and building height needs.' },
             { step: '02', label: 'Step 2', title: 'Inventory Selection', desc: 'Review verified on-ground boulevard options, road widths, and corner premium plots.' },
