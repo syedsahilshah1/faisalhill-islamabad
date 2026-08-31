@@ -812,7 +812,7 @@ export default function ExecutiveBlockContent() {
           {executiveAmenities.map((item, idx) => {
             const IconComponent = item.icon;
             return (
-              <div key={item.id} className="w-[260px] sm:w-auto shrink-0 snap-center flex flex-col">
+              <div key={item.id} className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
                 <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
                   <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full">
                     <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">

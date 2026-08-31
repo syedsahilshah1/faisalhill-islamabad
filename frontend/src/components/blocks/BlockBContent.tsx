@@ -824,13 +824,13 @@ export default function BlockBContent() {
             onMouseLeave={() => setMilestonesPaused(false)}
             onTouchStart={() => setMilestonesPaused(true)}
             onTouchEnd={() => setMilestonesPaused(false)}
-            className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 pt-1"
+            className="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {blockBDevelopmentMilestones.map((item, idx) => (
               <div
                 key={idx}
-                className="min-w-[82vw] sm:min-w-[340px] md:min-w-[360px] max-w-[380px] snap-center shrink-0 bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+                className="w-[85vw] sm:w-[340px] md:w-[360px] max-w-[380px] snap-start shrink-0 bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
               >
                 <div>
                   <div className="relative h-44 w-full overflow-hidden bg-slate-950">
@@ -941,13 +941,13 @@ export default function BlockBContent() {
           onMouseLeave={() => setAmenitiesPaused(false)}
           onTouchStart={() => setAmenitiesPaused(true)}
           onTouchEnd={() => setAmenitiesPaused(false)}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 pt-1"
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {blockBAmenities.map((amenity) => (
             <div
               key={amenity.id}
-              className="min-w-[85vw] sm:min-w-[360px] md:min-w-[400px] max-w-[420px] snap-center shrink-0 bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+              className="w-[85vw] sm:w-[360px] md:w-[400px] max-w-[420px] snap-start shrink-0 bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
             >
               <div>
                 <div className="relative w-full h-52 sm:h-60 overflow-hidden bg-slate-950">
@@ -997,8 +997,8 @@ export default function BlockBContent() {
             </p>
           </div>
 
-          {/* Plot Size Filter Tabs (Without 'All' Button on Mobile) */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0 overflow-x-auto max-w-full">
+          {/* Plot Size Filter Tabs (Horizontal touch scroll on mobile) */}
+          <div className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0 overflow-x-auto max-w-full -mx-2 px-2 sm:mx-0 sm:px-1">
             {['All', '5 Marla', '8 Marla', '10 Marla', '14 Marla', '1 Kanal', '2 Kanal', 'Commercial'].map((size) => (
               <button
                 key={size}

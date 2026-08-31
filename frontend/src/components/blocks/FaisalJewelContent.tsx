@@ -1201,14 +1201,14 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
               </p>
             </div>
 
-            {/* Unit Selector Buttons */}
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 shrink-0 overflow-x-auto">
+            {/* Unit Selector Buttons (Scrollable on mobile) */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0 overflow-x-auto max-w-full -mx-2 px-2 sm:mx-0 sm:px-1">
               {(['Commercial Shop', '1-Bed Apartment', '2-Bed Apartment', '3-Bed Penthouse', 'Hotel Suite'] as const).map((unit) => (
                 <button
                   key={unit}
                   type="button"
                   onClick={() => setSelectedCalcUnit(unit)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                  className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                     selectedCalcUnit === unit
                       ? 'bg-[#7b002c] text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
@@ -1220,20 +1220,20 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-10 border border-slate-200 shadow-sm space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
               
               <div className="lg:col-span-7 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
                     <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">Total Price Band</span>
-                    <div className="font-serif font-bold text-2xl text-slate-900">{calcDetails.price}</div>
+                    <div className="font-serif font-bold text-xl sm:text-2xl text-slate-900">{calcDetails.price}</div>
                     <span className="text-[11px] text-slate-500 block">25% Booking: <strong>{calcDetails.downPayment}</strong></span>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
                     <span className="text-[11px] font-mono text-emerald-800 uppercase tracking-wider font-semibold">Projected Monthly Rental</span>
-                    <div className="font-serif font-bold text-2xl text-emerald-700">{calcDetails.rental}</div>
+                    <div className="font-serif font-bold text-xl sm:text-2xl text-emerald-700">{calcDetails.rental}</div>
                     <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
                       <TrendingUp className="w-3.5 h-3.5" />
                       {calcDetails.yield}

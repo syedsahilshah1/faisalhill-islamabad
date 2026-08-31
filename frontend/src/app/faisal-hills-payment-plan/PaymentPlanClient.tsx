@@ -542,7 +542,7 @@ export default function PaymentPlanClient() {
       </section>
 
       {/* Main Payment Plan Table */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 border-b border-slate-200 pb-4">
             <span className="label-caps text-[#7b002c] font-bold block">Installment Matrix</span>
@@ -557,34 +557,36 @@ export default function PaymentPlanClient() {
 
         <ScrollReveal direction="up" delay={100}>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                <tr>
-                  <th className="p-4">Plot Size</th>
-                  <th className="p-4">Dimensions</th>
-                  <th className="p-4">Total Plot Price (PKR)</th>
-                  <th className="p-4">Down Payment (20%)</th>
-                  <th className="p-4">Confirmation (10%)</th>
-                  <th className="p-4">Qtr Installment (x10)</th>
-                  <th className="p-4">Possession (10%)</th>
-                  <th className="p-4">Lump Sum Cash Price</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {residentialPlans.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-bold text-[#7b002c]">{row.size}</td>
-                    <td className="p-4 font-mono">{row.dims}</td>
-                    <td className="p-4 font-bold">{row.total.toLocaleString()}</td>
-                    <td className="p-4 text-amber-600 font-semibold">{row.down.toLocaleString()}</td>
-                    <td className="p-4 text-slate-600">{row.conf.toLocaleString()}</td>
-                    <td className="p-4 text-slate-600 font-medium">{row.qtr.toLocaleString()}</td>
-                    <td className="p-4 text-slate-600">{row.poss.toLocaleString()}</td>
-                    <td className="p-4 text-emerald-600 font-bold">{row.cash.toLocaleString()}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse min-w-[760px]">
+                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
+                  <tr>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Plot Size</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Dimensions</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Total Plot Price (PKR)</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Down Payment (20%)</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Confirmation (10%)</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Qtr Installment (x10)</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Possession (10%)</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Lump Sum Cash Price</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {residentialPlans.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] whitespace-nowrap">{row.size}</td>
+                      <td className="p-3.5 sm:p-4 font-mono whitespace-nowrap">{row.dims}</td>
+                      <td className="p-3.5 sm:p-4 font-bold whitespace-nowrap">{row.total.toLocaleString()}</td>
+                      <td className="p-3.5 sm:p-4 text-amber-600 font-semibold whitespace-nowrap">{row.down.toLocaleString()}</td>
+                      <td className="p-3.5 sm:p-4 text-slate-600 whitespace-nowrap">{row.conf.toLocaleString()}</td>
+                      <td className="p-3.5 sm:p-4 text-slate-600 font-medium whitespace-nowrap">{row.qtr.toLocaleString()}</td>
+                      <td className="p-3.5 sm:p-4 text-slate-600 whitespace-nowrap">{row.poss.toLocaleString()}</td>
+                      <td className="p-3.5 sm:p-4 text-emerald-600 font-bold whitespace-nowrap">{row.cash.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </ScrollReveal>
         <p className="text-[10px] text-slate-500 italic text-center leading-relaxed max-w-4xl mx-auto">
@@ -923,7 +925,7 @@ export default function PaymentPlanClient() {
       </section>
 
       {/* Block comparison table */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 space-y-6">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 border-b border-slate-200 pb-4">
             <span className="label-caps text-[#7b002c] font-bold block">Cross Block Analysis</span>
@@ -938,36 +940,38 @@ export default function PaymentPlanClient() {
 
         <ScrollReveal direction="up" delay={100}>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
-                <tr>
-                  <th className="p-4">Block</th>
-                  <th className="p-4">5 Marla</th>
-                  <th className="p-4">8 Marla</th>
-                  <th className="p-4">10 Marla</th>
-                  <th className="p-4">14 Marla</th>
-                  <th className="p-4">1 Kanal</th>
-                  <th className="p-4">2 Kanal</th>
-                  <th className="p-4">Development Stage</th>
-                  <th className="p-4">Payment Route</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {blockComparison.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-bold text-[#7b002c]">{row.block}</td>
-                    <td className="p-4 font-semibold">{row.m5}</td>
-                    <td className="p-4">{row.m8}</td>
-                    <td className="p-4">{row.m10}</td>
-                    <td className="p-4">{row.m14}</td>
-                    <td className="p-4 font-semibold text-[#7b002c]">{row.kanal}</td>
-                    <td className="p-4 text-slate-500">{row.kanal2}</td>
-                    <td className="p-4 font-sans text-slate-600 text-[11px]">{row.stage}</td>
-                    <td className="p-4 font-bold text-slate-600">{row.route}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse min-w-[720px]">
+                <thead className="bg-[#4c050d] text-white uppercase text-[10px] tracking-wider font-semibold border-b border-[#7b002c]">
+                  <tr>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Block</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">5 Marla</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">8 Marla</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">10 Marla</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">14 Marla</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">1 Kanal</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">2 Kanal</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Development Stage</th>
+                    <th className="p-3.5 sm:p-4 whitespace-nowrap">Payment Route</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {blockComparison.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] whitespace-nowrap">{row.block}</td>
+                      <td className="p-3.5 sm:p-4 font-semibold whitespace-nowrap">{row.m5}</td>
+                      <td className="p-3.5 sm:p-4 whitespace-nowrap">{row.m8}</td>
+                      <td className="p-3.5 sm:p-4 whitespace-nowrap">{row.m10}</td>
+                      <td className="p-3.5 sm:p-4 whitespace-nowrap">{row.m14}</td>
+                      <td className="p-3.5 sm:p-4 font-semibold text-[#7b002c] whitespace-nowrap">{row.kanal}</td>
+                      <td className="p-3.5 sm:p-4 text-slate-500 whitespace-nowrap">{row.kanal2}</td>
+                      <td className="p-3.5 sm:p-4 font-sans text-slate-600 text-[11px] whitespace-nowrap">{row.stage}</td>
+                      <td className="p-3.5 sm:p-4 font-bold text-slate-600 whitespace-nowrap">{row.route}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </ScrollReveal>
         <p className="text-[10px] text-slate-500 italic text-center leading-relaxed max-w-4xl mx-auto">
@@ -978,7 +982,7 @@ export default function PaymentPlanClient() {
       </section>
 
       {/* SVG Bar Chart Comparison */}
-      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 py-12 bg-white rounded-3xl border border-slate-200 space-y-6">
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2 border-b border-slate-100 pb-3 max-w-4xl mx-auto">
             <span className="label-caps text-[#7b002c] font-bold block">Visual Analytics</span>
@@ -991,31 +995,33 @@ export default function PaymentPlanClient() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto items-center">
 
           {/* Chart Table */}
           <ScrollReveal direction="left" delay={80}>
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-900 text-white font-serif">
-                  <tr>
-                    <th className="p-3">Plot Size</th>
-                    <th className="p-3">Installment Total (PKR)</th>
-                    <th className="p-3">Cash Price (Discounted)</th>
-                    <th className="p-3 text-emerald-500">You Save</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-mono text-slate-700">
-                  {residentialPlans.map((row, idx) => (
-                    <tr key={idx}>
-                      <td className="p-3 font-sans font-bold text-[#7b002c]">{row.size}</td>
-                      <td className="p-3">{row.total.toLocaleString()}</td>
-                      <td className="p-3">{row.cash.toLocaleString()}</td>
-                      <td className="p-3 text-emerald-600 font-bold">{(row.total - row.cash).toLocaleString()}</td>
+            <div className="bg-slate-50 p-3 sm:p-6 rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse min-w-[340px] sm:min-w-[420px]">
+                  <thead className="bg-slate-900 text-white font-serif">
+                    <tr>
+                      <th className="p-2.5 sm:p-3 whitespace-nowrap">Plot Size</th>
+                      <th className="p-2.5 sm:p-3 whitespace-nowrap">Installment Total (PKR)</th>
+                      <th className="p-2.5 sm:p-3 whitespace-nowrap">Cash Price (Discounted)</th>
+                      <th className="p-2.5 sm:p-3 whitespace-nowrap text-emerald-400">You Save</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-mono text-slate-700">
+                    {residentialPlans.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-slate-100/70 transition-colors">
+                        <td className="p-2.5 sm:p-3 font-sans font-bold text-[#7b002c] whitespace-nowrap">{row.size}</td>
+                        <td className="p-2.5 sm:p-3 whitespace-nowrap">{row.total.toLocaleString()}</td>
+                        <td className="p-2.5 sm:p-3 whitespace-nowrap">{row.cash.toLocaleString()}</td>
+                        <td className="p-2.5 sm:p-3 text-emerald-600 font-bold whitespace-nowrap">{(row.total - row.cash).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </ScrollReveal>
 
