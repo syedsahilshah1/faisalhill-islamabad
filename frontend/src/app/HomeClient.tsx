@@ -73,10 +73,38 @@ export default function HomeClient() {
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
 
+  // Dynamic Homepage Hero Banner State
+  const [heroBgImage, setHeroBgImage] = useState('/images/faisalhillarc.jpg');
+  const [heroTitle, setHeroTitle] = useState('Faisal Hills Islamabad');
+  const [heroFormTitle, setHeroFormTitle] = useState('Book Your Plot / Flat');
+  const [heroFormSubtitle, setHeroFormSubtitle] = useState('Get official pricing, payment plan & plot selection guide.');
+
   React.useEffect(() => {
     fetchBlocks().then(data => setBlocks(data)).catch(console.error);
     fetchPlots().then(data => setPlots(data)).catch(console.error);
     fetchBlogs().then(data => setBlogs(data || [])).catch(console.error);
+
+    const syncHomeSettings = () => {
+      if (typeof window !== 'undefined') {
+        const cachedBg = localStorage.getItem('faisal_home_hero_bg');
+        if (cachedBg) setHeroBgImage(cachedBg);
+        const cachedTitle = localStorage.getItem('faisal_home_hero_title');
+        if (cachedTitle) setHeroTitle(cachedTitle);
+        const cachedFormTitle = localStorage.getItem('faisal_home_hero_form_title');
+        if (cachedFormTitle) setHeroFormTitle(cachedFormTitle);
+        const cachedFormSub = localStorage.getItem('faisal_home_hero_form_sub');
+        if (cachedFormSub) setHeroFormSubtitle(cachedFormSub);
+      }
+      fetchSettings().then((data: Record<string, any>) => {
+        if (data?.home_hero_bg_image) setHeroBgImage(data.home_hero_bg_image);
+        if (data?.home_hero_title) setHeroTitle(data.home_hero_title);
+        if (data?.home_hero_form_title) setHeroFormTitle(data.home_hero_form_title);
+        if (data?.home_hero_form_subtitle) setHeroFormSubtitle(data.home_hero_form_subtitle);
+      }).catch(console.error);
+    };
+
+    syncHomeSettings();
+    window.addEventListener('faisal_settings_updated', syncHomeSettings);
 
     const syncGallery = () => {
       if (typeof window !== 'undefined') {
@@ -103,6 +131,7 @@ export default function HomeClient() {
 
     return () => {
       window.removeEventListener('faisal_gallery_updated', syncGallery);
+      window.removeEventListener('faisal_settings_updated', syncHomeSettings);
     };
   }, []);
 
@@ -195,7 +224,7 @@ export default function HomeClient() {
         {/* Cinematic HD Architectural Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <Image
-            src="/images/faisalhillarc.jpg"
+            src={heroBgImage}
             alt="Faisal Hills Grand Monument Entrance"
             fill
             priority
@@ -218,7 +247,7 @@ export default function HomeClient() {
             <div className="col-span-7">
               <ScrollReveal direction="up" delay={50}>
                 <h1 className="font-serif font-bold text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl whitespace-nowrap">
-                  Faisal Hills Islamabad
+                  {heroTitle}
                 </h1>
               </ScrollReveal>
             </div>
@@ -229,10 +258,10 @@ export default function HomeClient() {
                 <div className="p-2 sm:p-4 space-y-5">
                   <div className="border-b border-white/15 pb-4">
                     <span className="font-serif font-extrabold text-2xl xl:text-3xl text-white block drop-shadow-md tracking-tight">
-                      Book Your Plot / Flat
+                      {heroFormTitle}
                     </span>
                     <p className="text-xs text-slate-300 mt-1 font-medium drop-shadow-sm">
-                      Get official pricing, payment plan & plot selection guide.
+                      {heroFormSubtitle}
                     </p>
                   </div>
 
@@ -308,7 +337,7 @@ export default function HomeClient() {
             <div className="relative z-10 pt-20 sm:pt-24 text-center px-4 max-w-4xl mx-auto space-y-2">
               <ScrollReveal direction="up" delay={50}>
                 <h1 className="font-serif font-bold text-3xl sm:text-5xl text-white tracking-tight leading-tight drop-shadow-2xl">
-                  Faisal Hills Islamabad
+                  {heroTitle}
                 </h1>
               </ScrollReveal>
             </div>
@@ -320,9 +349,9 @@ export default function HomeClient() {
               <div className="p-2 sm:p-4 space-y-5">
                 <div className="border-b border-white/15 pb-4 text-center sm:text-left">
                   <span className="font-serif font-extrabold text-2xl sm:text-3xl text-white block mt-1 drop-shadow-md tracking-tight">
-                    Book Your Plot / Flat
+                    {heroFormTitle}
                   </span>
-                  <p className="text-xs sm:text-sm text-slate-300 mt-1 font-medium drop-shadow-sm">Get official pricing, payment plan & plot selection guide.</p>
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1 font-medium drop-shadow-sm">{heroFormSubtitle}</p>
                 </div>
 
                 {formSubmitted ? (

@@ -15,7 +15,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { CommercialPlotsExplorer } from '@/components/commercial/CommercialPlotsExplorer';
 import { CommercialAboutSection } from '@/components/commercial/CommercialAboutSection';
 
-import { fetchSeo } from '@/data/faisalHillsData';
+import { fetchSeo, fetchSettings } from '@/data/faisalHillsData';
 import { JsonLd, generateBreadcrumbSchema, generateFaqSchema } from '@/components/seo/JsonLd';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
@@ -203,7 +203,7 @@ const faqs = [
   }
 ];
 
-export default function FaisalHillsCommercialPage() {
+export default async function FaisalHillsCommercialPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: BASE_URL },
     { name: 'Commercial Plots', url: `${BASE_URL}/faisal-hills-commercial` },
@@ -212,6 +212,9 @@ export default function FaisalHillsCommercialPage() {
   const faqSchema = generateFaqSchema(
     faqs.map(f => ({ question: f.q, answer: f.a }))
   );
+
+  const settings: Record<string, any> = await fetchSettings().catch(() => ({}));
+  const heroBg: string = settings?.commercial_hero_image || settings?.commercial_page_hero || "/images/commercial/flagship-store.jpg";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -222,7 +225,7 @@ export default function FaisalHillsCommercialPage() {
         {/* Crisp Commercial Background Image with Dark Contrast Overlay */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <Image
-            src="/images/commercial/flagship-store.jpg"
+            src={heroBg}
             alt="Faisal Hills Commercial"
             fill
             priority

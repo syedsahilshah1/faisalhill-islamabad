@@ -7,7 +7,7 @@ import {
   Trash2, Plus, Users, DollarSign, Calendar, Eye, EyeOff, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
   CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X,
-  Loader2, ChevronDown, Mail
+  Loader2, ChevronDown, Mail, Home
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
@@ -202,9 +202,18 @@ export default function AdminLoginPage() {
   const [blocksList, setBlocksList] = useState<BlockInfo[]>(blocksData);
   const [selectedBlockSlug, setSelectedBlockSlug] = useState<string>('executive-block');
   const [editingBlock, setEditingBlock] = useState<Partial<BlockInfo>>({ ...blocksData[0] });
-  const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | null>(null);
+  const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | 'commercialHero' | 'homeHero' | null>(null);
   const [newHighlightText, setNewHighlightText] = useState<string>('');
   const [isSavingBlock, setIsSavingBlock] = useState<boolean>(false);
+  const [commercialHeroImage, setCommercialHeroImage] = useState<string>('/images/commercial/flagship-store.jpg');
+  const [isSavingCommercialHero, setIsSavingCommercialHero] = useState<boolean>(false);
+
+  // Homepage Hero Banner & Title State
+  const [homeHeroBgImage, setHomeHeroBgImage] = useState<string>('/images/faisalhillarc.jpg');
+  const [homeHeroTitle, setHomeHeroTitle] = useState<string>('Faisal Hills Islamabad');
+  const [homeHeroFormTitle, setHomeHeroFormTitle] = useState<string>('Book Your Plot / Flat');
+  const [homeHeroFormSubtitle, setHomeHeroFormSubtitle] = useState<string>('Get official pricing, payment plan & plot selection guide.');
+  const [isSavingHomeHero, setIsSavingHomeHero] = useState<boolean>(false);
 
   // Legal Policies State
   const [termsOfService, setTermsOfService] = useState<LegalPolicyData>(defaultTermsOfService);
@@ -339,9 +348,13 @@ export default function AdminLoginPage() {
         setEditingBlock({ ...match });
       }
     }).catch(console.error);
-    fetchGallery().then(data => setGalleryList(data)).catch(console.error);
     fetchSettings().then(data => {
       if (data.last_verified_date) setVerifiedDate(data.last_verified_date);
+      if (data.commercial_hero_image) setCommercialHeroImage(data.commercial_hero_image);
+      if (data.home_hero_bg_image) setHomeHeroBgImage(data.home_hero_bg_image);
+      if (data.home_hero_title) setHomeHeroTitle(data.home_hero_title);
+      if (data.home_hero_form_title) setHomeHeroFormTitle(data.home_hero_form_title);
+      if (data.home_hero_form_subtitle) setHomeHeroFormSubtitle(data.home_hero_form_subtitle);
     }).catch(console.error);
 
     // Check localStorage cache first for immediate responsiveness
@@ -798,6 +811,55 @@ export default function AdminLoginPage() {
 
     setIsSavingBlock(false);
     setNotificationMsg(`Block "${editingBlock.name}" updated and published successfully!`);
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleSaveCommercialHero = async () => {
+    setIsSavingCommercialHero(true);
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faisal_commercial_hero_image', commercialHeroImage);
+    }
+    
+    if (activeToken) {
+      try {
+        await apiUpdateSetting('commercial_hero_image', commercialHeroImage, activeToken);
+      } catch (e) {
+        console.error('Failed to update commercial hero image via API:', e);
+      }
+    }
+    setIsSavingCommercialHero(false);
+    setNotificationMsg('Commercial Hub hero background image updated and published successfully!');
+    setSaveNotification(true);
+    setTimeout(() => setSaveNotification(false), 3500);
+  };
+
+  const handleSaveHomeHero = async () => {
+    setIsSavingHomeHero(true);
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faisal_home_hero_bg', homeHeroBgImage);
+      localStorage.setItem('faisal_home_hero_title', homeHeroTitle);
+      localStorage.setItem('faisal_home_hero_form_title', homeHeroFormTitle);
+      localStorage.setItem('faisal_home_hero_form_sub', homeHeroFormSubtitle);
+      window.dispatchEvent(new Event('faisal_settings_updated'));
+    }
+    
+    if (activeToken) {
+      try {
+        await apiUpdateSetting('home_hero_bg_image', homeHeroBgImage, activeToken);
+        await apiUpdateSetting('home_hero_title', homeHeroTitle, activeToken);
+        await apiUpdateSetting('home_hero_form_title', homeHeroFormTitle, activeToken);
+        await apiUpdateSetting('home_hero_form_subtitle', homeHeroFormSubtitle, activeToken);
+      } catch (e) {
+        console.error('Failed to update home hero settings via API:', e);
+      }
+    }
+    setIsSavingHomeHero(false);
+    setNotificationMsg('Homepage Hero Banner Image, Title & Form copy updated and published successfully!');
     setSaveNotification(true);
     setTimeout(() => setSaveNotification(false), 3500);
   };
@@ -3409,6 +3471,360 @@ export default function AdminLoginPage() {
             ))}
           </div>
 
+          {/* 1. HOMEPAGE HERO BANNER & TITLE CARD */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-slate-900 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-sm">
+                  <Home className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                    Homepage Main Hero Banner &amp; Heading
+                  </h3>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Live Route: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/ (Home Page)</code>
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
+                >
+                  <span>View Live Homepage</span>
+                  <Globe className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleSaveHomeHero}
+                  disabled={isSavingHomeHero}
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
+                >
+                  {isSavingHomeHero ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save Homepage Hero</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column: Background Image Controls & Text Fields */}
+              <div className="lg:col-span-7 space-y-5">
+                {/* Background Image Upload / Choose */}
+                <div className="space-y-2.5 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Hero Background Image</span>
+                    </label>
+                    {homeHeroBgImage && (
+                      <button
+                        type="button"
+                        onClick={() => setHomeHeroBgImage('/images/faisalhillarc.jpg')}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                        title="Reset to default background image"
+                      >
+                        Reset to Default
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('homeHero')}
+                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                              if (dataUrl) {
+                                setHomeHeroBgImage(dataUrl);
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={homeHeroBgImage}
+                    onChange={(e) => setHomeHeroBgImage(e.target.value)}
+                    placeholder="Or paste image URL (e.g. /images/... or https://...)"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+
+                  {/* Quick Presets */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
+                    {[
+                      { label: 'Grand Monument Arch', url: '/images/faisalhillarc.jpg' },
+                      { label: 'Executive Boulevard', url: '/images/faisalhillexecutive.webp' },
+                      { label: 'Drone Site Panorama', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
+                      { label: 'Margalla Hills View', url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' },
+                      { label: 'Promenade Strip', url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' },
+                    ].map((preset, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setHomeHeroBgImage(preset.url)}
+                        className="text-[10px] px-2.5 py-1 rounded-lg bg-white hover:bg-rose-50 hover:text-[#7b002c] border border-slate-200 font-medium transition cursor-pointer"
+                      >
+                        + {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main Heading Text */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Hero Main Heading (Left Title)
+                  </label>
+                  <input
+                    type="text"
+                    value={homeHeroTitle}
+                    onChange={(e) => setHomeHeroTitle(e.target.value)}
+                    placeholder="e.g. Faisal Hills Islamabad"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-serif font-bold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white"
+                  />
+                </div>
+
+                {/* Form Box Headings */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Booking Form Title
+                    </label>
+                    <input
+                      type="text"
+                      value={homeHeroFormTitle}
+                      onChange={(e) => setHomeHeroFormTitle(e.target.value)}
+                      placeholder="e.g. Book Your Plot / Flat"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-serif font-bold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Booking Form Subtitle
+                    </label>
+                    <input
+                      type="text"
+                      value={homeHeroFormSubtitle}
+                      onChange={(e) => setHomeHeroFormSubtitle(e.target.value)}
+                      placeholder="e.g. Get official pricing, payment plan & plot selection guide."
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-[#7b002c] focus:bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Live Interactive Preview */}
+              <div className="lg:col-span-5 space-y-2">
+                <span className="text-[11px] font-semibold text-slate-600 block">Live Homepage Hero Preview:</span>
+                <div className="h-64 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-950 shadow-lg flex flex-col justify-between p-5 text-white">
+                  <img
+                    src={homeHeroBgImage}
+                    alt="Homepage Hero Preview"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/70 pointer-events-none" />
+
+                  <div className="relative z-10">
+                    <span className="text-[9px] uppercase tracking-wider font-bold bg-[#7b002c] px-2 py-0.5 rounded text-white inline-block mb-2 shadow">
+                      Live Hero Preview
+                    </span>
+                    <h2 className="font-serif font-bold text-xl sm:text-2xl text-white drop-shadow-md">
+                      {homeHeroTitle || 'Faisal Hills Islamabad'}
+                    </h2>
+                  </div>
+
+                  <div className="relative z-10 bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/20 space-y-1">
+                    <strong className="block font-serif text-xs font-bold text-white">
+                      {homeHeroFormTitle || 'Book Your Plot / Flat'}
+                    </strong>
+                    <p className="text-[10px] text-slate-200 truncate">
+                      {homeHeroFormSubtitle || 'Get official pricing, payment plan & plot selection guide.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Commercial Page Hero Banner Card */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-rose-200/80 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shadow-sm">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                    Commercial Hub Hero Background Banner
+                  </h3>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Live Route: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/faisal-hills-commercial</code>
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/faisal-hills-commercial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
+                >
+                  <span>View Commercial Page</span>
+                  <Globe className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleSaveCommercialHero}
+                  disabled={isSavingCommercialHero}
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                >
+                  {isSavingCommercialHero ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save Background Image</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column: Controls */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                    <span>Upload or Select Background Banner</span>
+                  </label>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('commercialHero')}
+                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                              if (dataUrl) {
+                                setCommercialHeroImage(dataUrl);
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-slate-600">Background Image URL:</span>
+                  <input
+                    type="text"
+                    value={commercialHeroImage}
+                    onChange={(e) => setCommercialHeroImage(e.target.value)}
+                    placeholder="e.g. /images/commercial/flagship-store.jpg or https://..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] focus:bg-white"
+                  />
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
+                  {[
+                    { label: 'Flagship Store', url: '/images/commercial/flagship-store.jpg' },
+                    { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.jpg' },
+                    { label: 'Food Court Hub', url: '/images/commercial/food-court.jpg' },
+                    { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
+                    { label: 'Executive Aerial', url: '/images/faisalhillexecutive.webp' },
+                  ].map((preset, pIdx) => (
+                    <button
+                      key={pIdx}
+                      type="button"
+                      onClick={() => setCommercialHeroImage(preset.url)}
+                      className="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-[#7b002c] border border-slate-200 font-medium transition cursor-pointer"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Live Preview */}
+              <div className="lg:col-span-5">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-slate-600 block">Live Banner Preview:</span>
+                  <div className="h-44 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
+                    <img
+                      src={commercialHeroImage}
+                      alt="Commercial Hero Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/50 flex flex-col justify-end p-4 text-white">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300">Commercial Hub</span>
+                      <strong className="font-serif text-sm line-clamp-1">Faisal Hills Commercial Plots for Sale</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Active Block Edit Form */}
           {editingBlock && (
             <form onSubmit={handleSaveBlock} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
@@ -3861,6 +4277,10 @@ export default function AdminLoginPage() {
                       onClick={() => {
                         if (galleryPickerTarget === 'hero') {
                           setEditingBlock(prev => ({ ...prev, heroImage: item.imageUrl }));
+                        } else if (galleryPickerTarget === 'commercialHero') {
+                          setCommercialHeroImage(item.imageUrl);
+                        } else if (galleryPickerTarget === 'homeHero') {
+                          setHomeHeroBgImage(item.imageUrl);
                         } else {
                           setEditingBlock(prev => ({ ...prev, masterPlanImage: item.imageUrl }));
                         }
