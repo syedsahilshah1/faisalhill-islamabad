@@ -4,7 +4,7 @@ import { fetchSeo } from '@/data/faisalHillsData';
 import { JsonLd, generateBreadcrumbSchema, generateFaqSchema } from '@/components/seo/JsonLd';
 import PaymentPlanClient from './PaymentPlanClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('faisal-hills-payment-plan') || await fetchSeo('payment-plan');

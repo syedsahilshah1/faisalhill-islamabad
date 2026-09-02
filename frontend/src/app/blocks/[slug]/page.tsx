@@ -3,8 +3,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 import {
   Building2, ShieldCheck, MapPin, CheckCircle2, Trees, Landmark, Activity,
   Droplets, ShoppingBag, ArrowLeft, ArrowRight, MessageSquare, Calendar, HelpCircle,
@@ -94,7 +92,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: BlockPageProps): Promise<Metadata> {
-  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+  const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
   const seo = await fetchSeo(params.slug);
   if (seo) {
     const canonical = seo.canonical_url || `${BASE_URL}/blocks/${params.slug}`;

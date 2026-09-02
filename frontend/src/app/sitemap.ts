@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { fetchSitemapRoutes } from '@/data/faisalHillsData';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes = await fetchSitemapRoutes();

@@ -4,7 +4,7 @@ import { fetchBlogs, fetchSeo } from '@/data/faisalHillsData';
 import { JsonLd, generateBreadcrumbSchema } from '@/components/seo/JsonLd';
 import BlogsListingClient from './BlogsListingClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('blogs');

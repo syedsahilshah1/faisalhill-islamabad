@@ -5,12 +5,31 @@ import { fetchBlogBySlug, fetchBlogs } from '@/data/faisalHillsData';
 import { JsonLd, generateArticleSchema, generateBreadcrumbSchema, generateFaqSchema } from '@/components/seo/JsonLd';
 import BlogDetailClient from './BlogDetailClient';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 interface BlogPageProps {
   params: {
     slug: string;
   };
+}
+
+export async function generateStaticParams() {
+  try {
+    const blogs = await fetchBlogs();
+    if (blogs && blogs.length > 0) {
+      return blogs.map((blog) => ({
+        slug: blog.slug,
+      }));
+    }
+  } catch (e) {
+    // fallback
+  }
+  return [
+    { slug: 'how-to-buy-plot-in-faisal-hills' },
+    { slug: 'faisal-hills-taxila-rda-approved-luxury-living' },
+    { slug: 'executive-block-faisal-hills-development-investment' },
+    { slug: 'faisal-jewels-tower-luxury-high-rise-apartments' },
+  ];
 }
 
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {

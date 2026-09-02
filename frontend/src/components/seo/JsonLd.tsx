@@ -17,7 +17,7 @@ export function JsonLd({ data }: JsonLdProps) {
   );
 }
 
-export function generateOrganizationSchema(siteUrl = 'https://faisalhills.com.pk') {
+export function generateOrganizationSchema(siteUrl = 'https://faisalhillsislamabadfh.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
@@ -51,7 +51,7 @@ export function generateOrganizationSchema(siteUrl = 'https://faisalhills.com.pk
   };
 }
 
-export function generateWebSiteSchema(siteUrl = 'https://faisalhills.com.pk') {
+export function generateWebSiteSchema(siteUrl = 'https://faisalhillsislamabadfh.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -65,7 +65,7 @@ export function generateWebSiteSchema(siteUrl = 'https://faisalhills.com.pk') {
   };
 }
 
-export function generateBreadcrumbSchema(items: { name: string; url: string }[], siteUrl = 'https://faisalhills.com.pk') {
+export function generateBreadcrumbSchema(items: { name: string; url: string }[], siteUrl = 'https://faisalhillsislamabadfh.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -87,7 +87,7 @@ export function generateArticleSchema(blog: {
   createdAt?: string;
   updatedAt?: string;
   slug: string;
-}, siteUrl = 'https://faisalhills.com.pk') {
+}, siteUrl = 'https://faisalhillsislamabadfh.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -131,7 +131,7 @@ export function generateFaqSchema(faqs: { question: string; answer: string }[]) 
   };
 }
 
-export function generateContactSchema(siteUrl = 'https://faisalhills.com.pk') {
+export function generateContactSchema(siteUrl = 'https://faisalhillsislamabadfh.com') {
   return {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',

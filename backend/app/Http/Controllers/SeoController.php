@@ -20,7 +20,7 @@ class SeoController extends Controller
             
             $globalDefaults = [
                 'siteName' => 'Faisal Hills',
-                'siteUrl' => 'https://faisalhills.com.pk',
+                'siteUrl' => 'https://faisalhillsislamabadfh.com',
                 'titleSeparator' => '|',
                 'defaultMetaTitle' => 'Faisal Hills Taxila & Islamabad | Master Plan, Plots & Prices',
                 'defaultMetaDescription' => 'Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot maps, RDA NOC status, block prices, payment plans and real estate investments.',

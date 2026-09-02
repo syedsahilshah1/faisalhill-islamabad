@@ -6,7 +6,7 @@ import Footer from '@/components/ui/Footer';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { JsonLd, generateOrganizationSchema } from '@/components/seo/JsonLd';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhills.com.pk';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 const inter = Inter({
   subsets: ['latin'],

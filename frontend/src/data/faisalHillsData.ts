@@ -1336,10 +1336,22 @@ export function mapBlogToCamel(blog: any): BlogItem {
 }
 
 
-// -------------------------------------------------------------
-// Laravel API Client Helpers
-// -------------------------------------------------------------
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+export function getApiUrl(): string {
+  if (typeof window !== 'undefined') {
+    const origin = window.location.origin;
+    const hostname = window.location.hostname;
+    if (!hostname.includes('localhost') && !hostname.includes('127.0.0.1')) {
+      if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost') && !process.env.NEXT_PUBLIC_API_URL.includes('127.0.0.1')) {
+        return process.env.NEXT_PUBLIC_API_URL;
+      }
+      return `${origin}/api/public/index.php/api`;
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+}
+
+
+export const API_URL = typeof window !== 'undefined' ? getApiUrl() : (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api');
 
 let _cachedBlocks: BlockInfo[] = [];
 
@@ -1348,7 +1360,7 @@ export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
     return _cachedBlocks;
   }
   try {
-    const res = await fetch(`${API_URL}/blocks`, { next: { revalidate: 300 } });
+    const res = await fetch(`${getApiUrl()}/blocks`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch blocks');
     const data = await res.json();
     _cachedBlocks = data.map(mapBlockToCamel);
@@ -1361,7 +1373,7 @@ export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
 
 export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
   try {
-    const res = await fetch(`${API_URL}/blocks/${slug}`, { next: { revalidate: 300 } });
+    const res = await fetch(`${getApiUrl()}/blocks/${slug}`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch block');
     const data = await res.json();
     return mapBlockToCamel(data);
@@ -1379,7 +1391,7 @@ export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
   }
 
   try {
-    const res = await fetch(`${API_URL}/plots`, { next: { revalidate: 120 } });
+    const res = await fetch(`${getApiUrl()}/plots`, { next: { revalidate: 120 } });
     if (!res.ok) throw new Error('Failed to fetch plots');
     const data = await res.json();
     _cachedPlots = Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : []);
@@ -1397,7 +1409,7 @@ export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]>
     return _cachedGallery;
   }
   try {
-    const res = await fetch(`${API_URL}/gallery`, { next: { revalidate: 300 } });
+    const res = await fetch(`${getApiUrl()}/gallery`, { next: { revalidate: 300 } });
     if (!res.ok) throw new Error('Failed to fetch gallery');
     const data = await res.json();
     _cachedGallery = data.map(mapGalleryToCamel);
@@ -1410,7 +1422,7 @@ export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]>
 
 export async function fetchSettings(): Promise<Record<string, any>> {
   try {
-    const res = await fetch(`${API_URL}/settings`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/settings`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch settings');
     return await res.json();
   } catch (e) {
@@ -1424,7 +1436,7 @@ export async function fetchSettings(): Promise<Record<string, any>> {
 
 export async function fetchSeo(pageSlug: string): Promise<any> {
   try {
-    const res = await fetch(`${API_URL}/seo/${pageSlug}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/seo/${pageSlug}`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch SEO');
     return await res.json();
   } catch (e) {
@@ -1441,7 +1453,7 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
 }
 
 export async function submitLead(lead: { name: string; phone: string; interest?: string; message?: string }): Promise<any> {
-  const res = await fetch(`${API_URL}/leads`, {
+  const res = await fetch(`${getApiUrl()}/leads`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1488,7 +1500,10 @@ export interface ResetPasswordPayload {
 // Admin Authenticated Operations
 // -------------------------------------------------------------
 export async function adminLogin(username: string, password: string): Promise<{ token: string; user: AdminUser }> {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  const base = getApiUrl();
+  const url = `${base}/auth/login`;
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1496,15 +1511,30 @@ export async function adminLogin(username: string, password: string): Promise<{ 
     },
     body: JSON.stringify({ username, password }),
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || (err.errors && Object.values(err.errors)[0] as string) || 'Authentication failed');
+
+  const text = await res.text();
+  let data: any = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (e) {
+    throw new Error(`Backend response error (HTTP ${res.status}): ${text.substring(0, 100)}`);
   }
-  return await res.json();
+
+  if (!res.ok) {
+    const errorMsg = (data && (data.message || (data.errors && Object.values(data.errors)[0] as string))) || `Authentication failed (HTTP ${res.status})`;
+    throw new Error(errorMsg);
+  }
+
+  if (!data || !data.token) {
+    throw new Error('Authentication succeeded but session token was not returned');
+  }
+
+  return data;
 }
 
+
 export async function adminLogout(token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/auth/logout`, {
+  const res = await fetch(`${getApiUrl()}/auth/logout`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1517,7 +1547,7 @@ export async function adminLogout(token: string): Promise<any> {
 }
 
 export async function apiFetchCurrentUser(token: string): Promise<AdminUser> {
-  const res = await fetch(`${API_URL}/auth/user`, {
+  const res = await fetch(`${getApiUrl()}/auth/user`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
@@ -1529,7 +1559,7 @@ export async function apiFetchCurrentUser(token: string): Promise<AdminUser> {
 }
 
 export async function apiChangePassword(payload: ChangePasswordPayload, token: string): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`${API_URL}/auth/password`, {
+  const res = await fetch(`${getApiUrl()}/auth/password`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1547,7 +1577,7 @@ export async function apiChangePassword(payload: ChangePasswordPayload, token: s
 }
 
 export async function apiForgotPassword(email: string): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`${API_URL}/auth/forgot-password`, {
+  const res = await fetch(`${getApiUrl()}/auth/forgot-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1563,7 +1593,7 @@ export async function apiForgotPassword(email: string): Promise<{ success: boole
 }
 
 export async function apiResetPassword(payload: ResetPasswordPayload): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`${API_URL}/auth/reset-password`, {
+  const res = await fetch(`${getApiUrl()}/auth/reset-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1583,7 +1613,7 @@ export async function apiResetPassword(payload: ResetPasswordPayload): Promise<{
 // Super Admin Administrator Management
 // -------------------------------------------------------------
 export async function apiFetchAdminUsers(token: string): Promise<AdminUser[]> {
-  const res = await fetch(`${API_URL}/admin/users`, {
+  const res = await fetch(`${getApiUrl()}/admin/users`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
@@ -1598,7 +1628,7 @@ export async function apiFetchAdminUsers(token: string): Promise<AdminUser[]> {
 }
 
 export async function apiCreateAdminUser(payload: AdminUserPayload, token: string): Promise<{ success: boolean; message: string; user: AdminUser }> {
-  const res = await fetch(`${API_URL}/admin/users`, {
+  const res = await fetch(`${getApiUrl()}/admin/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1616,7 +1646,7 @@ export async function apiCreateAdminUser(payload: AdminUserPayload, token: strin
 }
 
 export async function apiUpdateAdminUser(id: number, payload: Partial<AdminUserPayload>, token: string): Promise<{ success: boolean; message: string; user: AdminUser }> {
-  const res = await fetch(`${API_URL}/admin/users/${id}`, {
+  const res = await fetch(`${getApiUrl()}/admin/users/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1634,7 +1664,7 @@ export async function apiUpdateAdminUser(id: number, payload: Partial<AdminUserP
 }
 
 export async function apiToggleAdminStatus(id: number, token: string): Promise<{ success: boolean; message: string; status: 'active' | 'inactive' }> {
-  const res = await fetch(`${API_URL}/admin/users/${id}/status`, {
+  const res = await fetch(`${getApiUrl()}/admin/users/${id}/status`, {
     method: 'PATCH',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -1649,7 +1679,7 @@ export async function apiToggleAdminStatus(id: number, token: string): Promise<{
 }
 
 export async function apiDeleteAdminUser(id: number, token: string): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`${API_URL}/admin/users/${id}`, {
+  const res = await fetch(`${getApiUrl()}/admin/users/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -1686,7 +1716,7 @@ export async function apiUpdatePlot(id: string, plot: Partial<PlotItem>, token: 
   delete payload.displayOrder;
   delete payload.mapCoords;
 
-  const res = await fetch(`${API_URL}/plots/${id}`, {
+  const res = await fetch(`${getApiUrl()}/plots/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1727,7 +1757,7 @@ export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Pro
   delete payload.displayOrder;
   delete payload.mapCoords;
 
-  const res = await fetch(`${API_URL}/plots`, {
+  const res = await fetch(`${getApiUrl()}/plots`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1746,7 +1776,7 @@ export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Pro
 }
 
 export async function apiDeletePlot(id: string, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/plots/${id}`, {
+  const res = await fetch(`${getApiUrl()}/plots/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -1760,7 +1790,7 @@ export async function apiDeletePlot(id: string, token: string): Promise<any> {
 }
 
 export async function apiFetchLeads(token: string): Promise<LeadItem[]> {
-  const res = await fetch(`${API_URL}/leads`, {
+  const res = await fetch(`${getApiUrl()}/leads`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'cache-control': 'no-cache',
@@ -1773,7 +1803,7 @@ export async function apiFetchLeads(token: string): Promise<LeadItem[]> {
 }
 
 export async function apiDeleteLead(id: string | number, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/leads/${id}`, {
+  const res = await fetch(`${getApiUrl()}/leads/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -1792,7 +1822,7 @@ export async function apiAddGalleryItem(item: Partial<GalleryItem>, token: strin
     alt: item.alt || item.title,
     description: item.description,
   };
-  const res = await fetch(`${API_URL}/gallery`, {
+  const res = await fetch(`${getApiUrl()}/gallery`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1807,7 +1837,7 @@ export async function apiAddGalleryItem(item: Partial<GalleryItem>, token: strin
 }
 
 export async function apiDeleteGalleryItem(id: string, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/gallery/${id}`, {
+  const res = await fetch(`${getApiUrl()}/gallery/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -1836,7 +1866,7 @@ export async function apiUpdateBlock(id: string, blockData: Partial<BlockInfo>, 
   if (blockData.faqs !== undefined) payload.faqs = blockData.faqs;
   if (blockData.developmentUpdates !== undefined) payload.development_updates = blockData.developmentUpdates;
 
-  const res = await fetch(`${API_URL}/blocks/${id}`, {
+  const res = await fetch(`${getApiUrl()}/blocks/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1852,7 +1882,7 @@ export async function apiUpdateBlock(id: string, blockData: Partial<BlockInfo>, 
 
 
 export async function apiUpdateSetting(key: string, value: any, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/settings`, {
+  const res = await fetch(`${getApiUrl()}/settings`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1866,7 +1896,7 @@ export async function apiUpdateSetting(key: string, value: any, token: string): 
 }
 
 export async function apiUpdateSeo(pageSlug: string, seo: any, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/seo/${pageSlug}`, {
+  const res = await fetch(`${getApiUrl()}/seo/${pageSlug}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1880,7 +1910,7 @@ export async function apiUpdateSeo(pageSlug: string, seo: any, token: string): P
 }
 
 export async function apiUpdateGlobalSeo(globalSeo: any, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/seo/global`, {
+  const res = await fetch(`${getApiUrl()}/seo/global`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1907,7 +1937,7 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
   }
 
   try {
-    const res = await fetch(`${API_URL}/blogs`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/blogs`, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error('Failed to fetch blogs');
     const data = await res.json();
     const mapped = Array.isArray(data) ? data.map(mapBlogToCamel) : [];
@@ -1946,7 +1976,7 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
   }
 
   try {
-    const res = await fetch(`${API_URL}/blogs/${slug}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/blogs/${slug}`, { next: { revalidate: 60 } });
     if (res.ok) {
       const data = await res.json();
       return mapBlogToCamel(data);
@@ -1959,7 +1989,7 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
 }
 
 export async function apiFetchAllBlogs(token: string): Promise<BlogItem[]> {
-  const res = await fetch(`${API_URL}/admin/blogs`, {
+  const res = await fetch(`${getApiUrl()}/admin/blogs`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'cache-control': 'no-cache',
@@ -1997,7 +2027,7 @@ export async function apiCreateBlog(blog: Partial<BlogItem>, token: string): Pro
     faqs: blog.faqs
   };
 
-  const res = await fetch(`${API_URL}/blogs`, {
+  const res = await fetch(`${getApiUrl()}/blogs`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -2037,7 +2067,7 @@ export async function apiUpdateBlog(id: string, blog: Partial<BlogItem> & { crea
   if (blog.faqs !== undefined) payload.faqs = blog.faqs;
   if (blog.create_redirect !== undefined) payload.create_redirect = blog.create_redirect;
 
-  const res = await fetch(`${API_URL}/blogs/${id}`, {
+  const res = await fetch(`${getApiUrl()}/blogs/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -2052,7 +2082,7 @@ export async function apiUpdateBlog(id: string, blog: Partial<BlogItem> & { crea
 }
 
 export async function apiDeleteBlog(id: string, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/blogs/${id}`, {
+  const res = await fetch(`${getApiUrl()}/blogs/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -2068,7 +2098,7 @@ export async function apiDeleteBlog(id: string, token: string): Promise<any> {
 // -------------------------------------------------------------
 
 export async function apiFetchRedirects(token: string): Promise<RedirectItem[]> {
-  const res = await fetch(`${API_URL}/redirects`, {
+  const res = await fetch(`${getApiUrl()}/redirects`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'cache-control': 'no-cache',
@@ -2080,7 +2110,7 @@ export async function apiFetchRedirects(token: string): Promise<RedirectItem[]> 
 }
 
 export async function apiCreateRedirect(data: Partial<RedirectItem>, token: string): Promise<RedirectItem> {
-  const res = await fetch(`${API_URL}/redirects`, {
+  const res = await fetch(`${getApiUrl()}/redirects`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -2098,7 +2128,7 @@ export async function apiCreateRedirect(data: Partial<RedirectItem>, token: stri
 }
 
 export async function apiUpdateRedirect(id: number, data: Partial<RedirectItem>, token: string): Promise<RedirectItem> {
-  const res = await fetch(`${API_URL}/redirects/${id}`, {
+  const res = await fetch(`${getApiUrl()}/redirects/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -2116,7 +2146,7 @@ export async function apiUpdateRedirect(id: number, data: Partial<RedirectItem>,
 }
 
 export async function apiDeleteRedirect(id: number, token: string): Promise<any> {
-  const res = await fetch(`${API_URL}/redirects/${id}`, {
+  const res = await fetch(`${getApiUrl()}/redirects/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -2129,7 +2159,7 @@ export async function apiDeleteRedirect(id: number, token: string): Promise<any>
 
 export async function fetchActiveRedirects(): Promise<{ source_url: string; destination_url: string; status_code: number }[]> {
   try {
-    const res = await fetch(`${API_URL}/redirects/active`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/redirects/active`, { next: { revalidate: 60 } });
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {
@@ -2140,7 +2170,7 @@ export async function fetchActiveRedirects(): Promise<{ source_url: string; dest
 
 export async function fetchSitemapRoutes(): Promise<{ url: string; changefreq: string; priority: number; lastmod: string }[]> {
   try {
-    const res = await fetch(`${API_URL}/sitemap-routes`, { next: { revalidate: 300 } });
+    const res = await fetch(`${getApiUrl()}/sitemap-routes`, { next: { revalidate: 300 } });
     if (!res.ok) return [];
     const data = await res.json();
     return data.routes || [];
@@ -2152,7 +2182,7 @@ export async function fetchSitemapRoutes(): Promise<{ url: string; changefreq: s
 
 export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
   try {
-    const res = await fetch(`${API_URL}/seo`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/seo`, { next: { revalidate: 60 } });
     if (!res.ok) return initialSeoConfig;
     const data = await res.json();
     return {
@@ -2326,7 +2356,7 @@ export const defaultContactInfo: ContactInfoData = {
 
 export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}/settings/${key}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${getApiUrl()}/settings/${key}`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return await res.json();
   } catch (e) {

@@ -69,6 +69,7 @@ import {
   apiUpdateSeo,
   apiUpdateGlobalSeo,
   API_URL,
+  getApiUrl,
   BlogItem,
   apiFetchAllBlogs,
   apiCreateBlog,
@@ -402,7 +403,7 @@ export default function AdminLoginPage() {
     }).catch(console.error);
     
     // Fetch all pages SEO
-    fetch(`${API_URL}/seo`)
+    fetch(`${getApiUrl()}/seo`)
       .then(res => res.json())
       .then(seoData => {
         if (seoData && seoData.pages) {
@@ -1805,7 +1806,7 @@ export default function AdminLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   onFocus={(e) => e.target.select()}
-                  placeholder="e.g. ubaidnasir147.un@gmail.com"
+                  placeholder="Enter username or email"
                   className="w-full pl-10 pr-10 py-3 bg-slate-900 border border-slate-800 rounded-xl text-base sm:text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-[#7b002c] focus:ring-1 focus:ring-[#7b002c] transition select-text touch-manipulation"
                 />
                 <Shield className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />

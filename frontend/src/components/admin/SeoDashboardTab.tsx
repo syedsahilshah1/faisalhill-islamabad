@@ -174,7 +174,7 @@ export default function SeoDashboardTab({
     try {
       await apiUpdateGlobalSeo({
         siteName: seoSettings.siteName,
-        siteUrl: seoSettings.siteUrl || 'https://faisalhills.com.pk',
+        siteUrl: seoSettings.siteUrl || 'https://faisalhillsislamabadfh.com',
         titleSeparator: seoSettings.titleSeparator || '|',
         defaultMetaTitle: seoSettings.defaultMetaTitle,
         defaultMetaDescription: seoSettings.defaultMetaDescription,
@@ -601,14 +601,14 @@ export default function SeoDashboardTab({
                   <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
                     <span>Canonical URL (`rel="canonical"`)</span>
                     <span className="text-[10px] text-slate-500 font-normal">
-                      Default: https://faisalhills.com.pk/{selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}
+                      Default: https://faisalhillsislamabadfh.com/{selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}
                     </span>
                   </label>
                   <input
                     type="text"
                     value={selectedPageSeo.canonicalUrl || ''}
                     onChange={(e) => handleSeoFieldChange('canonicalUrl', e.target.value)}
-                    placeholder={`https://faisalhills.com.pk/${selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}`}
+                    placeholder={`https://faisalhillsislamabadfh.com/${selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}`}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
@@ -840,7 +840,7 @@ export default function SeoDashboardTab({
                   <div className="min-w-0">
                     <span className="font-medium text-slate-800 text-xs block truncate">Faisal Hills Real Estate</span>
                     <span className="text-[11px] text-slate-500 block truncate">
-                      https://faisalhills.com.pk/{selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}
+                      https://faisalhillsislamabadfh.com/{selectedPageSeo.pageSlug === 'home' ? '' : selectedPageSeo.pageSlug}
                     </span>
                   </div>
                 </div>
@@ -880,7 +880,7 @@ export default function SeoDashboardTab({
                   style={{ backgroundImage: `url('${selectedPageSeo.ogImage || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}')` }}
                 >
                   <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                    faisalhills.com.pk
+                    faisalhillsislamabadfh.com
                   </span>
                 </div>
 
@@ -913,7 +913,7 @@ export default function SeoDashboardTab({
                   style={{ backgroundImage: `url('${selectedPageSeo.twitterImage || selectedPageSeo.ogImage || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}')` }}
                 />
                 <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-0.5">
-                  <span className="text-[10px] text-slate-400 font-medium">faisalhills.com.pk</span>
+                  <span className="text-[10px] text-slate-400 font-medium">faisalhillsislamabadfh.com</span>
                   <h5 className="font-bold text-xs text-slate-900 truncate">
                     {selectedPageSeo.twitterTitle || selectedPageSeo.ogTitle || selectedPageSeo.metaTitle}
                   </h5>
@@ -1077,7 +1077,7 @@ export default function SeoDashboardTab({
                   <label className="block text-xs font-bold text-slate-800">Canonical Base URL</label>
                   <input
                     type="text"
-                    value={seoSettings.siteUrl || 'https://faisalhills.com.pk'}
+                    value={seoSettings.siteUrl || 'https://faisalhillsislamabadfh.com'}
                     onChange={(e) => handleGlobalSeoChange('siteUrl', e.target.value)}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-900"
                   />

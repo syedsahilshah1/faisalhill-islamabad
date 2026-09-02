@@ -21,58 +21,67 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-        $throttleKey = Str::transliterate(Str::lower($request->input('username')) . '|' . $request->ip());
-
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
-            return response()->json([
-                'success' => false,
-                'message' => "Too many login attempts. Please try again in {$seconds} seconds."
-            ], 429);
-        }
-
-        // Support logging in by name (username) or email
-        $user = User::where('name', $request->username)
-            ->orWhere('email', $request->username)
-            ->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            RateLimiter::hit($throttleKey, 300);
-            throw ValidationException::withMessages([
-                'username' => ['The provided credentials do not match our records.'],
+        try {
+            $request->validate([
+                'username' => 'required|string',
+                'password' => 'required|string',
             ]);
-        }
 
-        // Check if account is active
-        if (!$user->isActive()) {
+            $throttleKey = Str::transliterate(Str::lower($request->input('username')) . '|' . $request->ip());
+
+            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                $seconds = RateLimiter::availableIn($throttleKey);
+                return response()->json([
+                    'success' => false,
+                    'message' => "Too many login attempts. Please try again in {$seconds} seconds."
+                ], 429);
+            }
+
+            // Support logging in by name (username) or email
+            $user = User::where('name', $request->username)
+                ->orWhere('email', $request->username)
+                ->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                RateLimiter::hit($throttleKey, 300);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The provided credentials do not match our records.'
+                ], 422);
+            }
+
+            // Check if account is active
+            if (!$user->isActive()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This administrator account has been deactivated. Please contact the Super Admin.'
+                ], 403);
+            }
+
+            RateLimiter::clear($throttleKey);
+
+            $token = $user->createToken('admin-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role ?? 'admin',
+                    'status' => $user->status ?? 'active',
+                ],
+                'message' => 'Successfully logged in'
+            ]);
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'This administrator account has been deactivated. Please contact the Super Admin.'
-            ], 403);
+                'message' => 'Server Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        RateLimiter::clear($throttleKey);
-
-        $token = $user->createToken('admin-token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role ?? 'admin',
-                'status' => $user->status ?? 'active',
-            ],
-            'message' => 'Successfully logged in'
-        ]);
     }
+
 
     /**
      * Terminate current session token
