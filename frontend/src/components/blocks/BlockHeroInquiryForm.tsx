@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Send, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { submitLead } from '@/data/faisalHillsData';
+import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface BlockHeroInquiryFormProps {
   blockName: string;
@@ -41,7 +41,7 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
           phone,
           interest: `${blockName} - ${plotSize}`,
           message: `Hero Quick Quote: ${plotSize}`,
-          submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          submittedAt: formatLeadDateTime()
         };
         localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
         window.dispatchEvent(new Event('faisal_leads_updated'));

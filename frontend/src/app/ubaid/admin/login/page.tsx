@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
   Trash2, Plus, Users, DollarSign, Calendar, Eye, EyeOff, Layers, ArrowUpRight, ArrowLeft,
   Lock, KeyRound, LogOut, Shield, Globe, Search, Share2, Code, FileText, Camera, Image as ImageIcon,
   CreditCard, BookOpen, PhoneCall, ExternalLink, Sparkles, Edit3, RefreshCw, AlertCircle, X,
-  Loader2, ChevronDown, Mail, Home
+  Loader2, ChevronDown, ChevronLeft, ChevronRight, Mail, Home, Clock
 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
@@ -86,7 +86,9 @@ import {
   defaultSocialLinks,
   formatPlotPrice,
   defaultContactInfo,
-  fetchSettingByKey
+  fetchSettingByKey,
+  formatLeadDateTime,
+  mapLeadToCamel
 } from '@/data/faisalHillsData';
 
 function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
@@ -293,11 +295,57 @@ export default function AdminLoginPage() {
   const [newPhotoCategory, setNewPhotoCategory] = useState<'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('Infrastructure');
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
 
-  // SEO Dashboard State
   const [seoSettings, setSeoSettings] = useState<GlobalSeoSettings>(initialSeoConfig);
   const [selectedSeoPageSlug, setSelectedSeoPageSlug] = useState<string>('home');
 
   const selectedPageSeo = seoSettings.pages.find(p => p.pageSlug === selectedSeoPageSlug) || seoSettings.pages[0];
+
+  // Horizontal scroll controller for admin tabs
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkTabsScroll = () => {
+    const el = tabsContainerRef.current;
+    if (el) {
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      setCanScrollLeft(scrollLeft > 4);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
+    }
+  };
+
+  useEffect(() => {
+    // Check initial scrollability
+    checkTabsScroll();
+    const handleResize = () => checkTabsScroll();
+    window.addEventListener('resize', handleResize);
+    
+    // Also check after slight delay to ensure layout rendering
+    const timer = setTimeout(checkTabsScroll, 200);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
+    };
+  }, [plots.length, blocksList.length, galleryList.length, blogsList.length, leadsList.length, currentUser?.role]);
+
+  useEffect(() => {
+    if (tabsContainerRef.current) {
+      const activeBtn = tabsContainerRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      }
+      setTimeout(checkTabsScroll, 300);
+    }
+  }, [activeTab]);
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    const el = tabsContainerRef.current;
+    if (el) {
+      const distance = direction === 'left' ? -280 : 280;
+      el.scrollBy({ left: distance, behavior: 'smooth' });
+      setTimeout(checkTabsScroll, 320);
+    }
+  };
 
   // 1. Initial State Loading & API sync
   React.useEffect(() => {
@@ -374,7 +422,31 @@ export default function AdminLoginPage() {
           if (parsed && parsed.sections) setPrivacyPolicy(parsed);
         } catch (e) {}
       }
+      const cachedLeads = localStorage.getItem('faisal_leads_data');
+      if (cachedLeads) {
+        try {
+          const parsed = JSON.parse(cachedLeads);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setLeadsList(parsed.map(mapLeadToCamel));
+          }
+        } catch (e) {}
+      }
     }
+
+    const handleLeadsUpdated = () => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('faisal_leads_data');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              setLeadsList(parsed.map(mapLeadToCamel));
+            }
+          } catch (e) {}
+        }
+      }
+    };
+    window.addEventListener('faisal_leads_updated', handleLeadsUpdated);
 
     fetchSettingByKey<LegalPolicyData>('terms_of_service').then(data => {
       if (data && data.sections) {
@@ -424,6 +496,12 @@ export default function AdminLoginPage() {
           });
         }
       }).catch(console.error);
+
+    return () => {
+      window.removeEventListener('fh_series_configs_updated', handleConfigsUpdate);
+      window.removeEventListener('fh_plots_updated', handleConfigsUpdate);
+      window.removeEventListener('faisal_leads_updated', handleLeadsUpdated);
+    };
   }, []);
 
   // 2. Fetch Leads & Blogs when authenticated
@@ -2002,33 +2080,71 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      {/* Horizontal Scrollable Tabs Strip */}
-      <div className="flex border-b border-slate-200 gap-1.5 sm:gap-2 text-xs font-bold overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
-        {dashboardTabs.map((tab) => {
-          const IconComp = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
+      {/* Horizontal Scrollable Tabs Strip with Left/Right Scroll Buttons */}
+      <div className="relative flex items-center group">
+        {/* Left Scroll Button */}
+        {canScrollLeft && (
+          <div className="absolute left-0 top-0 bottom-0 z-20 flex items-center pr-3 bg-gradient-to-r from-white via-white/95 to-transparent">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`py-2.5 sm:py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer rounded-t-xl text-xs ${
-                isActive
-                  ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/80 shadow-xs'
-                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
+              type="button"
+              onClick={() => scrollTabs('left')}
+              className="p-1.5 sm:p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-200 hover:bg-[#7b002c] hover:text-white hover:border-[#7b002c] transition-all duration-150 active:scale-90 cursor-pointer"
+              aria-label="Scroll tabs left"
+              title="Scroll tabs left"
             >
-              <IconComp className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#7b002c]' : 'text-slate-400'}`} />
-              <span>{tab.label}</span>
-              {tab.badge && (
-                <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
-                  isActive ? 'bg-[#7b002c] text-white' : 'bg-rose-100 text-[#7b002c]'
-                }`}>
-                  {tab.badge}
-                </span>
-              )}
+              <ChevronLeft className="w-4 h-4" />
             </button>
-          );
-        })}
+          </div>
+        )}
+
+        {/* Scrollable Tabs */}
+        <div
+          ref={tabsContainerRef}
+          onScroll={checkTabsScroll}
+          className="flex flex-1 border-b border-slate-200 gap-1.5 sm:gap-2 text-xs font-bold overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth"
+        >
+          {dashboardTabs.map((tab) => {
+            const IconComp = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                data-active={isActive ? 'true' : 'false'}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 cursor-pointer rounded-t-xl text-xs ${
+                  isActive
+                    ? 'border-[#7b002c] text-[#7b002c] font-bold bg-rose-50/80 shadow-xs'
+                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <IconComp className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#7b002c]' : 'text-slate-400'}`} />
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
+                    isActive ? 'bg-[#7b002c] text-white' : 'bg-rose-100 text-[#7b002c]'
+                  }`}>
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right Scroll Button */}
+        {canScrollRight && (
+          <div className="absolute right-0 top-0 bottom-0 z-20 flex items-center pl-3 bg-gradient-to-l from-white via-white/95 to-transparent">
+            <button
+              type="button"
+              onClick={() => scrollTabs('right')}
+              className="p-1.5 sm:p-2 rounded-full bg-white text-slate-700 shadow-md border border-slate-200 hover:bg-[#7b002c] hover:text-white hover:border-[#7b002c] transition-all duration-150 active:scale-90 cursor-pointer"
+              aria-label="Scroll tabs right"
+              title="Scroll tabs right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
 
@@ -4851,7 +4967,10 @@ export default function AdminLoginPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
-                    <span className="text-slate-400 font-medium text-[11px]">{lead.submittedAt}</span>
+                    <span className="text-slate-600 font-semibold text-[11px] whitespace-nowrap bg-white px-2.5 py-1 rounded-md border border-slate-200 shadow-2xs flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#7b002c] shrink-0" />
+                      {formatLeadDateTime(lead.submittedAt || (lead as any).created_at)}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleDeleteLead(lead.id)}

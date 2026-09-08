@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, MessageSquare, CheckCircle, ShieldCheck, Loader2 } from 'lucide-react';
-import { blocksData, submitLead, formatWhatsAppUrl } from '@/data/faisalHillsData';
+import { blocksData, submitLead, formatWhatsAppUrl, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export default function LeadModal({ isOpen, onClose, defaultBlock = '', defaultP
         phone: phone || 'N/A',
         interest: leadInterest,
         message: leadMessage,
-        submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        submittedAt: formatLeadDateTime()
       };
       localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
       window.dispatchEvent(new Event('faisal_leads_updated'));

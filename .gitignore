@@ -36,6 +36,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Large deployment archives
+*.zip
+frontend_hostinger_ready.zip
+backend_complete.zip
+
 # Docs / Plans
 implementation_plan.md
 walkthrough.md
+

@@ -12,7 +12,16 @@ class LeadController extends Controller
 {
     public function index()
     {
-        return response()->json(Lead::orderBy('created_at', 'desc')->get());
+        $leads = Lead::orderBy('created_at', 'desc')->get()->map(function ($lead) {
+            if ($lead->created_at) {
+                $lead->submitted_at = $lead->created_at->format('d M Y, h:i A');
+            } elseif (empty($lead->submitted_at) || str_starts_with($lead->submitted_at, 'Today') || str_starts_with($lead->submitted_at, 'Yesterday')) {
+                $lead->submitted_at = now()->format('d M Y, h:i A');
+            }
+            return $lead;
+        });
+
+        return response()->json($leads);
     }
 
     public function store(Request $request)
@@ -29,8 +38,10 @@ class LeadController extends Controller
             'phone' => $validated['phone'],
             'interest' => $validated['interest'] ?? 'General Inquiry',
             'message' => $validated['message'] ?? '',
-            'submitted_at' => 'Today, ' . now()->format('h:i A'),
+            'submitted_at' => now()->format('d M Y, h:i A'),
         ]);
+
+        $lead->submitted_at = $lead->created_at ? $lead->created_at->format('d M Y, h:i A') : now()->format('d M Y, h:i A');
 
         // Send email alert to Superadmin(s)
         try {

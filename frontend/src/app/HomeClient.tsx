@@ -140,8 +140,6 @@ export default function HomeClient() {
   // Lead Form State
   const [leadName, setLeadName] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
-  const [leadLocation, setLeadLocation] = useState('');
-  const [leadPreferredPlot, setLeadPreferredPlot] = useState('5 Marla');
   const [leadQuery, setLeadQuery] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -150,14 +148,13 @@ export default function HomeClient() {
     submitLead({
       name: leadName || 'Website Visitor',
       phone: leadEmail || 'N/A',
-      interest: `${leadPreferredPlot} (${leadLocation || 'Taxila/Islamabad'})`,
+      interest: 'Homepage Hero Inquiry',
       message: leadQuery
     }).then(() => {
       setFormSubmitted(true);
       setTimeout(() => setFormSubmitted(false), 5000);
       setLeadName('');
       setLeadEmail('');
-      setLeadLocation('');
       setLeadQuery('');
     }).catch(err => {
       console.error(err);

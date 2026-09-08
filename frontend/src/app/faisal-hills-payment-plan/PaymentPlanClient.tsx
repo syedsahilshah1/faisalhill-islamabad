@@ -8,7 +8,7 @@ import {
   Users, TrendingUp, Globe
 } from 'lucide-react';
 import FaqAccordion from '@/components/ui/FaqAccordion';
-import { blocksData } from '@/data/faisalHillsData';
+import { blocksData, formatLeadDateTime } from '@/data/faisalHillsData';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 
@@ -134,7 +134,7 @@ export default function PaymentPlanClient() {
         phone: phone || 'N/A',
         interest: `${preferredBlock} (${selectedSize})`,
         message: 'Lead submitted from payment plan page.',
-        submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        submittedAt: formatLeadDateTime()
       };
       localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
       window.dispatchEvent(new Event('faisal_leads_updated'));

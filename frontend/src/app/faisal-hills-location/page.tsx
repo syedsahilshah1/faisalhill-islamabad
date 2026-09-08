@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MapPin, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, Clock, Navigation, AlertCircle } from 'lucide-react';
-import { submitLead } from '@/data/faisalHillsData';
+import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 export default function FHLocationPage() {
   const [name, setName] = useState('');
@@ -34,7 +34,7 @@ export default function FHLocationPage() {
           phone,
           interest: `Site Visit Scheduled`,
           message: `Scheduled Date: ${visitDate}`,
-          submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          submittedAt: formatLeadDateTime()
         };
         localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
         window.dispatchEvent(new Event('faisal_leads_updated'));

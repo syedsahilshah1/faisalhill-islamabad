@@ -1189,6 +1189,45 @@ export interface LeadItem {
   submittedAt: string;
 }
 
+export function formatLeadDateTime(dateInput?: string | Date): string {
+  if (!dateInput) {
+    const now = new Date();
+    return `${now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+  }
+
+  const str = String(dateInput).trim();
+
+  // If already contains exact date and time like "08 Sep 2026, 02:45 PM"
+  if (/^\d{1,2}\s+[A-Za-z]{3}\s+\d{4},\s+\d{1,2}:\d{2}\s+(AM|PM)$/i.test(str)) {
+    return str;
+  }
+
+  // Handle legacy relative strings "Today, 02:45 PM" or "Yesterday, 06:15 PM"
+  if (/^Today,\s*(.*)$/i.test(str)) {
+    const timePart = str.replace(/^Today,\s*/i, '');
+    const now = new Date();
+    const dayStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return `${dayStr}, ${timePart || now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+  }
+
+  if (/^Yesterday,\s*(.*)$/i.test(str)) {
+    const timePart = str.replace(/^Yesterday,\s*/i, '');
+    const yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    const dayStr = yest.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return `${dayStr}, ${timePart || yest.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+  }
+
+  const d = new Date(dateInput);
+  if (!isNaN(d.getTime())) {
+    const day = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return `${day}, ${time}`;
+  }
+
+  return str;
+}
+
 export const initialLeadsData: LeadItem[] = [
   {
     id: "lead-1",
@@ -1196,7 +1235,7 @@ export const initialLeadsData: LeadItem[] = [
     phone: "+92 300 9876543",
     interest: "Block A (10 Marla Park Facing)",
     message: "Looking for immediate possession plot near commercial area.",
-    submittedAt: "Today, 02:45 PM"
+    submittedAt: "08 Sep 2026, 02:45 PM"
   },
   {
     id: "lead-2",
@@ -1204,7 +1243,7 @@ export const initialLeadsData: LeadItem[] = [
     phone: "+92 321 5551234",
     interest: "Faisal Jewels Luxury Flat #FJ-402",
     message: "Inquiring about 4-year installment plan & down payment.",
-    submittedAt: "Yesterday, 06:15 PM"
+    submittedAt: "07 Sep 2026, 06:15 PM"
   }
 ];
 
@@ -1305,10 +1344,15 @@ export function mapGalleryToCamel(item: any): GalleryItem {
 
 export function mapLeadToCamel(lead: any): LeadItem {
   if (!lead) return lead;
+  const rawDate = lead.created_at || lead.submitted_at || lead.submittedAt;
   return {
     ...lead,
-    id: lead.id.toString(),
-    submittedAt: lead.submitted_at || lead.submittedAt
+    id: lead.id ? lead.id.toString() : `lead-${Date.now()}`,
+    name: lead.name,
+    phone: lead.phone,
+    interest: lead.interest || 'General Inquiry',
+    message: lead.message,
+    submittedAt: formatLeadDateTime(rawDate)
   };
 }
 
@@ -1453,6 +1497,28 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
 }
 
 export async function submitLead(lead: { name: string; phone: string; interest?: string; message?: string }): Promise<any> {
+  const localLead: LeadItem = {
+    id: `lead-${Date.now()}`,
+    name: lead.name,
+    phone: lead.phone,
+    interest: lead.interest || 'General Inquiry',
+    message: lead.message,
+    submittedAt: formatLeadDateTime()
+  };
+
+  if (typeof window !== 'undefined') {
+    try {
+      const existing = JSON.parse(localStorage.getItem('faisal_leads_data') || '[]');
+      const isDuplicate = existing.some((item: any) => 
+        item.name === localLead.name && item.phone === localLead.phone && (item.message === localLead.message || item.interest === localLead.interest)
+      );
+      if (!isDuplicate) {
+        localStorage.setItem('faisal_leads_data', JSON.stringify([localLead, ...existing]));
+        window.dispatchEvent(new Event('faisal_leads_updated'));
+      }
+    } catch (e) {}
+  }
+
   const res = await fetch(`${getApiUrl()}/leads`, {
     method: 'POST',
     headers: {

@@ -7,7 +7,7 @@ import {
   Calendar, User, Clock, ArrowLeft, Send, MessageSquare, 
   HelpCircle, ChevronDown, CheckCircle, Mail, Phone, BookOpen
 } from 'lucide-react';
-import { submitLead, BlogItem } from '@/data/faisalHillsData';
+import { submitLead, BlogItem, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface BlogDetailClientProps {
   blog: BlogItem;
@@ -54,7 +54,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
           phone: consultPhone,
           interest: `Consultation: ${blog.title}`,
           message: `Location: ${consultLocation}`,
-          submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          submittedAt: formatLeadDateTime()
         };
         localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
         window.dispatchEvent(new Event('faisal_leads_updated'));
@@ -102,7 +102,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
           phone: sidebarPhone,
           interest: `Sidebar Inquiry: ${blog.title}`,
           message: `Email: ${sidebarEmail}`,
-          submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          submittedAt: formatLeadDateTime()
         };
         localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
         window.dispatchEvent(new Event('faisal_leads_updated'));

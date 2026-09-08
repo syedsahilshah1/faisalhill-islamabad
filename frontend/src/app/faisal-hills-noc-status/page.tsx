@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShieldCheck, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, FileText, BadgeCheck, AlertCircle } from 'lucide-react';
-import { submitLead } from '@/data/faisalHillsData';
+import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 export default function FHNocStatusPage() {
   const [name, setName] = useState('');
@@ -35,7 +35,7 @@ export default function FHNocStatusPage() {
           phone,
           interest: `NOC Status Inquiry: ${block}`,
           message: `Plot No: ${plotNo} Verification Requested`,
-          submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          submittedAt: formatLeadDateTime()
         };
         localStorage.setItem('faisal_leads_data', JSON.stringify([newLead, ...existingLeads]));
         window.dispatchEvent(new Event('faisal_leads_updated'));

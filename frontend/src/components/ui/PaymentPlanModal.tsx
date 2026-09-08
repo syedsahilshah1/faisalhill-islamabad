@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Download, ShieldCheck, CheckCircle2, User, Phone, Mail, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
-import { submitLead } from '@/data/faisalHillsData';
+import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface PaymentPlanModalProps {
   isLightboxOpen: boolean;
@@ -213,7 +213,7 @@ export default function PaymentPlanModal({
       email: email || 'N/A',
       interest: 'Faisal Hills Official Payment Plan Download',
       message: `Downloaded Payment Plan image. Phone/WhatsApp: ${phone}, Email: ${email}`,
-      submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      submittedAt: formatLeadDateTime(),
     };
 
     // 1. Save to LocalStorage for Admin Panel

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Download, ShieldCheck, CheckCircle2, User, Phone, Calendar, Mail } from 'lucide-react';
-import { submitLead } from '@/data/faisalHillsData';
+import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface MapDownloadModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export default function MapDownloadModal({
       email: email || 'N/A',
       interest: 'Master Plan PDF Map Download',
       message: `Downloaded Master Plan PDF map. Age: ${age}, Contact: ${phone}, Email: ${email}`,
-      submittedAt: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      submittedAt: formatLeadDateTime(),
     };
 
     // 1. Save to LocalStorage (Syncs with Admin Panel Leads tab)

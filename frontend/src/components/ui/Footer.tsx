@@ -71,11 +71,11 @@ export default function Footer() {
         </p>
       </div>
 
-      {/* Main 4-Column Footer Grid */}
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+      {/* Main 5-Column Footer Grid */}
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-8 lg:gap-6">
 
         {/* Column 1 — CONTACT US */}
-        <div className="lg:col-span-4 space-y-4">
+        <div className="lg:col-span-3 space-y-4">
           <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
             CONTACT US
           </h4>
@@ -126,10 +126,10 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 2 — QUICK LINKS & SECTORS */}
-        <div className="lg:col-span-3 space-y-4">
+        {/* Column 2 — QUICK LINKS */}
+        <div className="lg:col-span-2 space-y-4">
           <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
-            QUICK LINKS & SECTORS
+            QUICK LINKS
           </h4>
 
           <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
@@ -142,21 +142,49 @@ export default function Footer() {
             <li>
               <Link href="/faisal-hills-payment-plan" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Payment Plans & Installments</span>
+                <span>Payment Plans</span>
               </Link>
             </li>
             <li>
               <Link href="/master-plan" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Interactive Master Plan Map</span>
+                <span>Master Plan Map</span>
               </Link>
             </li>
             <li>
               <Link href="/faisal-hills-noc-status" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>CDA & RDA NOC Status</span>
+                <span>NOC</span>
               </Link>
             </li>
+            <li>
+              <Link href="/faisal-hills-location" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Location & Access</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blogs" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>News & Blogs</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Contact Sales</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Column 3 — BLOCKS */}
+        <div className="lg:col-span-2 space-y-4">
+          <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+            BLOCKS
+          </h4>
+
+          <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
             <li>
               <Link href="/blocks/executive-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
@@ -170,33 +198,69 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/faisal-hills-commercial" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+              <Link href="/blocks/block-a" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Commercial Plots & Highrise</span>
+                <span>Block A</span>
               </Link>
             </li>
             <li>
-              <Link href="/blogs" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+              <Link href="/blocks/block-b" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Latest News & Blogs</span>
+                <span>Block B</span>
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+              <Link href="/blocks/block-c" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Contact Sales Team</span>
+                <span>Block C</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/block-d" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Block D</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/faisal-hills-blocks" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>All Blocks Overview</span>
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Column 3 — UPCOMING PROJECTS & EXPANSIONS */}
+        {/* Column 4 — HIGHRISE */}
         <div className="lg:col-span-2 space-y-4">
           <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
-            UPCOMING PROJECTS
+            HIGHRISE
           </h4>
 
           <ul className="space-y-2 text-xs text-white/90 font-sans font-medium">
+            <li>
+              <Link href="/blocks/faisal-jewel-islamabad" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Faisal Jewel</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blocks/hills-walk" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Hills Walk</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/faisal-hills-commercial" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>City Walk Commercial</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/faisal-hills-commercial" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-rose-300" />
+                <span>Commercial Plots</span>
+              </Link>
+            </li>
             <li>
               <Link href="/blocks/block-b1-extension" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
@@ -209,40 +273,10 @@ export default function Footer() {
                 <span>Gandhara Block</span>
               </Link>
             </li>
-            <li>
-              <Link href="/blocks/wah-project" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Wah Cantt Project</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/blocks/block-e" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Block E (Executive)</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/blocks/block-f" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Block F (Foothills)</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/blocks/golf-view-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Golf View Block</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/blocks/faisal-jewel-islamabad" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-rose-300" />
-                <span>Faisal Jewel Tower</span>
-              </Link>
-            </li>
           </ul>
         </div>
 
-        {/* Column 4 — SUBSCRIBE TO NEWSLETTER & SOCIALS */}
+        {/* Column 5 — SUBSCRIBE TO NEWSLETTER & SOCIALS */}
         <div className="lg:col-span-3 space-y-6">
           <div className="space-y-4">
             <h4 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-white/70">
