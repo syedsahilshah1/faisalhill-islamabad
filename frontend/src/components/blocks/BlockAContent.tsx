@@ -143,7 +143,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Possession',
     status: 'Immediate Possession',
     badge: 'Near Mosque',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     features: ['Adjacent to Grand Jamia Mosque', 'Carpeted 40ft Street', 'Gas & Electric Meter Ready']
   },
   {
@@ -158,7 +158,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Possession',
     status: 'Ready to Build',
     badge: 'Main Road Frontage',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     features: ['Direct Entrance Road Link', 'Underground Utilities Live', 'Solid Ground Elevation']
   },
   {
@@ -173,7 +173,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Possession',
     status: 'VIP Possession',
     badge: '12-Kanal Park Facing',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     features: ['Double Side Corner', 'Direct Park Panorama', 'Populated Street with Villas']
   },
   {
@@ -188,7 +188,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Possession',
     status: 'Prime Possession',
     badge: 'Signature Location',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+    image: '/images/faisal-hills-aerial-panoramic.webp',
     features: ['Margalla Foothill Vista', 'Established Community Vibe', 'High Rental Demand Zone']
   },
 
@@ -205,7 +205,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Ready',
     status: 'High Rental Yield',
     badge: 'Plaza Plot',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     features: ['Ground + 5 Approval', 'High Footfall Market Area', 'Ideal for Bank / Mart / Clinic']
   },
   {
@@ -220,7 +220,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Ready',
     status: 'Prime Frontage',
     badge: 'Commercial Hub',
-    image: '/images/faisal-roots-school.jpg',
+    image: '/images/roots-international-school-faisal-hills.webp',
     features: ['225ft Boulevard Front', 'Corner Commercial Plot', 'Heavy Commuter Visibility']
   },
   {
@@ -235,7 +235,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Ready',
     status: 'High Capital Gain',
     badge: 'Commercial Plaza',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/hills-walk-commercial-aerial.webp',
     features: ['Approved Multi-Storey Retail', 'Dedicated Customer Parking', 'Direct Quaid Ave Access']
   },
   {
@@ -250,7 +250,7 @@ const defaultBlockASellingPlots = [
     downPayment: 'Full Cash / Ready',
     status: 'Corporate Plaza',
     badge: 'Corner Plaza Plot',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     features: ['3-Side Open Boulevard Corner', 'Corporate Office Hub Ready', 'Massive Daily Footfall']
   }
 ];
@@ -261,7 +261,7 @@ const blockAGalleryItems = [
     title: 'Block A Central Jamia Mosque & Minarets',
     category: 'amenities',
     tag: 'Grand Mosque',
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     desc: 'The iconic air-conditioned Grand Jamia Mosque actively holding daily prayers and Friday congregations.'
   },
   {
@@ -269,7 +269,7 @@ const blockAGalleryItems = [
     title: 'Block A Built Family Homes & Thriving Living',
     category: 'infrastructure',
     tag: '500+ Resident Families',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     desc: 'Fully populated sector featuring finished modern houses, paved streetscapes, and operational utilities.'
   },
   {
@@ -277,7 +277,7 @@ const blockAGalleryItems = [
     title: 'Block A 12-Kanal Central Community Park',
     category: 'nature',
     tag: 'Recreational Greens',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     desc: 'Expansive family park with walking tracks, flowering landscaping, gazebos, and secure children play areas.'
   },
   {
@@ -285,7 +285,7 @@ const blockAGalleryItems = [
     title: 'Main Grand Entrance & Enayat Ullah Khan Avenue',
     category: 'infrastructure',
     tag: 'Direct GT Road Gate',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     desc: 'Direct entrance connection providing effortless 1-minute access to GT Road (N-5) and Taxila commercial spine.'
   },
   {
@@ -293,7 +293,7 @@ const blockAGalleryItems = [
     title: 'Operational Commercial Markets & Daily Conveniences',
     category: 'infrastructure',
     tag: 'Commercial Plazas',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     desc: 'Functional retail plazas hosting grocery marts, bakeries, pharmacies, banking branches, and cafes.'
   },
   {
@@ -301,7 +301,7 @@ const blockAGalleryItems = [
     title: 'Roots Millennium International School Campus',
     category: 'amenities',
     tag: 'Operational School',
-    image: '/images/faisal-roots-school.jpg',
+    image: '/images/roots-international-school-faisal-hills.webp',
     desc: 'Premier educational institute operating actively with state-of-the-art academic and sports infrastructure.'
   },
   {
@@ -309,7 +309,7 @@ const blockAGalleryItems = [
     title: 'Sports Arena & Multi-Purpose Courts',
     category: 'amenities',
     tag: 'Sports Complex',
-    image: '/images/imgi_48_sports-arena.webp',
+    image: '/images/faisal-hills-sports-arena.webp',
     desc: 'Dedicated sporting grounds, football turf, tennis courts, and fitness jogging circuits.'
   },
   {
@@ -317,7 +317,7 @@ const blockAGalleryItems = [
     title: 'Healthcare Center & Emergency Clinic',
     category: 'amenities',
     tag: 'Medical Hub',
-    image: '/images/imgi_49_Medical-xomplex.webp',
+    image: '/images/faisal-hills-medical-complex.webp',
     desc: '24/7 medical consultation, pharmacy, and family healthcare facilities situated right inside the community.'
   }
 ];
@@ -417,14 +417,14 @@ export default function BlockAContent() {
   };
 
   const defaultBlockAPlotImages = [
-    '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-    '/images/faisalhillarc.jpg',
-    '/images/faisal-park.jpg',
-    '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
-    '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
-    '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
-    '/images/imgi_44_Executive-Block.webp',
-    '/images/faisal-roots-school.jpg'
+    '/images/faisal-hills-drone-view.webp',
+    '/images/faisal-hills-arc-gate.webp',
+    '/images/faisal-hills-glow-park.webp',
+    '/images/faisal-hills-aerial-panoramic.webp',
+    '/images/faisal-hills-site-header.webp',
+    '/images/hills-walk-commercial-aerial.webp',
+    '/images/faisal-hills-executive-sector.webp',
+    '/images/roots-international-school-faisal-hills.webp'
   ];
 
   const blockAPlots = useMemo(() => {
@@ -584,7 +584,7 @@ export default function BlockAContent() {
             <ScrollReveal direction="right" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-950 min-h-[340px] sm:min-h-[380px] flex flex-col justify-between group">
                 <img
-                  src="/images/imgi_46_Mosques.webp"
+                  src="/images/faisal-hills-jamia-mosque.webp"
                   alt="Block A Grand Jamia Mosque"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -800,7 +800,7 @@ export default function BlockAContent() {
             className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[460px] p-2 sm:p-4"
           >
             <img
-              src="/images/faisal-hills-master-plan-map.jpg"
+              src="/images/faisal-hills-master-plan-map.webp"
               alt="Faisal Hills Block A Master Plan Layout"
               className="w-full h-auto max-h-[560px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
             />
@@ -993,7 +993,7 @@ export default function BlockAContent() {
               <span>WhatsApp Resale Desk</span>
             </a>
             <a
-              href="tel:+923313339997"
+              href="tel:+923331113177"
               className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
             >
               <span>Call Direct Line</span>
@@ -1449,7 +1449,7 @@ export default function BlockAContent() {
           isOpen={isMapModalOpen}
           onClose={() => setIsMapModalOpen(false)}
           blockName="Faisal Hills Block A"
-          mapImageUrl="/images/faisal-hills-master-plan-map.jpg"
+          mapImageUrl="/images/faisal-hills-master-plan-map.webp"
         />
       )}
 

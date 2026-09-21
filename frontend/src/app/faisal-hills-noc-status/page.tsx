@@ -68,7 +68,7 @@ export default function FHNocStatusPage() {
       <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
+          style={{ backgroundImage: `url('/images/faisal-hills-site-header.webp')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />

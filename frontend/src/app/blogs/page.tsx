@@ -12,10 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = seo?.title || 'Faisal Hills News, Market Updates & Real Estate Blog 2026';
   const description = seo?.meta_description || 'Stay updated with Faisal Hills development progress, NOC approvals, balloting results, market trends, and expert investment guides.';
   const canonical = seo?.canonical_url || `${BASE_URL}/blogs`;
-  const ogImage = seo?.og_image || `${BASE_URL}/images/faisal-roots-school.jpg`;
+  const ogImage = seo?.og_image || `${BASE_URL}/images/roots-international-school-faisal-hills.webp`;
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: seo?.keywords ? seo.keywords.split(',').map((k: string) => k.trim()) : ['Faisal Hills blog', 'Faisal Hills news', 'plot prices', 'real estate investment'],
     alternates: {

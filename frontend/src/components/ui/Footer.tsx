@@ -56,7 +56,7 @@ export default function Footer() {
 
       {/* Top Section with Official FT Emblem and Slogan */}
       <div className="max-w-[1440px] mx-auto px-6 sm:px-10 pt-12 pb-8 text-center space-y-4 border-b border-white/10 flex flex-col items-center">
-        <Link href="/" className="inline-block py-2">
+        <Link href="/" className="inline-block py-2" aria-label="Faisal Hills Islamabad Home">
           <img
             src="/images/faisal-town-logo.webp"
             alt="Faisal Town Group"
@@ -65,6 +65,7 @@ export default function Footer() {
             loading="lazy"
             className="h-16 sm:h-20 lg:h-24 w-auto object-contain brightness-0 invert opacity-95 hover:opacity-100 transition-opacity"
           />
+          <span className="sr-only">Faisal Hills Islamabad</span>
         </Link>
         <p className="text-white/90 text-sm sm:text-base font-serif italic max-w-2xl mx-auto leading-relaxed">
           FaisalTown Group continues to lead the way in redefining real estate development in Pakistan.
@@ -308,6 +309,7 @@ export default function Footer() {
               aria-label="Follow on Facebook"
             >
               <Facebook className="w-4 h-4" />
+              <span className="sr-only">Facebook</span>
             </a>
             <a
               href={socials.instagram || 'https://instagram.com'}
@@ -317,6 +319,7 @@ export default function Footer() {
               aria-label="Follow on Instagram"
             >
               <Instagram className="w-4 h-4" />
+              <span className="sr-only">Instagram</span>
             </a>
             <a
               href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I am interested in Faisal Hills Islamabad.')}
@@ -326,6 +329,7 @@ export default function Footer() {
               aria-label="Chat on WhatsApp"
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="sr-only">WhatsApp Chat</span>
             </a>
             <a
               href={socials.linkedin || 'https://linkedin.com'}
@@ -335,6 +339,7 @@ export default function Footer() {
               aria-label="Connect on LinkedIn"
             >
               <Linkedin className="w-4 h-4" />
+              <span className="sr-only">LinkedIn</span>
             </a>
             <a
               href={socials.youtube || 'https://youtube.com'}
@@ -344,6 +349,7 @@ export default function Footer() {
               aria-label="Watch on YouTube"
             >
               <Youtube className="w-4 h-4" />
+              <span className="sr-only">YouTube</span>
             </a>
           </div>
         </div>

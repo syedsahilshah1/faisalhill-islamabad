@@ -131,7 +131,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 50, y: 50 },
     features: ['Main Pedestrian Promenade', 'Ground + 4 Approval', 'Direct Basement Parking Access'],
     description: 'Prime 4 Marla commercial plot on the European-style Hills Walk promenade with high retail footfall.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+    image: '/images/hills-walk-commercial-aerial.webp'
   },
   {
     id: 'plot-hw-02',
@@ -149,7 +149,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 52, y: 52 },
     features: ['Dual Frontage Corner', 'Facing Outdoor Amphitheater', 'Rooftop Cafe NOC'],
     description: 'Exclusive 5.8 Marla corner plot with panoramic Margalla views, approved for multi-storey retail arcade.',
-    image: '/images/faisalarc (3).jpg'
+    image: '/images/faisal-hills-arc-view.webp'
   },
   {
     id: 'plot-hw-03',
@@ -167,7 +167,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 55, y: 54 },
     features: ['Water Cascade View', 'Ground + 6 Storey Approval', 'Dedicated Loading Bay'],
     description: 'Flagship 8 Marla commercial arcade cut overlooking central water fountains and luxury restaurant boulevard.',
-    image: '/images/faisalarc (2).webp'
+    image: '/images/faisal-hills-arc-monument-2.webp'
   },
   {
     id: 'plot-hw-04',
@@ -185,7 +185,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 58, y: 56 },
     features: ['Near Brand Flagship Outlets', 'Immediate Construction', 'Zero Litigation'],
     description: 'High visibility 4 Marla commercial plot ready for immediate construction with full RDA approval.',
-    image: '/images/faisalarc (1).webp'
+    image: '/images/faisal-hills-arc-monument.webp'
   },
   {
     id: 'plot-hw-05',
@@ -203,7 +203,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 60, y: 58 },
     features: ['Corporate Tower Zoning', 'High-Speed Elevator Core', 'Direct 225ft Boulevard Link'],
     description: 'Premium 10 Marla corporate tower plot designed for multinational headquarters, banks, and serviced suites.',
-    image: '/images/faisal-jewel.jpg'
+    image: '/images/faisal-jewel-building.webp'
   },
   {
     id: 'plot-hw-06',
@@ -221,7 +221,7 @@ const defaultHillsWalkPlots: PlotItem[] = [
     mapCoords: { x: 62, y: 60 },
     features: ['Alfresco Dining Zone', 'Wide Pedestrian Sidewalk', 'Direct Zedem Biometric Transfer'],
     description: 'Prime 5.8 Marla commercial cut in the designated fine dining district of Hills Walk with high evening footfall.',
-    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
+    image: '/images/faisal-hills-site-header.webp'
   }
 ];
 
@@ -232,7 +232,7 @@ const hillsWalkAmenities = [
     title: 'European-Style Open-Air Pedestrian Promenade',
     category: 'Lifestyle',
     description: 'A pedestrian-first 80ft wide boulevard designed with cobblestone paving, tree-shaded seating, designer street lamps, and water fountains.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/hills-walk-commercial-aerial.webp',
     tag: 'Signature Landmark',
     features: ['80ft Wide Pedestrian Zone', 'Cobblestone Street Paving', 'Outdoor Cafe Seating', 'Zero Traffic Congestion']
   },
@@ -241,7 +241,7 @@ const hillsWalkAmenities = [
     title: 'Open-Air Community Amphitheater',
     category: 'Lifestyle',
     description: 'Dedicated modern open-air arena for community cultural events, seasonal festivals, live musical performances, and weekend celebrations.',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     tag: 'Entertainment Core',
     features: ['Tiered Seating Arena', 'HD Outdoor Screen', 'Acoustic Sound System', 'Lush Surrounding Terraces']
   },
@@ -250,7 +250,7 @@ const hillsWalkAmenities = [
     title: 'Multi-Level Smart Basement Car Parking',
     category: 'Infrastructure',
     description: 'Multi-storey subterranean parking facility accommodating 500+ vehicles with smart electronic parking guidance and EV charging bays.',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     tag: '500+ Capacity',
     features: ['500+ Car Basement Bays', 'Smart Sensor Guidance', 'EV Charging Points', '24/7 Security Attendants']
   },
@@ -259,7 +259,7 @@ const hillsWalkAmenities = [
     title: 'Rooftop Margalla Dining & Alfresco Cafes',
     category: 'Lifestyle',
     description: 'Zoned rooftop restaurants offering panoramic Margalla mountain sunsets, fine dining cuisine, coffee lounges, and executive meeting terraces.',
-    image: '/images/faisalarc (2).webp',
+    image: '/images/faisal-hills-arc-monument-2.webp',
     tag: 'Fine Dining Hub',
     features: ['Margalla Mountain Views', 'Alfresco Terrace Seating', 'Top Culinary Brands', 'Executive VIP Lounges']
   },
@@ -268,7 +268,7 @@ const hillsWalkAmenities = [
     title: 'Multi-Storey Commercial Arcades (G+4 & G+6)',
     category: 'Commercial',
     description: 'RDA-approved multi-storey commercial plazas designed for national fashion brands, banks, electronics showrooms, and healthcare diagnostic clinics.',
-    image: '/images/faisalarc (3).jpg',
+    image: '/images/faisal-hills-arc-view.webp',
     tag: 'RDA Approved',
     features: ['High Ceilings & Large Glass Fronts', 'High-Speed Elevators', 'Backup Generator Grid', 'Central HVAC Conduits']
   },
@@ -277,7 +277,7 @@ const hillsWalkAmenities = [
     title: '24/7 Smart Security & CCTV Surveillance',
     category: 'Security',
     description: 'Continuous high-definition perimeter monitoring, dedicated foot patrol squads, automated license plate readers, and rapid response safety teams.',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     tag: '24/7 Secure',
     features: ['HD CCTV Surveillance', 'Dedicated Mobile Patrol Squads', 'Biometric Automated Checkpoints', 'Emergency Medical Access']
   }
@@ -489,7 +489,7 @@ export default function HillsWalkContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   <img
-                    src="/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg"
+                    src="/images/hills-walk-commercial-aerial.webp"
                     alt="Faisal Hills Walk Promenade Showcase"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -610,7 +610,7 @@ export default function HillsWalkContent() {
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
                 <img
-                  src="/images/faisal-hills-master-plan-map.jpg"
+                  src="/images/faisal-hills-master-plan-map.webp"
                   alt="Faisal Hills Walk Master Plan Layout"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -840,7 +840,7 @@ export default function HillsWalkContent() {
                   <div>
                     <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950 block">
                       <img
-                        src={plot.image || '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'}
+                        src={plot.image || '/images/hills-walk-commercial-aerial.webp'}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />

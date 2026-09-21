@@ -54,7 +54,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 15.0 Lac',
     status: 'Available',
     badge: 'Near Roots School',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     features: ['Walking Distance to Roots School', '100% Level Ready to Build', 'Possession Ready']
   },
   {
@@ -69,7 +69,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 22.0 Lac',
     status: 'Hot Deal',
     badge: 'Boulevard Front',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     features: ['Wide 225ft Boulevard Front', 'Prime Commercial Walkability', 'Immediate Allotment']
   },
   {
@@ -84,7 +84,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 27.0 Lac',
     status: 'Ready to Build',
     badge: 'Corner Plot',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     features: ['Double Corner Extra Land', 'Lush Park View', 'Active Street Construction']
   },
   {
@@ -99,7 +99,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 42.0 Lac',
     status: 'Signature Plot',
     badge: 'VIP Enclave',
-    image: '/images/faisal-jewel.jpg',
+    image: '/images/faisal-jewel-building.webp',
     features: ['Top-Tier Margalla Panorama', 'Private Cul-de-Sac Street', 'Gated VIP Security']
   },
   {
@@ -114,7 +114,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 56.0 Lac',
     status: 'High ROI',
     badge: 'Commercial Core',
-    image: '/images/faisal-jewel.jpg',
+    image: '/images/faisal-jewel-building.webp',
     features: ['Ground + 5 Approved Height', 'Direct GT Road Entrance', 'High Footfall Core']
   },
   {
@@ -129,7 +129,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 73.0 Lac',
     status: 'Prime Frontage',
     badge: 'Faisal Jewel Axis',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     features: ['Facing Faisal Jewel Tower', 'Dedicated Customer Parking', 'Ideal for Brand / Bank']
   },
   {
@@ -144,7 +144,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 84.0 Lac',
     status: 'Corner Hub',
     badge: 'Double Corner',
-    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+    image: '/images/faisal-hills-site-header.webp',
     features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
   },
   {
@@ -159,7 +159,7 @@ const defaultExecutiveSellingPlots = [
     downPayment: 'PKR 1.10 Crore',
     status: 'Corporate File',
     badge: 'Flagship Site',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     features: ['Multi-Storey Corporate Approval', 'Maximum GT Road Visibility', 'Direct Site Office Access']
   }
 ];
@@ -169,56 +169,56 @@ const executiveAmenities = [
     id: 'civic-hub',
     tag: 'Sector Core',
     title: 'Civic Hub & Monument Gateway',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     icon: Building2
   },
   {
     id: 'roots-school',
     tag: 'Operational',
     title: 'Roots International School Campus',
-    image: '/images/faisal-roots-school.jpg',
+    image: '/images/roots-international-school-faisal-hills.webp',
     icon: GraduationCap
   },
   {
     id: 'faisal-jewel',
     tag: '27-Storey Icon',
     title: 'Faisal Jewel Tower',
-    image: '/images/faisal-jewel.jpg',
+    image: '/images/faisal-jewel-building.webp',
     icon: Landmark
   },
   {
     id: 'mosques',
     tag: 'Spiritual Center',
     title: 'Jamia Masjid Fatima Tuz Zahra',
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     icon: Building
   },
   {
     id: 'community-parks',
     tag: 'Lush Greenery',
     title: 'Executive Parks & Jogging Tracks',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     icon: Trees
   },
   {
     id: 'sports-arena',
     tag: 'Active Sports',
     title: 'Sports Arena & Cricket Ground',
-    image: '/images/imgi_48_sports-arena.webp',
+    image: '/images/faisal-hills-sports-arena.webp',
     icon: Activity
   },
   {
     id: 'fuel-station',
     tag: '24/7 Utility',
     title: 'Boulevard Fuel Station',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/hills-walk-commercial-aerial.webp',
     icon: FuelIcon
   },
   {
     id: 'gated-security',
     tag: 'VIP Enclave',
     title: 'Gated 24/7 Security & CCTV',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     icon: ShieldCheck
   }
 ];
@@ -331,7 +331,7 @@ export default function ExecutiveBlockContent() {
       downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : 'Contact for Plan'),
       status: plot.status || 'Possession Ready',
       badge: (plot as any).badge || 'Possession Ready',
-      image: plot.image || '/images/imgi_44_Executive-Block.webp',
+      image: plot.image || '/images/faisal-hills-executive-sector.webp',
       features: plot.features && plot.features.length > 0 ? plot.features : ['GT Road Frontage', 'Immediate Construction', 'Underground Utilities']
     }));
 
@@ -414,7 +414,7 @@ export default function ExecutiveBlockContent() {
             <ScrollReveal direction="right" delay={100} className="w-full h-full flex flex-col flex-1">
               <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                 <img
-                  src="/images/faisalhillarc.jpg"
+                  src="/images/faisal-hills-arc-gate.webp"
                   alt="Faisal Hills Executive Block Monument Entrance Arc Gate"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                 />
@@ -521,7 +521,7 @@ export default function ExecutiveBlockContent() {
                 className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[380px] p-2"
               >
                 <img
-                  src="/images/faisalexecutivemap.png"
+                  src="/images/faisal-hills-executive-map.webp"
                   alt="Faisal Hills Executive Block Master Plan Map"
                   className="w-full h-auto max-h-[500px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
                 />
@@ -993,7 +993,7 @@ export default function ExecutiveBlockContent() {
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
                 <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                   <img
-                    src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                    src="/images/faisal-hills-drone-view.webp"
                     alt="Faisal Hills Executive Block On-Ground Development Status & Aerial View"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />
@@ -1322,8 +1322,8 @@ export default function ExecutiveBlockContent() {
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
         blockName="Executive Block"
-        mapImageUrl="/images/faisalexecutivemap.png"
-        mapPdfUrl="/images/faisalexecutivemap.png"
+        mapImageUrl="/images/faisal-hills-executive-map.webp"
+        mapPdfUrl="/images/faisal-hills-executive-map.webp"
       />
 
     </div>

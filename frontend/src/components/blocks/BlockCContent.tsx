@@ -147,7 +147,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 55, y: 48 },
     features: ['Adjacent to Sector Park', '40ft Carpeted Street', 'RO Water Pipeline Connected'],
     description: 'Prime 5 Marla residential plot located near central park with immediate possession.',
-    image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png'
+    image: '/images/faisal-hills-executive-boulevard.webp'
   },
   {
     id: 'blockc-8m-1',
@@ -165,7 +165,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 58, y: 50 },
     features: ['Direct Avenue Access', 'Underground Utilities Live', 'Demarcation Completed'],
     description: 'Generous 8 Marla layout on 40ft street with wide frontage and mountain breeze.',
-    image: '/images/imgi_27_Rectangle-1-scaled.png'
+    image: '/images/faisal-hills-monument-entrance.webp'
   },
   {
     id: 'blockc-10m-1',
@@ -183,7 +183,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 62, y: 52 },
     features: ['Corner Dual Access', 'Panoramic Hillside Panorama', 'Near Grand Jamia Mosque'],
     description: 'Executive 10 Marla corner plot ideal for double-unit luxury villa construction.',
-    image: '/images/imgi_44_Executive-Block.webp'
+    image: '/images/faisal-hills-executive-sector.webp'
   },
   {
     id: 'blockc-14m-1',
@@ -201,7 +201,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 65, y: 54 },
     features: ['60ft Wide Avenue Frontage', 'Instant Home Construction', 'Zero Litigation'],
     description: '14 Marla luxury plot positioned along landscaped sector avenue.',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+    image: '/images/faisal-hills-aerial-panoramic.webp'
   },
   {
     id: 'blockc-1k-1',
@@ -219,7 +219,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 68, y: 56 },
     features: ['Facing 12-Kanal Central Park', 'Luxury Villa Demarcation', 'Biometric Zedem Transfer'],
     description: 'Flagship 1 Kanal mansion plot facing extensive green reserves and thematic parklands.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/faisal-hills-drone-view.webp'
   },
   {
     id: 'blockc-comm-1',
@@ -237,7 +237,7 @@ const defaultBlockCPlots: PlotItem[] = [
     mapCoords: { x: 70, y: 60 },
     features: ['Ground + 4 Storey Approval', 'High Footfall Corridor', 'Retail & Office Hub'],
     description: 'Prime commercial plot fronting the Hills Walk promenade with high retail footfall.',
-    image: '/images/faisalarc (2).webp'
+    image: '/images/faisal-hills-arc-monument-2.webp'
   }
 ];
 
@@ -248,7 +248,7 @@ const blockCAmenities = [
     title: 'High-Capacity RO Water Filtration Plant',
     category: 'utilities',
     description: 'Fully active water purification and mineral RO filtration station supplying 24/7 crystal-clear potable water to all Block C residents.',
-    image: '/images/faisal-forest.jpg',
+    image: '/images/faisal-hills-miyawaki-forest.webp',
     tag: 'Operational Asset',
     features: ['24/7 Filtered Mineral Water', 'Deep Tube-Well Sourced', 'Zero Water Scarcity', 'Maintained by Zedem']
   },
@@ -257,7 +257,7 @@ const blockCAmenities = [
     title: 'Direct Hills Walk Promenade Access',
     category: 'lifestyle',
     description: 'Direct pedestrian link to the vibrant Hills Walk commercial district featuring alfresco restaurants, cafes, and flagship retail boutiques.',
-    image: '/images/faisalarc (2).webp',
+    image: '/images/faisal-hills-arc-monument-2.webp',
     tag: 'Lifestyle Anchor',
     features: ['Pedestrian Walking Arcades', 'Food Street & Fine Dining', 'High Retail Footfall', 'Corporate Office Hub']
   },
@@ -266,7 +266,7 @@ const blockCAmenities = [
     title: 'Grand Sector Jamia Mosque',
     category: 'infrastructure',
     description: 'Architecturally stunning air-conditioned community mosque with dedicated ablution zones, lush courtyards, and Quran academy.',
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     tag: 'Delivered Landmark',
     features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
   },
@@ -275,7 +275,7 @@ const blockCAmenities = [
     title: 'Central Theme Park & Glow Garden',
     category: 'nature',
     description: 'Sprawling green reservations with children play grounds, illuminated evening walking tracks, and gazebos facing the mountains.',
-    image: '/images/imgi_45_Glow-garden.webp',
+    image: '/images/faisal-hills-glow-garden.webp',
     tag: 'Recreational Green',
     features: ['Illuminated Night Walkways', 'Children Play Arena', 'Margalla Mountain Breeze', 'Jogging Track']
   },
@@ -284,7 +284,7 @@ const blockCAmenities = [
     title: '100% Underground Electrification',
     category: 'utilities',
     description: 'Clean visual skyline with zero dangling wires, heavy underground power cables, grid transformer stations, and LED street lighting.',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     tag: 'Smart Infrastructure',
     features: ['Uninterrupted Grid Backup', 'Underground High-Tension Cables', 'Zero Overhead Wiring', 'LED Street Lamps']
   },
@@ -293,7 +293,7 @@ const blockCAmenities = [
     title: 'Dedicated 24/7 Gated Security & Surveillance',
     category: 'security',
     description: 'Rapid-response mobile patrolling squads, barrier-controlled check posts, and smart high-definition CCTV perimeter monitoring.',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     tag: '24/7 Secure',
     features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
   }
@@ -625,7 +625,7 @@ export default function BlockCContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[320px] sm:min-h-[360px] flex flex-col justify-between group">
                 <img
-                  src="/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg"
+                  src="/images/hills-walk-commercial-aerial.webp"
                   alt="Faisal Hills Block C Panoramic View"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -1079,7 +1079,7 @@ export default function BlockCContent() {
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
                     <img
-                      src={plot.image || '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'}
+                      src={plot.image || '/images/faisal-hills-drone-view.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1176,8 +1176,10 @@ export default function BlockCContent() {
                       rel="noopener noreferrer"
                       className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
                       title="Chat on WhatsApp"
+                      aria-label="Chat on WhatsApp"
                     >
                       <MessageSquare className="w-4 h-4" />
+                      <span className="sr-only">Chat on WhatsApp</span>
                     </a>
                   </div>
                 </div>

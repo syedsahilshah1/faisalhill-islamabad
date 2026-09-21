@@ -10,15 +10,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('faisal-hills-payment-plan') || await fetchSeo('payment-plan');
 
   const title = seo?.title || 'Faisal Hills Payment Plan 2026 – Installments & Cash Rates';
-  const description = seo?.meta_description || 'Detailed Faisal Hills Payment Plan 2026 for 5, 8, 10, 14 Marla and 1, 2 Kanal plots. Check down payments, quarterly installments, lump sum cash discounts, and possession timeline.';
+  const description = seo?.meta_description || 'Detailed Faisal Hills Payment Plan 2026 for 5 Marla to 2 Kanal plots. Check down payments, quarterly installments, discounts & possession timeline.';
   const canonical = seo?.canonical_url || `${BASE_URL}/faisal-hills-payment-plan`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['Faisal Hills Payment Plan', 'Faisal Hills installment plan', 'Faisal Hills 5 Marla payment plan', 'Faisal Hills 10 Marla price', 'Faisal Hills down payment', 'Faisal Hills plot prices 2026'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {

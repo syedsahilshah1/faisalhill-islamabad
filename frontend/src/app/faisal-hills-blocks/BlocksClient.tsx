@@ -60,7 +60,7 @@ export default function BlocksClient() {
         {/* Background HD Architectural Texture */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <Image
-            src="/images/imgi_38_Faisal-Hills-site-home-page-header.webp"
+            src="/images/faisal-hills-site-header.webp"
             alt="Faisal Hills Master Planned Sectors"
             fill
             priority

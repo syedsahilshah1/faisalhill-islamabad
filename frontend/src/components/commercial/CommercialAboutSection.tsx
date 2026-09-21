@@ -83,7 +83,7 @@ export const CommercialAboutSection: React.FC = () => {
               {/* Image 1: Flagship Retail Store */}
               <div className="relative h-64 sm:h-72 lg:h-full min-h-[280px] rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
                 <Image
-                  src="/images/commercial/flagship-store.jpg"
+                  src="/images/commercial/flagship-store.webp"
                   alt="Faisal Hills Boulevard Commercial Plaza"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
@@ -98,7 +98,7 @@ export const CommercialAboutSection: React.FC = () => {
               {/* Image 2: Food Court & Plazas */}
               <div className="relative h-64 sm:h-72 lg:h-full min-h-[280px] rounded-3xl overflow-hidden shadow-md group bg-slate-900 border border-slate-200 hover:shadow-xl transition-all duration-500">
                 <Image
-                  src="/images/commercial/food-court.jpg"
+                  src="/images/commercial/food-court.webp"
                   alt="Block C Civic Center Plazas"
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"

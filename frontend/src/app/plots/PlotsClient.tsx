@@ -47,12 +47,13 @@ function PlotSearchContent() {
   const querySize = searchParams.get('size');
   const queryCategory = searchParams.get('category');
   const queryBlock = searchParams.get('block');
+  const queryQ = searchParams.get('q') || searchParams.get('search');
 
   const [selectedBlock, setSelectedBlock] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(queryQ || '');
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
@@ -67,7 +68,8 @@ function PlotSearchContent() {
     if (querySize) setSelectedSize(querySize);
     if (queryCategory) setSelectedCategory(queryCategory);
     if (queryBlock) setSelectedBlock(queryBlock);
-  }, [querySize, queryCategory, queryBlock]);
+    if (queryQ) setSearchQuery(queryQ);
+  }, [querySize, queryCategory, queryBlock, queryQ]);
 
   useEffect(() => {
     fetchPlots()

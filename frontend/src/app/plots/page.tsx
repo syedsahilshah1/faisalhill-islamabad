@@ -10,15 +10,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('plots');
 
   const title = seo?.title || 'Faisal Hills Plots for Sale 2026 – Prices, Inventory & Map';
-  const description = seo?.meta_description || 'Search verified 5, 8, 10, 14 Marla & 1, 2 Kanal residential & commercial plots for sale in Faisal Hills Islamabad / Taxila. Check live demand rates, plot dimensions, and installment options.';
+  const description = seo?.meta_description || 'Search verified 5 Marla to 2 Kanal plots for sale in Faisal Hills Taxila. Check live demand rates, plot inventory, and installment options.';
   const canonical = seo?.canonical_url || `${BASE_URL}/plots`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['Faisal Hills Plots for Sale', '5 Marla plot Faisal Hills', '10 Marla plot Faisal Hills', '1 Kanal plot Faisal Hills', 'Faisal Hills plot prices', 'Faisal Hills commercial plots'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {
@@ -54,7 +54,7 @@ export default function PlotsPage() {
     name: 'Faisal Hills Plot Inventory 2026',
     description: 'Verified residential & commercial plots for sale in Faisal Hills Islamabad & Taxila with RDA approval.',
     url: `${BASE_URL}/plots`,
-    image: `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`,
+    image: `${BASE_URL}/images/faisal-hills-site-header.webp`,
     priceMin: 3500000,
     priceMax: 120000000,
     priceCurrency: 'PKR',

@@ -232,7 +232,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
             {/* Plot Featured Image Container */}
             <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-lg border border-slate-200 relative h-[360px] sm:h-[480px]">
               <img
-                src={currentPlot.image || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}
+                src={currentPlot.image || '/images/faisal-hills-site-header.webp'}
                 alt={`Plot #${currentPlot.plotNumber} ${currentPlot.blockName}`}
                 className="w-full h-full object-cover"
               />

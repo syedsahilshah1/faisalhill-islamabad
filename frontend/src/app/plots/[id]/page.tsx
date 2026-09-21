@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: PlotPageProps): Promise<Metad
     openGraph: {
       title: `Plot #${plot.plotNumber} ${plot.blockName} (${plot.size}) - Faisal Hills`,
       description: `Official rate: ${plot.priceFormatted}. ${plot.size} plot in ${plot.blockName}.`,
-      images: [{ url: plot.image || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' }],
+      images: [{ url: plot.image || '/images/faisal-hills-site-header.webp' }],
     },
   };
 }

@@ -9,7 +9,7 @@ import {
   Globe2, Check, HelpCircle, PhoneCall, ExternalLink, Calendar,
   ArrowUpRight, AlertCircle, Sparkles, ChevronRight, Home, Store
 } from 'lucide-react';
-import { blocksData, submitLead, fetchSettingByKey, formatWhatsAppUrl, defaultSocialLinks, SocialLinksData } from '@/data/faisalHillsData';
+import { blocksData, submitLead, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl, defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData } from '@/data/faisalHillsData';
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -19,11 +19,33 @@ export default function ContactClient() {
   const [isHeroSeeMoreOpen, setIsHeroSeeMoreOpen] = useState(false);
   const [isAboutSeeMoreOpen, setIsAboutSeeMoreOpen] = useState(false);
   const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
+  const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
 
   React.useEffect(() => {
+    const syncContact = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedC = localStorage.getItem('faisal_contact_info');
+          if (cachedC) setContact(JSON.parse(cachedC));
+          const cachedS = localStorage.getItem('faisal_social_links');
+          if (cachedS) setSocials(JSON.parse(cachedS));
+        } catch (e) { }
+      }
+    };
+    syncContact();
+
     fetchSettingByKey<SocialLinksData>('social_links').then((data) => {
       if (data) setSocials(data);
     }).catch(console.error);
+
+    fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
+      if (data) setContact(data);
+    }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncContact);
+      return () => window.removeEventListener('faisal_contact_updated', syncContact);
+    }
   }, []);
 
   // Interactive Mobile/Desktop Tab States
@@ -70,7 +92,7 @@ export default function ContactClient() {
       poss: 'Immediate Possession Ready',
       price: 'Premium Value',
       suit: 'End-users ready for immediate villa construction & GT Road frontage.',
-      image: '/images/imgi_44_Executive-Block.webp',
+      image: '/images/faisal-hills-executive-sector.webp',
       keyHighlights: ['Direct GT Road Entrance', 'Roots International School', 'Central Jamia Mosque']
     },
     {
@@ -81,7 +103,7 @@ export default function ContactClient() {
       poss: 'Possession Granted',
       price: 'Established Market Rate',
       suit: 'Families building luxury residences near established neighborhood parks.',
-      image: '/images/faisalarc (1).webp',
+      image: '/images/faisal-hills-arc-monument.webp',
       keyHighlights: ['Over 1,200+ Settled Families', 'Operating Retail Markets', 'Carpeted Wide Roads']
     },
     {
@@ -92,7 +114,7 @@ export default function ContactClient() {
       poss: 'Rolling Out Sector-Wise',
       price: 'Moderate Investment',
       suit: 'Balanced growth buyers seeking peaceful Margalla views and park frontage.',
-      image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+      image: '/images/faisal-hills-drone-view.webp',
       keyHighlights: ['Margalla Mountain Backdrop', 'Underground Power Grid', '150ft Boulevard Access']
     },
     {
@@ -103,7 +125,7 @@ export default function ContactClient() {
       poss: 'Phased Handover',
       price: 'Lowest Entry Point',
       suit: 'Budget investors aiming for high capital appreciation on 3-year timelines.',
-      image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+      image: '/images/hills-walk-commercial-aerial.webp',
       keyHighlights: ['Low Initial Capital', 'Expanding Sector Layout', '40ft to 100ft Roads']
     },
     {
@@ -114,7 +136,7 @@ export default function ContactClient() {
       poss: 'Partial Possession Granted',
       price: 'High-Growth Commercial & Living',
       suit: 'Investors focusing on the 800+ Commercial Civic Center & cricket stadium.',
-      image: '/images/commercial/food-court.jpg',
+      image: '/images/commercial/food-court.webp',
       keyHighlights: ['Central Commercial Civic Center', 'Cricket Stadium Reserve', 'High Footfall Core']
     },
     {
@@ -125,7 +147,7 @@ export default function ContactClient() {
       poss: 'Possession Ready in Parts',
       price: 'Affordable Possession Value',
       suit: 'Value-conscious families wanting quick possession at reasonable ticket prices.',
-      image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+      image: '/images/faisal-hills-site-header.webp',
       keyHighlights: ['Direct Margalla View', 'Community Parks & Mosque', 'Ready Construction Zones']
     },
     {
@@ -136,7 +158,7 @@ export default function ContactClient() {
       poss: 'Booking on Installments',
       price: 'Flexible 4-Year Plan',
       suit: 'Overseas & salaried buyers wanting easy quarterly installments.',
-      image: '/images/faisalarc (3).jpg',
+      image: '/images/faisal-hills-arc-view.webp',
       keyHighlights: ['16 Quarterly Installments', '20% Initial Down Payment', 'Rapidly Rising Value']
     }
   ];
@@ -190,7 +212,7 @@ export default function ContactClient() {
       <section className="relative bg-[#091522] text-white pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 px-4 sm:px-8 lg:px-12 overflow-hidden border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
-          style={{ backgroundImage: "url('/images/faisalhillarc.jpg')" }}
+          style={{ backgroundImage: "url('/images/faisal-hills-arc-gate.webp')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/75" />
 
@@ -226,7 +248,7 @@ export default function ContactClient() {
           <ScrollReveal direction="up" delay={350}>
             <div className="flex flex-wrap items-center justify-start gap-2.5 sm:gap-3.5 pt-2">
               <a
-                href="tel:+923313339997"
+                href={formatTelUrl(contact.salesHotline)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
@@ -234,7 +256,7 @@ export default function ContactClient() {
               </a>
 
               <a
-                href="https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20looking%20for%20verified%20plot%20rates%20and%20booking%20details."
+                href={formatWhatsAppUrl(socials.whatsapp, 'Hi Faisal Hills Desk, I am looking for verified plot rates and booking details.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer"
@@ -267,7 +289,7 @@ export default function ContactClient() {
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 -mt-6 sm:-mt-8 relative z-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           <a
-            href="tel:+923313339997"
+            href={formatTelUrl(contact.salesHotline)}
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#7b002c] transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
           >
             <div className="flex items-center justify-between">
@@ -397,7 +419,7 @@ export default function ContactClient() {
           <div className="lg:col-span-5 flex flex-col justify-center items-center">
             <div className="relative w-full h-56 sm:h-72 rounded-3xl overflow-hidden shadow-md bg-slate-950 border border-slate-200 group">
               <img
-                src="/images/faisalhillarc.jpg"
+                src="/images/faisal-hills-arc-gate.webp"
                 alt="Faisal Hills Grand Monument Entrance"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -425,7 +447,7 @@ export default function ContactClient() {
               </p>
             </div>
             <a
-              href="tel:+923313339997"
+              href={formatTelUrl(contact.salesHotline)}
               className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all self-start sm:self-auto shrink-0 shadow-md"
             >
               <Phone className="w-3.5 h-3.5" />
@@ -604,7 +626,7 @@ export default function ContactClient() {
                 <div>
                   <strong className="text-xs font-bold text-slate-900 block">By Phone</strong>
                   <p className="text-[11px] text-slate-600">Immediate availability checks and rate confirmations.</p>
-                  <a href="tel:+923313339997" className="text-xs font-bold text-[#7b002c] hover:underline mt-1 block">+92 331 3339997</a>
+                  <a href={formatTelUrl(contact.salesHotline)} className="text-xs font-bold text-[#7b002c] hover:underline mt-1 block">{contact.salesHotline || '+92 333 1113177'}</a>
                 </div>
               </div>
 
@@ -613,7 +635,7 @@ export default function ContactClient() {
                 <div>
                   <strong className="text-xs font-bold text-slate-900 block">On WhatsApp</strong>
                   <p className="text-[11px] text-slate-600">Preferred for digital maps, NOCs, and payment plans.</p>
-                  <a href="https://wa.me/923331113177" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-emerald-600 hover:underline mt-1 block">+92 333 1113177</a>
+                  <a href={formatWhatsAppUrl(socials.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-emerald-600 hover:underline mt-1 block">{socials.whatsapp || '+92 333 1113177'}</a>
                 </div>
               </div>
 
@@ -859,7 +881,7 @@ export default function ContactClient() {
 
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 pt-2">
             <a
-              href="tel:+923313339997"
+              href={formatTelUrl(contact.salesHotline)}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 sm:px-6 sm:py-3 bg-white hover:bg-slate-100 text-[#7b002c] text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105 cursor-pointer"
             >
               <Phone className="w-3.5 h-3.5" />
@@ -867,7 +889,7 @@ export default function ContactClient() {
             </a>
 
             <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20get%20in%20touch%20with%20Faisal%20Hills."
+              href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I want to get in touch with Faisal Hills.')}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 sm:px-6 sm:py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105 cursor-pointer"

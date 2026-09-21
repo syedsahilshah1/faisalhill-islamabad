@@ -106,7 +106,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: '225ft Grand Entrance Boulevard',
     features: ['Main Boulevard Direct Frontage', '16ft Double Height Ceiling', 'Drive-thru Option', 'Flagship Corporate Showroom'],
     description: 'Premier ground-floor commercial showroom with direct 225ft Grand Boulevard access. Unrivaled visibility for automotive showrooms, multinational banks, or flagship retail anchors.',
-    image: '/images/commercial/flagship-store.jpg'
+    image: '/images/commercial/flagship-store.webp'
   },
   // 1. Ground Floor Flagship Shop
   {
@@ -123,7 +123,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Grand Boulevard Entrance Facing',
     features: ['Main Entrance Frontage', '14ft Double Height', 'Flagship Brand Zone', 'High Footfall Core'],
     description: 'High-visibility Ground Floor flagship retail shop at the grand front entrance. Maximum footfall from Boulevard traffic and visiting commuters.',
-    image: '/images/faisalarc (3).jpg'
+    image: '/images/faisal-hills-arc-view.webp'
   },
   // 2. Ground Floor Atrium Boutique
   {
@@ -140,7 +140,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Central Glass Atrium Facing',
     features: ['Atrium Escalator Corner', 'Tempered Glass Facade', 'Perfume & Luxury Corner', 'Instant Brand Visibility'],
     description: 'Prime boutique retail cut in Ground Floor central atrium. Ideal for international cosmetics, luxury watches, and high-end accessories.',
-    image: '/images/faisalarc (1).webp'
+    image: '/images/faisal-hills-arc-monument.webp'
   },
   // 3. Lower Ground Anchor Superstore
   {
@@ -157,7 +157,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Basement Lift Lobby & Hypermarket',
     features: ['Anchor Retail Cut', 'Direct Underground Lift Lobby', 'Loading Bay Access', 'High Density Footfall'],
     description: 'Expansive Lower Ground commercial shop directly connected to basement parking elevators. Suitable for pharmacy, mart, or banking branch.',
-    image: '/images/faisalarc (2).webp'
+    image: '/images/faisal-hills-arc-monument-2.webp'
   },
   // 4. 4th Floor Food Court Kiosk
   {
@@ -174,7 +174,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Central 500-Seat Dining Hall',
     features: ['Commercial Exhaust Duct', 'Water & Gas Conduits', 'High Fast-Food Footfall', 'Shared Outdoor Terrace'],
     description: 'Fast-food kitchen and kiosk cut on 4th floor mega food court. Excellent recurring cash-flow with high daily student and family visitors.',
-    image: '/images/faisalarc (2).webp'
+    image: '/images/faisal-hills-arc-monument-2.webp'
   },
   // 5. 1-Bed Executive Apartment
   {
@@ -191,7 +191,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Margalla Foothills Panorama',
     features: ['Smart Home Automation', 'Designer Open Kitchen', 'Private Balcony', 'High Rental Yield'],
     description: 'Executive 1-Bedroom serviced apartment on 11th floor with picturesque northern Margalla mountain views and luxury finishes.',
-    image: '/faisal-jewel-1.png'
+    image: '/faisal-jewel-1.webp'
   },
   // 6. 2-Bed Luxury Suite
   {
@@ -208,7 +208,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Dual Margalla & Boulevard View',
     features: ['2 Master Ensuite Bedrooms', 'Spacious Sky Terrace', 'Dedicated Covered Parking', '24/7 Concierge'],
     description: 'Spacious 2-Bedroom luxury suite with wrap-around terrace, bespoke marble tiling, and panoramic sunset views over Faisal Hills.',
-    image: '/faisal-jewel.jpg'
+    image: '/faisal-jewel-building.webp'
   },
   // 7. 3-Bed Sky Penthouse
   {
@@ -225,7 +225,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: '360° Skyline & Margalla Horizon',
     features: ['Private Plunge Pool Option', 'Direct Penthouse Lift Key', 'Maid Room + Utility', 'Rooftop Lounge Access'],
     description: 'Ultra-exclusive 3-Bedroom Sky Penthouse with double-height salon, private sky garden terrace, and VIP elevator access.',
-    image: '/faisal-jewel-2.png'
+    image: '/faisal-jewel-2.webp'
   },
   // 8. 4-Star Hotel Suite
   {
@@ -242,7 +242,7 @@ const defaultJewelUnits: JewelUnitItem[] = [
     facing: 'Margalla Infinity Pool View',
     features: ['Fully Furnished Turnkey', 'Hotel Rental Pool Program', 'Complimentary Breakfast', 'High Net Cash Flow'],
     description: 'Fully serviced 4-Star Hotel Suite managed by international hospitality operator with passive quarterly rental income guarantee.',
-    image: '/faisal-jewel-3.png'
+    image: '/faisal-jewel-3.webp'
   }
 ];
 
@@ -253,7 +253,7 @@ const jewelLandmarks = [
     distance: 'Direct Frontage',
     time: '0 min',
     desc: 'Direct signal-free 6-lane access route into Islamabad sectors.',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+    image: '/images/hills-walk-commercial-aerial.webp'
   },
   {
     id: '02',
@@ -261,7 +261,7 @@ const jewelLandmarks = [
     distance: 'Major Education Hub',
     time: '3 min',
     desc: 'Premier university and academic campus adjacent to Faisal Hills.',
-    image: '/images/imgi_51_educational.webp'
+    image: '/images/roots-international-school-faisal-hills.webp'
   },
   {
     id: '03',
@@ -269,7 +269,7 @@ const jewelLandmarks = [
     distance: 'Historic Hub',
     time: '5 min',
     desc: 'UNESCO World Heritage sites and ancient Gandhara cultural reserve.',
-    image: '/images/imgi_46_faisal-hills-monument.webp'
+    image: '/images/faisal-hills-monument-entrance.webp'
   },
   {
     id: '04',
@@ -277,7 +277,7 @@ const jewelLandmarks = [
     distance: 'Cantonment Hub',
     time: '8 min',
     desc: 'Established military cantonment city and commercial markets.',
-    image: '/images/imgi_53_medical-college.webp'
+    image: '/images/faisal-hills-medical-complex.webp'
   },
   {
     id: '05',
@@ -285,7 +285,7 @@ const jewelLandmarks = [
     distance: 'Emerging Sectors',
     time: '12 min',
     desc: 'Rapidly growing modern residential sectors in Islamabad Zone 2.',
-    image: '/faisal-jewel-1.png'
+    image: '/images/faisal-jewel-tower.webp'
   },
   {
     id: '06',
@@ -293,7 +293,7 @@ const jewelLandmarks = [
     distance: 'Direct via Motorway',
     time: '25 min',
     desc: 'Seamless direct motorway link to the international terminal.',
-    image: '/images/imgi_50_security.webp'
+    image: '/images/faisal-hills-drone-view.webp'
   },
   {
     id: '07',
@@ -301,7 +301,7 @@ const jewelLandmarks = [
     distance: 'Central Business Hub',
     time: '30 min',
     desc: 'Islamabad commercial center, luxury dining, and retail avenues.',
-    image: '/faisal-jewel.jpg'
+    image: '/images/faisal-jewel-building.webp'
   }
 ];
 
@@ -339,8 +339,8 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
     return () => window.removeEventListener('faisal_blocks_updated', syncLocal);
   }, []);
 
-  const showcaseImage = currentBlock?.heroImage || '/faisal-jewel.jpg';
-  const masterPlanImg = currentBlock?.masterPlanImage || '/faisal-jewel-sketch.jpg';
+  const showcaseImage = currentBlock?.heroImage || '/faisal-jewel-building.webp';
+  const masterPlanImg = currentBlock?.masterPlanImage || '/faisal-jewel-architectural-sketch.webp';
 
   // Landmark auto-scroll refs and handlers
   const landmarksScrollRef = useRef<HTMLDivElement>(null);
@@ -1079,25 +1079,25 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             {
               title: '6-Floor Shopping Mall',
               desc: 'Six levels of air-conditioned luxury retail including jewelry souks, fashion brands, and food courts.',
-              image: '/images/faisalarc (1).webp',
+              image: '/images/faisal-hills-arc-monument.webp',
               tag: '350+ Shops'
             },
             {
               title: 'Panoramic Sky Gym & Spa',
               desc: 'Fully equipped multi-tier fitness club with imported cardio machines, sauna, and yoga studio overlooking Margalla.',
-              image: '/images/imgi_48_sports-arena.webp',
+              image: '/images/faisal-hills-sports-arena.webp',
               tag: 'Health Club'
             },
             {
               title: '3-Level Basement Parking',
               desc: 'Three subterranean levels with ANPR number plate recognition, EV charging, and 1,000+ car bays.',
-              image: '/faisal-jewel-3.png',
+              image: '/faisal-jewel-3.webp',
               tag: '1,000+ Cars'
             },
             {
               title: '4★ Hotel & Rooftop Pool',
               desc: 'Boutique hospitality experience with rooftop infinity pool, 24/7 concierge, and fine dining terraces.',
-              image: '/images/faisalarc (2).webp',
+              image: '/images/faisal-hills-arc-monument-2.webp',
               tag: 'Floors 22–27'
             }
           ].map((item, idx) => (

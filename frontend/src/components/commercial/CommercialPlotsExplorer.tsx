@@ -89,11 +89,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '14.5% Annual Projected Yield',
     capitalGrowth: '+22.4% Capital Appreciation',
-    image: '/images/commercial/flagship-store.jpg',
+    image: '/images/commercial/flagship-store.webp',
     galleryImages: [
-      '/images/commercial/flagship-store.jpg',
-      '/images/commercial/hypermarket.jpg',
-      '/images/faisalhillexecutive.webp'
+      '/images/commercial/flagship-store.webp',
+      '/images/commercial/hypermarket.webp',
+      '/images/faisal-hills-executive-block.webp'
     ],
     features: [
       'Prime 225ft Boulevard Frontage with direct GT Road access',
@@ -137,11 +137,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '13.2% Projected Rental Return',
     capitalGrowth: '+19.8% YoY Growth',
-    image: '/images/commercial/tech-gadgets.jpg',
+    image: '/images/commercial/tech-gadgets.webp',
     galleryImages: [
-      '/images/commercial/tech-gadgets.jpg',
-      '/images/commercial/fashion-pret.jpg',
-      '/images/imgi_44_Executive-Block.webp'
+      '/images/commercial/tech-gadgets.webp',
+      '/images/commercial/fashion-pret.webp',
+      '/images/faisal-hills-executive-sector.webp'
     ],
     features: [
       'Facing the iconic 27-storey Faisal Jewel development zone',
@@ -184,11 +184,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Immediate Construction',
     roiEstimate: '15.0% Guaranteed Active Demand',
     capitalGrowth: '+16.5% Annual Appreciation',
-    image: '/images/commercial/hypermarket.jpg',
+    image: '/images/commercial/hypermarket.webp',
     galleryImages: [
-      '/images/commercial/hypermarket.jpg',
-      '/images/commercial/food-court.jpg',
-      '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+      '/images/commercial/hypermarket.webp',
+      '/images/commercial/food-court.webp',
+      '/images/faisal-hills-drone-view.webp'
     ],
     features: [
       'Surrounded by 1,200+ fully settled resident families',
@@ -232,11 +232,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '16.8% High-Rise Yield',
     capitalGrowth: '+25.0% Rapid Growth Zone',
-    image: '/images/commercial/food-court.jpg',
+    image: '/images/commercial/food-court.webp',
     galleryImages: [
-      '/images/commercial/food-court.jpg',
-      '/images/commercial/flagship-store.jpg',
-      '/images/faisal-jewel-tower.jpg'
+      '/images/commercial/food-court.webp',
+      '/images/commercial/flagship-store.webp',
+      '/images/faisal-jewel-tower.webp'
     ],
     features: [
       'Heart of Block C Civic Center spanning over 800+ commercial units',
@@ -280,11 +280,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '14.0% Projected Rental Yield',
     capitalGrowth: '+21.5% Value Multiplier',
-    image: '/images/commercial/fashion-pret.jpg',
+    image: '/images/commercial/fashion-pret.webp',
     galleryImages: [
-      '/images/commercial/fashion-pret.jpg',
-      '/images/commercial/tech-gadgets.jpg',
-      '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+      '/images/commercial/fashion-pret.webp',
+      '/images/commercial/tech-gadgets.webp',
+      '/images/hills-walk-commercial-aerial.webp'
     ],
     features: [
       'Central location inside Block C commercial sector',
@@ -328,11 +328,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '13.8% Stable Rental Returns',
     capitalGrowth: '+18.0% Stable Growth',
-    image: '/images/commercial/jewelry-souk.jpg',
+    image: '/images/commercial/jewelry-souk.webp',
     galleryImages: [
-      '/images/commercial/jewelry-souk.jpg',
-      '/images/commercial/flagship-store.jpg',
-      '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+      '/images/commercial/jewelry-souk.webp',
+      '/images/commercial/flagship-store.webp',
+      '/images/faisal-hills-aerial-panoramic.webp'
     ],
     features: [
       'Panoramic Margalla Hills background backdrop',
@@ -376,11 +376,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'On Installments',
     roiEstimate: '18.0% Future Anticipated Yield',
     capitalGrowth: '+28.0% Projected Total Growth',
-    image: '/images/commercial/flagship-store.jpg',
+    image: '/images/commercial/flagship-store.webp',
     galleryImages: [
-      '/images/commercial/flagship-store.jpg',
-      '/images/commercial/tech-gadgets.jpg',
-      '/images/faisal-jewel-sketch.jpg'
+      '/images/commercial/flagship-store.webp',
+      '/images/commercial/tech-gadgets.webp',
+      '/images/faisal-jewel-architectural-sketch.webp'
     ],
     features: [
       'Brand new launch in the highly prestigious Prime Block',
@@ -424,11 +424,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '14.2% Estimated Yield',
     capitalGrowth: '+20.5% High Growth Rate',
-    image: '/images/commercial/hypermarket.jpg',
+    image: '/images/commercial/hypermarket.webp',
     galleryImages: [
-      '/images/commercial/hypermarket.jpg',
-      '/images/commercial/food-court.jpg',
-      '/images/imgi_45_Glow-garden.webp'
+      '/images/commercial/hypermarket.webp',
+      '/images/commercial/food-court.webp',
+      '/images/faisal-hills-glow-garden.webp'
     ],
     features: [
       'Most economical entry price for on-ground commercial plots in Faisal Hills',
@@ -472,12 +472,12 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Under Development',
     roiEstimate: '18.5% Prime International Yield',
     capitalGrowth: '+32.0% Iconic Landmark Appreciation',
-    image: '/faisal-jewel-tower.jpg',
+    image: '/faisal-jewel-tower.webp',
     galleryImages: [
-      '/faisal-jewel-tower.jpg',
-      '/faisal-jewel-1.png',
-      '/faisal-jewel-2.png',
-      '/faisal-jewel-3.png'
+      '/faisal-jewel-tower.webp',
+      '/faisal-jewel-1.webp',
+      '/faisal-jewel-2.webp',
+      '/faisal-jewel-3.webp'
     ],
     features: [
       'Situated in the tallest 27-storey skyscraper on the GT Road / Islamabad corridor',
@@ -521,11 +521,11 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
     possessionStatus: 'Possession Ready',
     roiEstimate: '17.5% High-Capacity Return',
     capitalGrowth: '+26.0% Institutional Asset',
-    image: '/images/commercial/flagship-store.jpg',
+    image: '/images/commercial/flagship-store.webp',
     galleryImages: [
-      '/images/commercial/flagship-store.jpg',
-      '/images/commercial/food-court.jpg',
-      '/images/faisal-jewel.jpg'
+      '/images/commercial/flagship-store.webp',
+      '/images/commercial/food-court.webp',
+      '/images/faisal-jewel-building.webp'
     ],
     features: [
       'Massive 500 Sq. Yds footprint allowing 50,000+ sq ft covered area',
@@ -592,7 +592,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
               galleryImages: [
                 p.image || '/images/commercial-boulevard-1.jpg',
                 '/images/faisal-hills-master-plan-map-opt.webp',
-                '/images/faisalexecutivemap.png'
+                '/images/faisal-hills-executive-map.webp'
               ],
               features: p.features && p.features.length > 0 ? p.features : [
                 'Direct Commercial Corridor Link',

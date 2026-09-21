@@ -3,10 +3,33 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MessageSquare, ArrowUp, ShieldCheck } from 'lucide-react';
 import LeadModal from './LeadModal';
+import { defaultContactInfo, ContactInfoData, fetchSettingByKey, formatTelUrl } from '@/data/faisalHillsData';
 
 export default function FloatingScrollCallBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+
+  useEffect(() => {
+    const syncContact = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedC = localStorage.getItem('faisal_contact_info');
+          if (cachedC) setContact(JSON.parse(cachedC));
+        } catch (e) { }
+      }
+    };
+    syncContact();
+
+    fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
+      if (data) setContact(data);
+    }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncContact);
+      return () => window.removeEventListener('faisal_contact_updated', syncContact);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +69,7 @@ export default function FloatingScrollCallBar() {
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between">
           <a
-            href="tel:+923001234567"
+            href={formatTelUrl(contact.salesHotline)}
             className="flex-1 sm:flex-initial px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 flex items-center justify-center gap-1.5 transition-all hover:scale-105"
           >
             <Phone className="w-3.5 h-3.5 text-white" />

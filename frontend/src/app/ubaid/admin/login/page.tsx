@@ -208,11 +208,11 @@ export default function AdminLoginPage() {
   const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | 'commercialHero' | 'homeHero' | null>(null);
   const [newHighlightText, setNewHighlightText] = useState<string>('');
   const [isSavingBlock, setIsSavingBlock] = useState<boolean>(false);
-  const [commercialHeroImage, setCommercialHeroImage] = useState<string>('/images/commercial/flagship-store.jpg');
+  const [commercialHeroImage, setCommercialHeroImage] = useState<string>('/images/commercial/flagship-store.webp');
   const [isSavingCommercialHero, setIsSavingCommercialHero] = useState<boolean>(false);
 
   // Homepage Hero Banner & Title State
-  const [homeHeroBgImage, setHomeHeroBgImage] = useState<string>('/images/faisalhillarc.jpg');
+  const [homeHeroBgImage, setHomeHeroBgImage] = useState<string>('/images/faisal-hills-arc-gate.webp');
   const [homeHeroTitle, setHomeHeroTitle] = useState<string>('Faisal Hills Islamabad');
   const [homeHeroFormTitle, setHomeHeroFormTitle] = useState<string>('Book Your Plot / Flat');
   const [homeHeroFormSubtitle, setHomeHeroFormSubtitle] = useState<string>('Get official pricing, payment plan & plot selection guide.');
@@ -1792,7 +1792,7 @@ export default function AdminLoginPage() {
       facing: quickAddPlotData.locationType,
       status: 'Available',
       features: [quickAddPlotData.locationType, 'Prime Location'],
-      image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+      image: '/images/faisal-hills-drone-view.webp',
     };
 
     setPlots(prev => [dbPlotItem, ...prev]);
@@ -2931,9 +2931,9 @@ export default function AdminLoginPage() {
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
                       {[
-                        { label: 'Drone Aerial', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
-                        { label: 'Boulevard Road', url: '/images/imgi_1_DJI_20250818122014_0054_D-scaled.jpg' },
-                        { label: 'Executive Block', url: '/images/executive.jpg' },
+                        { label: 'Drone Aerial', url: '/images/faisal-hills-drone-view.webp' },
+                        { label: 'Boulevard Road', url: '/images/faisal-hills-executive-boulevard.webp' },
+                        { label: 'Executive Block', url: '/images/faisal-hills-executive-block.webp' },
                         { label: 'Modern Villa', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
                       ].map((preset, pIdx) => (
                         <button
@@ -3226,9 +3226,9 @@ export default function AdminLoginPage() {
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
                       {[
-                        { label: 'Drone Aerial', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
-                        { label: 'Boulevard Road', url: '/images/imgi_1_DJI_20250818122014_0054_D-scaled.jpg' },
-                        { label: 'Executive Block', url: '/images/executive.jpg' },
+                        { label: 'Drone Aerial', url: '/images/faisal-hills-drone-view.webp' },
+                        { label: 'Boulevard Road', url: '/images/faisal-hills-executive-boulevard.webp' },
+                        { label: 'Executive Block', url: '/images/faisal-hills-executive-block.webp' },
                         { label: 'Modern Villa', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80' },
                       ].map((preset, pIdx) => (
                         <button
@@ -3442,7 +3442,7 @@ export default function AdminLoginPage() {
                     required
                     value={newPhotoUrl}
                     onChange={(e) => setNewPhotoUrl(e.target.value)}
-                    placeholder="e.g. /images/faisal-jewel.jpg or https://images.unsplash.com/..."
+                    placeholder="e.g. /images/faisal-jewel-building.webp or https://images.unsplash.com/..."
                     className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-mono text-[11px] focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
@@ -3650,7 +3650,7 @@ export default function AdminLoginPage() {
                     {homeHeroBgImage && (
                       <button
                         type="button"
-                        onClick={() => setHomeHeroBgImage('/images/faisalhillarc.jpg')}
+                        onClick={() => setHomeHeroBgImage('/images/faisal-hills-arc-gate.webp')}
                         className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
                         title="Reset to default background image"
                       >
@@ -3702,11 +3702,11 @@ export default function AdminLoginPage() {
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
                     {[
-                      { label: 'Grand Monument Arch', url: '/images/faisalhillarc.jpg' },
-                      { label: 'Executive Boulevard', url: '/images/faisalhillexecutive.webp' },
-                      { label: 'Drone Site Panorama', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
-                      { label: 'Margalla Hills View', url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' },
-                      { label: 'Promenade Strip', url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' },
+                      { label: 'Grand Monument Arch', url: '/images/faisal-hills-arc-gate.webp' },
+                      { label: 'Executive Boulevard', url: '/images/faisal-hills-executive-block.webp' },
+                      { label: 'Drone Site Panorama', url: '/images/faisal-hills-drone-view.webp' },
+                      { label: 'Margalla Hills View', url: '/images/faisal-hills-site-header.webp' },
+                      { label: 'Promenade Strip', url: '/images/hills-walk-commercial-aerial.webp' },
                     ].map((preset, pIdx) => (
                       <button
                         key={pIdx}
@@ -3894,7 +3894,7 @@ export default function AdminLoginPage() {
                     type="text"
                     value={commercialHeroImage}
                     onChange={(e) => setCommercialHeroImage(e.target.value)}
-                    placeholder="e.g. /images/commercial/flagship-store.jpg or https://..."
+                    placeholder="e.g. /images/commercial/flagship-store.webp or https://..."
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] focus:bg-white"
                   />
                 </div>
@@ -3903,11 +3903,11 @@ export default function AdminLoginPage() {
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
                   {[
-                    { label: 'Flagship Store', url: '/images/commercial/flagship-store.jpg' },
-                    { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.jpg' },
-                    { label: 'Food Court Hub', url: '/images/commercial/food-court.jpg' },
+                    { label: 'Flagship Store', url: '/images/commercial/flagship-store.webp' },
+                    { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.webp' },
+                    { label: 'Food Court Hub', url: '/images/commercial/food-court.webp' },
                     { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
-                    { label: 'Executive Aerial', url: '/images/faisalhillexecutive.webp' },
+                    { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
                   ].map((preset, pIdx) => (
                     <button
                       key={pIdx}
@@ -4045,11 +4045,11 @@ export default function AdminLoginPage() {
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
                     {[
-                      { label: 'Executive Aerial', url: '/images/faisalhillexecutive.webp' },
-                      { label: 'Drone Site View', url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' },
-                      { label: 'Sports Arena View', url: '/images/imgi_48_sports-arena.webp' },
-                      { label: 'European Promenade', url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' },
-                      { label: 'Margalla Springs', url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' },
+                      { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
+                      { label: 'Drone Site View', url: '/images/faisal-hills-drone-view.webp' },
+                      { label: 'Sports Arena View', url: '/images/faisal-hills-sports-arena.webp' },
+                      { label: 'European Promenade', url: '/images/hills-walk-commercial-aerial.webp' },
+                      { label: 'Margalla Springs', url: '/images/faisal-hills-site-header.webp' },
                     ].map((preset, pIdx) => (
                       <button
                         key={pIdx}

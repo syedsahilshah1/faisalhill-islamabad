@@ -40,11 +40,34 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import FaqAccordion from '@/components/ui/FaqAccordion';
+import { defaultContactInfo, ContactInfoData, fetchSettingByKey, formatTelUrl } from '@/data/faisalHillsData';
 
 export default function AboutUsClient() {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isSeeMoreOpen, setIsSeeMoreOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<number>(0);
+  const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+
+  useEffect(() => {
+    const syncContact = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedC = localStorage.getItem('faisal_contact_info');
+          if (cachedC) setContact(JSON.parse(cachedC));
+        } catch (e) { }
+      }
+    };
+    syncContact();
+
+    fetchSettingByKey<ContactInfoData>('contact_info').then((data) => {
+      if (data) setContact(data);
+    }).catch(console.error);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('faisal_contact_updated', syncContact);
+      return () => window.removeEventListener('faisal_contact_updated', syncContact);
+    }
+  }, []);
 
   // Pillars Auto-scroll refs & state
   const pillarsScrollRef = useRef<HTMLDivElement>(null);
@@ -84,31 +107,31 @@ export default function AboutUsClient() {
       year: "2012",
       title: "Establishment of Zedem International",
       desc: "Zedem International (Pvt) Ltd was founded with a singular conviction: to eliminate speculative real estate in Pakistan by securing land and complete legal NOC approvals prior to public launch.",
-      image: "/images/faisalhillarc.jpg"
+      image: "/images/faisal-hills-arc-gate.webp"
     },
     {
       year: "2016",
       title: "Strategic Site Acquisition on GT Road",
       desc: "Prime land was secured at the historic Margalla foothills along GT Road (N-5), strategically positioned 30 minutes from Islamabad Zero Point and directly linked to the M-1 Motorway.",
-      image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+      image: "/images/faisal-hills-drone-view.webp"
     },
     {
       year: "2018",
-      title: "Official RDA & CDA Regulatory Approvals",
-      desc: "Secured 100% verified legal NOC and layout approvals. Ground breaking commenced with heavy earth-moving machinery, establishing the master road network and central boulevard.",
-      image: "/images/imgi_38_Faisal-Hills-site-home-page-header.webp"
+      title: "Official RDA Regulatory Approvals & Sanctions",
+      desc: "Secured 100% verified legal NOC and layout approvals from the Rawalpindi Development Authority (RDA). Ground breaking commenced with heavy earth-moving machinery, establishing the master road network and central boulevard.",
+      image: "/images/faisal-hills-site-header.webp"
     },
     {
       year: "2021",
       title: "Rapid Infrastructure & Sector Handovers",
       desc: "Carpeted main boulevard, underground utilities, Grand Jamia Mosque, and primary family residential sectors launched with on-ground possession handovers in Block A & Executive Block.",
-      image: "/images/imgi_46_Mosques.webp"
+      image: "/images/faisal-hills-jamia-mosque.webp"
     },
     {
       year: "2026",
       title: "5,000+ Delivered Plots & Mega Skyscraper",
       desc: "Today, Faisal Hills stands as a fully operational landmark with over 5,000 satisfied investors, active construction of family villas, Hills Walk promenade, and the 27-storey Faisal Jewel skyscraper.",
-      image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+      image: "/images/faisal-hills-drone-view.webp"
     }
   ];
 
@@ -135,37 +158,37 @@ export default function AboutUsClient() {
     {
       title: "100% Legal Standing & Verified NOC",
       desc: "Faisal Hills holds complete RDA legal standing and verified NOC documentation, providing investors with undisputed freehold ownership and absolute title safety.",
-      image: "/images/faisalhillarc.jpg"
+      image: "/images/faisal-hills-arc-gate.webp"
     },
     {
       title: "Zedem International Proven Track Record",
       desc: "Backed by the multi-project delivery legacy of Faisal Town (FT-1), Faisal Hills, and Faisal Town Phase 2, with thousands of on-ground possession handovers.",
-      image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+      image: "/images/faisal-hills-drone-view.webp"
     },
     {
       title: "Strategic Tri-Corridor Location",
       desc: "Located on main GT Road (N-5) with direct connectivity to Margalla Avenue and the Brahma Bahtar M-1 Motorway Interchange for swift twin-city commuting.",
-      image: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg"
+      image: "/images/hills-walk-commercial-aerial.webp"
     },
     {
       title: "On-Ground Carpeted Infrastructure",
       desc: "225ft Grand Boulevard, underground power cables, live RO water plants, operational educational hubs like Roots International, and gated security.",
-      image: "/images/imgi_44_Executive-Block.webp"
+      image: "/images/faisal-hills-executive-sector.webp"
     },
     {
       title: "Flexible 3 to 4-Year Installment Plans",
       desc: "Payment plans structured around real household cash flows, requiring easy 20%–25% booking with quarterly installments spread across 36 to 48 months.",
-      image: "/images/faisalarc (3).jpg"
+      image: "/images/faisal-hills-arc-view.webp"
     },
     {
       title: "Dedicated Overseas Investor Desk",
       desc: "End-to-end remote consultation, digital booking submissions, secure banking channels, and regular video progress briefings for overseas Pakistanis in UAE, UK, and USA.",
-      image: "/images/girl-headphone-support.png"
+      image: "/images/faisal-hills-customer-support.webp"
     },
     {
       title: "High Capital Appreciation & Yield",
       desc: "Early investors have experienced over 250% capital growth since launch. Ongoing commercial hubs like Hills Walk and Faisal Jewel offer projected 10%–14% annual rental returns.",
-      image: "/faisal-jewel.jpg"
+      image: "/faisal-jewel-building.webp"
     }
   ];
 
@@ -174,25 +197,25 @@ export default function AboutUsClient() {
       title: "Families Building a Dream Home",
       tag: "Residential Living",
       desc: "For families seeking an eco-friendly, secure environment near Islamabad without paying inflated city-center prices. Faisal Hills provides 5 Marla to 1 Kanal residential plots in ready-to-build sectors with operational schools, mosques, and parks.",
-      image: "/images/imgi_44_Executive-Block.webp"
+      image: "/images/faisal-hills-executive-sector.webp"
     },
     {
       title: "First-Time Property Buyers",
       tag: "Secure Entry",
       desc: "New buyers benefit from transparent documentation, zero hidden charges, and structured installment schedules that allow systematic capital accumulation without financial stress.",
-      image: "/images/faisalarc (1).webp"
+      image: "/images/faisal-hills-arc-monument.webp"
     },
     {
       title: "Commercial & High-Yield Investors",
       tag: "10%–14% ROI",
       desc: "Seasoned investors leverage high-footfall commercial plots in Hills Walk and commercial retail shops in Faisal Jewel Skyscraper for sustained rental income and secondary market liquidity.",
-      image: "/images/commercial/flagship-store.jpg"
+      image: "/images/commercial/flagship-store.webp"
     },
     {
       title: "Overseas Pakistani Community",
       tag: "Global Support",
       desc: "Expats in the UAE, UK, Saudi Arabia, Canada, and the USA enjoy a dedicated remote investment pathway with verified biometric verification, digital receipts, and WhatsApp advisory.",
-      image: "/images/girl-headphone-support.png"
+      image: "/images/faisal-hills-customer-support.webp"
     }
   ];
 
@@ -254,7 +277,7 @@ export default function AboutUsClient() {
       <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-40 pb-16 lg:pb-24 border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
+          style={{ backgroundImage: `url('/images/faisal-hills-site-header.webp')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/80 to-slate-950/85" />
 
@@ -278,7 +301,7 @@ export default function AboutUsClient() {
               <span>Inquire With Advisory Desk</span>
             </button>
             <a
-              href="tel:+923313339997"
+              href={formatTelUrl(contact.salesHotline)}
               className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-xl backdrop-blur-md transition-all border border-white/20 flex items-center gap-2 font-sans"
             >
               <PhoneCall className="w-4 h-4 text-emerald-400" />

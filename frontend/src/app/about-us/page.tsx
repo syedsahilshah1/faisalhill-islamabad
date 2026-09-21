@@ -7,18 +7,18 @@ import AboutUsClient from './AboutUsClient';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await fetchSeo('about-us');
+  const seo = await fetchSeo('about-us'); 
 
   const title = seo?.title || 'About Faisal Hills – Zedem International & Vision';
-  const description = seo?.meta_description || 'Learn about Zedem International, Chairman Chaudhry Abdul Majeed, and the vision behind Faisal Hills on GT Road Taxila. Discover RDA NOC approval, delivered blocks, and society infrastructure.';
+  const description = seo?.meta_description || 'Learn about Zedem International and Faisal Hills on GT Road Taxila. Discover RDA NOC approval, delivered blocks, and master infrastructure.';
   const canonical = seo?.canonical_url || `${BASE_URL}/about-us`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['About Faisal Hills', 'Zedem International', 'Chaudhry Abdul Majeed', 'Faisal Hills Developer', 'Faisal Hills RDA NOC', 'Faisal Hills Islamabad history'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {

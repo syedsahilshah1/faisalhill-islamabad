@@ -156,37 +156,37 @@ const blockBAmenities = [
     id: 'sports-complex',
     title: 'Sector B Dedicated Sports Complex & Arenas',
     description: 'International-standard sports destination featuring floodlit all-weather futsal turf, tennis courts, basketball arena, jogging tracks, and open-air gymnasium.',
-    image: '/images/imgi_48_sports-arena.webp'
+    image: '/images/faisal-hills-sports-arena.webp'
   },
   {
     id: 'jamia-mosque-b',
     title: 'Grand Sector B Jamia Mosque',
     description: 'Majestic Islamic architectural centerpiece with capacity for 3,000 worshippers, central climate-control, marble courtyards, and dedicated Quranic education academy.',
-    image: '/images/imgi_46_Mosques.webp'
+    image: '/images/faisal-hills-jamia-mosque.webp'
   },
   {
     id: 'grand-boulevard',
     title: '225ft Grand Boulevard Commercial Spine',
     description: 'The premier arterial highway connecting Block A through Block B to Block C, lined with luxury multi-storey commercial plazas, banking halls, and retail arcades.',
-    image: '/images/faisalarc (3).jpg'
+    image: '/images/faisal-hills-arc-view.webp'
   },
   {
     id: 'community-parks',
     title: '10+ Landscaped Community Parks & Green Belts',
     description: 'Extensive botanical family parks with children play structures, floral walking trails, and gazebo seating overlooking the panoramic Margalla mountain ridge.',
-    image: '/images/faisal-park.jpg'
+    image: '/images/faisal-hills-glow-park.webp'
   },
   {
     id: 'underground-utilities-b',
     title: '100% Underground Electrification & Utilities',
     description: 'Complete subterranean power distribution system with zero overhead wires, dedicated grid station, underground fiber optics, and advanced LED streetlamps.',
-    image: '/images/imgi_44_Executive-Block.webp'
+    image: '/images/faisal-hills-executive-sector.webp'
   },
   {
     id: 'gated-security-b',
     title: '24/7 Gated Security & Perimeter Surveillance',
     description: 'Round-the-clock gated checkpoints with automated boom barriers, high-resolution night-vision CCTV cameras, and rapid-response mobile security patrol units.',
-    image: '/images/faisalhillarc.jpg'
+    image: '/images/faisal-hills-arc-gate.webp'
   }
 ];
 
@@ -196,42 +196,42 @@ const blockBDevelopmentMilestones = [
     progress: 100,
     status: '100% Paved & Functional',
     desc: 'Main 225ft arterial boulevard, 120ft main avenues, and 50ft residential streets fully asphalted with operational streetlamps.',
-    image: '/images/imgi_48_sports-arena.webp'
+    image: '/images/faisal-hills-sports-arena.webp'
   },
   {
     title: 'Underground Electrification & Utilities',
     progress: 100,
     status: 'Operational & Live',
     desc: 'Underground power cabling, transformers, and subterranean fiber infrastructure live across all populated streets.',
-    image: '/images/imgi_44_Executive-Block.webp'
+    image: '/images/faisal-hills-executive-sector.webp'
   },
   {
     title: 'Water Supply & Tube Wells Network',
     progress: 100,
     status: 'Continuous Potable Water',
     desc: 'High-capacity overhead water reservoirs and deep-well pumps delivering uninterrupted fresh water to all residences.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/faisal-hills-drone-view.webp'
   },
   {
     title: 'Sports Complex & Futsal Arenas',
     progress: 95,
     status: 'Active & Open for Residents',
     desc: 'Dedicated futsal ground, tennis courts, and fitness arena fully operational with active daily sports tournaments.',
-    image: '/images/imgi_48_sports-arena.webp'
+    image: '/images/faisal-hills-sports-arena.webp'
   },
   {
     title: '10+ Landscaped Community Parks',
     progress: 95,
     status: 'Lush & Maintained',
     desc: 'Family parks, walking tracks, and children play equipment installed and continuously maintained by horticulture teams.',
-    image: '/images/faisal-park.jpg'
+    image: '/images/faisal-hills-glow-park.webp'
   },
   {
     title: 'Commercial Plaza Strips & Retail',
     progress: 85,
     status: 'Fast-Track Construction',
     desc: 'Multiple multi-storey commercial shopping and office arcades under active construction along the Grand Boulevard.',
-    image: '/images/faisalarc (3).jpg'
+    image: '/images/faisal-hills-arc-view.webp'
   }
 ];
 
@@ -545,7 +545,7 @@ export default function BlockBContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   <img
-                    src="/images/imgi_48_sports-arena.webp"
+                    src="/images/faisal-hills-sports-arena.webp"
                     alt="Faisal Hills Block B Sports Complex & Boulevard"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -1035,7 +1035,7 @@ export default function BlockBContent() {
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
                     <img
-                      src={plot.image || '/images/imgi_48_sports-arena.webp'}
+                      src={plot.image || '/images/faisal-hills-sports-arena.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1132,8 +1132,10 @@ export default function BlockBContent() {
                       rel="noopener noreferrer"
                       className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
                       title="Chat on WhatsApp"
+                      aria-label="Chat on WhatsApp"
                     >
                       <MessageSquare className="w-4 h-4" />
+                      <span className="sr-only">Chat on WhatsApp</span>
                     </a>
                   </div>
                 </div>

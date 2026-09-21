@@ -49,11 +49,11 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
   const title = blog.metaTitle || blog.title;
   const description = blog.metaDescription || blog.summary || blog.title;
   const canonical = blog.canonicalUrl || `${BASE_URL}/blogs/${blog.slug}`;
-  const ogImage = blog.ogImage || blog.imageUrl || `${BASE_URL}/images/faisal-roots-school.jpg`;
+  const ogImage = blog.ogImage || blog.imageUrl || `${BASE_URL}/images/roots-international-school-faisal-hills.webp`;
   const twitterImage = blog.twitterImage || ogImage;
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: blog.keywords ? blog.keywords.split(',').map(k => k.trim()) : undefined,
     alternates: {

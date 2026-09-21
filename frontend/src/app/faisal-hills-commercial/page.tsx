@@ -24,15 +24,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('faisal-hills-commercial') || await fetchSeo('commercial');
 
   const title = seo?.title || 'Faisal Hills Commercial Plots for Sale 2026 | Prices & Payment Plan';
-  const description = seo?.meta_description || 'Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare 2, 4, 5.33, 8, 10 and 12 marla prices, Executive and A–D Block options, and easy installment plans. Book today.';
+  const description = seo?.meta_description || 'Explore Faisal Hills commercial plots for sale in Taxila. Compare 2 to 12 Marla prices, Executive & A–D Block options, and easy installment plans.';
   const canonical = seo?.canonical_url || `${BASE_URL}/faisal-hills-commercial`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/commercial/flagship-store.jpg`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/commercial/flagship-store.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['Faisal Hills Commercial', 'Faisal Hills commercial plot price', 'Faisal Hills commercial payment plan', 'Faisal Hills Executive Block commercial', 'Faisal Hills commercial plots on installments'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {
@@ -64,14 +64,14 @@ const blockCommercials = [
     description: "The Executive Block is the most prestigious business zone in the project, sitting closest to the main GT Road entrance. Features ready shops, multi-storey corporate plazas, and open boulevard plots on the 225ft Grand Boulevard.",
     suitability: "Retail outlets, branded shops, corporate offices, banks, multi-brand fashion stores, mixed-use buildings",
     tag: "High Footfall Gateway",
-    image: "/images/commercial/flagship-store.jpg"
+    image: "/images/commercial/flagship-store.webp"
   },
   {
     name: "Faisal Hills A Block Commercial",
     description: "Block A is among the most populated sectors of Faisal Hills with 1,200+ settled families. Commercial plots here provide immediate daily customer traffic for neighborhood grocery marts, pharmacies, and clinics.",
     suitability: "Daily-need retail, super marts, bakeries, clinical laboratories, salons, service businesses",
     tag: "Immediate Cash Flow",
-    image: "/images/commercial/hypermarket.jpg"
+    image: "/images/commercial/hypermarket.webp"
   },
   {
     name: "Faisal Hills B Block Commercial",
@@ -85,7 +85,7 @@ const blockCommercials = [
     description: "The largest commercial hub in Faisal Hills with 800+ commercial plots surrounding the Civic Center, Central Monument, and Mega Mosque. Approved for B+G+9 high-rise shopping malls and business centers.",
     suitability: "Medium & long-term investors, mega shopping malls, food courts, corporate headquarters",
     tag: "800+ Plot Mega Hub",
-    image: "/images/commercial/food-court.jpg"
+    image: "/images/commercial/food-court.webp"
   },
   {
     name: "Faisal Hills D Block Commercial",
@@ -99,7 +99,7 @@ const blockCommercials = [
     description: "The newest premium launch in Faisal Hills offering attractive 4-year installment plans with lower upfront down payments. Strategically linked to the upcoming direct M-1 Motorway interchange.",
     suitability: "4-year installment buyers, high-yield file investors, corporate franchises",
     tag: "4-Year Installments",
-    image: "/images/commercial/tech-gadgets.jpg"
+    image: "/images/commercial/tech-gadgets.webp"
   }
 ];
 
@@ -109,7 +109,7 @@ const commercialSizesShowcase = [
     dimensions: "30 × 30 ft to 40 × 30 ft (100 – 133 Sq. Yds)",
     height: "Basement + Ground + 5 Floors (B+G+5)",
     idealUse: "Boutique shops, pharmacies, cafes, doctor clinics, professional chambers",
-    image: "/images/commercial/tech-gadgets.jpg",
+    image: "/images/commercial/tech-gadgets.webp",
     priceRange: "PKR 3.2 Cr – 4.5 Cr",
     badge: "Popular Entry"
   },
@@ -118,7 +118,7 @@ const commercialSizesShowcase = [
     dimensions: "40 × 45 ft (200 Sq. Yds)",
     height: "Basement + Ground + 7 to 8 Floors (B+G+8)",
     idealUse: "Corporate bank branches, brand showrooms, multi-shop retail plaza, IT office",
-    image: "/images/commercial/flagship-store.jpg",
+    image: "/images/commercial/flagship-store.webp",
     priceRange: "PKR 5.5 Cr – 7.5 Cr",
     badge: "High Visibility"
   },
@@ -127,7 +127,7 @@ const commercialSizesShowcase = [
     dimensions: "45 × 50 ft to 35 × 70 ft (250 Sq. Yds)",
     height: "Basement + Ground + 9 Floors (B+G+9)",
     idealUse: "Departmental mall, multi-cuisine rooftop restaurant, fitness gym, diagnostics",
-    image: "/images/commercial/food-court.jpg",
+    image: "/images/commercial/food-court.webp",
     priceRange: "PKR 8.0 Cr – 10.5 Cr",
     badge: "Mega Mall Plaza"
   },
@@ -136,7 +136,7 @@ const commercialSizesShowcase = [
     dimensions: "50 × 60 ft (300 Sq. Yds)",
     height: "Basement + Lower Ground + G + 9 Floors",
     idealUse: "Luxury corporate towers, serviced apartment suites, hotel branches",
-    image: "/images/commercial/fashion-pret.jpg",
+    image: "/images/commercial/fashion-pret.webp",
     priceRange: "PKR 11.0 Cr – 13.5 Cr",
     badge: "Corporate High-Rise"
   },
@@ -145,7 +145,7 @@ const commercialSizesShowcase = [
     dimensions: "50 × 90 ft (500 Sq. Yds)",
     height: "Dual Basement + Ground + 9 Floors",
     idealUse: "Full-scale shopping mall, private hospital, university campus, enterprise HQ",
-    image: "/images/commercial/hypermarket.jpg",
+    image: "/images/commercial/hypermarket.webp",
     priceRange: "PKR 14.5 Cr – 18.0 Cr",
     badge: "Flagship Landmark"
   },
@@ -154,7 +154,7 @@ const commercialSizesShowcase = [
     dimensions: "1,500 – 4,500 Sq. Ft. Double Height",
     height: "27-Storey Iconic Landmark Skyscraper",
     idealUse: "International luxury brands, 5-star hotel suites, penthouse offices",
-    image: "/faisal-jewel-tower.jpg",
+    image: "/faisal-jewel-tower.webp",
     priceRange: "Flexible Installments",
     badge: "27-Storey Icon"
   }
@@ -214,7 +214,7 @@ export default async function FaisalHillsCommercialPage() {
   );
 
   const settings: Record<string, any> = await fetchSettings().catch(() => ({}));
-  const heroBg: string = settings?.commercial_hero_image || settings?.commercial_page_hero || "/images/commercial/flagship-store.jpg";
+  const heroBg: string = settings?.commercial_hero_image || settings?.commercial_page_hero || "/images/commercial/flagship-store.webp";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -362,7 +362,7 @@ export default async function FaisalHillsCommercialPage() {
               {/* Desktop Action Buttons */}
               <ScrollReveal direction="up" delay={150} className="hidden lg:flex flex-wrap items-center gap-3 pt-2">
                 <a
-                  href="/images/faisal-hills-master-plan-map.jpg"
+                  href="/images/faisal-hills-master-plan-map.webp"
                   download="Faisal-Hills-Master-Plan.jpg"
                   className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
                 >
@@ -389,7 +389,7 @@ export default async function FaisalHillsCommercialPage() {
               {/* Mobile Action Buttons Below Map */}
               <div className="lg:hidden flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-1">
                 <a
-                  href="/images/faisal-hills-master-plan-map.jpg"
+                  href="/images/faisal-hills-master-plan-map.webp"
                   download="Faisal-Hills-Master-Plan.jpg"
                   className="inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all active:scale-95 cursor-pointer text-center"
                 >

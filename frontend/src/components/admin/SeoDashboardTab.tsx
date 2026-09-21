@@ -179,7 +179,7 @@ export default function SeoDashboardTab({
         defaultMetaTitle: seoSettings.defaultMetaTitle,
         defaultMetaDescription: seoSettings.defaultMetaDescription,
         defaultKeywords: seoSettings.defaultMetaKeywords,
-        defaultOgImage: seoSettings.defaultOgImage || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+        defaultOgImage: seoSettings.defaultOgImage || '/images/faisal-hills-site-header.webp',
         googleSiteVerification: seoSettings.googleSiteVerification,
         bingSiteVerification: seoSettings.bingSiteVerification,
         gtmId: seoSettings.gtmId || '',
@@ -714,7 +714,7 @@ export default function SeoDashboardTab({
                       type="text"
                       value={selectedPageSeo.ogImage || ''}
                       onChange={(e) => handleSeoFieldChange('ogImage', e.target.value)}
-                      placeholder="/images/imgi_38_Faisal-Hills-site-home-page-header.webp"
+                      placeholder="/images/faisal-hills-site-header.webp"
                       className="flex-grow px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:border-[#7b002c]"
                     />
                     {selectedPageSeo.ogImage && (
@@ -877,7 +877,7 @@ export default function SeoDashboardTab({
               <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-slate-50">
                 <div 
                   className="h-44 bg-cover bg-center bg-slate-800 relative"
-                  style={{ backgroundImage: `url('${selectedPageSeo.ogImage || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}')` }}
+                  style={{ backgroundImage: `url('${selectedPageSeo.ogImage || '/images/faisal-hills-site-header.webp'}')` }}
                 >
                   <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
                     faisalhillsislamabadfh.com
@@ -910,7 +910,7 @@ export default function SeoDashboardTab({
               <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
                 <div 
                   className="h-36 bg-cover bg-center bg-slate-800"
-                  style={{ backgroundImage: `url('${selectedPageSeo.twitterImage || selectedPageSeo.ogImage || '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'}')` }}
+                  style={{ backgroundImage: `url('${selectedPageSeo.twitterImage || selectedPageSeo.ogImage || '/images/faisal-hills-site-header.webp'}')` }}
                 />
                 <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-0.5">
                   <span className="text-[10px] text-slate-400 font-medium">faisalhillsislamabadfh.com</span>

@@ -11,15 +11,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('faisal-hills-blocks') || await fetchSeo('blocks');
 
   const title = seo?.title || 'Faisal Hills Blocks | Executive, Prime, Block A, B, C & D Sectors';
-  const description = seo?.meta_description || 'Explore all Faisal Hills Blocks: Executive, Prime, Block A, Block B, B-1 Extension, Block C, and Block D. Compare possession status, plot sizes, prices, and master plan maps.';
+  const description = seo?.meta_description || 'Explore all Faisal Hills Blocks: Executive, Prime, Block A–D. Compare possession status, plot sizes, prices, and master plan maps.';
   const canonical = seo?.canonical_url || `${BASE_URL}/faisal-hills-blocks`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['Faisal Hills Blocks', 'Faisal Hills Executive Block', 'Faisal Hills Prime Block', 'Faisal Hills A Block', 'Faisal Hills B Block', 'Faisal Hills C Block', 'Faisal Hills D Block', 'Faisal Hills Gandahara', 'Faisal Jewel'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {

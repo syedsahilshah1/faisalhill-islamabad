@@ -96,9 +96,9 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
   const seo = await fetchSeo(params.slug);
   if (seo) {
     const canonical = seo.canonical_url || `${BASE_URL}/blocks/${params.slug}`;
-    const ogImg = seo.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+    const ogImg = seo.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
     return {
-      title: `${seo.title} | Faisal Hills`,
+      title: seo.title,
       description: seo.meta_description,
       keywords: seo.keywords ? seo.keywords.split(',').map((k: string) => k.trim()) : undefined,
       alternates: {
@@ -134,7 +134,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Executive Block – Plots, Prices & Map',
         description: 'Faisal Hills Executive Block: RDA-approved plots on Main GT Road. Check location, prices, payment plan, NOC, facilities & investment details.',
-        images: [{ url: '/images/faisalhillexecutive.webp' }]
+        images: [{ url: '/images/faisal-hills-executive-block.webp' }]
       }
     };
   }
@@ -147,7 +147,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Prime Block – Official Prices, 4-Year Payment Plan & Map',
         description: 'Faisal Hills Prime Block: Official fixed launch rates on 48-month easy installment plan. 100% RDA approved with GT Road & Margalla views.',
-        images: [{ url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp' }]
+        images: [{ url: '/images/faisal-hills-site-header.webp' }]
       }
     };
   }
@@ -160,7 +160,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Block A – Possession Plots, Prices, Jamia Mosque & Map',
         description: 'Faisal Hills Block A: 100% on-ground possession plots, Grand Jamia Mosque, fully populated family villas, and direct GT Road access.',
-        images: [{ url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' }]
+        images: [{ url: '/images/faisal-hills-drone-view.webp' }]
       }
     };
   }
@@ -173,7 +173,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Walk – Commercial Plots, Promenade, Prices & Map',
         description: 'Faisal Hills Walk: European-style open-air pedestrian commercial promenade with Ground + 4 approved arcades, rooftop dining, outdoor amphitheater, and high rental yields.',
-        images: [{ url: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg' }]
+        images: [{ url: '/images/hills-walk-commercial-aerial.webp' }]
       }
     };
   }
@@ -186,7 +186,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Jewel Islamabad – 27-Storey Skyscraper, Shops & Apartments',
         description: 'Faisal Jewel Islamabad: Landmark 27-floor luxury mixed-use skyscraper on GT Road. 6-floor shopping mall, 250+ luxury serviced apartments, 4-star hotel, 3 basement parking levels & 4-year installment plans.',
-        images: [{ url: '/faisal-jewel.jpg' }]
+        images: [{ url: '/faisal-jewel-building.webp' }]
       }
     };
   }
@@ -199,7 +199,7 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
       openGraph: {
         title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
         description: 'Faisal Hills Block D: 100% RDA-approved plots with natural freshwater springs, Brahma Bahtar M-1 Motorway access, and Medical City.',
-        images: [{ url: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg' }]
+        images: [{ url: '/images/faisal-hills-drone-view.webp' }]
       }
     };
   }
@@ -222,22 +222,22 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
   // Authentic Hero images and descriptions for custom blocks with dynamic DB override
   const heroBg = block.heroImage || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
-    ? '/faisal-jewel.jpg'
+    ? '/faisal-jewel-building.webp'
     : block.slug === 'prime-block'
-    ? '/images/faisalhillexecutive.webp'
+    ? '/images/faisal-hills-executive-block.webp'
     : block.slug === 'executive-block'
-    ? '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    ? '/images/faisal-hills-drone-view.webp'
     : block.slug === 'block-a'
-    ? '/images/imgi_44_Executive-Block.webp'
+    ? '/images/faisal-hills-executive-sector.webp'
     : block.slug === 'block-b'
-    ? '/images/imgi_48_sports-arena.webp'
+    ? '/images/faisal-hills-sports-arena.webp'
     : block.slug === 'block-b1-extension'
-    ? '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+    ? '/images/faisal-hills-aerial-panoramic.webp'
     : block.slug === 'block-c'
-    ? '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg'
+    ? '/images/hills-walk-commercial-aerial.webp'
     : block.slug === 'block-d'
-    ? '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
-    : '/images/imgi_38_Faisal-Hills-site-home-page-header.webp');
+    ? '/images/faisal-hills-site-header.webp'
+    : '/images/faisal-hills-site-header.webp');
 
   const heroSubtitle = block.subtitle;
 
@@ -308,7 +308,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             {block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
               <div className="hidden md:flex flex-wrap items-center gap-3 pt-2">
                 <a
-                  href="tel:+923313339997"
+                  href="tel:+923331113177"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
                 >
                   <PhoneCall className="w-4 h-4 text-white" />
@@ -468,7 +468,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               <div className="lg:col-span-5 flex items-center justify-center">
                 <div className="relative w-full max-w-md bg-white p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden group">
                   <img
-                    src="/images/faisal-jewel.jpg"
+                    src="/images/faisal-jewel-building.webp"
                     alt="Faisal Jewel Skyscraper Tower"
                     className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
                   />
@@ -1881,7 +1881,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                     {/* Plot Image */}
                     <div className="relative h-48 w-full overflow-hidden bg-slate-900">
                       <img
-                        src={plot.image || '/images/imgi_44_Executive-Block.webp'}
+                        src={plot.image || '/images/faisal-hills-executive-sector.webp'}
                         alt={`Plot ${plot.plotNumber} in ${block.name}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                         loading="lazy"
@@ -2146,7 +2146,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
               <div className="lg:col-span-6 relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-900 h-80">
                 <img
-                  src="/faisal-jewel.jpg"
+                  src="/faisal-jewel-building.webp"
                   alt="Faisal Jewel Apartment Layout"
                   className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
                 />

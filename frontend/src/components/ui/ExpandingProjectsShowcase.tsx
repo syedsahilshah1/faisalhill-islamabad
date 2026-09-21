@@ -24,7 +24,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Flagship Entrance',
     badge: 'GT Road Frontage',
     description: 'Prestigious front entrance block featuring the iconic Arc Gate, Roots Millennium School, and direct GT Road access.',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     href: '/blocks/executive-block'
   },
   {
@@ -34,7 +34,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Elite Enclave',
     badge: 'Margalla Foothills',
     description: 'Exclusive residential sector with wider streets, elevated topography, private security, and scenic hilltop vistas.',
-    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+    image: '/images/faisal-hills-site-header.webp',
     href: '/blocks/prime-block'
   },
   {
@@ -44,7 +44,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Civic Core',
     badge: 'Possession Ready',
     description: 'Fully developed sector with Grand Jamia Mosque, active family villas, commercial plazas, and lush public parks.',
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     href: '/blocks/block-a'
   },
   {
@@ -54,7 +54,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Central Sector',
     badge: 'Sports Complex & Parks',
     description: 'Premier central sector built on the 225ft Grand Boulevard with dedicated Sports Complex, futsal turf, and community parks.',
-    image: '/images/imgi_48_sports-arena.webp',
+    image: '/images/faisal-hills-sports-arena.webp',
     href: '/blocks/block-b'
   },
   {
@@ -64,7 +64,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Margalla Hillside',
     badge: 'High Appreciation',
     description: 'Commanding high-elevation Margalla mountain crest views, natural green belts, and luxury 1 & 2 Kanal hillside plots.',
-    image: '/images/faisal-forest.jpg',
+    image: '/images/faisal-hills-miyawaki-forest.webp',
     href: '/blocks/block-c'
   },
   {
@@ -74,7 +74,7 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
     tag: 'Motorway Access',
     badge: 'M-1 Link Road',
     description: 'Strategically positioned next to the upcoming dedicated M-1 Motorway interchange for rapid commuting.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     href: '/blocks/block-d'
   }
 ];
@@ -186,7 +186,11 @@ export default function ExpandingProjectsShowcase({
         {currentMobileItem && (
           <div className="relative w-full h-[380px] rounded-2xl overflow-hidden border border-white/20 shadow-xl group">
             {/* Background Image */}
-            <Link href={currentMobileItem.href || '#'} className="absolute inset-0 bg-slate-950 block">
+            <Link
+              href={currentMobileItem.href || '#'}
+              aria-label={`Explore ${currentMobileItem.title}`}
+              className="absolute inset-0 bg-slate-950 block"
+            >
               <img
                 key={currentMobileItem.id || currentMobileIndex}
                 src={currentMobileItem.image}
@@ -195,6 +199,7 @@ export default function ExpandingProjectsShowcase({
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
+              <span className="sr-only">Explore {currentMobileItem.title}</span>
             </Link>
 
             {/* Top Bar: Sector Counter & Prev/Next Scrolling Buttons */}
@@ -226,9 +231,9 @@ export default function ExpandingProjectsShowcase({
 
             {/* Bottom Content Area */}
             <div className="absolute inset-x-0 bottom-0 p-5 z-10 space-y-3 pointer-events-none">
-              <h3 className="font-serif font-bold text-2xl text-white tracking-normal drop-shadow-md">
+              <p className="font-serif font-bold text-2xl text-white tracking-normal drop-shadow-md">
                 {currentMobileItem.title}
-              </h3>
+              </p>
 
               <div className="pointer-events-auto flex items-center justify-between gap-2 pt-1">
                 <Link
@@ -308,6 +313,7 @@ export default function ExpandingProjectsShowcase({
 
                   {/* Action Button Reveal on Active / Hover */}
                   <div
+                    aria-hidden="true"
                     className={`transition-all duration-500 ease-out overflow-hidden ${
                       isHovered
                         ? 'max-h-20 opacity-100 pt-1'

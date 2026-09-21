@@ -134,7 +134,7 @@ export const blocksData: BlockInfo[] = [
       residential: "PKR 95 Lacs - 3.2 Crore",
       commercial: "PKR 3.5 Crore - 12 Crore"
     },
-    heroImage: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+    heroImage: "/images/faisal-hills-drone-view.webp",
     masterPlanImage: "/images/faisal-hills-master-plan-map-opt.webp",
     amenities: [
       { name: "Private Security Patrol", description: "Dedicated rapid response security unit and thermal cameras", icon: "ShieldCheck", image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=75" },
@@ -176,13 +176,13 @@ export const blocksData: BlockInfo[] = [
       residential: "PKR 65 Lacs - 1.85 Crore",
       commercial: "PKR 2.2 Crore - 8.5 Crore"
     },
-    heroImage: "/images/faisalhillexecutive.webp",
-    masterPlanImage: "/images/faisalexecutivemap.png",
+    heroImage: "/images/faisal-hills-executive-block.webp",
+    masterPlanImage: "/images/faisal-hills-executive-map.webp",
     amenities: [
-      { name: "Grand Entrance Monument", description: "State-of-the-art guarded entry portal with 24/7 biometric surveillance", icon: "Shield", image: "/images/faisalhillarc.jpg" },
-      { name: "Roots International School", description: "Operational campus providing world-class international curriculum on-ground", icon: "GraduationCap", image: "/images/faisal-roots-school.jpg" },
-      { name: "Central Park & Family Enclave", description: "12-Kanal lush green park with dedicated sports courts and tracks", icon: "Trees", image: "/images/faisal-park.jpg" },
-      { name: "Jamia Masjid Fatima Tuz Zahra", description: "Grand architectural mosque for daily and Friday congregational prayers", icon: "Building", image: "/images/imgi_46_Mosques.webp" }
+      { name: "Grand Entrance Monument", description: "State-of-the-art guarded entry portal with 24/7 biometric surveillance", icon: "Shield", image: "/images/faisal-hills-arc-gate.webp" },
+      { name: "Roots International School", description: "Operational campus providing world-class international curriculum on-ground", icon: "GraduationCap", image: "/images/roots-international-school-faisal-hills.webp" },
+      { name: "Central Park & Family Enclave", description: "12-Kanal lush green park with dedicated sports courts and tracks", icon: "Trees", image: "/images/faisal-hills-glow-park.webp" },
+      { name: "Jamia Masjid Fatima Tuz Zahra", description: "Grand architectural mosque for daily and Friday congregational prayers", icon: "Building", image: "/images/faisal-hills-jamia-mosque.webp" }
     ],
     faqs: [
       { question: "Is Faisal Hills Executive Block in Islamabad or Rawalpindi?", answer: "Faisal Hills sits on the main GT Road, just a few minutes from B-17 Islamabad, but it technically falls under the jurisdiction of the Rawalpindi Development Authority (RDA)." },
@@ -194,8 +194,8 @@ export const blocksData: BlockInfo[] = [
       { question: "Where can I find the Faisal Hills Executive Block map?", answer: "You can request the latest master plan and zoning map directly from our team — we can also point out which sectors are closest to GT Road and which are quieter residential pockets." }
     ],
     developmentUpdates: [
-      { title: "Underground Electric Grid & Sector Utilities", date: "August 2026", image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg", progress: 100, text: "100% underground cable laying completed and connected to the main feeder line." },
-      { title: "225ft Main Boulevard & Commercial Asphalt", date: "July 2026", image: "/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg", progress: 95, text: "Final carpet asphalt applied on Executive Commercial Boulevard." }
+      { title: "Underground Electric Grid & Sector Utilities", date: "August 2026", image: "/images/faisal-hills-drone-view.webp", progress: 100, text: "100% underground cable laying completed and connected to the main feeder line." },
+      { title: "225ft Main Boulevard & Commercial Asphalt", date: "July 2026", image: "/images/faisal-hills-aerial-panoramic.webp", progress: 95, text: "Final carpet asphalt applied on Executive Commercial Boulevard." }
     ]
   },
   {
@@ -475,7 +475,7 @@ export const blocksData: BlockInfo[] = [
       residential: "Starting PKR 5.8 Lacs (Installments) • 1,295 Sq. Ft. Suite",
       commercial: "PKR 1.8 Crore - 18 Crore (350 Shops)"
     },
-    heroImage: "/faisal-jewel.jpg",
+    heroImage: "/faisal-jewel-building.webp",
     masterPlanImage: "/faisal-jewel-map.png",
     amenities: [
       { name: "Swimming Pool & Fitness Center", description: "Heated indoor swimming pool, gym, sauna & health club on 22nd floor", icon: "Waves", image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75" },
@@ -500,7 +500,7 @@ export const blocksData: BlockInfo[] = [
       { question: "How do I book a unit in Faisal Jewel Islamabad?", answer: "Booking a unit in Faisal Jewel Islamabad is straightforward. You can call or WhatsApp the sales team at +92 333 1113177, visit the official website at faisalhillsislamabadfh.com, or send an email to info@faisalhillsislamabadfh.com. The team will share available inventory, floor plans, payment plan options, and guide you through the booking process step by step." }
     ],
     developmentUpdates: [
-      { title: "Floor 14 Slab Concrete Pouring", date: "August 2026", image: "/faisal-jewel.jpg", progress: 60, text: "High-strength RCC structure progressing smoothly." }
+      { title: "Floor 14 Slab Concrete Pouring", date: "August 2026", image: "/faisal-jewel-building.webp", progress: 60, text: "High-strength RCC structure progressing smoothly." }
     ]
   }
 ];
@@ -870,7 +870,7 @@ export interface RedirectItem {
 export const initialSeoConfig: GlobalSeoSettings = {
   siteName: "Faisal Hills Real Estate Portal",
   defaultMetaTitle: "Faisal Hills Real Estate | Official Master Plan, Plots & Prices",
-  defaultMetaDescription: "Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot map, NOC details, block prices, payment plans for Executive Block, Block A, B, C, D, Prime Block, Gandahara, Hills Walk & Faisal Jewels Tower.",
+  defaultMetaDescription: "Explore Faisal Hills Islamabad & Taxila. Interactive plot maps, RDA NOC status, block prices, and flexible payment plans for residential & commercial plots.",
   defaultMetaKeywords: "Faisal Hills, Faisal Hills Taxila, Faisal Hills Rawalpindi, Executive Block Faisal Hills, Block A Faisal Hills, Block B Faisal Hills, Block C Faisal Hills, Prime Block Faisal Hills, Faisal Hills Plot Prices, Faisal Hills Map, Faisal Jewels Tower",
   googleSiteVerification: "google-site-verification-code-xyz123",
   bingSiteVerification: "bing-verification-code-abc456",
@@ -880,8 +880,8 @@ export const initialSeoConfig: GlobalSeoSettings = {
     {
       pageSlug: "home",
       pageTitle: "Home Page",
-      metaTitle: "Faisal Hills Real Estate | Official Master Plan, Plots & Prices",
-      metaDescription: "Explore RDA approved residential & commercial plot investments with interactive master map, block price rates, and instant online booking in Faisal Hills GT Road Taxila.",
+      metaTitle: "Faisal Hills Real Estate | Master Plan, Plots & Prices",
+      metaDescription: "Explore RDA-approved residential & commercial plots in Faisal Hills GT Road Taxila. View interactive master map, block rates & booking options.",
       metaKeywords: "Faisal Hills Taxila, Faisal Hills Rawalpindi, Plots for sale in Faisal Hills, RDA approved housing society, Faisal Town Group",
       ogTitle: "Faisal Hills Taxila • Official Real Estate Portal",
       ogDescription: "Interactive plot inventory, master plan, and verified prices for Faisal Hills Executive, Block A, B, C, D & Prime Block.",
@@ -893,7 +893,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       pageSlug: "payment-plan",
       pageTitle: "Payment Schedules Page",
       metaTitle: "Faisal Hills Official Payment Plans & 3-Year Installment Schedules 2026",
-      metaDescription: "Verified 3-year quarterly payment schedules for 5 Marla, 10 Marla, 1 Kanal plots and Faisal Jewels luxury apartments & commercial shops in Faisal Hills Taxila.",
+      metaDescription: "Verified 3-year quarterly payment schedules for 5 Marla, 10 Marla, 1 Kanal plots and luxury apartments in Faisal Hills Taxila. View rates & down payments.",
       metaKeywords: "Faisal Hills payment plan, Faisal Jewels payment plan 2026, 5 Marla plot installment Faisal Hills, 10 Marla price list",
       ogTitle: "Faisal Hills Payment Matrix 2026",
       ogDescription: "Interactive installment calculator & official price schedules for residential and commercial plots.",
@@ -921,7 +921,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Jewel Islamabad, Faisal Jewel payment plan, Faisal Jewel apartments, Faisal Jewel shops, Zedem Properties, CAM Construction",
       ogTitle: "Faisal Jewel Islamabad • 27-Story Mixed-Use Skyscraper",
       ogDescription: "Faisal Jewel Islamabad: 27-floor mixed-use tower in Faisal Hills. Luxury apartments, commercial shops & 4-star hotel.",
-      ogImage: "/faisal-jewel.jpg",
+      ogImage: "/faisal-jewel-building.webp",
       canonicalUrl: "https://faisalhills.com/blocks/faisal-jewel-islamabad",
       author: "Faisal Jewel Development Team"
     },
@@ -977,7 +977,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       pageSlug: "block-b1-extension",
       pageTitle: "Block B1 Extension Page",
       metaTitle: "Faisal Hills B Extension – Affordable Plots & High Growth",
-      metaDescription: "Faisal Hills Block B Extension: Affordable residential plots with high appreciation potential. Check current pricing, road-work progress & early possession details.",
+      metaDescription: "Faisal Hills Block B Extension: Affordable residential plots with high growth. Check current pricing, road work progress & early possession details.",
       metaKeywords: "Faisal Hills B Extension, B1 Extension plots, affordable plots Islamabad",
       ogTitle: "Faisal Hills B Extension",
       ogDescription: "Affordable residential plots with high appreciation potential. Check current pricing & progress.",
@@ -1029,7 +1029,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills Commercial, commercial plots Faisal Hills, plot price, commercial payment plan",
       ogTitle: "Faisal Hills Commercial Plots for Sale",
       ogDescription: "Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare prices & plans.",
-      ogImage: "/faisal-jewel.jpg",
+      ogImage: "/faisal-jewel-building.webp",
       canonicalUrl: "https://faisalhills.com/faisal-hills-commercial",
       author: "Faisal Hills Marketing Team"
     },
@@ -1041,7 +1041,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "About Faisal Hills, Zedem International, Chaudhry Abdul Majeed, Faisal Hills developers, RDA approval",
       ogTitle: "About Faisal Hills | Zedem International & Vision",
       ogDescription: "Learn about Faisal Hills Taxila, Zedem International leadership, project milestones, RDA NOC approval.",
-      ogImage: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+      ogImage: "/images/faisal-hills-drone-view.webp",
       canonicalUrl: "https://faisalhills.com/about-us",
       author: "Faisal Hills Corporate Affairs"
     },
@@ -1053,7 +1053,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Hills Walk Faisal Hills, Hills Walk commercial, retail shops Faisal Hills, boulevard shops",
       ogTitle: "Hills Walk Commercial Strip Faisal Hills",
       ogDescription: "European style pedestrian open-air commercial boulevard with retail outlets & cafes.",
-      ogImage: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg",
+      ogImage: "/images/hills-walk-commercial-aerial.webp",
       canonicalUrl: "https://faisalhills.com/blocks/hills-walk",
       author: "Faisal Hills Commercial Desk"
     },
@@ -1065,7 +1065,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills plots for sale, buy plot in Faisal Hills, plot prices Taxila, 5 marla plot price, 10 marla plot price, 1 kanal plot price",
       ogTitle: "Faisal Hills Plots for Sale | Interactive Inventory",
       ogDescription: "Search verified residential and commercial plots for sale in Faisal Hills Islamabad with instant pricing.",
-      ogImage: "/images/faisal-park.jpg",
+      ogImage: "/images/faisal-hills-glow-park.webp",
       canonicalUrl: "https://faisalhills.com/plots",
       author: "Faisal Hills Sales Desk"
     },
@@ -1077,7 +1077,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills news, Faisal Hills blog, real estate updates Islamabad, balloting 2026, NOC status",
       ogTitle: "Faisal Hills News & Real Estate Blog 2026",
       ogDescription: "Stay updated with Faisal Hills development progress, NOC approvals, and market trends.",
-      ogImage: "/images/faisal-roots-school.jpg",
+      ogImage: "/images/roots-international-school-faisal-hills.webp",
       canonicalUrl: "https://faisalhills.com/blogs",
       author: "Faisal Hills Editorial Team"
     },
@@ -1089,7 +1089,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills contact, Faisal Hills phone number, sales desk, site office, head office Rawalpindi",
       ogTitle: "Contact Faisal Hills Official Sales Desk",
       ogDescription: "Get in touch with Faisal Hills official sales desk, helpline, and site office.",
-      ogImage: "/images/faisalhillarc.jpg",
+      ogImage: "/images/faisal-hills-arc-gate.webp",
       canonicalUrl: "https://faisalhills.com/contact",
       author: "Faisal Hills Support Team"
     },
@@ -1101,7 +1101,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills terms of service, booking terms, Zedem international policies",
       ogTitle: "Terms of Service | Faisal Hills Official Portal",
       ogDescription: "Official terms of service and plot booking policies for Faisal Hills.",
-      ogImage: "/images/faisalhillarc.jpg",
+      ogImage: "/images/faisal-hills-arc-gate.webp",
       canonicalUrl: "https://faisalhills.com/terms-of-service",
       author: "Faisal Hills Legal Department"
     },
@@ -1113,7 +1113,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       metaKeywords: "Faisal Hills privacy policy, customer data protection, privacy guidelines",
       ogTitle: "Privacy Policy | Faisal Hills Official Portal",
       ogDescription: "Privacy Policy and data protection standards for Faisal Hills visitors.",
-      ogImage: "/images/faisalhillarc.jpg",
+      ogImage: "/images/faisal-hills-arc-gate.webp",
       canonicalUrl: "https://faisalhills.com/privacy-policy",
       author: "Faisal Hills Compliance Team"
     }
@@ -1134,7 +1134,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-1",
     title: "Faisal Hills Arc Monument Entrance",
     category: "Entrance",
-    imageUrl: "/images/faisalhillarc.jpg",
+    imageUrl: "/images/faisal-hills-arc-gate.webp",
     description: "Grand Entrance Arc Portal on GT Road with 24/7 guarded security checkposts.",
     dateAdded: "August 2026"
   },
@@ -1142,7 +1142,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-2",
     title: "Faisal Jewels 27-Story Skyscraper Tower",
     category: "Towers",
-    imageUrl: "/images/imgi_175_faisal-jewel.jpg",
+    imageUrl: "/images/faisal-jewel-tower.webp",
     description: "Architectural 27-story five-star luxury hotel & high-rise apartment tower.",
     dateAdded: "August 2026"
   },
@@ -1150,7 +1150,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-3",
     title: "225ft Executive Commercial Boulevard",
     category: "Infrastructure",
-    imageUrl: "/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png",
+    imageUrl: "/images/faisal-hills-executive-boulevard.webp",
     description: "Wide asphalt carpeted boulevards with underground utilities and commercial plazas.",
     dateAdded: "August 2026"
   },
@@ -1158,7 +1158,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-4",
     title: "Active On-Ground Development Site",
     category: "Infrastructure",
-    imageUrl: "/images/imgi_160_WhatsApp-Image-2025-01-27-at-15.16.19_de49243e-1.jpg",
+    imageUrl: "/images/faisal-hills-development-site.webp",
     description: "Heavy machinery active road cutting, sewerage laying and plot leveling.",
     dateAdded: "August 2026"
   },
@@ -1166,7 +1166,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-5",
     title: "Hill Walk Commercial Strip Aerial View",
     category: "Infrastructure",
-    imageUrl: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg",
+    imageUrl: "/images/hills-walk-commercial-aerial.webp",
     description: "Aerial view of the pedestrian-friendly commercial boulevard near Margalla Hills.",
     dateAdded: "August 2026"
   },
@@ -1174,7 +1174,7 @@ export const initialGalleryData: GalleryItem[] = [
     id: "gal-6",
     title: "Faisal Hills Master-Planned Community Drone View",
     category: "Entrance",
-    imageUrl: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+    imageUrl: "/images/faisal-hills-drone-view.webp",
     description: "Panoramic overhead drone view of blocks A, B, C, Executive & Prime Block.",
     dateAdded: "August 2026"
   }
@@ -1397,6 +1397,21 @@ export function getApiUrl(): string {
 
 export const API_URL = typeof window !== 'undefined' ? getApiUrl() : (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api');
 
+export async function safeFetch(url: string, init?: RequestInit, timeoutMs = 2500): Promise<Response | null> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const res = await fetch(url, {
+      ...init,
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+    return res;
+  } catch {
+    return null;
+  }
+}
+
 let _cachedBlocks: BlockInfo[] = [];
 
 export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
@@ -1404,25 +1419,25 @@ export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
     return _cachedBlocks;
   }
   try {
-    const res = await fetch(`${getApiUrl()}/blocks`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error('Failed to fetch blocks');
+    const res = await safeFetch(`${getApiUrl()}/blocks`, { next: { revalidate: 300 } });
+    if (!res || !res.ok) return blocksData;
     const data = await res.json();
     _cachedBlocks = data.map(mapBlockToCamel);
     return _cachedBlocks;
   } catch (e) {
-    console.error(e);
     return blocksData; // fallback
   }
 }
 
 export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/blocks/${slug}`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error('Failed to fetch block');
+    const res = await safeFetch(`${getApiUrl()}/blocks/${slug}`, { next: { revalidate: 300 } });
+    if (!res || !res.ok) {
+      return blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null;
+    }
     const data = await res.json();
     return mapBlockToCamel(data);
   } catch (e) {
-    console.error(e);
     return blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null; // fallback
   }
 }
@@ -1435,14 +1450,13 @@ export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
   }
 
   try {
-    const res = await fetch(`${getApiUrl()}/plots`, { next: { revalidate: 120 } });
-    if (!res.ok) throw new Error('Failed to fetch plots');
+    const res = await safeFetch(`${getApiUrl()}/plots`, { next: { revalidate: 120 } });
+    if (!res || !res.ok) return _cachedPlots.length > 0 ? _cachedPlots : plotInventoryData;
     const data = await res.json();
     _cachedPlots = Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : []);
     return _cachedPlots;
   } catch (e) {
-    console.error(e);
-    return _cachedPlots || [];
+    return _cachedPlots.length > 0 ? _cachedPlots : plotInventoryData;
   }
 }
 
@@ -1453,24 +1467,27 @@ export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]>
     return _cachedGallery;
   }
   try {
-    const res = await fetch(`${getApiUrl()}/gallery`, { next: { revalidate: 300 } });
-    if (!res.ok) throw new Error('Failed to fetch gallery');
+    const res = await safeFetch(`${getApiUrl()}/gallery`, { next: { revalidate: 300 } });
+    if (!res || !res.ok) return initialGalleryData;
     const data = await res.json();
     _cachedGallery = data.map(mapGalleryToCamel);
     return _cachedGallery;
   } catch (e) {
-    console.error(e);
     return initialGalleryData; // fallback
   }
 }
 
 export async function fetchSettings(): Promise<Record<string, any>> {
   try {
-    const res = await fetch(`${getApiUrl()}/settings`, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error('Failed to fetch settings');
+    const res = await safeFetch(`${getApiUrl()}/settings`, { next: { revalidate: 60 } });
+    if (!res || !res.ok) {
+      return {
+        society_stats: societyStats,
+        last_verified_date: societyStats.lastVerifiedDate
+      };
+    }
     return await res.json();
   } catch (e) {
-    console.error(e);
     return {
       society_stats: societyStats,
       last_verified_date: societyStats.lastVerifiedDate
@@ -1479,12 +1496,46 @@ export async function fetchSettings(): Promise<Record<string, any>> {
 }
 
 export async function fetchSeo(pageSlug: string): Promise<any> {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('faisal_seo_settings');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const p = parsed.pages?.find((page: any) => page.pageSlug === pageSlug);
+        if (p) {
+          return {
+            title: p.metaTitle || p.pageTitle,
+            h1_heading: p.h1Heading,
+            meta_description: p.metaDescription,
+            canonical_url: p.canonicalUrl,
+            keywords: p.metaKeywords,
+            og_title: p.ogTitle || p.metaTitle,
+            og_description: p.ogDescription || p.metaDescription,
+            og_image: p.ogImage,
+            twitter_title: p.twitterTitle,
+            twitter_description: p.twitterDescription,
+            twitter_image: p.twitterImage,
+            schema_type: p.schemaType,
+            custom_schema_json: p.customSchemaJson
+          };
+        }
+      }
+    } catch (_) {}
+  }
   try {
-    const res = await fetch(`${getApiUrl()}/seo/${pageSlug}`, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error('Failed to fetch SEO');
+    const res = await safeFetch(`${getApiUrl()}/seo/${pageSlug}`, { next: { revalidate: 60 } });
+    if (!res || !res.ok) {
+      const p = initialSeoConfig.pages.find(page => page.pageSlug === pageSlug);
+      return p ? {
+        title: p.metaTitle || p.pageTitle,
+        meta_description: p.metaDescription,
+        keywords: p.metaKeywords,
+        og_title: p.ogTitle,
+        og_description: p.ogDescription
+      } : null;
+    }
     return await res.json();
   } catch (e) {
-    console.error(e);
     const p = initialSeoConfig.pages.find(page => page.pageSlug === pageSlug);
     return p ? {
       title: p.metaTitle || p.pageTitle,
@@ -2003,8 +2054,16 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
   }
 
   try {
-    const res = await fetch(`${getApiUrl()}/blogs`, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error('Failed to fetch blogs');
+    const res = await safeFetch(`${getApiUrl()}/blogs`, { next: { revalidate: 60 } });
+    if (!res || !res.ok) {
+      const seen = new Set<string>();
+      return localBlogs.filter(b => {
+        const key = b.id || b.slug;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return b.published !== false;
+      });
+    }
     const data = await res.json();
     const mapped = Array.isArray(data) ? data.map(mapBlogToCamel) : [];
 
@@ -2018,7 +2077,6 @@ export async function fetchBlogs(): Promise<BlogItem[]> {
       return b.published !== false;
     });
   } catch (e) {
-    console.error(e);
     const seen = new Set<string>();
     return localBlogs.filter(b => {
       const key = b.id || b.slug;
@@ -2042,16 +2100,15 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
   }
 
   try {
-    const res = await fetch(`${getApiUrl()}/blogs/${slug}`, { next: { revalidate: 60 } });
-    if (res.ok) {
+    const res = await safeFetch(`${getApiUrl()}/blogs/${slug}`, { next: { revalidate: 60 } });
+    if (res && res.ok) {
       const data = await res.json();
       return mapBlogToCamel(data);
     }
-  } catch (e) {
-    console.error(e);
+    return null;
+  } catch {
+    return null;
   }
-
-  return null;
 }
 
 export async function apiFetchAllBlogs(token: string): Promise<BlogItem[]> {
@@ -2248,8 +2305,8 @@ export async function fetchSitemapRoutes(): Promise<{ url: string; changefreq: s
 
 export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
   try {
-    const res = await fetch(`${getApiUrl()}/seo`, { next: { revalidate: 60 } });
-    if (!res.ok) return initialSeoConfig;
+    const res = await safeFetch(`${getApiUrl()}/seo`, { next: { revalidate: 60 } });
+    if (!res || !res.ok) return initialSeoConfig;
     const data = await res.json();
     return {
       ...initialSeoConfig,
@@ -2281,7 +2338,6 @@ export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
       }))
     };
   } catch (e) {
-    console.error('Failed to fetch global SEO settings:', e);
     return initialSeoConfig;
   }
 }
@@ -2422,11 +2478,12 @@ export const defaultContactInfo: ContactInfoData = {
 
 export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/settings/${key}`, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
-    console.error(`Failed to fetch setting ${key}:`, e);
+    const res = await safeFetch(`${getApiUrl()}/settings/${key}`, { 
+      next: { revalidate: 60 } 
+    });
+    if (!res || !res.ok) return null;
+    return await res.json().catch(() => null);
+  } catch {
     return null;
   }
 }

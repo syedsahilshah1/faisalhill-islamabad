@@ -17,21 +17,61 @@ export function JsonLd({ data }: JsonLdProps) {
   );
 }
 
-export function generateOrganizationSchema(siteUrl = 'https://faisalhillsislamabadfh.com') {
+export function generateOrganizationSchema(
+  siteUrl = 'https://faisalhillsislamabadfh.com',
+  socials?: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    linkedin?: string;
+    twitter?: string;
+  } | null,
+  contact?: {
+    email?: string;
+    salesHotline?: string;
+    salesDesk?: string;
+    headOffice?: string;
+    siteOffice?: string;
+  } | null
+) {
+  const sameAs: string[] = [];
+  if (socials?.facebook?.trim() && !socials.facebook.endsWith('facebook.com') && !socials.facebook.endsWith('facebook.com/')) {
+    sameAs.push(socials.facebook.trim());
+  }
+  if (socials?.instagram?.trim() && !socials.instagram.endsWith('instagram.com') && !socials.instagram.endsWith('instagram.com/')) {
+    sameAs.push(socials.instagram.trim());
+  }
+  if (socials?.youtube?.trim() && !socials.youtube.endsWith('youtube.com') && !socials.youtube.endsWith('youtube.com/')) {
+    sameAs.push(socials.youtube.trim());
+  }
+  if (socials?.linkedin?.trim() && !socials.linkedin.endsWith('linkedin.com') && !socials.linkedin.endsWith('linkedin.com/')) {
+    sameAs.push(socials.linkedin.trim());
+  }
+  if (socials?.twitter?.trim() && !socials.twitter.endsWith('twitter.com') && !socials.twitter.endsWith('twitter.com/')) {
+    sameAs.push(socials.twitter.trim());
+  }
+
+  const defaultSameAs = [
+    'https://www.facebook.com/faisalhills.official',
+    'https://www.instagram.com/faisalhills.official',
+    'https://www.youtube.com/@faisalhills'
+  ];
+
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
+    '@id': `${siteUrl}/#organization`,
     'name': 'Faisal Hills Real Estate Portal',
     'legalName': 'Zedem International (Pvt) Ltd - Faisal Hills',
     'url': siteUrl,
     'logo': `${siteUrl}/icon.svg`,
-    'image': `${siteUrl}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`,
-    'description': 'Official marketing & sales portal for Faisal Hills Rawalpindi / Taxila, an RDA-approved master-planned mega housing society on Main GT Road.',
-    'telephone': '+923331113177',
-    'email': 'info@faisalhillsislamabadfh.com',
+    'image': `${siteUrl}/images/faisal-hills-site-header.webp`,
+    'description': 'Official marketing and sales portal for Faisal Hills Rawalpindi / Taxila, an RDA-approved master-planned mega housing society on Main GT Road.',
+    'telephone': contact?.salesHotline || contact?.salesDesk || '+923331113177',
+    'email': contact?.email || 'info@faisalhillsislamabadfh.com',
     'address': {
       '@type': 'PostalAddress',
-      'streetAddress': 'Main GT Road, Near MPCHS Interchange',
+      'streetAddress': contact?.siteOffice || 'Main GT Road, Near MPCHS Interchange',
       'addressLocality': 'Taxila / Rawalpindi',
       'addressRegion': 'Punjab',
       'postalCode': '47050',
@@ -42,12 +82,7 @@ export function generateOrganizationSchema(siteUrl = 'https://faisalhillsislamab
       'latitude': '33.7431',
       'longitude': '72.7844'
     },
-    'sameAs': [
-      'https://facebook.com',
-      'https://instagram.com',
-      'https://youtube.com',
-      'https://linkedin.com'
-    ]
+    'sameAs': sameAs.length > 0 ? sameAs : defaultSameAs
   };
 }
 
@@ -55,11 +90,19 @@ export function generateWebSiteSchema(siteUrl = 'https://faisalhillsislamabadfh.
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
     'url': siteUrl,
-    'name': 'Faisal Hills Real Estate',
+    'name': 'Faisal Hills Real Estate Portal',
+    'description': 'Official portal for Faisal Hills Islamabad & Taxila plot bookings, master plans, and society updates.',
+    'publisher': {
+      '@id': `${siteUrl}/#organization`
+    },
     'potentialAction': {
       '@type': 'SearchAction',
-      'target': `${siteUrl}/plots?search={search_term_string}`,
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': `${siteUrl}/plots?q={search_term_string}`
+      },
       'query-input': 'required name=search_term_string'
     }
   };
@@ -97,7 +140,7 @@ export function generateArticleSchema(blog: {
     },
     'headline': blog.title,
     'description': blog.summary || blog.title,
-    'image': blog.imageUrl ? [blog.imageUrl] : [`${siteUrl}/images/faisal-roots-school.jpg`],
+    'image': blog.imageUrl ? [blog.imageUrl] : [`${siteUrl}/images/roots-international-school-faisal-hills.webp`],
     'author': {
       '@type': 'Person',
       'name': blog.author || 'Faisal Hills Real Estate Desk'
@@ -141,7 +184,7 @@ export function generateContactSchema(siteUrl = 'https://faisalhillsislamabadfh.
     'mainEntity': {
       '@type': 'RealEstateAgent',
       'name': 'Faisal Hills Islamabad Sales Desk',
-      'telephone': '+923313339997',
+      'telephone': '+923331113177',
       'email': 'info@faisalhillsislamabadfh.com',
       'address': {
         '@type': 'PostalAddress',

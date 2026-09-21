@@ -116,9 +116,9 @@ export default function StickyHorizontalBookingSteps() {
           <span className="label-caps text-[#7b002c] font-bold block">
             How to Book
           </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight leading-tight">
+          <p className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight leading-tight">
             A Simple 5-Step Booking Process
-          </h2>
+          </p>
           <p className="text-slate-600 text-xs leading-relaxed font-sans">
             We have designed the Faisal Hills Islamabad booking process to be straightforward and stress-free.
           </p>
@@ -151,9 +151,9 @@ export default function StickyHorizontalBookingSteps() {
                     <span className="text-[8px] sm:text-[9px] font-bold text-[#7b002c] uppercase tracking-wider block">
                       {step.stepTag}
                     </span>
-                    <h3 className="font-serif font-bold text-xs sm:text-sm text-slate-900 leading-snug">
+                    <p className="font-serif font-bold text-xs sm:text-sm text-slate-900 leading-snug">
                       {step.title}
-                    </h3>
+                    </p>
                   </div>
 
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-relaxed font-sans line-clamp-4 sm:line-clamp-none">

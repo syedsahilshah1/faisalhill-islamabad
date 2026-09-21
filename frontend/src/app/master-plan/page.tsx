@@ -10,15 +10,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('master-plan');
 
   const title = seo?.title || 'Faisal Hills Master Plan Map – High-Res Interactive Map';
-  const description = seo?.meta_description || 'Explore the official high-resolution Faisal Hills master plan map. Zoom up to 1200% into Block A, Block B, Block C, Block D, Executive Block & Prime Block roads, parks, and plots.';
+  const description = seo?.meta_description || 'Explore official high-resolution Faisal Hills master plan map. Zoom into Block A, B, C, D, Executive & Prime Block roads, parks & plots.';
   const canonical = seo?.canonical_url || `${BASE_URL}/master-plan`;
-  const ogImg = seo?.og_image || `${BASE_URL}/images/imgi_38_Faisal-Hills-site-home-page-header.webp`;
+  const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 
     ? seo.keywords.split(',').map((k: string) => k.trim()) 
     : ['Faisal Hills Master Plan', 'Faisal Hills Map', 'Faisal Hills High Resolution Map', 'Faisal Hills Executive Block Map', 'Faisal Hills Block A Map', 'Faisal Hills PDF Map'];
 
   return {
-    title: `${title} | Faisal Hills Real Estate`,
+    title: title,
     description: description,
     keywords: keywords,
     alternates: {

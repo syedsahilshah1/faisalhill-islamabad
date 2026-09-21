@@ -4,7 +4,8 @@ import './globals.css';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import { JsonLd, generateOrganizationSchema } from '@/components/seo/JsonLd';
+import { JsonLd, generateOrganizationSchema, generateWebSiteSchema } from '@/components/seo/JsonLd';
+import { fetchSettingByKey, SocialLinksData, ContactInfoData } from '@/data/faisalHillsData';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
@@ -24,9 +25,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: 'Faisal Hills Real Estate | Official Master Plan, Plots & Prices',
-    template: '%s | Faisal Hills Real Estate',
+    template: '%s',
   },
-  description: 'Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot map, NOC details, block prices, payment plans for Executive Block, Block A, B, C, D, Prime Block, Gandahara & Hills Walk.',
+  description: 'Explore Faisal Hills Islamabad & Taxila. Interactive plot maps, RDA NOC status, block prices, and flexible payment plans for residential & commercial plots.',
   keywords: ['Faisal Hills', 'Faisal Hills Taxila', 'Faisal Hills Rawalpindi', 'Executive Block Faisal Hills', 'Block A Faisal Hills', 'Block B Faisal Hills', 'Block C Faisal Hills', 'Prime Block Faisal Hills', 'Faisal Hills Plot Prices', 'Faisal Hills Map', 'Faisal Jewels Tower'],
   authors: [{ name: 'Faisal Hills Real Estate Portal' }],
   creator: 'Zedem International',
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
     description: 'Explore RDA-approved residential & commercial plot investments in Faisal Hills GT Road Taxila with interactive master map, block price rates, and online booking.',
     images: [
       {
-        url: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+        url: '/images/faisal-hills-site-header.webp',
         width: 1200,
         height: 630,
         alt: 'Faisal Hills Master Plan & Society Overview',
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Faisal Hills Real Estate | Official Master Plan, Plots & Prices',
     description: 'Explore RDA-approved residential & commercial plot investments in Faisal Hills GT Road Taxila.',
-    images: ['/images/imgi_38_Faisal-Hills-site-home-page-header.webp'],
+    images: ['/images/faisal-hills-site-header.webp'],
     creator: '@FaisalHillsPK',
   },
   verification: {
@@ -78,23 +79,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const organizationSchema = generateOrganizationSchema(BASE_URL);
-  const websiteSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    'name': 'Faisal Hills Real Estate Portal',
-    'url': BASE_URL,
-    'potentialAction': {
-      '@type': 'SearchAction',
-      'target': `${BASE_URL}/plots?q={search_term_string}`,
-      'query-input': 'required name=search_term_string'
-    }
-  };
+  const [socials, contact] = await Promise.all([
+    fetchSettingByKey<SocialLinksData>('social_links'),
+    fetchSettingByKey<ContactInfoData>('contact_info'),
+  ]);
+
+  const organizationSchema = generateOrganizationSchema(BASE_URL, socials, contact);
+  const websiteSchema = generateWebSiteSchema(BASE_URL);
 
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>

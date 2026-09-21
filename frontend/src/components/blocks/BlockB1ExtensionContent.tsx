@@ -169,31 +169,31 @@ const b1ExtensionAmenities = [
 
 const b1SliderImages = [
   {
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     title: 'Boulevard Road Network',
     sub: 'Active road leveling & infrastructure carpeting across B1 Extension',
     tag: 'Infrastructure'
   },
   {
-    image: '/images/faisal-forest.jpg',
+    image: '/images/faisal-hills-miyawaki-forest.webp',
     title: 'Margalla Hillside Panorama',
     sub: 'Serene foothill environment with fresh natural air and mountain contours',
     tag: 'Scenic Setting'
   },
   {
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     title: 'Community Jamia Mosque',
     sub: 'Dedicated sector mosque reservations with traditional Islamic architecture',
     tag: 'Community Life'
   },
   {
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     title: 'Sector Parks & Green Belts',
     sub: 'Dedicated family recreational grounds and children play areas',
     tag: 'Green Spaces'
   },
   {
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/hills-walk-commercial-aerial.webp',
     title: 'Highway & Sector Connectivity',
     sub: 'Seamless internal access linking Block B, Block A, and Block D',
     tag: 'Strategic Access'
@@ -421,7 +421,7 @@ export default function BlockB1ExtensionContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   <img
-                    src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                    src="/images/faisal-hills-drone-view.webp"
                     alt="Faisal Hills Block B1 Extension Sector Overview"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -542,7 +542,7 @@ export default function BlockB1ExtensionContent() {
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
                 <img
-                  src="/images/faisal-hills-master-plan-map.jpg"
+                  src="/images/faisal-hills-master-plan-map.webp"
                   alt="Faisal Hills B1 Extension Master Plan Layout"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />

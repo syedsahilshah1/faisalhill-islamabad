@@ -23,7 +23,7 @@ export default function MasterPlanViewer({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Image resolution state - direct load of full 9,900px blueprint
-  const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map.jpg');
+  const [imageSrc, setImageSrc] = useState('/images/faisal-hills-master-plan-map.webp');
   const [isHighResLoaded, setIsHighResLoaded] = useState(true);
   const [isHighResLoading, setIsHighResLoading] = useState(false);
 
@@ -37,9 +37,9 @@ export default function MasterPlanViewer({
     setIsHighResLoading(true);
 
     const img = new Image();
-    img.src = '/images/faisal-hills-master-plan-map.jpg';
+    img.src = '/images/faisal-hills-master-plan-map.webp';
     img.onload = () => {
-      setImageSrc('/images/faisal-hills-master-plan-map.jpg');
+      setImageSrc('/images/faisal-hills-master-plan-map.webp');
       setIsHighResLoaded(true);
       setIsHighResLoading(false);
     };

@@ -19,7 +19,7 @@ export default function PaymentPlanModal({
   isDownloadOpen,
   onCloseDownload,
   onOpenDownload,
-  imageSrc = '/images/faisal-hill-payment-plan.jpg'
+  imageSrc = '/images/faisal-hills-payment-plan-2026.webp'
 }: PaymentPlanModalProps) {
   // Download Form State
   const [name, setName] = useState('');

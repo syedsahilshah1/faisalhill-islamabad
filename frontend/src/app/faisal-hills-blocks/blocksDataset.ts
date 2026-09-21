@@ -37,7 +37,7 @@ export const allBlocksDataset: BlockDetailItem[] = [
       residential: "PKR 65 Lacs - 1.85 Crore",
       commercial: "PKR 2.2 Crore - 8.5 Crore"
     },
-    heroImage: "/images/faisalhillexecutive.webp",
+    heroImage: "/images/faisal-hills-executive-block.webp",
     badge: "Gateway Sector",
     description: "Directly on Main GT Road Taxila. Home to Faisal Jewel, civic centers, premium commercial plots, and Roots International School. Perfect for high-footfall business.",
     detailedCopy: "The Faisal Hills Executive Block is widely regarded as the most prestigious address within the society. Sitting directly on the Main GT Road, this block is home to the society's grand main entrance, which connects the entire development to the arterial road via Enayat Ullah Khan Avenue — a wide, tree-lined boulevard that sets the tone for the whole project. One of the defining landmarks of this block is Faisal Jewel, a prominent commercial and lifestyle development that adds significant value to the surrounding area. The block features a large civic and commercial centre, making it an attractive destination for businesses and investors seeking Faisal Hills commercial plots in a high-footfall location. For residents, the proximity to the GT Road Taxila location means effortless commutes to both Rawalpindi and Taxila city in minutes.",
@@ -65,7 +65,7 @@ export const allBlocksDataset: BlockDetailItem[] = [
       residential: "PKR 95 Lacs - 3.2 Crore",
       commercial: "PKR 3.5 Crore - 12 Crore"
     },
-    heroImage: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+    heroImage: "/images/faisal-hills-drone-view.webp",
     badge: "VIP Elevated Sector",
     description: "Premium residential sector featuring wider streets, elevated topography, private guards, and scenic hilltop vistas. Ideal for high-end residential villas.",
     detailedCopy: "As the name suggests, the Faisal Hills Prime Block is designed for buyers who want a premium living environment without compromise. This block offers an exclusive residential character, with wider plot streets, more generous open spaces, and a quieter atmosphere compared to the busier entrance-facing sectors. It is well-connected internally to the B Extension Block and D Block, making daily movement within the society seamless. Faisal Hills residential plots in the Prime Block appeal particularly to families looking for a peaceful neighbourhood that still benefits from all shared amenities — parks, mosques, schools, and commercial access — just a short walk or drive away.",
@@ -261,7 +261,7 @@ export const allBlocksDataset: BlockDetailItem[] = [
       residential: "Starting PKR 5.8 Lacs (Installments)",
       commercial: "PKR 1.8 Crore - 18 Crore"
     },
-    heroImage: "/faisal-jewel.jpg",
+    heroImage: "/faisal-jewel-building.webp",
     badge: "Mega High-Rise",
     description: "Rising 27 stories high at the Grand Boulevard of Executive Block. Featuring 350+ commercial shops, 4-star hotel, food court, and 250+ serviced apartments.",
     detailedCopy: "Faisal Jewel Islamabad is a landmark 27-story mixed-use skyscraper offering luxury apartments and commercial shops in Faisal Hills. Rising above the junction of GT Road and the M-1 Motorway, this iconic high-rise features premium residences, retail shops, and a 4-star hotel with panoramic Margalla views.",
@@ -289,7 +289,7 @@ export const allBlocksDataset: BlockDetailItem[] = [
       residential: "Executive Studio Suites",
       commercial: "PKR 2.5 Crore - 15 Crore"
     },
-    heroImage: "/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg",
+    heroImage: "/images/hills-walk-commercial-aerial.webp",
     badge: "Commercial Promenade",
     description: "Faisal Hills' premier open-air lifestyle commercial destination lined with top fashion brands, outdoor cafes, rooftop dining, and corporate plazas.",
     detailedCopy: "Hills Walk is Faisal Hills' signature commercial destination. Designed as a European-style open-air pedestrian promenade lined with luxury brands, rooftop restaurants, banks, and corporate towers, positioned strategically between Block A, B, and C.",

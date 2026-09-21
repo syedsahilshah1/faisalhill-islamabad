@@ -133,7 +133,7 @@ const primeGalleryItems = [
     title: 'Prime Block Grand Boulevards & Wide Paved Roads',
     category: 'infrastructure',
     tag: '225ft Main Boulevard',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     desc: 'Wide 225ft and 150ft carpeted road networks with modern streetscaping, LED lighting and green dividers.'
   },
   {
@@ -141,7 +141,7 @@ const primeGalleryItems = [
     title: 'Scenic Margalla Ridge Panoramic Crest Enclave',
     category: 'nature',
     tag: 'Margalla Views',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+    image: '/images/faisal-hills-aerial-panoramic.webp',
     desc: 'Breathtaking high-elevation vistas over the Margalla Hills and serene natural green topography.'
   },
   {
@@ -149,7 +149,7 @@ const primeGalleryItems = [
     title: 'Prime Block Community Park & Family Greens',
     category: 'infrastructure',
     tag: 'Family Parks',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     desc: 'Dedicated family park spaces with jogging tracks, children play zones, and manicured landscaping.'
   },
   {
@@ -157,7 +157,7 @@ const primeGalleryItems = [
     title: 'Commercial Plazas & High-End Retail Hubs',
     category: 'infrastructure',
     tag: 'Commercial Plazas',
-    image: '/images/faisal-jewel.jpg',
+    image: '/images/faisal-jewel-building.webp',
     desc: 'Ground+5 commercial plots positioned along main intersections, ideal for supermarkets and brand outlets.'
   },
   {
@@ -165,7 +165,7 @@ const primeGalleryItems = [
     title: 'Sports Grounds, Futsal Turf & Fitness Greens',
     category: 'infrastructure',
     tag: 'Sports & Wellness',
-    image: '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
+    image: '/images/hills-walk-commercial-aerial.webp',
     desc: 'Dedicated sports facilities for youth, outdoor workout fitness gyms, and badminton courts.'
   },
   {
@@ -173,7 +173,7 @@ const primeGalleryItems = [
     title: '24/7 Gated Security & Smart Surveillance Grid',
     category: 'infrastructure',
     tag: 'Safe Society',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     desc: 'Round-the-clock security checkpoints, motorized patrolling units, and full perimeter boundary walls.'
   },
   {
@@ -181,7 +181,7 @@ const primeGalleryItems = [
     title: 'Modern Educational Campuses & Schooling Zone',
     category: 'infrastructure',
     tag: 'Education Hub',
-    image: '/images/faisal-roots-school.jpg',
+    image: '/images/roots-international-school-faisal-hills.webp',
     desc: 'Allocated institutional plots for recognized school networks and international curriculum academies.'
   },
   {
@@ -189,7 +189,7 @@ const primeGalleryItems = [
     title: 'Grand Jamia Mosque & Neighborhood Prayer Halls',
     category: 'infrastructure',
     tag: 'Jamia Mosque',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     desc: 'Architecturally stunning air-conditioned Jamia Mosque with spacious ablution areas and Islamic center.'
   }
 ];
@@ -241,7 +241,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 6,90,000 (20%)',
     status: 'Available',
     badge: 'Near Park',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     features: ['Direct Walking Distance to Park', '100% Level Ground', '4-Year Installments']
   },
   {
@@ -256,7 +256,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 10,20,000 (20%)',
     status: 'Hot Deal',
     badge: 'Boulevard Front',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
+    image: '/images/faisal-hills-aerial-panoramic.webp',
     features: ['Wide 225ft Road Access', 'High Elevation Ridge View', 'Commercial Walkability']
   },
   {
@@ -271,7 +271,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 12,40,000 (20%)',
     status: 'Ready to Book',
     badge: 'Corner Plot',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     features: ['Double Corner Extra Land', 'Lush Green Belt View', 'Instant Allotment File']
   },
   {
@@ -286,7 +286,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 21,00,000 (20%)',
     status: 'Signature Plot',
     badge: 'VIP Ridge',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     features: ['Top-Tier Margalla Panorama', 'Private Cul-de-Sac Street', 'Gated VIP Security']
   },
   {
@@ -301,7 +301,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 39,00,000 (20%)',
     status: 'High ROI',
     badge: 'Commercial Hub',
-    image: '/images/faisal-jewel.jpg',
+    image: '/images/faisal-jewel-building.webp',
     features: ['Ground + 5 Commercial Height', '225ft Road Frontage', 'High Rental Footfall']
   },
   {
@@ -316,7 +316,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 53,00,000 (20%)',
     status: 'Prime Frontage',
     badge: 'Civic Core',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
+    image: '/images/faisal-hills-drone-view.webp',
     features: ['Central Civic Market Position', 'Dedicated Customer Parking', 'Ideal for Bank / Brand']
   },
   {
@@ -331,7 +331,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 62,00,000 (20%)',
     status: 'Corner Plot',
     badge: 'Double Corner',
-    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',
+    image: '/images/faisal-hills-site-header.webp',
     features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
   },
   {
@@ -346,7 +346,7 @@ const defaultPrimeSellingPlots = [
     downPayment: 'PKR 84,00,000 (20%)',
     status: 'Corporate File',
     badge: 'Mega Hub',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     features: ['Multi-Storey Brand Approval', 'Maximum Vehicle Visibility', 'Direct GT Road Link']
   }
 ];
@@ -414,14 +414,14 @@ export default function PrimeBlockContent() {
   };
 
   const defaultPrimePlotImages = [
-    '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg',
-    '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
-    '/images/faisalhillarc.jpg',
-    '/images/faisal-park.jpg',
-    '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg',
-    '/images/imgi_24_0001_Aerial_HW_Far-away_Final-copy-scaled.jpg',
-    '/images/faisal-jewel.jpg',
-    '/images/faisal-roots-school.jpg'
+    '/images/faisal-hills-drone-view.webp',
+    '/images/faisal-hills-aerial-panoramic.webp',
+    '/images/faisal-hills-arc-gate.webp',
+    '/images/faisal-hills-glow-park.webp',
+    '/images/faisal-hills-aerial-panoramic.webp',
+    '/images/hills-walk-commercial-aerial.webp',
+    '/images/faisal-jewel-building.webp',
+    '/images/roots-international-school-faisal-hills.webp'
   ];
 
   const primePlots = useMemo(() => {
@@ -533,7 +533,7 @@ export default function PrimeBlockContent() {
               <ScrollReveal direction="right" delay={80} className="w-full flex-1">
                 <div className="relative min-h-[300px] lg:min-h-[360px] w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-lg group">
                   <img
-                    src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                    src="/images/faisal-hills-drone-view.webp"
                     alt="Faisal Hills Prime Block On-Ground Development"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -655,7 +655,7 @@ export default function PrimeBlockContent() {
               >
                 <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl">
                   <img
-                    src="/images/faisal-hills-master-plan-map.jpg"
+                    src="/images/faisal-hills-master-plan-map.webp"
                     alt="Faisal Hills Prime Block Master Plan Layout"
                     className="w-full h-auto max-h-[420px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -798,7 +798,7 @@ export default function PrimeBlockContent() {
               title="Click to Open Fullscreen & Zoom Payment Plan"
             >
               <img
-                src="/images/faisal-hill-payment-plan.jpg"
+                src="/images/faisal-hills-payment-plan-2026.webp"
                 alt="Faisal Hills Prime Block Official Payment Plan Schedule & Rates"
                 className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"
               />
@@ -1006,7 +1006,7 @@ export default function PrimeBlockContent() {
               <span>WhatsApp Resale Desk</span>
             </a>
             <a
-              href="tel:+923313339997"
+              href="tel:+923331113177"
               className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
             >
               <span>Direct Call Support</span>
@@ -1262,7 +1262,7 @@ export default function PrimeBlockContent() {
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
                 <div className="relative w-full h-full min-h-[320px] sm:min-h-[380px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                   <img
-                    src="/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg"
+                    src="/images/faisal-hills-aerial-panoramic.webp"
                     alt="Faisal Hills Prime Block On-Ground Development Status & Aerial View"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />
@@ -1630,7 +1630,7 @@ export default function PrimeBlockContent() {
         isDownloadOpen={isPaymentPlanDownloadOpen}
         onCloseDownload={() => setIsPaymentPlanDownloadOpen(false)}
         onOpenDownload={() => setIsPaymentPlanDownloadOpen(true)}
-        imageSrc="/images/faisal-hill-payment-plan.jpg"
+        imageSrc="/images/faisal-hills-payment-plan-2026.webp"
       />
 
       {/* Map Download & Full Screen Modal */}
@@ -1638,7 +1638,7 @@ export default function PrimeBlockContent() {
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
         blockName="Prime Block"
-        mapImageUrl="/images/faisal-hills-master-plan-map.jpg"
+        mapImageUrl="/images/faisal-hills-master-plan-map.webp"
       />
 
     </div>

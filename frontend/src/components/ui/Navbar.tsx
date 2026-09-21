@@ -151,26 +151,37 @@ export default function Navbar() {
         >
 
           {/* LEFT: Desktop Navigation Links & Mobile Quick Call Button */}
-          <div className="flex items-center justify-start xl:justify-evenly flex-1 shrink-0">
-            {/* Desktop Nav: About Us, Master Plan, Faisal Hills Blocks */}
-            <nav className="hidden xl:flex items-center justify-around w-full px-2 lg:px-4 shrink-0 whitespace-nowrap">
+          <div className="flex items-center justify-start xl:justify-end flex-1 shrink-0">
+            {/* Desktop Nav: About Us, Master Plan, Faisal Hills Blocks with equal spacing */}
+            <nav className="hidden xl:flex items-center justify-end gap-5 2xl:gap-7 px-2 shrink-0 whitespace-nowrap">
 
               {/* About Us */}
               <Link
                 href="/about-us"
-                className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${pathname === '/about-us'
-                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors py-1.5 px-2 relative whitespace-nowrap ${pathname === '/about-us'
+                  ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
                 <span>About Us</span>
               </Link>
 
+              {/* NOC Status */}
+              <Link
+                href="/faisal-hills-noc-status"
+                className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors py-1.5 px-2 relative whitespace-nowrap ${pathname === '/faisal-hills-noc-status'
+                  ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
+                  : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
+                  }`}
+              >
+                <span>NOC Status</span>
+              </Link>
+
               {/* Master Plan Map */}
               <Link
                 href="/master-plan"
-                className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${pathname === '/master-plan'
-                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors py-1.5 px-2 relative whitespace-nowrap ${pathname === '/master-plan'
+                  ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
@@ -186,8 +197,8 @@ export default function Navbar() {
                 <Link
                   href="/faisal-hills-blocks"
                   onClick={() => setBlocksDropdownOpen(false)}
-                  className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap ${pathname.startsWith('/blocks') || pathname === '/faisal-hills-blocks'
-                    ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors flex items-center gap-1.5 py-1.5 px-2 whitespace-nowrap ${pathname.startsWith('/blocks') || pathname === '/faisal-hills-blocks'
+                    ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                     : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                     }`}
                 >
@@ -232,29 +243,31 @@ export default function Navbar() {
 
                         <div className="space-y-1 max-h-[290px] overflow-y-auto pr-1">
                           {blocksData.filter(b => b.category === 'developed').map((block) => (
-                            <Link
+                            <div
                               key={block.id}
-                              href={`/blocks/${block.slug}`}
-                              onClick={() => setBlocksDropdownOpen(false)}
-                              className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
+                              className="relative group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs cursor-pointer"
                             >
-                              <div className="w-8 h-8 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                              <div aria-hidden="true" className="w-8 h-8 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
                                 {block.name.replace('Block ', '').charAt(0)}
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
+                                  <Link
+                                    href={`/blocks/${block.slug}`}
+                                    onClick={() => setBlocksDropdownOpen(false)}
+                                    className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate after:absolute after:inset-0 after:content-['']"
+                                  >
                                     {block.name}
-                                  </span>
-                                  <span className="text-[9px] text-slate-500 group-hover/item:text-white/80 shrink-0 font-medium">
+                                  </Link>
+                                  <span className="text-[9px] text-slate-500 group-hover/item:text-white/80 shrink-0 font-medium pointer-events-none z-10">
                                     {block.status || 'Ready'}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
+                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5 pointer-events-none">
                                   {block.subtitle || 'Residential & Commercial Plots'}
                                 </p>
                               </div>
-                            </Link>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -272,29 +285,31 @@ export default function Navbar() {
 
                         <div className="space-y-1 max-h-[290px] overflow-y-auto pr-1">
                           {blocksData.filter(b => b.category !== 'developed').map((block) => (
-                            <Link
+                            <div
                               key={block.id}
-                              href={`/blocks/${block.slug}`}
-                              onClick={() => setBlocksDropdownOpen(false)}
-                              className="group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs"
+                              className="relative group/item flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 hover:translate-x-1 shadow-xs cursor-pointer"
                             >
-                              <div className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                              <div aria-hidden="true" className="w-8 h-8 rounded-xl bg-amber-500/10 group-hover/item:bg-white text-amber-600 group-hover/item:text-[#7b002c] font-bold text-xs flex items-center justify-center shrink-0 transition-colors shadow-xs">
                                 <Sparkles className="w-4 h-4" />
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate">
+                                  <Link
+                                    href={`/blocks/${block.slug}`}
+                                    onClick={() => setBlocksDropdownOpen(false)}
+                                    className="text-xs font-bold text-slate-900 group-hover/item:text-white transition-colors truncate after:absolute after:inset-0 after:content-['']"
+                                  >
                                     {block.name}
-                                  </span>
-                                  <span className="text-[9px] bg-amber-100 text-amber-800 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0">
+                                  </Link>
+                                  <span className="text-[9px] bg-amber-100 text-amber-800 group-hover/item:bg-white/20 group-hover/item:text-white px-2 py-0.5 rounded-full font-semibold shrink-0 pointer-events-none z-10">
                                     {block.category === 'upcoming' ? 'Upcoming' : 'Commercial'}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5">
+                                <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate mt-0.5 pointer-events-none">
                                   {block.subtitle || 'Prime Real Estate Investment'}
                                 </p>
                               </div>
-                            </Link>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -333,16 +348,17 @@ export default function Navbar() {
                 ? 'text-[#7b002c] bg-slate-100 hover:bg-slate-200 border border-slate-200'
                 : 'text-white bg-white/10 hover:bg-white/20 border border-white/20'
                 }`}
-              aria-label="Call Sales Desk"
+              aria-label={`Call Sales Desk: ${contact.salesHotline || '+92 333 1113177'}`}
               title={`Call ${contact.salesHotline || '+92 333 1113177'}`}
             >
               <Phone className="w-4 h-4 text-inherit" />
+              <span className="sr-only">Call Sales Desk</span>
             </a>
           </div>
 
           {/* CENTER: Official FAISALTOWN GROUP FT Emblem */}
-          <div className="flex items-center justify-center shrink-0 px-3 sm:px-5 lg:px-6 py-1">
-            <Link href="/" className="flex items-center justify-center group shrink-0" aria-label="Faisal Hills Homepage">
+          <div className="flex items-center justify-center shrink-0 px-3 sm:px-6 lg:px-8 py-1">
+            <Link href="/" className="flex items-center justify-center group shrink-0" aria-label="Faisal Hills Islamabad Home">
               <img
                 src="/images/faisal-town-logo.webp"
                 alt="Faisal Town Group"
@@ -354,13 +370,14 @@ export default function Navbar() {
                     : 'h-11 sm:h-13 lg:h-14 xl:h-17 brightness-0 invert'
                 }`}
               />
+              <span className="sr-only">Faisal Hills Islamabad</span>
             </Link>
           </div>
 
           {/* RIGHT: Desktop Navigation Links + Compact Hotline Pill & Mobile Hamburger */}
-          <div className="flex items-center justify-end xl:justify-evenly flex-1 shrink-0">
-            {/* Desktop Right Links */}
-            <div className="hidden xl:flex items-center justify-around w-full px-2 lg:px-4 shrink-0 whitespace-nowrap">
+          <div className="flex items-center justify-end xl:justify-start flex-1 shrink-0">
+            {/* Desktop Right Links with equal spacing */}
+            <div className="hidden xl:flex items-center justify-start gap-5 2xl:gap-7 px-2 shrink-0 whitespace-nowrap">
 
               {/* Highrise Dropdown */}
               <div
@@ -371,8 +388,8 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setHighriseDropdownOpen(!highriseDropdownOpen)}
-                  className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors flex items-center gap-1.5 py-1 whitespace-nowrap cursor-pointer ${pathname === '/blocks/faisal-jewel-islamabad'
-                    ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                  className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors flex items-center gap-1.5 py-1.5 px-2 whitespace-nowrap cursor-pointer ${pathname === '/blocks/faisal-jewel-islamabad'
+                    ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                     : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                     }`}
                 >
@@ -387,41 +404,41 @@ export default function Navbar() {
                         Highrise Projects
                       </span>
                     </div>
-                    <Link
-                      href="/blocks/faisal-jewel-islamabad"
-                      onClick={() => setHighriseDropdownOpen(false)}
-                      className="group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 shadow-xs"
-                    >
+                    <div className="relative group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 shadow-xs cursor-pointer">
                       <div className="w-9 h-9 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] flex items-center justify-center shrink-0 transition-colors">
                         <Building2 className="w-5 h-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <span className="text-xs font-bold text-slate-900 group-hover/item:text-white block">
+                        <Link
+                          href="/blocks/faisal-jewel-islamabad"
+                          onClick={() => setHighriseDropdownOpen(false)}
+                          className="text-xs font-bold text-slate-900 group-hover/item:text-white block after:absolute after:inset-0 after:content-['']"
+                        >
                           Faisal Jewel Tower
-                        </span>
-                        <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate leading-tight mt-0.5">
+                        </Link>
+                        <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate leading-tight mt-0.5 pointer-events-none">
                           27-Story Ultra-Luxury High-Rise
                         </p>
                       </div>
-                    </Link>
+                    </div>
 
-                    <Link
-                      href="/blocks/hills-walk"
-                      onClick={() => setHighriseDropdownOpen(false)}
-                      className="group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 shadow-xs"
-                    >
+                    <div className="relative group/item flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-[#7b002c] border border-slate-200/80 hover:border-[#7b002c] transition-all duration-300 shadow-xs cursor-pointer">
                       <div className="w-9 h-9 rounded-xl bg-[#7b002c]/10 group-hover/item:bg-white text-[#7b002c] group-hover/item:text-[#7b002c] flex items-center justify-center shrink-0 transition-colors">
                         <Store className="w-5 h-5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <span className="text-xs font-bold text-slate-900 group-hover/item:text-white block">
+                        <Link
+                          href="/blocks/hills-walk"
+                          onClick={() => setHighriseDropdownOpen(false)}
+                          className="text-xs font-bold text-slate-900 group-hover/item:text-white block after:absolute after:inset-0 after:content-['']"
+                        >
                           Hills Walk
-                        </span>
-                        <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate leading-tight mt-0.5">
+                        </Link>
+                        <p className="text-[10px] text-slate-500 group-hover/item:text-white/80 truncate leading-tight mt-0.5 pointer-events-none">
                           Commercial Promenade & Dining
                         </p>
                       </div>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -429,8 +446,8 @@ export default function Navbar() {
               {/* Commercial */}
               <Link
                 href="/faisal-hills-commercial"
-                className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${pathname === '/faisal-hills-commercial'
-                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors py-1.5 px-2 relative whitespace-nowrap ${pathname === '/faisal-hills-commercial'
+                  ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
@@ -440,31 +457,31 @@ export default function Navbar() {
               {/* Payment Plans */}
               <Link
                 href="/faisal-hills-payment-plan"
-                className={`text-xs xl:text-[13px] 2xl:text-sm font-bold transition-colors py-1 relative whitespace-nowrap ${pathname === '/faisal-hills-payment-plan'
-                  ? (isSolidNav ? 'text-[#7b002c]' : 'text-white font-extrabold')
+                className={`text-[13px] 2xl:text-[14px] font-semibold transition-colors py-1.5 px-2 relative whitespace-nowrap ${pathname === '/faisal-hills-payment-plan'
+                  ? (isSolidNav ? 'text-[#7b002c] font-bold' : 'text-white font-bold')
                   : (isSolidNav ? 'text-slate-800 hover:text-[#7b002c]' : 'text-white/90 hover:text-white')
                   }`}
               >
                 <span>Payment Plans</span>
               </Link>
 
-              {/* Action Button - Compact Sleek Calling Pill */}
+              {/* Action Button - Premium CTA Pill */}
               <a
                 href={formatTelUrl(contact.salesHotline)}
-                className={`inline-flex items-center gap-1.5 pl-1.5 pr-3.5 py-1 text-xs font-bold rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ${isSolidNav
+                className={`inline-flex items-center gap-2 pl-2 pr-4 py-1.5 text-xs 2xl:text-[13px] font-bold rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ml-1 ${isSolidNav
                   ? 'bg-[#7b002c] hover:bg-[#9e1245] text-white'
-                  : 'bg-[#7b002c] hover:bg-[#9e1245] text-white border border-white/10'
+                  : 'bg-[#7b002c] hover:bg-[#9e1245] text-white border border-white/20'
                   }`}
                 title={`Call Helpline: ${contact.salesHotline || '+92 333 1113177'}`}
               >
                 <Image
-                  src="/images/girl-headphone-support.png"
+                  src="/images/faisal-hills-customer-support.webp"
                   alt="Customer Support"
-                  width={20}
-                  height={20}
-                  className="w-5 h-5 rounded-full object-cover shrink-0"
+                  width={22}
+                  height={22}
+                  className="w-5 h-5 rounded-full object-cover shrink-0 ring-1 ring-white/40"
                 />
-                <span>{contact.salesHotline || '+92 333 1113177'}</span>
+                <span className="tracking-wide">{contact.salesHotline || '+92 333 1113177'}</span>
               </a>
             </div>
 
@@ -496,12 +513,13 @@ export default function Navbar() {
 
             {/* Drawer Top Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
-              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center py-1">
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} aria-label="Faisal Hills Islamabad Home" className="flex items-center py-1">
                 <img
-                  src="/images/imgi_10_LogosIn500x150Px-01-2048x615.png"
+                  src="/images/faisal-town-group-logo.webp"
                   alt="Faisal Town Group"
                   className="h-13 sm:h-15 w-auto object-contain"
                 />
+                <span className="sr-only">Faisal Hills Islamabad</span>
               </Link>
 
               <button
@@ -526,6 +544,15 @@ export default function Navbar() {
                 <span className="text-xs text-slate-400 font-bold">→</span>
               </Link>
 
+              <Link
+                href="/faisal-hills-noc-status"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-bold py-3 px-4 rounded-xl text-slate-800 hover:bg-rose-50 hover:text-[#7b002c] transition-colors"
+              >
+                <span>NOC Status</span>
+                <span className="text-xs text-slate-400 font-bold">→</span>
+              </Link>
+
               {/* Blocks Collapsible */}
               <div>
                 <button
@@ -547,15 +574,19 @@ export default function Navbar() {
                       Explore All Blocks Overview →
                     </Link>
                     {blocksData.map((block) => (
-                      <Link
+                      <div
                         key={block.id}
-                        href={`/blocks/${block.slug}`}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors"
+                        className="relative flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors cursor-pointer"
                       >
-                        <span>{block.name}</span>
-                        <span className="text-[10px] text-slate-400 font-semibold">{block.status}</span>
-                      </Link>
+                        <Link
+                          href={`/blocks/${block.slug}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="after:absolute after:inset-0 after:content-[''] font-semibold text-slate-800 hover:text-[#7b002c]"
+                        >
+                          {block.name}
+                        </Link>
+                        <span className="text-[10px] text-slate-400 font-semibold pointer-events-none z-10">{block.status}</span>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -574,22 +605,26 @@ export default function Navbar() {
 
                 {mobileHighriseOpen && (
                   <div className="pl-3 py-2 space-y-1 bg-slate-50 rounded-2xl my-1 border border-slate-200/80">
-                    <Link
-                      href="/blocks/faisal-jewel-islamabad"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors"
-                    >
-                      <span className="font-bold text-[#7b002c]">Faisal Jewel Tower</span>
-                      <span className="text-[10px] text-slate-500">27-Story High-Rise</span>
-                    </Link>
-                    <Link
-                      href="/blocks/hills-walk"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors border-t border-slate-100"
-                    >
-                      <span className="font-bold text-[#7b002c]">Hills Walk</span>
-                      <span className="text-[10px] text-slate-500">Commercial Promenade</span>
-                    </Link>
+                    <div className="relative flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors cursor-pointer">
+                      <Link
+                        href="/blocks/faisal-jewel-islamabad"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="after:absolute after:inset-0 after:content-[''] font-bold text-[#7b002c]"
+                      >
+                        Faisal Jewel Tower
+                      </Link>
+                      <span className="text-[10px] text-slate-500 pointer-events-none z-10">27-Story High-Rise</span>
+                    </div>
+                    <div className="relative flex items-center justify-between text-xs font-medium text-slate-700 py-2 px-3 hover:text-[#7b002c] rounded-xl hover:bg-white transition-colors border-t border-slate-100 cursor-pointer">
+                      <Link
+                        href="/blocks/hills-walk"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="after:absolute after:inset-0 after:content-[''] font-bold text-[#7b002c]"
+                      >
+                        Hills Walk
+                      </Link>
+                      <span className="text-[10px] text-slate-500 pointer-events-none z-10">Commercial Promenade</span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -638,7 +673,7 @@ export default function Navbar() {
                 className="py-3 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
               >
                 <Image
-                  src="/images/girl-headphone-support.png"
+                  src="/images/faisal-hills-customer-support.webp"
                   alt="Support"
                   width={24}
                   height={24}

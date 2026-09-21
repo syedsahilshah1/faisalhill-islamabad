@@ -200,8 +200,8 @@ export default function InteractiveMasterPlan({
 
   React.useEffect(() => {
     const img = new Image();
-    img.src = '/images/faisal-hills-master-plan-map.jpg';
-    img.onload = () => setMapImageSrc('/images/faisal-hills-master-plan-map.jpg');
+    img.src = '/images/faisal-hills-master-plan-map.webp';
+    img.onload = () => setMapImageSrc('/images/faisal-hills-master-plan-map.webp');
   }, []);
 
   const handleWheel = (e: React.WheelEvent) => {

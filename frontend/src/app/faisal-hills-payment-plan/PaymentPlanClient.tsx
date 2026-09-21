@@ -188,7 +188,7 @@ export default function PaymentPlanClient() {
       <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/imgi_38_Faisal-Hills-site-home-page-header.webp')` }}
+          style={{ backgroundImage: `url('/images/faisal-hills-site-header.webp')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
@@ -462,7 +462,7 @@ export default function PaymentPlanClient() {
               <div className="relative w-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 group">
                 <div className="relative h-80 sm:h-96 w-full">
                   <img
-                    src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                    src="/images/faisal-hills-drone-view.webp"
                     alt="Faisal Hills Master Development and Infrastructure Overview"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     loading="lazy"
@@ -624,7 +624,7 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 119,800",
               cashPrice: "PKR 4,792,000",
               savings: "Save PKR 1,198,000",
-              image: "/images/imgi_44_Executive-Block.webp",
+              image: "/images/faisal-hills-executive-sector.webp",
               badge: "Most Requested Size",
               badgeColor: "bg-[#7b002c]",
               desc: "The 5 Marla payment plan is the most requested option in the society, and for good reason. At a total plot price of PKR 5,990,000, you book with a down payment of PKR 1,198,000, add a confirmation amount of PKR 599,000, then carry ten quarterly installments of PKR 359,400. That works out to a monthly installment equivalent of roughly PKR 119,800, which sits inside the budget of a dual-income household in the twin cities.",
@@ -640,7 +640,7 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 169,400",
               cashPrice: "PKR 6,776,000",
               savings: "Save PKR 1,694,000",
-              image: "/images/faisalarc (2).webp",
+              image: "/images/faisal-hills-arc-monument-2.webp",
               badge: "Sweet Spot Family Plot",
               badgeColor: "bg-[#7b002c]",
               desc: "The 8 Marla payment plan covers a 30 x 60 plot at a total price of PKR 8,470,000. The booking amount is PKR 1,694,000, followed by a confirmation amount of PKR 847,000 and ten quarterly installments of PKR 508,200. Monthly equivalent: approximately PKR 169,400.",
@@ -656,7 +656,7 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 223,400",
               cashPrice: "PKR 8,936,000",
               savings: "Save PKR 2,234,000",
-              image: "/images/faisalarc (3).jpg",
+              image: "/images/faisal-hills-arc-view.webp",
               badge: "Classic Twin-Cities Standard",
               badgeColor: "bg-[#7b002c]",
               desc: "The 10 Marla payment plan applies to a 35 x 70 plot at PKR 11,170,000 total. Down payment is PKR 2,234,000, confirmation is PKR 1,117,000, and the quarterly installment is PKR 670,200, or roughly PKR 223,400 per month.",
@@ -672,7 +672,7 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 291,000",
               cashPrice: "PKR 11,640,000",
               savings: "Save PKR 2,910,000",
-              image: "/images/faisal-park.jpg",
+              image: "/images/faisal-hills-glow-park.webp",
               badge: "Scarcity & High Value",
               badgeColor: "bg-[#7b002c]",
               desc: "The 14 Marla payment plan sits at a total plot price of PKR 14,550,000 for a 40 x 80 plot. Expect a down payment of PKR 2,910,000, a confirmation amount of PKR 1,455,000, and ten quarterly installments of PKR 873,000.",
@@ -688,11 +688,11 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 385,800",
               cashPrice: "PKR 15,432,000",
               savings: "Save PKR 3,858,000",
-              image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+              image: "/images/faisal-hills-drone-view.webp",
               badge: "Luxury Estate Benchmark",
               badgeColor: "bg-[#7b002c]",
               desc: "The 1 Kanal payment plan covers a 50 x 90 plot at PKR 19,290,000. Booking requires PKR 3,858,000, confirmation PKR 1,929,000, and ten quarterly installments of PKR 1,157,400, with a monthly installment equivalent near PKR 385,800.",
-              bestSuited: "Best suited to: luxury home builders seeking direct Margalla views and elevated prestige at a fraction of Islamabad CDA sector rates."
+              bestSuited: "Best suited to: luxury home builders seeking direct Margalla views and elevated prestige at a fraction of central Islamabad plot rates."
             },
             {
               size: "2 Kanal Plot Payment Plan",
@@ -704,7 +704,7 @@ export default function PaymentPlanClient() {
               monthlyEquiv: "PKR 747,200",
               cashPrice: "PKR 29,888,000",
               savings: "Save PKR 7,472,000",
-              image: "/images/imgi_38_Faisal-Hills-site-home-page-header.webp",
+              image: "/images/faisal-hills-site-header.webp",
               badge: "Palatial Farmhouse Tier",
               badgeColor: "bg-[#7b002c]",
               desc: "The 2 Kanal payment plan is the premium tier at PKR 37,360,000 for a 75 x 120 plot. Down payment lands at PKR 7,472,000, confirmation at PKR 3,736,000, and quarterly installments at PKR 2,241,600.",
@@ -815,7 +815,7 @@ export default function PaymentPlanClient() {
             {
               name: "Executive Block",
               slug: "executive-block",
-              image: "/images/imgi_44_Executive-Block.webp",
+              image: "/images/faisal-hills-executive-sector.webp",
               desc: "The Executive Block is the most developed and prestigious sector, fronting directly onto GT Road with 100% on-ground possession, operational commercial plazas, and ready villas.",
               status: "Mostly Resale (Cash Route)",
               badge: "Possession Ready",
@@ -824,7 +824,7 @@ export default function PaymentPlanClient() {
             {
               name: "Prime Block",
               slug: "prime-block",
-              image: "/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg",
+              image: "/images/faisal-hills-drone-view.webp",
               desc: "The Prime Block is the flagship residential sector positioned at the main entrance near Taxila Chowk with a 225-foot boulevard, underground electricity, and active installment bookings.",
               status: "Installments Available on Bookings",
               badge: "4-Year Plan Open",
@@ -833,7 +833,7 @@ export default function PaymentPlanClient() {
             {
               name: "Block A",
               slug: "block-a",
-              image: "/images/imgi_46_Mosques.webp",
+              image: "/images/faisal-hills-jamia-mosque.webp",
               desc: "Block A is the largest populated block with over 8,000 plots, Grand Jamia Mosque, Roots International School, Business Etihad Center, and fully completed carpeted roads.",
               status: "Possession Granted (Cash Resale)",
               badge: "Families Settled",
@@ -842,7 +842,7 @@ export default function PaymentPlanClient() {
             {
               name: "Block B",
               slug: "block-b",
-              image: "/images/faisal-park.jpg",
+              image: "/images/faisal-hills-glow-park.webp",
               desc: "Block B offers direct panoramic Margalla Hills views in a tranquil, eco-friendly setting between Block A and Block C, priced competitively with substantial capital appreciation.",
               status: "Calm Setting & Scenic Views",
               badge: "Margalla Views",
@@ -851,7 +851,7 @@ export default function PaymentPlanClient() {
             {
               name: "B Extension",
               slug: "block-b1-extension",
-              image: "/images/faisalarc (1).webp",
+              image: "/images/faisal-hills-arc-monument.webp",
               desc: "B Extension is one of the most accessible entry points into Faisal Hills, featuring its own community park, mosque, and seamless connectivity with Block B and Prime Block.",
               status: "Lowest Down Payment Options",
               badge: "Budget Friendly",
@@ -860,7 +860,7 @@ export default function PaymentPlanClient() {
             {
               name: "Block C",
               slug: "block-c",
-              image: "/images/faisal-forest.jpg",
+              image: "/images/faisal-hills-miyawaki-forest.webp",
               desc: "Block C is a powerhouse sector with over 8,300 residential plots and 800+ commercial plots, operational Echo petrol station, Miyawaki Forest, and upcoming direct CPEC access.",
               status: "M-1 & CPEC Connectivity potential",
               badge: "800+ Commercials",
@@ -869,7 +869,7 @@ export default function PaymentPlanClient() {
             {
               name: "Block D",
               slug: "block-d",
-              image: "/images/imgi_48_sports-arena.webp",
+              image: "/images/faisal-hills-sports-arena.webp",
               desc: "Block D is the latest delivered possession sector featuring over 2,400 plots, 100ft central avenues, 40ft streets, underground utilities, and active family home construction.",
               status: "Possession Ready / Mixed Routes",
               badge: "Possession Delivered",

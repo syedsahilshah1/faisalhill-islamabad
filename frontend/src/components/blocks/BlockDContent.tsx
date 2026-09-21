@@ -150,7 +150,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 78, y: 55 },
     features: ['Solid Ground Land', 'Near Central Park', 'Fast Developing Sector'],
     description: 'Affordable 5 Marla residential plot in Faisal Hills Block D, offering excellent value near community green spaces.',
-    image: '/images/imgi_5_Rectangle-1-1-scaled-e1766059628733.png'
+    image: '/images/faisal-hills-executive-boulevard.webp'
   },
   {
     id: 'plot-d-02',
@@ -168,7 +168,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 80, y: 58 },
     features: ['50ft Sector Boulevard', 'Near Sector Jamia Mosque', 'Underground Electricity'],
     description: 'Family-size 8 Marla plot along the 50ft wide avenue in Block D with completed utilities and open mountain air.',
-    image: '/images/imgi_27_Rectangle-1-scaled.png'
+    image: '/images/faisal-hills-monument-entrance.webp'
   },
   {
     id: 'plot-d-03',
@@ -186,7 +186,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 82, y: 62 },
     features: ['Corner Plot', 'Scenic Mountain Backdrop', 'Direct Allotment File'],
     description: 'Scenic 10 Marla corner plot ideal for double-unit luxury construction, with open views of Margalla range.',
-    image: '/images/imgi_44_Executive-Block.webp'
+    image: '/images/faisal-hills-executive-sector.webp'
   },
   {
     id: 'plot-d-04',
@@ -204,7 +204,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 84, y: 65 },
     features: ['Executive Estate Cut', 'Near Healthcare Zone', 'Immediate Transfer'],
     description: 'Spacious 14 Marla executive plot cut on a 60ft avenue, minutes from the proposed medical and education complex.',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+    image: '/images/faisal-hills-aerial-panoramic.webp'
   },
   {
     id: 'plot-d-05',
@@ -222,7 +222,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 86, y: 68 },
     features: ['Direct Park Facing', 'Mansion Zoning', 'Zero Litigation Risk'],
     description: 'Premium 1 Kanal mansion plot directly overlooking central green reservations in Faisal Hills Block D.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/faisal-hills-drone-view.webp'
   },
   {
     id: 'plot-d-06',
@@ -240,7 +240,7 @@ const defaultBlockDPlots: PlotItem[] = [
     mapCoords: { x: 88, y: 70 },
     features: ['Sector Commercial Strip', 'Ground + 4 Storey Approval', 'High ROI Catchment'],
     description: 'Prime 4 Marla commercial plot in Sector D commercial zone, approved for multi-storey retail, grocery, and clinic development.',
-    image: '/images/faisalarc (3).jpg'
+    image: '/images/faisal-hills-arc-view.webp'
   }
 ];
 
@@ -251,7 +251,7 @@ const blockDAmenities = [
     title: 'Lush Sector Parks & Scenic Margalla Trails',
     category: 'nature',
     description: 'Block D is surrounded by open green belts, botanical family parks, and walking tracks designed to offer fresh mountain air and serene living for residents.',
-    image: '/images/faisal-park.jpg',
+    image: '/images/faisal-hills-glow-park.webp',
     tag: 'Eco-Living Feature',
     features: ['Family Botanical Parks', 'Jogging & Walking Trails', 'Lush Green Belts', 'Eco-Conscious Zoning']
   },
@@ -260,7 +260,7 @@ const blockDAmenities = [
     title: 'Sector D Multi-Purpose Community Center',
     category: 'lifestyle',
     description: 'Dedicated modern social hub featuring banquet facilities, indoor recreation halls, senior citizen lounges, and executive meeting rooms for neighborhood residents.',
-    image: '/images/faisalarc (2).webp',
+    image: '/images/faisal-hills-arc-monument-2.webp',
     tag: 'Community Anchor',
     features: ['Banquet & Event Halls', 'Indoor Games Arena', 'Senior Citizen Lounge', 'Resident Meeting Suites']
   },
@@ -269,7 +269,7 @@ const blockDAmenities = [
     title: 'Grand Sector D Jamia Mosque',
     category: 'infrastructure',
     description: 'Modern Islamic architectural landmark designed for 2,500 worshippers, complete with air-conditioned prayer halls, expansive marble courtyards, and Quranic academy.',
-    image: '/images/imgi_46_Mosques.webp',
+    image: '/images/faisal-hills-jamia-mosque.webp',
     tag: 'Delivered Landmark',
     features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
   },
@@ -278,7 +278,7 @@ const blockDAmenities = [
     title: 'Proposed Medical City & Healthcare Complex',
     category: 'utilities',
     description: 'Zoned high-capacity healthcare district designed to house multi-specialty hospitals, 24/7 trauma emergency care, diagnostic laboratories, and pharmacy hubs.',
-    image: '/images/imgi_49_Medical-xomplex.webp',
+    image: '/images/faisal-hills-medical-complex.webp',
     tag: 'Healthcare Hub',
     features: ['24/7 Emergency Trauma Care', 'Specialist Clinics', 'Diagnostic Pathology Labs', 'Pharmacies & Medical Supplies']
   },
@@ -287,7 +287,7 @@ const blockDAmenities = [
     title: '100% Underground Electrification & Wide Grid',
     category: 'utilities',
     description: 'Subterranean power distribution ensuring completely unobstructed skyline vistas, modern street lighting poles, and storm water conduits.',
-    image: '/images/imgi_44_Executive-Block.webp',
+    image: '/images/faisal-hills-executive-sector.webp',
     tag: 'Smart Infrastructure',
     features: ['Subterranean Power Cabling', 'High-Capacity Transformers', 'LED Street Lamps', 'Zero Overhead Wiring']
   },
@@ -296,7 +296,7 @@ const blockDAmenities = [
     title: '24/7 Gated Security & Perimeter Surveillance',
     category: 'security',
     description: 'Guarded sector checkposts, smart boom barriers, high-resolution night-vision CCTV coverage, and dedicated mobile patrolling units.',
-    image: '/images/faisalhillarc.jpg',
+    image: '/images/faisal-hills-arc-gate.webp',
     tag: '24/7 Secure',
     features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
   }
@@ -309,42 +309,42 @@ const blockDDevelopmentMilestones = [
     progress: 90,
     status: 'Paved & Functional',
     desc: 'Main 50ft and 60ft avenues asphalted with drainage gutters, curbs, and street lamp foundations.',
-    image: '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'
+    image: '/images/faisal-hills-drone-view.webp'
   },
   {
     title: 'Underground Electrification',
     progress: 85,
     status: 'Cables Laid in Trenches',
     desc: 'Subterranean conduit pipes and underground cable trenches completed across all sectors.',
-    image: '/images/imgi_4_DJI_20250818121525_0053_D-scaled.jpg'
+    image: '/images/faisal-hills-aerial-panoramic.webp'
   },
   {
     title: 'Water Wells & Storage Tanks',
     progress: 95,
     status: 'Tube Wells Operational',
     desc: 'High-yield deep-well tube wells and overhead water reservoirs delivering clean mountain water.',
-    image: '/images/faisalhill.jpg'
+    image: '/images/faisal-hills-overview.webp'
   },
   {
     title: 'Sui Gas Pipeline Network',
     progress: 80,
     status: 'Mainlines Laid',
     desc: 'Underground gas pipelines installed along primary avenues awaiting final pressure testing.',
-    image: '/images/imgi_38_Faisal-Hills-site-home-page-header.webp'
+    image: '/images/faisal-hills-site-header.webp'
   },
   {
     title: 'Sewerage & Storm Drainage',
     progress: 90,
     status: 'RCC Pipes Laid',
     desc: 'Heavy RCC sewerage conduits connected to main society trunk lines for rain runoff safety.',
-    image: '/images/faisalarc (1).webp'
+    image: '/images/faisal-hills-arc-monument.webp'
   },
   {
     title: 'Sector Parks & Green Reservations',
     progress: 85,
     status: 'Turf & Trees Planted',
     desc: 'Family walking trails, children play areas, and perimeter tree plantations active.',
-    image: '/images/faisal-park.jpg'
+    image: '/images/faisal-hills-glow-park.webp'
   }
 ];
 
@@ -616,7 +616,7 @@ export default function BlockDContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[320px] sm:min-h-[360px] flex flex-col justify-between group">
                 <img
-                  src="/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg"
+                  src="/images/faisal-hills-drone-view.webp"
                   alt="Faisal Hills Block D Panoramic View"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -1159,7 +1159,7 @@ export default function BlockDContent() {
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
                     <img
-                      src={plot.image || '/images/imgi_3_DJI_20250818122014_0056_D-scaled.jpg'}
+                      src={plot.image || '/images/faisal-hills-drone-view.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1256,8 +1256,10 @@ export default function BlockDContent() {
                       rel="noopener noreferrer"
                       className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
                       title="Chat on WhatsApp"
+                      aria-label="Chat on WhatsApp"
                     >
                       <MessageSquare className="w-4 h-4" />
+                      <span className="sr-only">Chat on WhatsApp</span>
                     </a>
                   </div>
                 </div>
