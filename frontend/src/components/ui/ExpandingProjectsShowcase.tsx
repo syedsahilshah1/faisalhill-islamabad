@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
+import type { BlockInfo } from '@/data/faisalHillsData';
+
 export interface ShowcaseItem {
   id: string;
   title: string;
@@ -14,6 +16,25 @@ export interface ShowcaseItem {
   image: string;
   href: string;
   status?: string;
+}
+
+export type ShowcaseInputItem = ShowcaseItem | BlockInfo;
+
+export function normalizeShowcaseItem(item: ShowcaseInputItem): ShowcaseItem {
+  if ('title' in item && 'image' in item && item.title && item.image) {
+    return item as ShowcaseItem;
+  }
+  const b = item as BlockInfo;
+  return {
+    id: b.id || b.slug,
+    title: b.name || b.slug,
+    areaSubtitle: b.subtitle || (b.totalPlots ? `TOTAL PLOTS: ${b.totalPlots}` : undefined),
+    tag: b.category ? b.category.replace('_', ' ').toUpperCase() : undefined,
+    badge: b.status || b.nocStatus,
+    description: b.description,
+    image: b.heroImage || b.masterPlanImage || '/images/faisal-hills-site-header.webp',
+    href: b.slug ? `/blocks/${b.slug}` : '#'
+  };
 }
 
 export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
@@ -79,8 +100,9 @@ export const defaultFaisalHillsBlocks: ShowcaseItem[] = [
   }
 ];
 
-interface ExpandingProjectsShowcaseProps {
-  items?: ShowcaseItem[];
+export interface ExpandingProjectsShowcaseProps {
+  items?: ShowcaseInputItem[];
+  blocks?: ShowcaseInputItem[];
   defaultActiveIndex?: number;
   activeIndex?: number;
   onActiveIndexChange?: (index: number) => void;
@@ -92,7 +114,8 @@ interface ExpandingProjectsShowcaseProps {
 }
 
 export default function ExpandingProjectsShowcase({
-  items = defaultFaisalHillsBlocks,
+  items,
+  blocks,
   defaultActiveIndex = 0,
   activeIndex,
   onActiveIndexChange,
@@ -106,7 +129,8 @@ export default function ExpandingProjectsShowcase({
   const [internalMobileIndex, setInternalMobileIndex] = useState<number>(defaultActiveIndex);
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
 
-  const displayItems = Array.isArray(items) && items.length > 0 ? items : defaultFaisalHillsBlocks;
+  const rawList = items || blocks || defaultFaisalHillsBlocks;
+  const displayItems = (Array.isArray(rawList) && rawList.length > 0 ? rawList : defaultFaisalHillsBlocks).map(normalizeShowcaseItem);
   const currentActive = activeIndex !== undefined ? activeIndex : (internalHoveredIndex ?? 0);
   const currentMobileIndex = activeIndex !== undefined ? activeIndex : internalMobileIndex;
 

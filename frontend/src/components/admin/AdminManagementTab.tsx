@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, ShieldCheck, ShieldAlert, Plus, Edit2, Trash2, Power, 
   CheckCircle2, AlertCircle, Loader2, RefreshCw, X, Lock, KeyRound, 
-  UserCheck, UserX, Mail, User as UserIcon
+  UserCheck, UserX, Mail, User as UserIcon, CheckSquare, Square
 } from 'lucide-react';
 import { 
   AdminUser, 
@@ -12,7 +12,9 @@ import {
   apiCreateAdminUser, 
   apiUpdateAdminUser, 
   apiToggleAdminStatus, 
-  apiDeleteAdminUser 
+  apiDeleteAdminUser,
+  ALL_DASHBOARD_PERMISSIONS,
+  UserPermissionKey
 } from '@/data/faisalHillsData';
 
 interface AdminManagementTabProps {
@@ -32,21 +34,32 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
-  // Form states
+  // Form states with granular RBAC permissions
   const [createForm, setCreateForm] = useState({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
     status: 'active' as 'active' | 'inactive',
+    permissions: [
+      'manage_leads',
+      'manage_plots',
+      'manage_blogs',
+      'manage_gallery',
+      'manage_homepage_cms',
+      'manage_seo'
+    ] as UserPermissionKey[],
   });
+
   const [editForm, setEditForm] = useState({
     name: '',
     email: '',
     status: 'active' as 'active' | 'inactive',
     password: '',
     password_confirmation: '',
+    permissions: [] as UserPermissionKey[],
   });
+
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState('');
 
@@ -96,6 +109,14 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
         password: '',
         password_confirmation: '',
         status: 'active',
+        permissions: [
+          'manage_leads',
+          'manage_plots',
+          'manage_blogs',
+          'manage_gallery',
+          'manage_homepage_cms',
+          'manage_seo'
+        ],
       });
       loadUsers();
     } catch (err: any) {
@@ -114,6 +135,9 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
       status: user.status,
       password: '',
       password_confirmation: '',
+      permissions: (user.permissions && user.permissions.length > 0)
+        ? (user.permissions as UserPermissionKey[])
+        : ['manage_leads', 'manage_plots', 'manage_blogs', 'manage_gallery', 'manage_homepage_cms', 'manage_seo'],
     });
     setModalError('');
     setIsEditModalOpen(true);
@@ -131,6 +155,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
         name: editForm.name,
         email: editForm.email,
         status: editForm.status,
+        permissions: editForm.permissions,
       };
       if (editForm.password) {
         if (editForm.password.length < 8) {
@@ -202,14 +227,14 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
               <ShieldCheck className="w-4 h-4 text-amber-700" />
             </div>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900">
-              Administrator Management
+              Administrator Management &amp; Role-Based Access
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-[#7b002c] border border-rose-200">
               Super Admin Exclusive
             </span>
           </div>
           <p className="text-xs text-slate-500 font-sans">
-            Manage administrative personnel, grant operational access, toggle account status, and enforce strict role separation.
+            Manage administrative personnel, grant operational access, toggle account status, and configure granular tab permissions.
           </p>
         </div>
 
@@ -287,8 +312,8 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
             <table className="w-full text-left text-xs font-sans">
               <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
                 <tr>
-                  <th className="py-3.5 px-4 font-bold">Name & Email</th>
-                  <th className="py-3.5 px-4 font-bold">Role</th>
+                  <th className="py-3.5 px-4 font-bold">Name &amp; Email</th>
+                  <th className="py-3.5 px-4 font-bold">Role &amp; Permissions</th>
                   <th className="py-3.5 px-4 font-bold">Account Status</th>
                   <th className="py-3.5 px-4 font-bold">Registered On</th>
                   <th className="py-3.5 px-4 font-bold text-right">Actions</th>
@@ -298,6 +323,9 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 {users.map((user) => {
                   const isSuper = user.role === 'super_admin';
                   const isActive = user.status === 'active';
+                  const userPerms = (user.permissions && Array.isArray(user.permissions) && user.permissions.length > 0)
+                    ? user.permissions
+                    : (isSuper ? ['ALL'] : ['manage_leads', 'manage_plots', 'manage_blogs', 'manage_gallery', 'manage_homepage_cms', 'manage_seo']);
 
                   return (
                     <tr key={user.id} className="hover:bg-slate-50/60 transition-colors">
@@ -324,18 +352,34 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                         </div>
                       </td>
 
-                      {/* Role Badge */}
+                      {/* Role & Granular Permissions */}
                       <td className="py-4 px-4">
-                        {isSuper ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-[#7b002c] border border-rose-200 text-[10px] font-bold uppercase tracking-wider">
-                            <ShieldCheck className="w-3 h-3 text-[#7b002c]" />
-                            <span>SUPER ADMIN</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold uppercase tracking-wider">
-                            <span>ADMIN</span>
-                          </span>
-                        )}
+                        <div className="space-y-1">
+                          <div>
+                            {isSuper ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-[#7b002c] border border-rose-200 text-[10px] font-bold uppercase tracking-wider">
+                                <ShieldCheck className="w-3 h-3 text-[#7b002c]" />
+                                <span>SUPER ADMIN (Full Access)</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold uppercase tracking-wider">
+                                <span>ADMIN</span>
+                              </span>
+                            )}
+                          </div>
+                          {!isSuper && (
+                            <div className="flex flex-wrap gap-1 max-w-xs">
+                              {userPerms.map((pKey: string) => {
+                                const found = ALL_DASHBOARD_PERMISSIONS.find(p => p.key === pKey);
+                                return (
+                                  <span key={pKey} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                    {found?.label || pKey}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       </td>
 
                       {/* Status */}
@@ -407,11 +451,11 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
       </div>
 
       {/* ========================================================= */}
-      {/* MODAL 1: CREATE ADMINISTRATOR                             */}
+      {/* MODAL 1: CREATE ADMINISTRATOR WITH PERMISSION CHECKBOXES   */}
       {/* ========================================================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
@@ -420,7 +464,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-slate-900">Create Administrator</h3>
-                  <p className="text-xs text-slate-500">Add a new administrative team member with role 'admin'</p>
+                  <p className="text-xs text-slate-500">Add an administrator and select which dashboard tabs they can access</p>
                 </div>
               </div>
               <button 
@@ -524,6 +568,59 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 </div>
               </div>
 
+              {/* Granular Permission Checkboxes */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Allowed Dashboard Tabs &amp; Modules
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (createForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length) {
+                        setCreateForm({ ...createForm, permissions: [] });
+                      } else {
+                        setCreateForm({ ...createForm, permissions: ALL_DASHBOARD_PERMISSIONS.map(p => p.key as UserPermissionKey) });
+                      }
+                    }}
+                    className="text-[11px] font-bold text-[#7b002c] hover:underline cursor-pointer"
+                  >
+                    {createForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  {ALL_DASHBOARD_PERMISSIONS.map((perm) => {
+                    const isChecked = createForm.permissions.includes(perm.key as UserPermissionKey);
+                    return (
+                      <label
+                        key={perm.key}
+                        className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
+                          isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCreateForm({ ...createForm, permissions: [...createForm.permissions, perm.key as UserPermissionKey] });
+                            } else {
+                              setCreateForm({ ...createForm, permissions: createForm.permissions.filter(p => p !== perm.key) });
+                            }
+                          }}
+                          className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
+                        />
+                        <div>
+                          <div className="text-xs font-bold text-slate-800">{perm.label}</div>
+                          <div className="text-[10px] text-slate-500 leading-tight">{perm.desc}</div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-slate-100">
                 <button
                   type="button"
@@ -536,7 +633,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 <button
                   type="submit"
                   disabled={modalLoading}
-                  className="px-5 py-2.5 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
                 >
                   {modalLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>Create Account</span>
@@ -549,11 +646,11 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
       )}
 
       {/* ========================================================= */}
-      {/* MODAL 2: EDIT ADMINISTRATOR                               */}
+      {/* MODAL 2: EDIT ADMINISTRATOR WITH PERMISSIONS               */}
       {/* ========================================================= */}
       {isEditModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-w-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
@@ -562,7 +659,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-slate-900">Edit Administrator</h3>
-                  <p className="text-xs text-slate-500">Update account details for #{selectedUser.id}</p>
+                  <p className="text-xs text-slate-500">Update details &amp; permissions for #{selectedUser.id}</p>
                 </div>
               </div>
               <button 
@@ -622,6 +719,59 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 </select>
               </div>
 
+              {/* Granular Permission Checkboxes */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Allowed Dashboard Tabs &amp; Modules
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length) {
+                        setEditForm({ ...editForm, permissions: [] });
+                      } else {
+                        setEditForm({ ...editForm, permissions: ALL_DASHBOARD_PERMISSIONS.map(p => p.key as UserPermissionKey) });
+                      }
+                    }}
+                    className="text-[11px] font-bold text-[#7b002c] hover:underline cursor-pointer"
+                  >
+                    {editForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  {ALL_DASHBOARD_PERMISSIONS.map((perm) => {
+                    const isChecked = editForm.permissions.includes(perm.key as UserPermissionKey);
+                    return (
+                      <label
+                        key={perm.key}
+                        className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
+                          isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setEditForm({ ...editForm, permissions: [...editForm.permissions, perm.key as UserPermissionKey] });
+                            } else {
+                              setEditForm({ ...editForm, permissions: editForm.permissions.filter(p => p !== perm.key) });
+                            }
+                          }}
+                          className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
+                        />
+                        <div>
+                          <div className="text-xs font-bold text-slate-800">{perm.label}</div>
+                          <div className="text-[10px] text-slate-500 leading-tight">{perm.desc}</div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="text-xs font-bold text-slate-800">
                   Optional: Set New Password for this Admin
@@ -656,7 +806,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 <button
                   type="submit"
                   disabled={modalLoading}
-                  className="px-5 py-2.5 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
                 >
                   {modalLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>Save Changes</span>

@@ -109,7 +109,186 @@ export const societyStats: SocietyStats = {
   activePlots: 14500,
   lastVerifiedDate: "August 2026"
 };
-export const plotInventoryData: PlotItem[] = [];
+export const plotInventoryData: PlotItem[] = [
+  {
+    id: "plot-101",
+    plotNumber: "A-125",
+    blockSlug: "block-a",
+    blockName: "Block A",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 9800000,
+    priceFormatted: "PKR 98 Lacs",
+    priceHistoryTrend: "+8.5% in last 3 months",
+    status: "Available",
+    facing: "Park Facing",
+    mapCoords: { x: 38, y: 42 },
+    features: [
+      "Corner Plot",
+      "Fronting 12-Kanal Park",
+      "Underground Electricity",
+      "Immediate Possession"
+    ],
+    description: "Prime 10 Marla residential plot directly facing Sector A central park. Ideal for modern villa construction.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-102",
+    plotNumber: "FJ-402",
+    blockSlug: "faisal-jewels",
+    blockName: "Faisal Jewels",
+    category: "Apartment",
+    size: "2-Bed Luxury Flat",
+    dimensions: "1,150 Sq Ft",
+    price: 13500000,
+    priceFormatted: "PKR 1.35 Crore",
+    priceHistoryTrend: "+15.4% high demand",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 15, y: 22 },
+    features: [
+      "26th Floor Sky View",
+      "Serviced Hotel Suite",
+      "Revolving Restaurant Access",
+      "High Rental Yield"
+    ],
+    description: "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
+    image: "/images/faisal-jewel-tower.webp"
+  },
+  {
+    id: "plot-103",
+    plotNumber: "A-204",
+    blockSlug: "block-a",
+    blockName: "Block A",
+    category: "Residential",
+    size: "5 Marla",
+    dimensions: "25 x 50",
+    price: 5600000,
+    priceFormatted: "PKR 56 Lacs",
+    priceHistoryTrend: "+11.2% in last 6 months",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 42, y: 46 },
+    features: [
+      "Fronting 60ft Boulevard",
+      "Solid Land Ground",
+      "Close to Jamia Mosque"
+    ],
+    description: "Highly demanded 5 Marla plot situated on 60ft road near Mosque & Commercial Market.",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-104",
+    plotNumber: "EXE-048",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Residential",
+    size: "1 Kanal",
+    dimensions: "50 x 90",
+    price: 18500000,
+    priceFormatted: "PKR 1.85 Crore",
+    priceHistoryTrend: "+14% high demand",
+    status: "Available",
+    facing: "Corner",
+    mapCoords: { x: 18, y: 28 },
+    features: [
+      "Double Side Corner",
+      "225ft Boulevard Proximity",
+      "Executive Club View"
+    ],
+    description: "Luxurious 1 Kanal Corner Plot near GT Road Entrance Gate.",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-105",
+    plotNumber: "FJ-709",
+    blockSlug: "faisal-jewels",
+    blockName: "Faisal Jewels",
+    category: "Apartment",
+    size: "1-Bed Executive Suite",
+    dimensions: "650 Sq Ft",
+    price: 8500000,
+    priceFormatted: "PKR 85 Lacs",
+    priceHistoryTrend: "+12.8% pre-launch ROI",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 16, y: 24 },
+    features: [
+      "Smart Automation Suite",
+      "Furnished Interior Option",
+      "Infinity Pool Access"
+    ],
+    description: "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
+    image: "/images/faisal-jewel-tower.webp"
+  },
+  {
+    id: "plot-106",
+    plotNumber: "EXE-112",
+    blockSlug: "executive-block",
+    blockName: "Executive Block",
+    category: "Commercial",
+    size: "4 Marla Plaza Plot",
+    dimensions: "30 x 30",
+    price: 32000000,
+    priceFormatted: "PKR 3.2 Crore",
+    priceHistoryTrend: "+18% commercial yield",
+    status: "Available",
+    facing: "Main Boulevard",
+    mapCoords: { x: 22, y: 32 },
+    features: [
+      "Ground + 5 Approval",
+      "225ft Main GT Entrance Road",
+      "Ideal for Bank Plaza"
+    ],
+    description: "Hot commercial plot on Executive Main Boulevard.",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-107",
+    plotNumber: "B-089",
+    blockSlug: "block-b",
+    blockName: "Block B",
+    category: "Residential",
+    size: "10 Marla",
+    dimensions: "35 x 70",
+    price: 8400000,
+    priceFormatted: "PKR 84 Lacs",
+    priceHistoryTrend: "+6.8% stable",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 58, y: 30 },
+    features: [
+      "Margalla Mountain Backdrop",
+      "Quiet Cul-de-Sac Street",
+      "Full Utilities"
+    ],
+    description: "Scenic 10 Marla hill-view plot in elevated Block B.",
+    image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "plot-108",
+    plotNumber: "PR-014",
+    blockSlug: "prime-block",
+    blockName: "Prime Block",
+    category: "Residential",
+    size: "1 Kanal Villa Plot",
+    dimensions: "50 x 90",
+    price: 24500000,
+    priceFormatted: "PKR 2.45 Crore",
+    priceHistoryTrend: "+21% prestige demand",
+    status: "Available",
+    facing: "Hill View",
+    mapCoords: { x: 74, y: 22 },
+    features: [
+      "Private Gated Sector",
+      "Exclusive Height Elevation",
+      "Underground Fiber Optics"
+    ],
+    description: "Ultra-luxury 1 Kanal plot in VIP Prime Block with Margalla panorama.",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
+  }
+];
 
 export const blocksData: BlockInfo[] = [
   {
@@ -1588,6 +1767,7 @@ export interface AdminUser {
   email: string;
   role: 'super_admin' | 'admin';
   status: 'active' | 'inactive';
+  permissions?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -1598,6 +1778,7 @@ export interface AdminUserPayload {
   password?: string;
   password_confirmation?: string;
   status: 'active' | 'inactive';
+  permissions?: string[];
 }
 
 export interface ChangePasswordPayload {
@@ -2515,6 +2696,844 @@ export function formatTelUrl(rawNumber?: string): string {
   }
   return `tel:${cleaned || '+923331113177'}`;
 }
+
+// -------------------------------------------------------------
+// Homepage CMS Interfaces & Defaults (100% Dynamic Content & Images)
+// -------------------------------------------------------------
+
+export interface TestimonialItem {
+  id: string;
+  name: string;
+  locationOrType?: string;
+  role?: string;
+  rating: number;
+  review?: string;
+  quote?: string;
+  plotOrBlock?: string;
+  verified: boolean;
+  date?: string;
+}
+
+export interface LandmarkCardItem {
+  id: string;
+  timeBadge: string;
+  title: string;
+  subLine: string;
+  image: string;
+  mapQuery?: string;
+}
+
+export interface WhyInvestItem {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  tag?: string;
+}
+
+export interface AmenityCardItem {
+  id: string;
+  title: string;
+  bullets?: string[];
+  desc?: string;
+  image: string;
+}
+
+export interface InfraCarouselItem {
+  id: string;
+  badge: string;
+  caption: string;
+  image: string;
+  category?: string;
+}
+
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
+export interface HomepageCMSData {
+  hero: {
+    badge: string;
+    h1: string;
+    subtitle: string;
+    formTitle: string;
+    formSubtitle: string;
+    trustLine: string;
+    bgImage: string;
+  };
+  statsBand: {
+    stat1: { value: string; label: string; icon: string };
+    stat2: { value: string; label: string; icon: string };
+    stat3: { value: string; label: string; icon: string };
+    stat4: { value: string; label: string; icon: string };
+    stat5: { value: string; label: string; icon: string };
+  };
+  chairman: {
+    h2: string;
+    quoteTitle: string;
+    visibleParagraph: string;
+    expandedParagraph: string;
+    buttonText: string;
+    buttonLink: string;
+    image: string;
+    imageAlt: string;
+  };
+  tickerItems: string[];
+  projectsByZedem: {
+    h2: string;
+    projects: { name: string; href: string }[];
+  };
+  overview: {
+    h2: string;
+    paragraph: string;
+    linkText: string;
+    linkHref: string;
+    image: string;
+    imageAlt: string;
+  };
+  location: {
+    h2: string;
+    p1: string;
+    p2: string;
+    p3: string;
+    linkText: string;
+    linkHref: string;
+    mapEmbedUrl?: string;
+  };
+  landmarks: {
+    label: string;
+    h2: string;
+    paragraph: string;
+    cards: LandmarkCardItem[];
+  };
+  masterPlan: {
+    h2: string;
+    paragraph: string;
+    downloadBtnText: string;
+    downloadPdfUrl: string;
+    fullscreenBtnText: string;
+    previewImage: string;
+  };
+  blocksSection: {
+    h2: string;
+    paragraph: string;
+  };
+  plotsForSale: {
+    badge: string;
+    h2: string;
+    paragraph: string;
+    btnText: string;
+    ctaHeading: string;
+    ctaText: string;
+    ctaBtn1Text: string;
+    ctaBtn2Text: string;
+  };
+  flagships: {
+    h2: string;
+    paragraph: string;
+    card1: { title: string; subtitle: string; desc: string; btnText: string; btnHref: string; image: string; alt: string };
+    card2: { title: string; subtitle: string; desc: string; btnText: string; btnHref: string; image: string; alt: string };
+  };
+  paymentPlan: {
+    h2: string;
+    paragraph: string;
+    calcBtnText: string;
+    sectionLabel: string;
+    card1: { title: string; desc: string };
+    card2: { title: string; desc: string };
+    card3: { title: string; desc: string };
+    card4: { title: string; desc: string };
+    image: string;
+    imageCaption: string;
+    downloadBtnText: string;
+    bookBtnText: string;
+  };
+  bookingSteps: {
+    label: string;
+    h2: string;
+    subline: string;
+    steps: { number: string; stepTag: string; title: string; desc: string }[];
+  };
+  whyInvest: {
+    h2: string;
+    paragraph: string;
+    benefits: WhyInvestItem[];
+  };
+  amenities: {
+    h2: string;
+    paragraph: string;
+    cards: AmenityCardItem[];
+  };
+  testimonials: {
+    label: string;
+    h2: string;
+    paragraph: string;
+    items: TestimonialItem[];
+  };
+  infrastructure: {
+    h2: string;
+    paragraph: string;
+    whatsappBtnText: string;
+    cards: InfraCarouselItem[];
+  };
+  photoGallery: {
+    h2: string;
+    paragraph: string;
+    items: { title: string; category: string; desc: string; image: string }[];
+  };
+  discoverFtStats: {
+    label: string;
+    stats: { number: string; label: string }[];
+  };
+  faqs: {
+    label: string;
+    h2: string;
+    items: FaqItem[];
+  };
+  finalCta: {
+    h2: string;
+    paragraph: string;
+    callBtnText: string;
+    whatsappBtnText: string;
+    visitBtnText: string;
+  };
+  footer: {
+    tagline: string;
+    disclaimer: string;
+  };
+}
+
+export const initialHomepageCMS: HomepageCMSData = {
+  hero: {
+    badge: 'RDA Approved • Main GT Road Taxila',
+    h1: 'Faisal Hills Islamabad',
+    subtitle: 'Master-planned society by Zedem International. 5 Marla to 2 Kanal residential plots, commercial avenues, and iconic high-rises at the foothills of Margalla.',
+    formTitle: 'Book Your Plot / Flat',
+    formSubtitle: 'Get verified 2026 rates, payment plan & plot selection guide.',
+    trustLine: 'Your information is 100% secure — we reply on WhatsApp.',
+    bgImage: '/images/faisal-hills-arc-monument-2.webp'
+  },
+  statsBand: {
+    stat1: { value: '11,823', label: 'KANALS RDA-APPROVED', icon: 'Maximize' },
+    stat2: { value: '7', label: 'PLANNED BLOCKS', icon: 'Building' },
+    stat3: { value: '2016', label: 'LAUNCHED', icon: 'Award' },
+    stat4: { value: '100%', label: 'RDA APPROVED NOC', icon: 'Shield' },
+    stat5: { value: '32,000+', label: 'RESIDENTIAL & COMMERCIAL PLOTS', icon: 'Trees' }
+  },
+  chairman: {
+    h2: 'Chairman & Founder — Chaudhry Abdul Majeed',
+    quoteTitle: 'A Legacy of Excellence & Uncompromising Delivery in Real Estate',
+    visibleParagraph: 'Faisal Hills Islamabad is developed by Zedem International under the leadership of Chaudhry Abdul Majeed, the founder of Faisal Town Group.',
+    expandedParagraph: 'His group is behind some of the twin cities\' best-known communities, including Faisal Town Phase 1, Faisal Town Phase 2, Faisal Margalla City and Faisal Hills. At Faisal Hills, that experience shows on the ground: families already live in the developed blocks, and landmark projects such as Faisal Jewel and Hills Walk are rising within the society.',
+    buttonText: 'Discover More About Zedem International',
+    buttonLink: '/about-us',
+    image: '/images/chaudhry-abdul-majeed.webp',
+    imageAlt: 'Chaudhry Abdul Majeed, Chairman of Faisal Town Group and Zedem International'
+  },
+  tickerItems: [
+    'FAISAL HILLS ISLAMABAD',
+    '100% RDA APPROVED SOCIETY',
+    'LIVING AT THE MARGALLA FOOTHILLS',
+    '225FT MAIN BOULEVARD',
+    'RESIDENTIAL & COMMERCIAL PLOTS',
+    'A PROJECT BY ZEDEM INTERNATIONAL',
+    'SECURE, LEGALLY APPROVED INVESTMENT',
+    'POSSESSION IN DEVELOPED BLOCKS'
+  ],
+  projectsByZedem: {
+    h2: 'Our Projects by Zedem International',
+    projects: [
+      { name: 'Faisal Town Phase 1', href: '/about-us' },
+      { name: 'Faisal Town Phase 2', href: '/about-us' },
+      { name: 'Faisal Hills', href: '/faisal-hills-blocks' },
+      { name: 'Faisal Margalla City', href: '/about-us' },
+      { name: 'Faisal Heights', href: '/about-us' },
+      { name: 'Faisal Jewel', href: '/blocks/faisal-jewel-islamabad' }
+    ]
+  },
+  overview: {
+    h2: 'Faisal Hills Islamabad Overview',
+    paragraph: 'Faisal Hills Islamabad is a master-planned, RDA-approved gated community on the main N-5 GT Road near Taxila, developed by Zedem International. Spread over 11,823 kanals with the Margalla Hills as its backdrop, it offers 5 Marla to 2 Kanal residential plots, commercial plots and high-rise apartments. With families already living in its developed blocks and direct access to Islamabad and Rawalpindi, it suits both homebuilders and long-term investors.',
+    linkText: 'Discover More About Faisal Hills',
+    linkHref: '/about-us',
+    image: '/images/faisal-hills-overview.webp',
+    imageAlt: 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'
+  },
+  location: {
+    h2: 'Faisal Hills Islamabad — A Location That Sets It Apart',
+    p1: 'The Faisal Hills Islamabad location is one of its defining advantages. Situated on the Grand Trunk Road (GT Road) near Taxila, the society sits between the federal capital and historic Taxila, combining easy Islamabad access with more land per rupee.',
+    p2: 'Direct GT Road frontage means you are not waiting on a future road to reach the society. It connects Faisal Hills to Islamabad, Rawalpindi, Wah Cantt and the M-1 Motorway, with the Margalla Avenue link offering a quicker route into Islamabad\'s sectors.',
+    p3: 'Ongoing regional road projects are expected to improve connectivity further over time. For buyers, the key point is simple: Faisal Hills is accessible today, not only on a master-plan drawing.',
+    linkText: 'Explore Complete Location Map & Sector Boundaries',
+    linkHref: '/faisal-hills-location',
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Faisal%20Hills%20Taxila&t=&z=13&ie=UTF8&iwloc=&output=embed'
+  },
+  landmarks: {
+    label: 'STRATEGIC CONNECTIVITY',
+    h2: 'Nearby Landmarks of Faisal Hills',
+    paragraph: 'Positioned on the historic GT Road, Faisal Hills offers practical travel times to key cultural, commercial and travel destinations across the twin cities.',
+    cards: [
+      {
+        id: 'lm-1',
+        timeBadge: '~25–30 Mins',
+        title: 'Zero Point & Blue Area',
+        subLine: 'Capital Business District',
+        image: '/images/landmarks/islamabad-zero-point.webp'
+      },
+      {
+        id: 'lm-2',
+        timeBadge: '~15 Mins',
+        title: 'Islamabad International Airport',
+        subLine: 'International Air Terminal',
+        image: '/images/landmarks/islamabad-airport.webp'
+      },
+      {
+        id: 'lm-3',
+        timeBadge: '~20–25 Mins',
+        title: 'M-1 Motorway',
+        subLine: 'Peshawar–Islamabad Highway',
+        image: '/images/landmarks/m1-motorway.webp'
+      },
+      {
+        id: 'lm-4',
+        timeBadge: '~5 Mins',
+        title: 'Taxila Museum & Heritage Sites',
+        subLine: 'Historical & Cultural Center',
+        image: '/images/landmarks/taxila-museum.webp'
+      }
+    ]
+  },
+  masterPlan: {
+    h2: 'Faisal Hills Master Plan Map',
+    paragraph: 'Explore the RDA-approved layout of Faisal Hills Islamabad. Check block boundaries, plot dimensions, road networks and commercial boulevards, with deep zoom up to 1200%.',
+    downloadBtnText: 'Download Master Plan (PDF)',
+    downloadPdfUrl: '/documents/faisal-hills-master-plan.pdf',
+    fullscreenBtnText: 'Launch Fullscreen Map',
+    previewImage: '/images/faisal-hills-master-plan-preview.webp'
+  },
+  blocksSection: {
+    h2: 'Explore Faisal Hills Blocks & Sectors',
+    paragraph: 'Select a block to see its location advantages, development status and available plots.'
+  },
+  plotsForSale: {
+    badge: 'VERIFIED INVENTORY & RESALE FILES',
+    h2: 'Plots for Sale in Faisal Hills',
+    paragraph: 'Browse available residential and commercial plots across all blocks. Check current asking prices, sizes and facing, and confirm documents with our sales desk before booking.',
+    btnText: 'VIEW COMPLETE PLOT DIRECTORY',
+    ctaHeading: 'Looking for a Specific Plot Number or Corner Position?',
+    ctaText: 'Our sales desk handles direct-owner resale files and developer allocation plots across all blocks, with documents verified before booking.',
+    ctaBtn1Text: 'WHATSAPP SALES DESK',
+    ctaBtn2Text: 'ALL PLOTS DIRECTORY'
+  },
+  flagships: {
+    h2: 'Faisal Hills High-Rise & Commercial Flagships',
+    paragraph: 'Landmark high-rise and lifestyle destinations being built inside Faisal Hills Islamabad.',
+    card1: {
+      title: 'Faisal Jewel',
+      subtitle: '27-Storey High-Rise Landmark',
+      desc: 'The crown jewel of Faisal Hills featuring a luxury 4-star hotel, shopping mall, corporate suites, and premium serviced apartments with scenic Margalla views.',
+      btnText: 'Explore Faisal Jewel',
+      btnHref: '/blocks/faisal-jewel-islamabad',
+      image: '/images/faisal-jewels-tower.webp',
+      alt: 'Faisal Jewel 27-storey high-rise tower in Faisal Hills Islamabad'
+    },
+    card2: {
+      title: 'Hills Walk',
+      subtitle: 'Open-Air Commercial Boulevard',
+      desc: 'European-style open-air pedestrian shopping street featuring flagship retail outlets, cafes, restaurants, and lakeside recreational promenades.',
+      btnText: 'Explore Hills Walk',
+      btnHref: '/blocks/hills-walk',
+      image: '/images/hills-walk.webp',
+      alt: 'Hills Walk open-air commercial boulevard in Faisal Hills'
+    }
+  },
+  paymentPlan: {
+    h2: 'Faisal Hills Islamabad Payment Plan 2026',
+    paragraph: 'The most common question we get is about the payment plan, and for good reason. Knowing exactly what you pay, when, and what you receive is the foundation of a confident decision. Here is how it works.',
+    calcBtnText: 'Open Custom Calculator',
+    sectionLabel: 'HOW THE PAYMENT PLAN WORKS',
+    card1: {
+      title: 'Booking Amount',
+      desc: 'A set percentage of the plot value is paid at booking to reserve your specific plot and block.'
+    },
+    card2: {
+      title: 'Down Payment',
+      desc: 'The balance of the down payment is paid to confirm formal allocation with the developer.'
+    },
+    card3: {
+      title: 'Payment Schedule',
+      desc: 'The remaining amount is paid in scheduled quarterly installments or as full payment depending on the plot category.'
+    },
+    card4: {
+      title: 'No Hidden Charges',
+      desc: 'Development charges, transfer fees and possession charges are disclosed in writing at booking.'
+    },
+    image: '/images/faisal-hills-payment-plan-chart.webp',
+    imageCaption: 'Official payment schedule — verify the latest version before booking.',
+    downloadBtnText: 'Download Plan (PDF)',
+    bookBtnText: 'Book Plot On This Plan'
+  },
+  bookingSteps: {
+    label: 'HOW TO BOOK',
+    h2: 'A Simple 5-Step Booking Process',
+    subline: 'Scroll down to explore each step — from your first inquiry to the day you receive possession.',
+    steps: [
+      {
+        number: '01',
+        stepTag: 'STEP 1: SELECTION',
+        title: 'Enquire & Choose Your Plot',
+        desc: 'Contact our sales team by phone, WhatsApp or the online form. Share your budget, plot size and preferred block, and we will show you verified options with current pricing.'
+      },
+      {
+        number: '02',
+        stepTag: 'STEP 2: DOCUMENTATION',
+        title: 'Reserve & Submit Documents',
+        desc: 'Complete the booking form with your CNIC copy (NICOP for overseas buyers), next-of-kin CNIC and photos. Pay only by pay order or bank transfer in the developer\'s official name.'
+      },
+      {
+        number: '03',
+        stepTag: 'STEP 3: ALLOTMENT',
+        title: 'Receive Your Allotment Letter',
+        desc: 'Your official allotment letter is issued by the developer, confirming plot number, block, size, total value and payment schedule.'
+      },
+      {
+        number: '04',
+        stepTag: 'STEP 4: PAYMENTS',
+        title: 'Complete Payments & Track Progress',
+        desc: 'Pay according to your agreed schedule. We share regular development updates, and site visits, including live video tours for overseas buyers, can be arranged anytime.'
+      },
+      {
+        number: '05',
+        stepTag: 'STEP 5: HANDOVER',
+        title: 'Take Possession',
+        desc: 'Once possession charges are cleared, your plot is demarcated and handed over with documentation ready for construction. Welcome to Faisal Hills.'
+      }
+    ]
+  },
+  whyInvest: {
+    h2: 'Why Faisal Hills Is a Smart Property Investment in 2026',
+    paragraph: 'Land value depends on three things: legal status, location, and real development on the ground. Faisal Hills Islamabad offers all three, which is why it attracts both overseas investors and families building their homes.',
+    benefits: [
+      {
+        id: 'ben-1',
+        number: '01',
+        title: 'Legally Secure — RDA Approved',
+        description: 'Faisal Hills holds an NOC from the Rawalpindi Development Authority covering 11,823.5 kanals. Allotment, transfer and possession follow a legally recognised process, removing the biggest risk buyers face in the twin cities.',
+        tag: 'Legal Protection'
+      },
+      {
+        id: 'ben-2',
+        number: '02',
+        title: 'Permanent GT Road Advantage',
+        description: 'Properties on major arterial roads keep their value because access doesn\'t depend on future projects. Direct GT Road frontage gives Faisal Hills lasting residential and commercial appeal.',
+        tag: 'Direct Access'
+      },
+      {
+        id: 'ben-3',
+        number: '03',
+        title: 'Development You Can Visit',
+        description: 'Families live in the developed blocks, schools are operating, and landmark projects like Faisal Jewel and Hills Walk are under construction. You can see progress for yourself before investing.',
+        tag: 'On-Ground Reality'
+      },
+      {
+        id: 'ben-4',
+        number: '04',
+        title: 'More Land Per Rupee',
+        description: 'Compared with established Islamabad sectors, Faisal Hills offers larger plots at lower entry prices, with tremendous appreciation room as the community matures.',
+        tag: 'High Value'
+      },
+      {
+        id: 'ben-5',
+        number: '05',
+        title: 'Trusted Developer Track Record',
+        description: 'Zedem International and Faisal Town Group have delivered inhabited communities across the twin cities, including Faisal Town Phase 1.',
+        tag: 'Zedem Quality'
+      },
+      {
+        id: 'ben-6',
+        number: '06',
+        title: 'Built for Overseas Buyers',
+        description: 'NICOP booking, live video site tours, document verification and WhatsApp support in your time zone for buyers in the UK, UAE and Gulf.',
+        tag: 'Overseas Desk'
+      }
+    ]
+  },
+  amenities: {
+    h2: 'Amenities Designed for Modern Living',
+    paragraph: 'From underground utilities to schools and parks, Faisal Hills is planned so that daily life is comfortable within the community itself.',
+    cards: [
+      {
+        id: 'am-1',
+        title: 'Roads & Utilities',
+        bullets: [
+          'Carpeted roads and boulevards from 40 ft to 225 ft',
+          'Underground electricity in designated blocks',
+          'Planned water supply and modern sewerage network'
+        ],
+        image: '/images/amenities/roads-infrastructure.webp'
+      },
+      {
+        id: 'am-2',
+        title: 'Parks & Recreation',
+        bullets: [
+          'Parks, green belts and landscaped public spaces',
+          'Dedicated jogging and walking tracks',
+          'Sports arena and family community centers'
+        ],
+        image: '/images/amenities/parks-greenery.webp'
+      },
+      {
+        id: 'am-3',
+        title: 'Education & Healthcare',
+        bullets: [
+          'Roots International Schools & Colleges campus',
+          'Hospital and healthcare clinics within the society',
+          'Fast access to Taxila and Wah Cantt medical centers'
+        ],
+        image: '/images/amenities/education-schools.webp'
+      },
+      {
+        id: 'am-4',
+        title: 'Commercial & Retail',
+        bullets: [
+          'Hills Walk open-air commercial boulevard',
+          'Commercial plazas along 225ft main boulevards',
+          'Daily-needs grocery marts and banks within blocks'
+        ],
+        image: '/images/amenities/commercial-retail.webp'
+      },
+      {
+        id: 'am-5',
+        title: 'Security & Management',
+        bullets: [
+          'Gated community with 24/7 guarded checkpoint gates',
+          'Dedicated security patrols and mobile response',
+          'CCTV surveillance monitoring main boulevards'
+        ],
+        image: '/images/amenities/gated-security.webp'
+      },
+      {
+        id: 'am-6',
+        title: 'Mosques & Community',
+        bullets: [
+          'Grand Jamia Mosque and convenient block mosques',
+          'Modern community event center',
+          'Miyawaki urban forest ecological reserve in Block C'
+        ],
+        image: '/images/amenities/mosques-community.webp'
+      }
+    ]
+  },
+  testimonials: {
+    label: 'CLIENT FEEDBACK',
+    h2: 'What Our Buyers Say',
+    paragraph: 'Real experiences from overseas investors and homebuyers who booked through our sales desk.',
+    items: [
+      {
+        id: 'test-1',
+        name: 'Usman A.',
+        locationOrType: 'Dubai, UAE • Overseas Investor',
+        rating: 5,
+        review: 'Booking my 10 Marla plot in Executive Block from Dubai was completely seamless. The sales desk verified the allotment file with Zedem International and arranged a live video tour of the on-ground development.',
+        plotOrBlock: 'Executive Block (10 Marla)',
+        verified: true,
+        date: 'August 2026'
+      },
+      {
+        id: 'test-2',
+        name: 'Dr. Tariq M.',
+        locationOrType: 'London, UK • Homebuilder',
+        rating: 5,
+        review: 'I wanted to secure a plot near Margalla Hills for our family home. The team gave transparent guidance on RDA NOC approval, possession timelines in Block A, and legal verification.',
+        plotOrBlock: 'Block A (1 Kanal)',
+        verified: true,
+        date: 'July 2026'
+      },
+      {
+        id: 'test-3',
+        name: 'Farhan & Sadia K.',
+        locationOrType: 'Islamabad, PK • Resident Buyers',
+        rating: 5,
+        review: 'We inspected multiple societies along GT Road, but Faisal Hills stood out for its 225ft wide roads, underground electricity in Prime Block, and accessible location. Very satisfied with our purchase.',
+        plotOrBlock: 'Prime Block (5 Marla)',
+        verified: true,
+        date: 'September 2026'
+      }
+    ]
+  },
+  infrastructure: {
+    h2: 'Infrastructure of Faisal Hills',
+    paragraph: 'Wide streets and boulevards from 40 to 225 feet give Faisal Hills a spacious, organised layout, planned to modern urban-design standards.',
+    whatsappBtnText: 'CHAT ON WHATSAPP',
+    cards: [
+      {
+        id: 'inf-1',
+        badge: 'Commercial',
+        caption: 'Hills Walk — Open-Air Commercial Boulevard',
+        image: '/images/infrastructure/hills-walk-boulevard.webp',
+        category: 'Commercial'
+      },
+      {
+        id: 'inf-2',
+        badge: 'Main Gate',
+        caption: 'Faisal Hills Arc — Architectural Landmark',
+        image: '/images/infrastructure/faisal-hills-arc.webp',
+        category: 'Entrance'
+      },
+      {
+        id: 'inf-3',
+        badge: 'High-Rise',
+        caption: 'Faisal Jewel — 27-Storey Landmark Tower',
+        image: '/images/infrastructure/faisal-jewel-construction.webp',
+        category: 'Towers'
+      },
+      {
+        id: 'inf-4',
+        badge: 'Executive',
+        caption: 'Sports Arena — Executive Block',
+        image: '/images/infrastructure/sports-arena.webp',
+        category: 'Amenities'
+      },
+      {
+        id: 'inf-5',
+        badge: 'Education',
+        caption: 'Roots International Schools & Colleges',
+        image: '/images/infrastructure/roots-school.webp',
+        category: 'Amenities'
+      },
+      {
+        id: 'inf-6',
+        badge: 'Block C',
+        caption: 'Miyawaki Forest — Block C',
+        image: '/images/infrastructure/miyawaki-forest.webp',
+        category: 'Infrastructure'
+      },
+      {
+        id: 'inf-7',
+        badge: 'Downtown',
+        caption: 'Faisal Hills Downtown — Civic Center',
+        image: '/images/infrastructure/civic-center.webp',
+        category: 'Infrastructure'
+      },
+      {
+        id: 'inf-8',
+        badge: 'Block A',
+        caption: 'Glow Park — Block A',
+        image: '/images/infrastructure/glow-park.webp',
+        category: 'Amenities'
+      }
+    ]
+  },
+  photoGallery: {
+    h2: 'On-Site Development & Photo Gallery',
+    paragraph: 'Recent photography of Faisal Hills entrance, boulevards, mosques and high-rise construction. (Updated September 2026)',
+    items: [
+      {
+        title: 'Faisal Hills Arc Main Entrance',
+        category: 'Entrance',
+        desc: 'Grand arc entrance on GT Road with guarded security checkpoint.',
+        image: '/images/gallery/arc-main-gate.webp'
+      },
+      {
+        title: 'Faisal Jewel Tower Construction',
+        category: 'Towers',
+        desc: '27-storey high-rise with hotel, apartments and commercial floors.',
+        image: '/images/gallery/faisal-jewel-crane.webp'
+      },
+      {
+        title: '225ft Main Boulevard',
+        category: 'Infrastructure',
+        desc: 'Wide carpeted boulevard with commercial plazas.',
+        image: '/images/gallery/main-boulevard-paved.webp'
+      },
+      {
+        title: 'On-Ground Development Work',
+        category: 'Infrastructure',
+        desc: 'Road cutting, sewerage laying and plot levelling in progress.',
+        image: '/images/gallery/heavy-machinery-roads.webp'
+      },
+      {
+        title: 'Hills Walk Aerial View',
+        category: 'Infrastructure',
+        desc: 'Pedestrian-friendly commercial boulevard near the Margalla Hills.',
+        image: '/images/gallery/hills-walk-aerial.webp'
+      },
+      {
+        title: 'Faisal Hills Drone View',
+        category: 'Amenities',
+        desc: 'Overhead view of the developed blocks and natural landscape.',
+        image: '/images/gallery/overhead-valley.webp'
+      }
+    ]
+  },
+  discoverFtStats: {
+    label: 'DISCOVER FAISAL HILLS SCALE',
+    stats: [
+      { number: '11,823+', label: 'KANALS TOTAL LAND' },
+      { number: '7', label: 'MASTER PLANNED SECTORS' },
+      { number: '32,000+', label: 'RESIDENTIAL & COMMERCIAL PLOTS' },
+      { number: '225 FT', label: 'MAIN BOULEVARD ROAD' },
+      { number: '100%', label: 'RDA APPROVED NOC' }
+    ]
+  },
+  faqs: {
+    label: 'FAQ\'S',
+    h2: 'Frequently Asked Questions (FAQs)',
+    items: [
+      {
+        q: 'Is Faisal Hills Islamabad an RDA-approved housing society?',
+        a: 'Yes. Faisal Hills holds a No Objection Certificate (NOC) from the Rawalpindi Development Authority (RDA) covering 11,823.5 kanals in Pindi Gondal, Dhoke Syedo and Mohra Shahwali. You can check the RDA\'s official list of approved schemes, and our team shares the verified NOC copy with every buyer before booking.'
+      },
+      {
+        q: 'Who is the developer of Faisal Hills Islamabad?',
+        a: 'Faisal Hills is developed by Zedem International, part of Faisal Town Group, led by Chairman Chaudhry Abdul Majeed. The group\'s successful portfolio includes Faisal Town Phase 1 & 2, Faisal Margalla City, Faisal Heights, and Faisal Jewel.'
+      },
+      {
+        q: 'What is the current Faisal Hills Islamabad payment plan for 2026?',
+        a: 'Residential plots in developed and possession blocks are predominantly traded on full cash payment/resale, while new commercial sectors and high-rises like Faisal Jewel offer flexible quarterly installment schedules. Contact our sales desk on WhatsApp for the official 2026 rate list.'
+      },
+      {
+        q: 'What plot sizes are available in Faisal Hills Islamabad?',
+        a: 'Residential plots come in 5 Marla, 8 Marla, 10 Marla, 14 Marla, 1 Kanal, and 2 Kanal sizes. Commercial plots and luxury retail/apartment units in Faisal Jewel and Hills Walk are also available across multiple blocks.'
+      },
+      {
+        q: 'Where exactly is Faisal Hills Islamabad located?',
+        a: 'Faisal Hills is located on the main N-5 GT Road near Taxila Bypass in Rawalpindi District, with the picturesque Margalla Hills as its backdrop. It connects directly to Islamabad via GT Road and Margalla Avenue, and is approximately 15–20 minutes from the M-1 Motorway and Islamabad International Airport.'
+      },
+      {
+        q: 'Which blocks of Faisal Hills have possession?',
+        a: 'Executive Block, Block A, and Block D have full possession with hundreds of families living and constructing houses. Block B and Block C are undergoing rapid on-ground possession handovers, while Prime Block is under active development.'
+      },
+      {
+        q: 'Can overseas Pakistanis invest in Faisal Hills?',
+        a: 'Yes. Overseas buyers from the UK, USA, UAE, and Gulf can easily book using their NICOP or Passport. We provide remote document verification, digital allotment tracking, live video site tours, and direct bank transfer instructions.'
+      },
+      {
+        q: 'How do I verify a plot before buying?',
+        a: 'Always request the original allotment letter or file registration number, verify the legal ledger with the developer\'s head office, inspect the RDA NOC, and make payments only via Pay Order or Bank Transfer in the name of \'Zedem International (Pvt) Ltd\'. Never pay cash to individual agents.'
+      }
+    ]
+  },
+  finalCta: {
+    h2: 'Ready to Secure Your Plot in Faisal Hills?',
+    paragraph: 'Talk to our sales desk to compare blocks, check verified availability, get the latest payment plan, or book a physical site visit or live video tour.',
+    callBtnText: 'CALL NOW',
+    whatsappBtnText: 'WHATSAPP',
+    visitBtnText: 'BOOK A SITE VISIT'
+  },
+  footer: {
+    tagline: 'Your trusted sales partner for Faisal Hills Islamabad, a Faisal Town Group project by Zedem International.',
+    disclaimer: 'This website is operated by an authorized real estate sales and marketing partner, and is not the direct official portal of the developer (Zedem International). All pricing, payment plans, and plot availability are subject to market conditions and developer revisions.'
+  }
+};
+
+export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('faisal_homepage_cms');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          ...initialHomepageCMS,
+          ...parsed,
+          hero: { ...initialHomepageCMS.hero, ...(parsed.hero || {}) },
+          statsBand: { ...initialHomepageCMS.statsBand, ...(parsed.statsBand || {}) },
+          chairman: { ...initialHomepageCMS.chairman, ...(parsed.chairman || {}) },
+          projectsByZedem: { ...initialHomepageCMS.projectsByZedem, ...(parsed.projectsByZedem || {}) },
+          overview: { ...initialHomepageCMS.overview, ...(parsed.overview || {}) },
+          location: { ...initialHomepageCMS.location, ...(parsed.location || {}) },
+          landmarks: { ...initialHomepageCMS.landmarks, ...(parsed.landmarks || {}) },
+          masterPlan: { ...initialHomepageCMS.masterPlan, ...(parsed.masterPlan || {}) },
+          blocksSection: { ...initialHomepageCMS.blocksSection, ...(parsed.blocksSection || {}) },
+          plotsForSale: { ...initialHomepageCMS.plotsForSale, ...(parsed.plotsForSale || {}) },
+          flagships: { ...initialHomepageCMS.flagships, ...(parsed.flagships || {}) },
+          paymentPlan: { ...initialHomepageCMS.paymentPlan, ...(parsed.paymentPlan || {}) },
+          bookingSteps: { ...initialHomepageCMS.bookingSteps, ...(parsed.bookingSteps || {}) },
+          whyInvest: { ...initialHomepageCMS.whyInvest, ...(parsed.whyInvest || {}) },
+          amenities: { ...initialHomepageCMS.amenities, ...(parsed.amenities || {}) },
+          testimonials: { ...initialHomepageCMS.testimonials, ...(parsed.testimonials || {}) },
+          infrastructure: { ...initialHomepageCMS.infrastructure, ...(parsed.infrastructure || {}) },
+          photoGallery: { ...initialHomepageCMS.photoGallery, ...(parsed.photoGallery || {}) },
+          discoverFtStats: { ...initialHomepageCMS.discoverFtStats, ...(parsed.discoverFtStats || {}) },
+          faqs: { ...initialHomepageCMS.faqs, ...(parsed.faqs || {}) },
+          finalCta: { ...initialHomepageCMS.finalCta, ...(parsed.finalCta || {}) },
+          footer: { ...initialHomepageCMS.footer, ...(parsed.footer || {}) }
+        };
+      }
+    } catch { }
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/homepage_cms`, { next: { revalidate: 60 } });
+    if (!res || !res.ok) return initialHomepageCMS;
+    const data = await res.json();
+    return {
+      ...initialHomepageCMS,
+      ...data
+    };
+  } catch {
+    return initialHomepageCMS;
+  }
+}
+
+export async function saveHomepageCMS(cmsData: HomepageCMSData, token?: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_homepage_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_homepage_updated'));
+    } catch { }
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/homepage_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// -------------------------------------------------------------
+// Granular User Role & Module Permissions
+// -------------------------------------------------------------
+
+export type UserPermissionKey = 
+  | 'manage_leads'
+  | 'manage_plots'
+  | 'manage_blogs'
+  | 'manage_gallery'
+  | 'manage_homepage_cms'
+  | 'manage_seo'
+  | 'manage_users';
+
+export interface DashboardUserItem {
+  id: number | string;
+  name: string;
+  email: string;
+  role: 'superadmin' | 'admin' | 'editor' | 'agent' | 'viewer';
+  status: 'active' | 'suspended' | 'pending';
+  permissions: UserPermissionKey[];
+  createdAt?: string;
+  lastLogin?: string;
+}
+
+export const ALL_DASHBOARD_PERMISSIONS: { key: UserPermissionKey; label: string; description: string; desc: string }[] = [
+  { key: 'manage_leads', label: 'Manage Leads & Inquiries', description: 'View, filter, export and update customer booking leads', desc: 'View, filter, export and update customer booking leads' },
+  { key: 'manage_plots', label: 'Manage Plots & Inventory', description: 'Add, update prices, and edit plot listings and blocks', desc: 'Add, update prices, and edit plot listings and blocks' },
+  { key: 'manage_blogs', label: 'Manage Blog Posts', description: 'Create, edit, and publish SEO blog articles', desc: 'Create, edit, and publish SEO blog articles' },
+  { key: 'manage_gallery', label: 'Photo Gallery Management', description: 'Upload and manage on-site development photos', desc: 'Upload and manage on-site development photos' },
+  { key: 'manage_homepage_cms', label: 'Homepage CMS & Visual Content', description: 'Edit all 24 homepage sections, texts, cards, and images', desc: 'Edit all 24 homepage sections, texts, cards, and images' },
+  { key: 'manage_seo', label: 'SEO & Verification Settings', description: 'Manage metadata, social links, and official contact details', desc: 'Manage metadata, social links, and official contact details' },
+  { key: 'manage_users', label: 'User & Permission Management', description: 'Create new users and assign role permissions (Superadmin only)', desc: 'Create new users and assign role permissions (Superadmin only)' }
+];
+
 
 
 

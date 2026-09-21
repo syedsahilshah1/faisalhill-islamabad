@@ -15,7 +15,7 @@ class AdminUserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::select(['id', 'name', 'email', 'role', 'status', 'created_at', 'updated_at'])
+        $users = User::select(['id', 'name', 'email', 'role', 'status', 'permissions', 'created_at', 'updated_at'])
             ->orderByRaw("CASE WHEN role = 'super_admin' THEN 0 ELSE 1 END")
             ->orderBy('id', 'asc')
             ->get();
@@ -36,6 +36,7 @@ class AdminUserController extends Controller
             'email' => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'string', 'confirmed', Password::min(8)],
             'status' => ['required', Rule::in(['active', 'inactive'])],
+            'permissions' => ['nullable', 'array'],
         ]);
 
         // Strict server-side invariant: Any newly created admin is always assigned role = 'admin'
@@ -45,6 +46,7 @@ class AdminUserController extends Controller
             'password' => Hash::make($request->input('password')),
             'role' => 'admin',
             'status' => $request->input('status', 'active'),
+            'permissions' => $request->input('permissions', []),
             'email_verified_at' => now(),
         ]);
 
@@ -57,6 +59,7 @@ class AdminUserController extends Controller
                 'email' => $admin->email,
                 'role' => $admin->role,
                 'status' => $admin->status,
+                'permissions' => $admin->permissions,
                 'created_at' => $admin->created_at,
             ]
         ], 201);
@@ -82,11 +85,16 @@ class AdminUserController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($targetUser->id)],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'password' => ['nullable', 'string', 'confirmed', Password::min(8)],
+            'permissions' => ['nullable', 'array'],
         ]);
 
         $targetUser->name = $request->input('name');
         $targetUser->email = $request->input('email');
         $targetUser->status = $request->input('status');
+
+        if ($request->has('permissions')) {
+            $targetUser->permissions = $request->input('permissions');
+        }
 
         if ($request->filled('password')) {
             $targetUser->password = Hash::make($request->input('password'));
@@ -110,6 +118,7 @@ class AdminUserController extends Controller
                 'email' => $targetUser->email,
                 'role' => $targetUser->role,
                 'status' => $targetUser->status,
+                'permissions' => $targetUser->permissions,
                 'updated_at' => $targetUser->updated_at,
             ]
         ]);

@@ -5,15 +5,19 @@ import { X, Download, ShieldCheck, CheckCircle2, User, Phone, Mail, ZoomIn, Zoom
 import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
 
 interface PaymentPlanModalProps {
-  isLightboxOpen: boolean;
-  onCloseLightbox: () => void;
-  isDownloadOpen: boolean;
-  onCloseDownload: () => void;
-  onOpenDownload: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  isLightboxOpen?: boolean;
+  onCloseLightbox?: () => void;
+  isDownloadOpen?: boolean;
+  onCloseDownload?: () => void;
+  onOpenDownload?: () => void;
   imageSrc?: string;
 }
 
 export default function PaymentPlanModal({
+  isOpen,
+  onClose,
   isLightboxOpen,
   onCloseLightbox,
   isDownloadOpen,
@@ -21,6 +25,11 @@ export default function PaymentPlanModal({
   onOpenDownload,
   imageSrc = '/images/faisal-hills-payment-plan-2026.webp'
 }: PaymentPlanModalProps) {
+  const effectiveLightboxOpen = isLightboxOpen ?? false;
+  const effectiveDownloadOpen = isDownloadOpen ?? (isOpen ?? false);
+  const handleCloseDownload = onCloseDownload || onClose || (() => {});
+  const handleCloseLightbox = onCloseLightbox || onClose || (() => {});
+  const handleOpenDownload = onOpenDownload || (() => {});
   // Download Form State
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -249,7 +258,7 @@ export default function PaymentPlanModal({
     // Auto-close modal after 2.5s
     setTimeout(() => {
       setIsSuccess(false);
-      onCloseDownload();
+      handleCloseDownload();
     }, 2500);
   };
 
@@ -258,7 +267,7 @@ export default function PaymentPlanModal({
       {/* ========================================================= */}
       {/* 1. FULLSCREEN LIGHTBOX PREVIEW MODAL WITH PINCH-TO-ZOOM   */}
       {/* ========================================================= */}
-      {isLightboxOpen && (
+      {effectiveLightboxOpen && (
         <div 
           className="fixed inset-0 z-[99990] flex flex-col bg-slate-950/95 backdrop-blur-md transition-all duration-300 select-none"
           style={{ touchAction: 'none' }}
@@ -274,12 +283,12 @@ export default function PaymentPlanModal({
               </span>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <div className="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-0.5">
+            {/* Actions: Zoom Controls + Download Button + Close */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1 sm:p-1.5 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg transition cursor-pointer"
+                  className="p-1 sm:p-1.5 hover:bg-slate-700 text-slate-200 hover:text-white transition cursor-pointer"
                   title="Zoom In"
                   aria-label="Zoom In"
                 >
@@ -305,8 +314,8 @@ export default function PaymentPlanModal({
 
               <button
                 onClick={() => {
-                  onCloseLightbox();
-                  onOpenDownload();
+                  handleCloseLightbox();
+                  handleOpenDownload();
                 }}
                 className="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
               >
@@ -317,7 +326,7 @@ export default function PaymentPlanModal({
               <button
                 onClick={() => {
                   handleResetZoom();
-                  onCloseLightbox();
+                  handleCloseLightbox();
                 }}
                 className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition cursor-pointer ml-0.5 sm:ml-1"
                 aria-label="Close"
@@ -365,16 +374,16 @@ export default function PaymentPlanModal({
       {/* ========================================================= */}
       {/* 2. LEAD-GATED DOWNLOAD FORM MODAL                         */}
       {/* ========================================================= */}
-      {isDownloadOpen && (
+      {effectiveDownloadOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto transition-opacity duration-300">
-          <div className="fixed inset-0 bg-slate-950/80 -z-10" onClick={onCloseDownload} />
+          <div className="fixed inset-0 bg-slate-950/80 -z-10" onClick={handleCloseDownload} />
 
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden relative transform transition-all duration-300 scale-100 my-auto z-10 animate-fade-up">
             {/* Header */}
             <div className="bg-[#7b002c] text-white p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
               <button
-                onClick={onCloseDownload}
+                onClick={handleCloseDownload}
                 className="absolute top-4 right-4 text-white/80 hover:text-white p-1.5 rounded-full hover:bg-black/20 transition-colors cursor-pointer z-20"
                 aria-label="Close modal"
               >

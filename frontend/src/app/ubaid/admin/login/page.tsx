@@ -13,6 +13,7 @@ import RichTextEditor from '@/components/ui/RichTextEditor';
 import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
 import AdminManagementTab from '@/components/admin/AdminManagementTab';
 import SecuritySettingsTab from '@/components/admin/SecuritySettingsTab';
+import HomepageCmsTab from '@/components/admin/HomepageCmsTab';
 import {
   formatPKR,
   formatPriceRange,
@@ -134,7 +135,7 @@ export default function AdminLoginPage() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('series');
+  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
@@ -1966,20 +1967,32 @@ export default function AdminLoginPage() {
   // -------------------------------------------------------------
   // 2. AUTHENTICATED ADMIN DASHBOARD
   // -------------------------------------------------------------
-  const dashboardTabs = [
-    { id: 'series', label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync' },
-    { id: 'plots', label: `Plots Inventory (${plots.length})`, icon: Layers },
-    { id: 'blocks', label: `Blocks & BG Images (${blocksList.length})`, icon: Building2 },
-    { id: 'legal', label: 'Legal Policies (Terms & Privacy)', icon: BookOpen },
-    { id: 'accounts', label: 'Bank Accounts & Contacts', icon: CreditCard },
-    { id: 'gallery', label: `Photo Gallery (${galleryList.length})`, icon: Camera },
-    { id: 'seo', label: `SEO & Meta Tags (${seoSettings.pages.length} Pages)`, icon: Globe },
-    { id: 'verification', label: 'Verification Date', icon: ShieldCheck },
-    { id: 'leads', label: `Inquiries Log (${leadsList.length})`, icon: Users },
-    { id: 'blogs', label: `Blogs CMS (${blogsList.length})`, icon: FileText },
-    ...(currentUser?.role === 'super_admin' ? [{ id: 'users', label: 'Administrators', icon: Users, badge: 'Super Admin' }] : []),
-    { id: 'security', label: 'Security & Password', icon: KeyRound },
+  const isSuperAdmin = currentUser?.role === 'super_admin';
+  const userPerms = currentUser?.permissions || [];
+  const hasPermission = (p: string | null) => {
+    if (!p) return true;
+    if (isSuperAdmin) return true;
+    if (!userPerms || userPerms.length === 0) return true; // default full access for existing admin accounts
+    return userPerms.includes(p);
+  };
+
+  const allAvailableTabs = [
+    { id: 'homepage_cms' as const, label: '🏠 Homepage CMS Editor', icon: Home, badge: 'All 24 Sections', requiredPerm: 'manage_homepage_cms' },
+    { id: 'series' as const, label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync', requiredPerm: 'manage_plots' },
+    { id: 'plots' as const, label: `Plots Inventory (${plots.length})`, icon: Layers, requiredPerm: 'manage_plots' },
+    { id: 'blocks' as const, label: `Blocks & BG Images (${blocksList.length})`, icon: Building2, requiredPerm: 'manage_plots' },
+    { id: 'leads' as const, label: `Inquiries Log (${leadsList.length})`, icon: Users, requiredPerm: 'manage_leads' },
+    { id: 'blogs' as const, label: `Blogs CMS (${blogsList.length})`, icon: FileText, requiredPerm: 'manage_blogs' },
+    { id: 'gallery' as const, label: `Photo Gallery (${galleryList.length})`, icon: Camera, requiredPerm: 'manage_gallery' },
+    { id: 'seo' as const, label: `SEO & Meta Tags (${seoSettings.pages.length} Pages)`, icon: Globe, requiredPerm: 'manage_seo' },
+    { id: 'legal' as const, label: 'Legal Policies (Terms & Privacy)', icon: BookOpen, requiredPerm: 'manage_homepage_cms' },
+    { id: 'accounts' as const, label: 'Bank Accounts & Contacts', icon: CreditCard, requiredPerm: 'manage_homepage_cms' },
+    { id: 'verification' as const, label: 'Verification Date', icon: ShieldCheck, requiredPerm: 'manage_homepage_cms' },
+    ...(isSuperAdmin || hasPermission('manage_users') ? [{ id: 'users' as const, label: 'Administrators', icon: Users, badge: isSuperAdmin ? 'Super Admin' : undefined, requiredPerm: 'manage_users' }] : []),
+    { id: 'security' as const, label: 'Security & Password', icon: KeyRound, requiredPerm: null },
   ];
+
+  const dashboardTabs = allAvailableTabs.filter(t => hasPermission(t.requiredPerm));
 
   return (
     <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 font-sans">
@@ -5925,12 +5938,17 @@ export default function AdminLoginPage() {
           </div>
         </div>
       )}
-      {/* TAB 8: ADMINISTRATOR MANAGEMENT (SUPER ADMIN ONLY) */}
-      {activeTab === 'users' && currentUser?.role === 'super_admin' && (
+      {/* TAB: HOMEPAGE CMS VISUAL & SECTION EDITOR */}
+      {activeTab === 'homepage_cms' && (
+        <HomepageCmsTab token={token} />
+      )}
+
+      {/* TAB: ADMINISTRATOR MANAGEMENT (SUPER ADMIN / MANAGE USERS) */}
+      {activeTab === 'users' && (currentUser?.role === 'super_admin' || hasPermission('manage_users')) && (
         <AdminManagementTab token={token || ''} currentUser={currentUser} />
       )}
 
-      {/* TAB 9: SECURITY & PASSWORD CREDENTIALS */}
+      {/* TAB: SECURITY & PASSWORD CREDENTIALS */}
       {activeTab === 'security' && (
         <SecuritySettingsTab token={token || ''} currentUser={currentUser} />
       )}

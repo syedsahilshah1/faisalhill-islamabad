@@ -58,7 +58,7 @@
         "High Rental Yield"
       ],
       "description": "Luxury 2-Bedroom Serviced Apartment on the 14th floor of iconic Faisal Jewels Tower with Margalla views.",
-      "image": "/faisal-jewel.jpg"
+      "image": "/images/faisal-jewel-tower.webp"
     },
     {
       "id": "plot-103",
@@ -133,7 +133,7 @@
         "Infinity Pool Access"
       ],
       "description": "Executive 1-Bedroom Apartment in Faisal Jewels Tower. Perfect for rental returns and luxury living.",
-      "image": "/faisal-jewel.jpg"
+      "image": "/images/faisal-jewel-tower.webp"
     },
     {
       "id": "plot-106",
@@ -753,8 +753,8 @@
         "residential": "Starting PKR 5.8 Lacs (Installments) • 1,295 Sq. Ft. Suite",
         "commercial": "PKR 1.8 Crore - 18 Crore (350 Shops)"
       },
-      "heroImage": "/faisal-jewel.jpg",
-      "masterPlanImage": "/faisal-jewel.jpg",
+      "heroImage": "/images/faisal-jewel-tower.webp",
+      "masterPlanImage": "/images/faisal-jewel-architectural-sketch.webp",
       "amenities": [
         {
           "name": "Swimming Pool & Fitness Center",
@@ -823,7 +823,7 @@
         {
           "title": "Floor 14 Slab Concrete Pouring",
           "date": "August 2026",
-          "image": "/faisal-jewel.jpg",
+          "image": "/images/faisal-jewel-tower.webp",
           "progress": 60,
           "text": "High-strength RCC structure progressing smoothly."
         }
@@ -929,7 +929,7 @@
       "id": "gal-2",
       "title": "Faisal Jewels 26-Story Skyscraper Tower",
       "category": "Towers",
-      "imageUrl": "/faisal-jewel.jpg",
+      "imageUrl": "/images/faisal-jewel-tower.webp",
       "description": "Rapid structural construction phase of the iconic 26-story high-rise.",
       "dateAdded": "August 2026"
     },
@@ -1038,7 +1038,7 @@
         "metaKeywords": "Faisal Jewels Tower, Faisal Jewels payment plan, 2-bed flat Faisal Jewels, revolving restaurant Taxila, high rise tower Faisal Hills",
         "ogTitle": "Faisal Jewels Tower • 26-Story Luxury Skyscraper",
         "ogDescription": "16 Quarterly Installments (48 Months) for luxury hotel apartments & retail shop spaces.",
-        "ogImage": "/faisal-jewel.jpg",
+        "ogImage": "/images/faisal-jewel-tower.webp",
         "canonicalUrl": "https://faisalhills.com/blocks/faisal-jewels",
         "author": "Faisal Jewels Development Team"
       }
