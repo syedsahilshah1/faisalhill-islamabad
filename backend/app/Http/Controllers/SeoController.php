@@ -22,7 +22,7 @@ class SeoController extends Controller
                 'siteName' => 'Faisal Hills',
                 'siteUrl' => 'https://faisalhillsislamabadfh.com',
                 'titleSeparator' => '|',
-                'defaultMetaTitle' => 'Faisal Hills Taxila & Islamabad | Master Plan, Plots & Prices',
+                'defaultMetaTitle' => 'Faisal Hills Islamabad: Plot Prices, Payment Plan & NOC Status',
                 'defaultMetaDescription' => 'Explore Faisal Hills Rawalpindi & Islamabad. Interactive plot maps, RDA NOC status, block prices, payment plans and real estate investments.',
                 'defaultKeywords' => 'Faisal Hills, Faisal Hills Taxila, Executive Block, Block A, Plot Prices, RDA Approved',
                 'defaultOgImage' => '/images/imgi_38_Faisal-Hills-site-home-page-header.webp',

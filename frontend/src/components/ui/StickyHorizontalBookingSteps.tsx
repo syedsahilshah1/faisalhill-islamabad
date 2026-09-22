@@ -4,53 +4,67 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Search, FileText, Award, Calculator, ShieldCheck, ArrowRight } from 'lucide-react';
 import ScrollReveal from './ScrollReveal';
 
-interface BookingStep {
+export interface BookingStepItem {
   number: string;
+  stepTag?: string;
   title: string;
-  description: string;
-  stepTag: string;
-  icon: React.ElementType;
+  desc: string;
+  description?: string;
 }
 
-const steps: BookingStep[] = [
+const defaultStepIcons: React.ElementType[] = [Search, FileText, Award, Calculator, ShieldCheck];
+
+const defaultSteps: BookingStepItem[] = [
   {
     number: '01',
-    title: 'Step 1 — Enquire & Choose Your Plot',
-    description: 'Contact our sales team via phone, WhatsApp, or the online form. Tell us your budget, preferred plot size, and sector. We will present you with available options and guide you through current pricing.',
-    stepTag: 'Step 1: Selection',
-    icon: Search,
+    stepTag: 'Selection',
+    title: 'Enquire & Choose Your Plot',
+    desc: 'Contact our sales team via phone, WhatsApp, or the online form. Share your budget, preferred plot size, and sector to receive available options and current pricing.',
   },
   {
     number: '02',
-    title: 'Step 2 — Reserve & Submit Documents',
-    description: 'Once you select your preferred plot, a booking form is completed and submitted along with the booking amount (bank transfer in favour of Zedem International). Bring your CNIC copy and photos.',
-    stepTag: 'Step 2: Documentation',
-    icon: FileText,
+    stepTag: 'Documentation',
+    title: 'Reserve & Submit Documents',
+    desc: 'Complete the booking form with your CNIC copy, next-of-kin CNIC and photos. Submit payments via official bank transfer to Zedem International.',
   },
   {
     number: '03',
-    title: 'Step 3 — Receive Your Allotment Letter',
-    description: 'Within 2–4 weeks of booking confirmation, your official allotment letter is issued by Zedem International, confirming your plot number, block, size, total value, and instalment schedule.',
-    stepTag: 'Step 3: Allotment',
-    icon: Award,
+    stepTag: 'Allotment',
+    title: 'Receive Your Allotment Letter',
+    desc: 'Within 2–4 weeks of booking confirmation, your official allotment letter is issued, confirming plot number, block, size, total value, and instalment schedule.',
   },
   {
     number: '04',
-    title: 'Step 4 — Pay Instalments & Track Development',
-    description: 'Pay your quarterly instalments according to the agreed schedule. Our team provides regular development updates so you always know the status of your investment. Site visits can be arranged at any time.',
-    stepTag: 'Step 4: Installments',
-    icon: Calculator,
+    stepTag: 'Installments',
+    title: 'Pay Instalments & Track Progress',
+    desc: 'Pay your quarterly instalments according to the agreed schedule. Our sales desk provides regular development updates so you always stay informed.',
   },
   {
     number: '05',
-    title: 'Step 5 — Take Possession',
-    description: 'Once development milestones are met and possession charges paid, your plot is handed over with all legal documentation ready for construction. Congratulations — you are now a Faisal Hills homeowner.',
-    stepTag: 'Step 5: Handover',
-    icon: ShieldCheck,
+    stepTag: 'Handover',
+    title: 'Take Possession',
+    desc: 'Once development milestones are met and possession charges cleared, your plot is demarcated and handed over ready for construction. Welcome to Faisal Hills.',
   },
 ];
 
-export default function StickyHorizontalBookingSteps() {
+interface StickyHorizontalBookingStepsProps {
+  label?: string;
+  h2?: string;
+  subline?: string;
+  data?: {
+    label?: string;
+    h2?: string;
+    subline?: string;
+    steps?: BookingStepItem[];
+  };
+}
+
+export default function StickyHorizontalBookingSteps({ label, h2, subline, data }: StickyHorizontalBookingStepsProps = {}) {
+  const displayLabel = label !== undefined ? label : (data?.label || '');
+  const displayH2 = h2 || data?.h2 || 'A Simple 5-Step Booking Process';
+  const displaySubline = subline || data?.subline || 'Scroll down to explore each step — from your first inquiry to the day you receive possession.';
+  const stepsList = (data?.steps && data.steps.length > 0) ? data.steps : defaultSteps;
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -99,11 +113,11 @@ export default function StickyHorizontalBookingSteps() {
       window.removeEventListener('resize', calculateBounds);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [stepsList.length]);
 
   const currentStepIndex = Math.min(
-    Math.floor(scrollProgress * steps.length),
-    steps.length - 1
+    Math.floor(scrollProgress * stepsList.length),
+    Math.max(0, stepsList.length - 1)
   );
 
   return (
@@ -113,21 +127,24 @@ export default function StickyHorizontalBookingSteps() {
       {/* ========================================================= */}
       <section className="block md:hidden bg-slate-50 py-10 px-3.5 sm:px-6 border-y border-slate-200 space-y-6">
         <div className="text-center space-y-1.5 max-w-xl mx-auto">
-          <span className="label-caps text-[#7b002c] font-bold block">
-            How to Book
-          </span>
+          {displayLabel ? (
+            <span className="label-caps text-[#7b002c] font-bold block">
+              {displayLabel}
+            </span>
+          ) : null}
           <p className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight leading-tight">
-            A Simple 5-Step Booking Process
+            {displayH2}
           </p>
           <p className="text-slate-600 text-xs leading-relaxed font-sans">
-            We have designed the Faisal Hills Islamabad booking process to be straightforward and stress-free.
+            {displaySubline}
           </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-          {steps.map((step, idx) => {
-            const IconComp = step.icon;
-            const isLast = idx === steps.length - 1;
+          {stepsList.map((step, idx) => {
+            const IconComp = defaultStepIcons[idx % defaultStepIcons.length] || Award;
+            const isLast = idx === stepsList.length - 1;
+            const stepNum = step.number || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`);
             return (
               <ScrollReveal 
                 key={idx} 
@@ -140,7 +157,7 @@ export default function StickyHorizontalBookingSteps() {
                 }`}>
                   <div className="flex items-center justify-between gap-1.5">
                     <span className="text-lg sm:text-2xl font-serif font-black text-[#7b002c]">
-                      {step.number}
+                      {stepNum}
                     </span>
                     <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg bg-rose-50 text-[#7b002c] flex items-center justify-center border border-rose-100 shrink-0">
                       <IconComp className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" />
@@ -148,16 +165,18 @@ export default function StickyHorizontalBookingSteps() {
                   </div>
 
                   <div className="space-y-0.5">
-                    <span className="text-[8px] sm:text-[9px] font-bold text-[#7b002c] uppercase tracking-wider block">
-                      {step.stepTag}
-                    </span>
+                    {step.stepTag ? (
+                      <span className="text-[9px] sm:text-[10px] font-bold text-[#7b002c] uppercase tracking-wider block">
+                        {step.stepTag}
+                      </span>
+                    ) : null}
                     <p className="font-serif font-bold text-xs sm:text-sm text-slate-900 leading-snug">
                       {step.title}
                     </p>
                   </div>
 
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-relaxed font-sans line-clamp-4 sm:line-clamp-none">
-                    {step.description}
+                    {step.desc || step.description}
                   </p>
                 </div>
               </ScrollReveal>
@@ -177,14 +196,16 @@ export default function StickyHorizontalBookingSteps() {
 
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2 shrink-0">
-            <span className="label-caps text-[#7b002c] font-bold block mb-0.5">
-              How to Book
-            </span>
+            {displayLabel ? (
+              <span className="label-caps text-[#7b002c] font-bold block mb-0.5">
+                {displayLabel}
+              </span>
+            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight">
-              A Simple 5-Step Booking Process
+              {displayH2}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-sans">
-              Scroll down to explore each step — from your first inquiry to the day you receive possession.
+              {displaySubline}
             </p>
 
             {/* Scroll Driven Progress Bar */}
@@ -196,7 +217,7 @@ export default function StickyHorizontalBookingSteps() {
                 />
               </div>
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Step {currentStepIndex + 1} / {steps.length}
+                Step {currentStepIndex + 1} / {stepsList.length}
               </span>
             </div>
           </div>
@@ -210,9 +231,10 @@ export default function StickyHorizontalBookingSteps() {
                 transform: `translate3d(-${scrollProgress * maxScrollX}px, 0, 0)`,
               }}
             >
-              {steps.map((step, idx) => {
-                const IconComp = step.icon;
+              {stepsList.map((step, idx) => {
+                const IconComp = defaultStepIcons[idx % defaultStepIcons.length] || Award;
                 const isCurrent = currentStepIndex === idx;
+                const stepNum = step.number || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`);
                 return (
                   <div
                     key={idx}
@@ -226,7 +248,7 @@ export default function StickyHorizontalBookingSteps() {
                       {/* Card Header: Number + Icon */}
                       <div className="flex items-center justify-between">
                         <span className="text-3xl sm:text-4xl font-serif font-black text-[#7b002c]">
-                          {step.number}
+                          {stepNum}
                         </span>
                         <div
                           className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center transition-all ${
@@ -241,9 +263,11 @@ export default function StickyHorizontalBookingSteps() {
 
                       {/* Tag & Title */}
                       <div>
-                        <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-wider block mb-1">
-                          {step.stepTag}
-                        </span>
+                        {step.stepTag ? (
+                          <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-wider block mb-1">
+                            {step.stepTag}
+                          </span>
+                        ) : null}
                         <h3 className="font-serif font-bold text-base sm:text-lg text-slate-900 leading-snug">
                           {step.title}
                         </h3>
@@ -251,14 +275,14 @@ export default function StickyHorizontalBookingSteps() {
 
                       {/* Description */}
                       <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                        {step.description}
+                        {step.desc || step.description}
                       </p>
                     </div>
 
                     {/* Card Footer */}
                     <div className="pt-3.5 border-t border-slate-100 text-xs font-semibold tracking-wider uppercase flex items-center justify-between">
                       <span className={isCurrent ? 'text-[#7b002c] font-bold' : 'text-slate-400'}>
-                        {step.stepTag}
+                        Step {idx + 1} of {stepsList.length}
                       </span>
                       <ArrowRight
                         className={`w-4 h-4 transition-transform ${

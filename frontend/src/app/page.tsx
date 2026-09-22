@@ -8,8 +8,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamab
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('home');
 
-  const title = seo?.title || 'Faisal Hills Islamabad | RDA Approved Plots & Prices 2026';
-  const description = seo?.meta_description || 'Faisal Hills Islamabad by Zedem International — RDA-approved plots on GT Road near Taxila. 5 Marla to 2 Kanal, block rates, payment plan & possession.';
+  const title = seo?.title || 'Faisal Hills Islamabad: Plot Prices, Payment Plan & NOC Status';
+  const description = seo?.meta_description || 'Faisal Hills Islamabad on GT Road, Taxila: RDA NOC status, block-by-block plot rates, 2026 payment plans and possession status, with checks before you buy.';
   const canonical = seo?.canonical_url || BASE_URL;
   const ogImg = seo?.og_image || `${BASE_URL}/images/faisal-hills-site-header.webp`;
   const keywords = seo?.keywords 

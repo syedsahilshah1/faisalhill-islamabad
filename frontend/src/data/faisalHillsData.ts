@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface BlockInfo {
   id: string;
   slug: string;
@@ -1048,7 +1050,7 @@ export interface RedirectItem {
 
 export const initialSeoConfig: GlobalSeoSettings = {
   siteName: "Faisal Hills Real Estate Portal",
-  defaultMetaTitle: "Faisal Hills Real Estate | Official Master Plan, Plots & Prices",
+  defaultMetaTitle: "Faisal Hills Islamabad: Plot Prices, Payment Plan & NOC Status",
   defaultMetaDescription: "Explore Faisal Hills Islamabad & Taxila. Interactive plot maps, RDA NOC status, block prices, and flexible payment plans for residential & commercial plots.",
   defaultMetaKeywords: "Faisal Hills, Faisal Hills Taxila, Faisal Hills Rawalpindi, Executive Block Faisal Hills, Block A Faisal Hills, Block B Faisal Hills, Block C Faisal Hills, Prime Block Faisal Hills, Faisal Hills Plot Prices, Faisal Hills Map, Faisal Jewels Tower",
   googleSiteVerification: "google-site-verification-code-xyz123",
@@ -1059,8 +1061,8 @@ export const initialSeoConfig: GlobalSeoSettings = {
     {
       pageSlug: "home",
       pageTitle: "Home Page",
-      metaTitle: "Faisal Hills Real Estate | Master Plan, Plots & Prices",
-      metaDescription: "Explore RDA-approved residential & commercial plots in Faisal Hills GT Road Taxila. View interactive master map, block rates & booking options.",
+      metaTitle: "Faisal Hills Islamabad: Plot Prices, Payment Plan & NOC Status",
+      metaDescription: "Faisal Hills Islamabad on GT Road, Taxila: RDA NOC status, block-by-block plot rates, 2026 payment plans and possession status, with checks before you buy.",
       metaKeywords: "Faisal Hills Taxila, Faisal Hills Rawalpindi, Plots for sale in Faisal Hills, RDA approved housing society, Faisal Town Group",
       ogTitle: "Faisal Hills Taxila • Official Real Estate Portal",
       ogDescription: "Interactive plot inventory, master plan, and verified prices for Faisal Hills Executive, Block A, B, C, D & Prime Block.",
@@ -1699,7 +1701,7 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
           };
         }
       }
-    } catch (_) {}
+    } catch (_) { }
   }
   try {
     const res = await safeFetch(`${getApiUrl()}/seo/${pageSlug}`, { next: { revalidate: 60 } });
@@ -1739,14 +1741,14 @@ export async function submitLead(lead: { name: string; phone: string; interest?:
   if (typeof window !== 'undefined') {
     try {
       const existing = JSON.parse(localStorage.getItem('faisal_leads_data') || '[]');
-      const isDuplicate = existing.some((item: any) => 
+      const isDuplicate = existing.some((item: any) =>
         item.name === localLead.name && item.phone === localLead.phone && (item.message === localLead.message || item.interest === localLead.interest)
       );
       if (!isDuplicate) {
         localStorage.setItem('faisal_leads_data', JSON.stringify([localLead, ...existing]));
         window.dispatchEvent(new Event('faisal_leads_updated'));
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   const res = await fetch(`${getApiUrl()}/leads`, {
@@ -2659,8 +2661,8 @@ export const defaultContactInfo: ContactInfoData = {
 
 export async function fetchSettingByKey<T>(key: string): Promise<T | null> {
   try {
-    const res = await safeFetch(`${getApiUrl()}/settings/${key}`, { 
-      next: { revalidate: 60 } 
+    const res = await safeFetch(`${getApiUrl()}/settings/${key}`, {
+      next: { revalidate: 60 }
     });
     if (!res || !res.ok) return null;
     return await res.json().catch(() => null);
@@ -2754,7 +2756,7 @@ export interface FaqItem {
 
 export interface HomepageCMSData {
   hero: {
-    badge: string;
+    badge?: string;
     h1: string;
     subtitle: string;
     formTitle: string;
@@ -2770,6 +2772,7 @@ export interface HomepageCMSData {
     stat5: { value: string; label: string; icon: string };
   };
   chairman: {
+    label?: string;
     h2: string;
     quoteTitle: string;
     visibleParagraph: string;
@@ -2781,10 +2784,12 @@ export interface HomepageCMSData {
   };
   tickerItems: string[];
   projectsByZedem: {
+    label?: string;
     h2: string;
     projects: { name: string; href: string }[];
   };
   overview: {
+    label?: string;
     h2: string;
     paragraph: string;
     linkText: string;
@@ -2792,22 +2797,34 @@ export interface HomepageCMSData {
     image: string;
     imageAlt: string;
   };
+  atAGlance?: {
+    label?: string;
+    h2: string;
+    items: { label: string; value: string }[];
+  };
   location: {
+    label?: string;
     h2: string;
     p1: string;
-    p2: string;
-    p3: string;
+    p2?: string;
+    p3?: string;
     linkText: string;
     linkHref: string;
     mapEmbedUrl?: string;
   };
+  gettingThere?: {
+    label?: string;
+    h3: string;
+    routes: { route: string; connects: string; time: string }[];
+  };
   landmarks: {
-    label: string;
+    label?: string;
     h2: string;
     paragraph: string;
     cards: LandmarkCardItem[];
   };
   masterPlan: {
+    label?: string;
     h2: string;
     paragraph: string;
     downloadBtnText: string;
@@ -2816,11 +2833,12 @@ export interface HomepageCMSData {
     previewImage: string;
   };
   blocksSection: {
+    label?: string;
     h2: string;
     paragraph: string;
   };
   plotsForSale: {
-    badge: string;
+    badge?: string;
     h2: string;
     paragraph: string;
     btnText: string;
@@ -2830,16 +2848,18 @@ export interface HomepageCMSData {
     ctaBtn2Text: string;
   };
   flagships: {
+    label?: string;
     h2: string;
     paragraph: string;
     card1: { title: string; subtitle: string; desc: string; btnText: string; btnHref: string; image: string; alt: string };
     card2: { title: string; subtitle: string; desc: string; btnText: string; btnHref: string; image: string; alt: string };
   };
   paymentPlan: {
+    label?: string;
     h2: string;
     paragraph: string;
     calcBtnText: string;
-    sectionLabel: string;
+    sectionLabel?: string;
     card1: { title: string; desc: string };
     card2: { title: string; desc: string };
     card3: { title: string; desc: string };
@@ -2850,48 +2870,53 @@ export interface HomepageCMSData {
     bookBtnText: string;
   };
   bookingSteps: {
-    label: string;
+    label?: string;
     h2: string;
     subline: string;
     steps: { number: string; stepTag: string; title: string; desc: string }[];
   };
   whyInvest: {
+    label?: string;
     h2: string;
     paragraph: string;
     benefits: WhyInvestItem[];
   };
   amenities: {
+    label?: string;
     h2: string;
     paragraph: string;
     cards: AmenityCardItem[];
   };
   testimonials: {
-    label: string;
+    label?: string;
     h2: string;
     paragraph: string;
     items: TestimonialItem[];
   };
   infrastructure: {
+    label?: string;
     h2: string;
     paragraph: string;
     whatsappBtnText: string;
     cards: InfraCarouselItem[];
   };
   photoGallery: {
+    label?: string;
     h2: string;
     paragraph: string;
     items: { title: string; category: string; desc: string; image: string }[];
   };
   discoverFtStats: {
-    label: string;
+    label?: string;
     stats: { number: string; label: string }[];
   };
   faqs: {
-    label: string;
+    label?: string;
     h2: string;
     items: FaqItem[];
   };
   finalCta: {
+    label?: string;
     h2: string;
     paragraph: string;
     callBtnText: string;
@@ -2922,6 +2947,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     stat5: { value: '32,000+', label: 'RESIDENTIAL & COMMERCIAL PLOTS', icon: 'Trees' }
   },
   chairman: {
+    label: '',
     h2: 'Chairman & Founder — Chaudhry Abdul Majeed',
     quoteTitle: 'A Legacy of Excellence & Uncompromising Delivery in Real Estate',
     visibleParagraph: 'Faisal Hills Islamabad is developed by Zedem International under the leadership of Chaudhry Abdul Majeed, the founder of Faisal Town Group.',
@@ -2942,6 +2968,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     'POSSESSION IN DEVELOPED BLOCKS'
   ],
   projectsByZedem: {
+    label: '',
     h2: 'Our Projects by Zedem International',
     projects: [
       { name: 'Faisal Town Phase 1', href: '/about-us' },
@@ -2953,6 +2980,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   overview: {
+    label: '',
     h2: 'Faisal Hills Islamabad Overview',
     paragraph: 'Faisal Hills Islamabad is a master-planned, RDA-approved gated community on the main N-5 GT Road near Taxila, developed by Zedem International. Spread over 11,823 kanals with the Margalla Hills as its backdrop, it offers 5 Marla to 2 Kanal residential plots, commercial plots and high-rise apartments. With families already living in its developed blocks and direct access to Islamabad and Rawalpindi, it suits both homebuilders and long-term investors.',
     linkText: 'Discover More About Faisal Hills',
@@ -2960,51 +2988,84 @@ export const initialHomepageCMS: HomepageCMSData = {
     image: '/images/faisal-hills-overview.webp',
     imageAlt: 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'
   },
+  atAGlance: {
+    label: '',
+    h2: 'Faisal Hills at a Glance',
+    items: [
+      { label: 'Approval', value: 'NOC from the Rawalpindi Development Authority (RDA)' },
+      { label: 'Approved area', value: '11,823.5 kanals' },
+      { label: 'Launched', value: '2016' },
+      { label: 'Location', value: 'Main GT Road (N-5), near Taxila' },
+      { label: 'Blocks', value: 'Executive, A, B, B Extension, C, D, Prime, Hill Estate View' },
+      { label: 'Plot sizes', value: '5 Marla to 2 Kanal residential; commercial plots in selected blocks' },
+      { label: 'Payment', value: 'Lump sum in developed blocks; installments in newer blocks' },
+      { label: 'Possession', value: 'Available in Executive and A; partial or pending elsewhere' }
+    ]
+  },
   location: {
-    h2: 'Faisal Hills Islamabad — A Location That Sets It Apart',
-    p1: 'The Faisal Hills Islamabad location is one of its defining advantages. Situated on the Grand Trunk Road (GT Road) near Taxila, the society sits between the federal capital and historic Taxila, combining easy Islamabad access with more land per rupee.',
-    p2: 'Direct GT Road frontage means you are not waiting on a future road to reach the society. It connects Faisal Hills to Islamabad, Rawalpindi, Wah Cantt and the M-1 Motorway, with the Margalla Avenue link offering a quicker route into Islamabad\'s sectors.',
-    p3: 'Ongoing regional road projects are expected to improve connectivity further over time. For buyers, the key point is simple: Faisal Hills is accessible today, not only on a master-plan drawing.',
+    label: '',
+    h2: 'Faisal Hills Islamabad: Main GT Road near Taxila',
+    p1: 'Faisal Hills fronts the Main GT Road (N-5), the highway linking Islamabad and Rawalpindi with Taxila, Wah Cantt and Peshawar. Its main entrance, beside the Executive Block, opens onto the GT Road, and the society extends back toward the Margalla foothills. Sector B-17 (Multi Gardens / MPCHS) adjoins it on the Islamabad side; Taxila city and Taxila Cantonment lie to the west.',
     linkText: 'Explore Complete Location Map & Sector Boundaries',
     linkHref: '/faisal-hills-location',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Faisal%20Hills%20Taxila&t=&z=13&ie=UTF8&iwloc=&output=embed'
   },
+  gettingThere: {
+    label: '',
+    h3: 'Getting There',
+    routes: [
+      { route: 'GT Road (N-5)', connects: 'Direct frontage; main entrance', time: 'Direct (0 Min)' },
+      { route: 'Margalla Avenue', connects: 'Western sectors of Islamabad (D-12, E-11, F-10)', time: '~15–20 Mins' },
+      { route: 'M-1 Motorway', connects: 'Peshawar and the northern corridor', time: '~5–8 Mins' },
+      { route: 'Srinagar Highway', connects: 'Central Islamabad and Blue Area', time: '~25–30 Mins' },
+      { route: 'New Islamabad International Airport', connects: 'Air travel', time: '~25–30 Mins' },
+      { route: 'Taxila / Wah Cantt', connects: 'Shopping, hospitals, services', time: '~5–10 Mins' }
+    ]
+  },
   landmarks: {
-    label: 'STRATEGIC CONNECTIVITY',
+    label: '',
     h2: 'Nearby Landmarks of Faisal Hills',
-    paragraph: 'Positioned on the historic GT Road, Faisal Hills offers practical travel times to key cultural, commercial and travel destinations across the twin cities.',
+    paragraph: 'Positioned on the historic GT Road (N-5), Faisal Hills offers practical travel times to key educational institutions, heritage hubs, and neighboring twin-city destinations.',
     cards: [
       {
         id: 'lm-1',
-        timeBadge: '~25–30 Mins',
-        title: 'Zero Point & Blue Area',
-        subLine: 'Capital Business District',
-        image: '/images/landmarks/islamabad-zero-point.webp'
+        timeBadge: '~2–4 Mins',
+        title: 'Sector B-17 / Multi Gardens (MPCHS)',
+        subLine: 'Directly Adjoining Twin-City Mega Housing Society',
+        image: '/images/landmarks/sector-b17-mpchs.webp'
       },
       {
         id: 'lm-2',
-        timeBadge: '~15 Mins',
-        title: 'Islamabad International Airport',
-        subLine: 'International Air Terminal',
-        image: '/images/landmarks/islamabad-airport.webp'
+        timeBadge: '~5–8 Mins',
+        title: 'HITEC University, Taxila',
+        subLine: 'Premier Engineering, Medical & Technology Campus',
+        image: '/images/landmarks/hitec-university-taxila.webp'
       },
       {
         id: 'lm-3',
-        timeBadge: '~20–25 Mins',
-        title: 'M-1 Motorway',
-        subLine: 'Peshawar–Islamabad Highway',
-        image: '/images/landmarks/m1-motorway.webp'
+        timeBadge: '~8–10 Mins',
+        title: 'University of Engineering and Technology (UET), Taxila',
+        subLine: 'Top Tier Public Engineering University',
+        image: '/images/landmarks/uet-taxila-campus.webp'
       },
       {
         id: 'lm-4',
         timeBadge: '~5 Mins',
-        title: 'Taxila Museum & Heritage Sites',
-        subLine: 'Historical & Cultural Center',
-        image: '/images/landmarks/taxila-museum.webp'
-      }
+        title: 'Taxila Museum and the Gandhara heritage sites',
+        subLine: 'UNESCO World Heritage Archaeological Landmark',
+        image: '/images/landmarks/taxila-museum-gandhara.webp'
+      },
+      {
+        id: 'lm-5',
+        timeBadge: '~10–12 Mins',
+        title: 'Wah Cantt',
+        subLine: 'Well-established military cantonment with schools, hospitals and commercial zones.',
+        image: '/images/landmarks/wah-cantonment.webp'
+      },
     ]
   },
   masterPlan: {
+    label: '',
     h2: 'Faisal Hills Master Plan Map',
     paragraph: 'Explore the RDA-approved layout of Faisal Hills Islamabad. Check block boundaries, plot dimensions, road networks and commercial boulevards, with deep zoom up to 1200%.',
     downloadBtnText: 'Download Master Plan (PDF)',
@@ -3013,11 +3074,12 @@ export const initialHomepageCMS: HomepageCMSData = {
     previewImage: '/images/faisal-hills-master-plan-preview.webp'
   },
   blocksSection: {
+    label: '',
     h2: 'Explore Faisal Hills Blocks & Sectors',
     paragraph: 'Select a block to see its location advantages, development status and available plots.'
   },
   plotsForSale: {
-    badge: 'VERIFIED INVENTORY & RESALE FILES',
+    badge: '',
     h2: 'Plots for Sale in Faisal Hills',
     paragraph: 'Browse available residential and commercial plots across all blocks. Check current asking prices, sizes and facing, and confirm documents with our sales desk before booking.',
     btnText: 'VIEW COMPLETE PLOT DIRECTORY',
@@ -3027,6 +3089,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ctaBtn2Text: 'ALL PLOTS DIRECTORY'
   },
   flagships: {
+    label: '',
     h2: 'Faisal Hills High-Rise & Commercial Flagships',
     paragraph: 'Landmark high-rise and lifestyle destinations being built inside Faisal Hills Islamabad.',
     card1: {
@@ -3049,10 +3112,11 @@ export const initialHomepageCMS: HomepageCMSData = {
     }
   },
   paymentPlan: {
+    label: '',
     h2: 'Faisal Hills Islamabad Payment Plan 2026',
     paragraph: 'The most common question we get is about the payment plan, and for good reason. Knowing exactly what you pay, when, and what you receive is the foundation of a confident decision. Here is how it works.',
     calcBtnText: 'Open Custom Calculator',
-    sectionLabel: 'HOW THE PAYMENT PLAN WORKS',
+    sectionLabel: '',
     card1: {
       title: 'Booking Amount',
       desc: 'A set percentage of the plot value is paid at booking to reserve your specific plot and block.'
@@ -3075,43 +3139,44 @@ export const initialHomepageCMS: HomepageCMSData = {
     bookBtnText: 'Book Plot On This Plan'
   },
   bookingSteps: {
-    label: 'HOW TO BOOK',
+    label: '',
     h2: 'A Simple 5-Step Booking Process',
     subline: 'Scroll down to explore each step — from your first inquiry to the day you receive possession.',
     steps: [
       {
         number: '01',
-        stepTag: 'STEP 1: SELECTION',
+        stepTag: 'Selection',
         title: 'Enquire & Choose Your Plot',
         desc: 'Contact our sales team by phone, WhatsApp or the online form. Share your budget, plot size and preferred block, and we will show you verified options with current pricing.'
       },
       {
         number: '02',
-        stepTag: 'STEP 2: DOCUMENTATION',
+        stepTag: 'Documentation',
         title: 'Reserve & Submit Documents',
         desc: 'Complete the booking form with your CNIC copy (NICOP for overseas buyers), next-of-kin CNIC and photos. Pay only by pay order or bank transfer in the developer\'s official name.'
       },
       {
         number: '03',
-        stepTag: 'STEP 3: ALLOTMENT',
+        stepTag: 'Allotment',
         title: 'Receive Your Allotment Letter',
         desc: 'Your official allotment letter is issued by the developer, confirming plot number, block, size, total value and payment schedule.'
       },
       {
         number: '04',
-        stepTag: 'STEP 4: PAYMENTS',
+        stepTag: 'Payments',
         title: 'Complete Payments & Track Progress',
         desc: 'Pay according to your agreed schedule. We share regular development updates, and site visits, including live video tours for overseas buyers, can be arranged anytime.'
       },
       {
         number: '05',
-        stepTag: 'STEP 5: HANDOVER',
+        stepTag: 'Handover',
         title: 'Take Possession',
         desc: 'Once possession charges are cleared, your plot is demarcated and handed over with documentation ready for construction. Welcome to Faisal Hills.'
       }
     ]
   },
   whyInvest: {
+    label: '',
     h2: 'Why Faisal Hills Is a Smart Property Investment in 2026',
     paragraph: 'Land value depends on three things: legal status, location, and real development on the ground. Faisal Hills Islamabad offers all three, which is why it attracts both overseas investors and families building their homes.',
     benefits: [
@@ -3160,6 +3225,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   amenities: {
+    label: '',
     h2: 'Amenities Designed for Modern Living',
     paragraph: 'From underground utilities to schools and parks, Faisal Hills is planned so that daily life is comfortable within the community itself.',
     cards: [
@@ -3226,7 +3292,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   testimonials: {
-    label: 'CLIENT FEEDBACK',
+    label: '',
     h2: 'What Our Buyers Say',
     paragraph: 'Real experiences from overseas investors and homebuyers who booked through our sales desk.',
     items: [
@@ -3263,6 +3329,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   infrastructure: {
+    label: '',
     h2: 'Infrastructure of Faisal Hills',
     paragraph: 'Wide streets and boulevards from 40 to 225 feet give Faisal Hills a spacious, organised layout, planned to modern urban-design standards.',
     whatsappBtnText: 'CHAT ON WHATSAPP',
@@ -3326,6 +3393,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   photoGallery: {
+    label: '',
     h2: 'On-Site Development & Photo Gallery',
     paragraph: 'Recent photography of Faisal Hills entrance, boulevards, mosques and high-rise construction. (Updated September 2026)',
     items: [
@@ -3368,7 +3436,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   discoverFtStats: {
-    label: 'DISCOVER FAISAL HILLS SCALE',
+    label: '',
     stats: [
       { number: '11,823+', label: 'KANALS TOTAL LAND' },
       { number: '7', label: 'MASTER PLANNED SECTORS' },
@@ -3378,7 +3446,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     ]
   },
   faqs: {
-    label: 'FAQ\'S',
+    label: '',
     h2: 'Frequently Asked Questions (FAQs)',
     items: [
       {
@@ -3443,6 +3511,7 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
           projectsByZedem: { ...initialHomepageCMS.projectsByZedem, ...(parsed.projectsByZedem || {}) },
           overview: { ...initialHomepageCMS.overview, ...(parsed.overview || {}) },
           location: { ...initialHomepageCMS.location, ...(parsed.location || {}) },
+          gettingThere: { ...initialHomepageCMS.gettingThere, ...(parsed.gettingThere || {}) },
           landmarks: { ...initialHomepageCMS.landmarks, ...(parsed.landmarks || {}) },
           masterPlan: { ...initialHomepageCMS.masterPlan, ...(parsed.masterPlan || {}) },
           blocksSection: { ...initialHomepageCMS.blocksSection, ...(parsed.blocksSection || {}) },
@@ -3504,7 +3573,7 @@ export async function saveHomepageCMS(cmsData: HomepageCMSData, token?: string):
 // Granular User Role & Module Permissions
 // -------------------------------------------------------------
 
-export type UserPermissionKey = 
+export type UserPermissionKey =
   | 'manage_leads'
   | 'manage_plots'
   | 'manage_blogs'

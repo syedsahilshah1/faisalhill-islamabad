@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
   Image as ImageIcon, Sparkles, Building2, MapPin, Layers, PhoneCall, MessageCircle, HelpCircle,
-  Star, ShieldCheck, Eye, Compass, Award, FileText, Check, DollarSign, ListChecks
+  Star, ShieldCheck, Eye, Compass, Award, FileText, Check, DollarSign, ListChecks,
+  Upload, Camera, Link2, X
 } from 'lucide-react';
 import {
   HomepageCMSData,
@@ -19,6 +20,194 @@ import {
   LandmarkCardItem,
   FaqItem
 } from '@/data/faisalHillsData';
+
+function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } else {
+          resolve((event.target?.result as string) || '');
+        }
+      };
+      img.onerror = () => resolve((event.target?.result as string) || '');
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+
+interface ImageUploaderProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  helper?: string;
+}
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({
+  label,
+  value,
+  onChange,
+  placeholder = 'Image URL or upload from device',
+  helper = 'Supports JPG, PNG, WEBP from PC / Mobile'
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const dataUrl = await compressImageFile(file, 1920, 0.85);
+      if (dataUrl) {
+        onChange(dataUrl);
+      }
+    } catch (err) {
+      console.error('Failed to process image:', err);
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+          {label}
+        </label>
+        <button
+          type="button"
+          onClick={() => setShowUrlInput(!showUrlInput)}
+          className="text-[11px] text-[#7b002c] hover:underline font-medium flex items-center gap-1 cursor-pointer"
+        >
+          <Link2 className="w-3 h-3" />
+          <span>{showUrlInput ? 'Hide URL' : 'Direct URL / Path'}</span>
+        </button>
+      </div>
+
+      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+        {value ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="relative w-24 h-16 sm:w-28 sm:h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-900 shrink-0 shadow-sm group">
+              <img
+                src={value}
+                alt="Preview"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/faisal-hills-site-header.webp';
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Eye className="w-4 h-4 text-white" />
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0 space-y-1.5">
+              <p className="text-xs font-semibold text-slate-800 truncate">
+                {value.startsWith('data:') ? 'Uploaded from Device (Saved)' : value}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="file"
+                  ref={inputRef}
+                  accept="image/*"
+                  onChange={handleFile}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  disabled={uploading}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  <Upload className="w-3.5 h-3.5 text-[#7b002c]" />
+                  <span>{uploading ? 'Processing...' : 'Change Photo'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onChange('')}
+                  className="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-semibold transition flex items-center gap-1 cursor-pointer"
+                  title="Remove image"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Remove</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 border-2 border-dashed border-slate-300 hover:border-[#7b002c]/60 rounded-xl bg-white transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#7b002c] flex items-center justify-center shrink-0">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-800">No Image Uploaded</p>
+                <p className="text-[11px] text-slate-500">{helper}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="file"
+                ref={inputRef}
+                accept="image/*"
+                onChange={handleFile}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                disabled={uploading}
+                className="w-full sm:w-auto px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{uploading ? 'Processing...' : 'Upload from Device / Mobile'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showUrlInput && (
+          <div className="pt-2 border-t border-slate-200/60 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Direct Image URL / Path:
+            </span>
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
+              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono text-slate-900 focus:outline-none focus:border-[#7b002c]"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 interface HomepageCmsTabProps {
   token: string | null;
@@ -201,10 +390,11 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Top Badge Tag</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Top Badge Tag (Optional)</label>
                   <input
                     type="text"
-                    value={cms.hero.badge}
+                    value={cms.hero.badge || ''}
+                    placeholder="Leave blank to hide"
                     onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, badge: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
@@ -251,26 +441,22 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Trust Guarantee Line</label>
-                    <input
-                      type="text"
-                      value={cms.hero.trustLine}
-                      onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, trustLine: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Background Image URL</label>
-                    <input
-                      type="text"
-                      value={cms.hero.bgImage}
-                      onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, bgImage: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Trust Guarantee Line</label>
+                  <input
+                    type="text"
+                    value={cms.hero.trustLine}
+                    onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, trustLine: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
                 </div>
+
+                <ImageUploader
+                  label="Hero Background Image"
+                  value={cms.hero.bgImage}
+                  onChange={(val) => setCms({ ...cms, hero: { ...cms.hero, bgImage: val } })}
+                  placeholder="/images/faisal-hills-site-header.webp"
+                />
               </div>
             </div>
           )}
@@ -434,26 +620,22 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Chairman Image URL</label>
-                    <input
-                      type="text"
-                      value={cms.chairman.image}
-                      onChange={(e) => setCms({ ...cms, chairman: { ...cms.chairman, image: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Image Alt Text</label>
-                    <input
-                      type="text"
-                      value={cms.chairman.imageAlt}
-                      onChange={(e) => setCms({ ...cms, chairman: { ...cms.chairman, imageAlt: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Image Alt Text</label>
+                  <input
+                    type="text"
+                    value={cms.chairman.imageAlt}
+                    onChange={(e) => setCms({ ...cms, chairman: { ...cms.chairman, imageAlt: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
                 </div>
+
+                <ImageUploader
+                  label="Chairman Portrait Image"
+                  value={cms.chairman.image}
+                  onChange={(val) => setCms({ ...cms, chairman: { ...cms.chairman, image: val } })}
+                  placeholder="/images/faisal-hills-site-header.webp"
+                />
               </div>
             </div>
           )}
@@ -467,14 +649,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
-                  <input
-                    type="text"
-                    value={cms.overview.h2}
-                    onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.overview.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.overview.h2}
+                      onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -508,75 +702,63 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Image URL</label>
-                    <input
-                      type="text"
-                      value={cms.overview.image}
-                      onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, image: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Image Alt</label>
-                    <input
-                      type="text"
-                      value={cms.overview.imageAlt}
-                      onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, imageAlt: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Image Alt Text</label>
+                  <input
+                    type="text"
+                    value={cms.overview.imageAlt}
+                    onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, imageAlt: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
                 </div>
+
+                <ImageUploader
+                  label="Overview Feature Image"
+                  value={cms.overview.image}
+                  onChange={(val) => setCms({ ...cms, overview: { ...cms.overview, image: val } })}
+                  placeholder="/images/faisal-hills-site-header.webp"
+                />
               </div>
             </div>
           )}
 
-          {/* 6. LOCATION */}
+          {/* 6. LOCATION & GETTING THERE */}
           {activeSection === 'location' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
               <div className="border-b border-slate-100 pb-3">
                 <h3 className="font-serif text-lg font-bold text-slate-900">Location &amp; Access Section</h3>
-                <p className="text-xs text-slate-500">GT Road, Taxila, M-1 access routes description and interactive map embed URL.</p>
+                <p className="text-xs text-slate-500">GT Road location description, interactive map embed URL, and Getting There access routes.</p>
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Location H2 Heading</label>
-                  <input
-                    type="text"
-                    value={cms.location.h2}
-                    onChange={(e) => setCms({ ...cms, location: { ...cms.location, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.location.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, location: { ...cms.location, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Location H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.location.h2}
+                      onChange={(e) => setCms({ ...cms, location: { ...cms.location, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph 1</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Location Paragraph</label>
                   <textarea
-                    rows={2}
+                    rows={3}
                     value={cms.location.p1}
                     onChange={(e) => setCms({ ...cms, location: { ...cms.location, p1: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph 2</label>
-                  <textarea
-                    rows={2}
-                    value={cms.location.p2}
-                    onChange={(e) => setCms({ ...cms, location: { ...cms.location, p2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph 3</label>
-                  <textarea
-                    rows={2}
-                    value={cms.location.p3}
-                    onChange={(e) => setCms({ ...cms, location: { ...cms.location, p3: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
@@ -590,38 +772,249 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
+
+                {/* Getting There Sub-section */}
+                <div className="pt-6 border-t border-slate-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-serif text-base font-bold text-slate-900">Getting There (Access Routes Table)</h4>
+                      <p className="text-xs text-slate-500">Manage highway routes, connected areas, and verified drive times.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm('Reset Getting There routes table to default verified routes?')) {
+                            setCms({
+                              ...cms,
+                              gettingThere: initialHomepageCMS.gettingThere
+                            });
+                            showNotification('success', 'Getting There routes reset to defaults.');
+                          }
+                        }}
+                        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Reset Routes</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentRoutes = cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || [];
+                          const newRoute = { route: 'New Highway / Route', connects: 'Connected destination', time: '~10 Mins' };
+                          setCms({
+                            ...cms,
+                            gettingThere: {
+                              h3: cms.gettingThere?.h3 || 'Getting There',
+                              routes: [...currentRoutes, newRoute],
+                              label: undefined
+                            }
+                          });
+                        }}
+                        className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Route</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Getting There Heading</label>
+                    <input
+                      type="text"
+                      value={cms.gettingThere?.h3 || 'Getting There'}
+                      onChange={(e) => setCms({
+                        ...cms,
+                        gettingThere: {
+                          routes: cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || [],
+                          h3: e.target.value,
+                          label: undefined
+                        }
+                      })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    {(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || []).map((routeItem, rIdx) => (
+                      <div key={rIdx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-12 gap-3 items-center relative">
+                        <div className="col-span-12 sm:col-span-4 space-y-1">
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Route Name</label>
+                          <input
+                            type="text"
+                            value={routeItem.route}
+                            onChange={(e) => {
+                              const list = [...(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || [])];
+                              list[rIdx] = { ...list[rIdx], route: e.target.value };
+                              setCms({
+                                ...cms,
+                                gettingThere: {
+                                  h3: cms.gettingThere?.h3 || 'Getting There',
+                                  routes: list,
+                                  label: undefined
+                                }
+                              });
+                            }}
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-900"
+                          />
+                        </div>
+
+                        <div className="col-span-12 sm:col-span-5 space-y-1">
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Connects You To</label>
+                          <input
+                            type="text"
+                            value={routeItem.connects}
+                            onChange={(e) => {
+                              const list = [...(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || [])];
+                              list[rIdx] = { ...list[rIdx], connects: e.target.value };
+                              setCms({
+                                ...cms,
+                                gettingThere: {
+                                  h3: cms.gettingThere?.h3 || 'Getting There',
+                                  routes: list,
+                                  label: undefined
+                                }
+                              });
+                            }}
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700"
+                          />
+                        </div>
+
+                        <div className="col-span-9 sm:col-span-2 space-y-1">
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Drive Time</label>
+                          <input
+                            type="text"
+                            value={routeItem.time}
+                            onChange={(e) => {
+                              const list = [...(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || [])];
+                              list[rIdx] = { ...list[rIdx], time: e.target.value };
+                              setCms({
+                                ...cms,
+                                gettingThere: {
+                                  h3: cms.gettingThere?.h3 || 'Getting There',
+                                  routes: list,
+                                  label: undefined
+                                }
+                              });
+                            }}
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-[#7b002c]"
+                          />
+                        </div>
+
+                        <div className="col-span-3 sm:col-span-1 flex justify-end pt-4 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const list = (cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || []).filter((_, i) => i !== rIdx);
+                              setCms({
+                                ...cms,
+                                gettingThere: {
+                                  h3: cms.gettingThere?.h3 || 'Getting There',
+                                  routes: list,
+                                  label: undefined
+                                }
+                              });
+                            }}
+                            className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-lg cursor-pointer transition-colors"
+                            title="Delete Route"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
           {/* 7. LANDMARKS */}
           {activeSection === 'landmarks' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="font-serif text-lg font-bold text-slate-900">Nearby Key Landmarks</h3>
-                  <p className="text-xs text-slate-500">Show proximity cards with travel times and thumbnails.</p>
+                  <p className="text-xs text-slate-500">Edit section headers, travel time proximity badges, and landmark photos.</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newCard: LandmarkCardItem = {
-                      id: `lm-${Date.now()}`,
-                      timeBadge: '5 MINS',
-                      title: 'New Landmark Location',
-                      subLine: 'Direct expressway access',
-                      image: '/images/faisal-hills-site-header.webp'
-                    };
-                    setCms({ ...cms, landmarks: { ...cms.landmarks, cards: [...cms.landmarks.cards, newCard] } });
-                  }}
-                  className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Landmark</span>
-                </button>
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('Reset Nearby Landmarks section to the 5 standard landmarks (Sector B-17/MPCHS, HITEC Univ, UET Taxila, Taxila Museum, Wah Cantt)?')) {
+                        setCms({ ...cms, landmarks: initialHomepageCMS.landmarks });
+                        showNotification('success', 'Landmarks section reset to standard 5 landmarks.');
+                      }
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer transition-all"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Reset Landmarks (5)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newCard: LandmarkCardItem = {
+                        id: `lm-${Date.now()}`,
+                        timeBadge: '~5 Mins',
+                        title: 'New Landmark Location',
+                        subLine: 'Direct expressway access',
+                        image: '/images/landmarks/sector-b17-mpchs.webp'
+                      };
+                      setCms({ ...cms, landmarks: { ...cms.landmarks, cards: [...cms.landmarks.cards, newCard] } });
+                    }}
+                    className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Landmark Card</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Section Main Titles & Description */}
+              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.landmarks.label || ''}
+                      onChange={(e) => setCms({ ...cms, landmarks: { ...cms.landmarks, label: e.target.value } })}
+                      placeholder="Leave blank to hide"
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.landmarks.h2 || ''}
+                      onChange={(e) => setCms({ ...cms, landmarks: { ...cms.landmarks, h2: e.target.value } })}
+                      placeholder="e.g. Nearby Landmarks of Faisal Hills"
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Description Paragraph</label>
+                  <textarea
+                    rows={3}
+                    value={cms.landmarks.paragraph || ''}
+                    onChange={(e) => setCms({ ...cms, landmarks: { ...cms.landmarks, paragraph: e.target.value } })}
+                    placeholder="Brief description explaining travel connectivity and surrounding landmarks..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+              </div>
+
+              {/* Landmark Cards Grid */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Landmark Cards List</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {cms.landmarks.cards.map((card, idx) => (
                   <div key={card.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 relative">
                     <button
@@ -671,19 +1064,19 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       placeholder="Subtitle (e.g. 15 km via GT Road)"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
-                    <input
-                      type="text"
+                    <ImageUploader
+                      label="Landmark Image"
                       value={card.image}
-                      onChange={(e) => {
+                      onChange={(val) => {
                         const updated = [...cms.landmarks.cards];
-                        updated[idx].image = e.target.value;
+                        updated[idx].image = val;
                         setCms({ ...cms, landmarks: { ...cms.landmarks, cards: updated } });
                       }}
-                      placeholder="Image URL"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                      placeholder="/images/landmarks/..."
                     />
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -697,14 +1090,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
-                  <input
-                    type="text"
-                    value={cms.masterPlan.h2}
-                    onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.masterPlan.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.masterPlan.h2}
+                      onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -750,14 +1155,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
-                  <input
-                    type="text"
-                    value={cms.blocksSection.h2}
-                    onChange={(e) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.blocksSection.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.blocksSection.h2}
+                      onChange={(e) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -783,10 +1200,11 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Top Badge</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                   <input
                     type="text"
-                    value={cms.plotsForSale.badge}
+                    value={cms.plotsForSale.badge || ''}
+                    placeholder="Leave blank to hide"
                     onChange={(e) => setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, badge: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
@@ -845,14 +1263,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
-                  <input
-                    type="text"
-                    value={cms.flagships.h2}
-                    onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.flagships.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.flagships.h2}
+                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
@@ -880,12 +1310,11 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       placeholder="Description"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
-                    <input
-                      type="text"
+                    <ImageUploader
+                      label="Faisal Jewel Render / Photo"
                       value={cms.flagships.card1.image}
-                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, card1: { ...cms.flagships.card1, image: e.target.value } } })}
-                      placeholder="Image URL"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                      onChange={(val) => setCms({ ...cms, flagships: { ...cms.flagships, card1: { ...cms.flagships.card1, image: val } } })}
+                      placeholder="/images/faisal-jewel-header.webp"
                     />
                   </div>
 
@@ -913,12 +1342,11 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       placeholder="Description"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
-                    <input
-                      type="text"
+                    <ImageUploader
+                      label="Hills Walk Render / Photo"
                       value={cms.flagships.card2.image}
-                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, card2: { ...cms.flagships.card2, image: e.target.value } } })}
-                      placeholder="Image URL"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                      onChange={(val) => setCms({ ...cms, flagships: { ...cms.flagships, card2: { ...cms.flagships.card2, image: val } } })}
+                      placeholder="/images/faisal-hills-site-header.webp"
                     />
                   </div>
                 </div>
@@ -935,14 +1363,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
-                  <input
-                    type="text"
-                    value={cms.paymentPlan.h2}
-                    onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.paymentPlan.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.paymentPlan.h2}
+                      onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -955,26 +1395,22 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Payment Plan Graphic URL</label>
-                    <input
-                      type="text"
-                      value={cms.paymentPlan.image}
-                      onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, image: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Download Button Text</label>
-                    <input
-                      type="text"
-                      value={cms.paymentPlan.downloadBtnText}
-                      onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, downloadBtnText: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                    />
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Download Button Text</label>
+                  <input
+                    type="text"
+                    value={cms.paymentPlan.downloadBtnText}
+                    onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, downloadBtnText: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
                 </div>
+
+                <ImageUploader
+                  label="Payment Plan Graphic / Chart Image"
+                  value={cms.paymentPlan.image}
+                  onChange={(val) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, image: val } })}
+                  placeholder="/images/payment-plan.webp"
+                />
               </div>
             </div>
           )}
@@ -982,50 +1418,158 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
           {/* 13. BOOKING STEPS */}
           {activeSection === 'bookingSteps' && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-serif text-lg font-bold text-slate-900">Booking Steps &amp; Process</h3>
-                <p className="text-xs text-slate-500">Edit the 4-step official booking and verification walkthrough.</p>
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Booking Steps &amp; Process Guide</h3>
+                  <p className="text-xs text-slate-500">Edit heading, subline, and step-by-step guidance cards for plot buyers.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentSteps = cms.bookingSteps?.steps || [];
+                    const nextNum = currentSteps.length + 1;
+                    const newStep = {
+                      number: nextNum < 10 ? `0${nextNum}` : `${nextNum}`,
+                      stepTag: `Step ${nextNum}`,
+                      title: `New Step ${nextNum}`,
+                      desc: 'Describe the action or requirement for this step.'
+                    };
+                    setCms({
+                      ...cms,
+                      bookingSteps: {
+                        ...cms.bookingSteps,
+                        steps: [...currentSteps, newStep]
+                      }
+                    });
+                  }}
+                  className="px-3.5 py-2 bg-rose-50 text-[#7b002c] hover:bg-rose-100 font-bold text-xs rounded-xl transition flex items-center gap-1.5 border border-rose-200 cursor-pointer self-start sm:self-auto"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add New Step</span>
+                </button>
               </div>
 
               <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.bookingSteps.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.bookingSteps.h2}
+                      onChange={(e) => setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Subtitle / Instructions</label>
                   <input
                     type="text"
-                    value={cms.bookingSteps.h2}
-                    onChange={(e) => setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, h2: e.target.value } })}
+                    value={cms.bookingSteps.subline || ''}
+                    onChange={(e) => setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, subline: e.target.value } })}
+                    placeholder="Scroll down to explore each step..."
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
                 <div className="space-y-3 pt-2">
-                  {cms.bookingSteps.steps.map((step, idx) => (
-                    <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                      <span className="text-[10px] font-bold text-[#7b002c] uppercase">Step {step.number || idx + 1}: {step.stepTag}</span>
-                      <input
-                        type="text"
-                        value={step.title}
-                        onChange={(e) => {
-                          const updated = [...cms.bookingSteps.steps];
-                          updated[idx].title = e.target.value;
-                          setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
-                        }}
-                        placeholder="Title"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
-                      />
-                      <textarea
-                        rows={2}
-                        value={step.desc}
-                        onChange={(e) => {
-                          const updated = [...cms.bookingSteps.steps];
-                          updated[idx].desc = e.target.value;
-                          setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
-                        }}
-                        placeholder="Description"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
-                      />
-                    </div>
-                  ))}
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Individual Booking Steps</h4>
+                  <div className="space-y-3">
+                    {(cms.bookingSteps?.steps || []).map((step, idx) => (
+                      <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 relative">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-[#7b002c] uppercase">
+                            Step #{idx + 1}
+                          </span>
+                          {(cms.bookingSteps?.steps || []).length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = (cms.bookingSteps?.steps || []).filter((_, i) => i !== idx);
+                                setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                              }}
+                              className="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg cursor-pointer transition"
+                              title="Delete Step"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-bold uppercase text-slate-500">Step Number</label>
+                            <input
+                              type="text"
+                              value={step.number || `0${idx + 1}`}
+                              onChange={(e) => {
+                                const updated = [...(cms.bookingSteps?.steps || [])];
+                                updated[idx].number = e.target.value;
+                                setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                              }}
+                              placeholder="01"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="block text-[10px] font-bold uppercase text-slate-500">Step Tag / Badge</label>
+                            <input
+                              type="text"
+                              value={step.stepTag || ''}
+                              onChange={(e) => {
+                                const updated = [...(cms.bookingSteps?.steps || [])];
+                                updated[idx].stepTag = e.target.value;
+                                setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                              }}
+                              placeholder="e.g. Selection"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[10px] font-bold uppercase text-slate-500">Step Title</label>
+                          <input
+                            type="text"
+                            value={step.title}
+                            onChange={(e) => {
+                              const updated = [...(cms.bookingSteps?.steps || [])];
+                              updated[idx].title = e.target.value;
+                              setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                            }}
+                            placeholder="e.g. Enquire & Choose Your Plot"
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[10px] font-bold uppercase text-slate-500">Step Description</label>
+                          <textarea
+                            rows={2}
+                            value={step.desc}
+                            onChange={(e) => {
+                              const updated = [...(cms.bookingSteps?.steps || [])];
+                              updated[idx].desc = e.target.value;
+                              setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                            }}
+                            placeholder="Detailed explanation of this step..."
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1058,14 +1602,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
-                  <input
-                    type="text"
-                    value={cms.whyInvest.h2}
-                    onChange={(e) => setCms({ ...cms, whyInvest: { ...cms.whyInvest, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.whyInvest.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, whyInvest: { ...cms.whyInvest, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.whyInvest.h2}
+                      onChange={(e) => setCms({ ...cms, whyInvest: { ...cms.whyInvest, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1152,14 +1708,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
-                  <input
-                    type="text"
-                    value={cms.amenities.h2}
-                    onChange={(e) => setCms({ ...cms, amenities: { ...cms.amenities, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.amenities.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, amenities: { ...cms.amenities, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.amenities.h2}
+                      onChange={(e) => setCms({ ...cms, amenities: { ...cms.amenities, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1190,16 +1758,15 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         placeholder="Title"
                         className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
                       />
-                      <input
-                        type="text"
+                      <ImageUploader
+                        label="Amenity Photo / Graphic"
                         value={card.image}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...cms.amenities.cards];
-                          updated[idx].image = e.target.value;
+                          updated[idx].image = val;
                           setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
                         }}
-                        placeholder="Image URL"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                        placeholder="/images/..."
                       />
                     </div>
                   ))}
@@ -1237,58 +1804,82 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {cms.testimonials.items.map((test, idx) => (
-                  <div key={test.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 relative">
-                    <button
-                      type="button"
-                      onClick={() => setCms({
-                        ...cms,
-                        testimonials: {
-                          ...cms.testimonials,
-                          items: cms.testimonials.items.filter((_, i) => i !== idx)
-                        }
-                      })}
-                      className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <span className="text-[10px] font-bold text-[#7b002c] uppercase">Review #{idx + 1}</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                     <input
                       type="text"
-                      value={test.name}
-                      onChange={(e) => {
-                        const updated = [...cms.testimonials.items];
-                        updated[idx].name = e.target.value;
-                        setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
-                      }}
-                      placeholder="Name"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
-                    />
-                    <input
-                      type="text"
-                      value={test.locationOrType || ''}
-                      onChange={(e) => {
-                        const updated = [...cms.testimonials.items];
-                        updated[idx].locationOrType = e.target.value;
-                        setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
-                      }}
-                      placeholder="Tag / Role (e.g. Overseas Pakistani Investor)"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
-                    />
-                    <textarea
-                      rows={3}
-                      value={test.review || ''}
-                      onChange={(e) => {
-                        const updated = [...cms.testimonials.items];
-                        updated[idx].review = e.target.value;
-                        setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
-                      }}
-                      placeholder="Review Text"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                      value={cms.testimonials.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, testimonials: { ...cms.testimonials, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
-                ))}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.testimonials.h2 || ''}
+                      onChange={(e) => setCms({ ...cms, testimonials: { ...cms.testimonials, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {cms.testimonials.items.map((test, idx) => (
+                    <div key={test.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 relative">
+                      <button
+                        type="button"
+                        onClick={() => setCms({
+                          ...cms,
+                          testimonials: {
+                            ...cms.testimonials,
+                            items: cms.testimonials.items.filter((_, i) => i !== idx)
+                          }
+                        })}
+                        className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <span className="text-[10px] font-bold text-[#7b002c] uppercase">Review #{idx + 1}</span>
+                      <input
+                        type="text"
+                        value={test.name}
+                        onChange={(e) => {
+                          const updated = [...cms.testimonials.items];
+                          updated[idx].name = e.target.value;
+                          setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
+                        }}
+                        placeholder="Name"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                      <input
+                        type="text"
+                        value={test.locationOrType || ''}
+                        onChange={(e) => {
+                          const updated = [...cms.testimonials.items];
+                          updated[idx].locationOrType = e.target.value;
+                          setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
+                        }}
+                        placeholder="Tag / Role (e.g. Overseas Pakistani Investor)"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                      />
+                      <textarea
+                        rows={3}
+                        value={test.review || ''}
+                        onChange={(e) => {
+                          const updated = [...cms.testimonials.items];
+                          updated[idx].review = e.target.value;
+                          setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
+                        }}
+                        placeholder="Review Text"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -1319,58 +1910,81 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {cms.infrastructure.cards.map((card, idx) => (
-                  <div key={card.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 relative">
-                    <button
-                      type="button"
-                      onClick={() => setCms({
-                        ...cms,
-                        infrastructure: {
-                          ...cms.infrastructure,
-                          cards: cms.infrastructure.cards.filter((_, i) => i !== idx)
-                        }
-                      })}
-                      className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <span className="text-[10px] font-bold text-[#7b002c] uppercase">Update #{idx + 1}</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                     <input
                       type="text"
-                      value={card.badge}
-                      onChange={(e) => {
-                        const updated = [...cms.infrastructure.cards];
-                        updated[idx].badge = e.target.value;
-                        setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
-                      }}
-                      placeholder="Badge (e.g. Arc Gate Frontage)"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
-                    />
-                    <textarea
-                      rows={2}
-                      value={card.caption}
-                      onChange={(e) => {
-                        const updated = [...cms.infrastructure.cards];
-                        updated[idx].caption = e.target.value;
-                        setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
-                      }}
-                      placeholder="Caption"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
-                    />
-                    <input
-                      type="text"
-                      value={card.image}
-                      onChange={(e) => {
-                        const updated = [...cms.infrastructure.cards];
-                        updated[idx].image = e.target.value;
-                        setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
-                      }}
-                      placeholder="Image URL"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                      value={cms.infrastructure.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, infrastructure: { ...cms.infrastructure, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
-                ))}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
+                    <input
+                      type="text"
+                      value={cms.infrastructure.h2 || ''}
+                      onChange={(e) => setCms({ ...cms, infrastructure: { ...cms.infrastructure, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {cms.infrastructure.cards.map((card, idx) => (
+                    <div key={card.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 relative">
+                      <button
+                        type="button"
+                        onClick={() => setCms({
+                          ...cms,
+                          infrastructure: {
+                            ...cms.infrastructure,
+                            cards: cms.infrastructure.cards.filter((_, i) => i !== idx)
+                          }
+                        })}
+                        className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <span className="text-[10px] font-bold text-[#7b002c] uppercase">Update #{idx + 1}</span>
+                      <input
+                        type="text"
+                        value={card.badge}
+                        onChange={(e) => {
+                          const updated = [...cms.infrastructure.cards];
+                          updated[idx].badge = e.target.value;
+                          setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
+                        }}
+                        placeholder="Badge (e.g. Arc Gate Frontage)"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
+                      />
+                      <textarea
+                        rows={2}
+                        value={card.caption}
+                        onChange={(e) => {
+                          const updated = [...cms.infrastructure.cards];
+                          updated[idx].caption = e.target.value;
+                          setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
+                        }}
+                        placeholder="Caption"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                      />
+                      <ImageUploader
+                        label="Infrastructure Photo"
+                        value={card.image}
+                        onChange={(val) => {
+                          const updated = [...cms.infrastructure.cards];
+                          updated[idx].image = val;
+                          setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
+                        }}
+                        placeholder="/images/faisal-hills-site-header.webp"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -1385,10 +1999,11 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Label</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                   <input
                     type="text"
-                    value={cms.discoverFtStats.label}
+                    value={cms.discoverFtStats.label || ''}
+                    placeholder="Leave blank to hide"
                     onChange={(e) => setCms({ ...cms, discoverFtStats: { ...cms.discoverFtStats, label: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
@@ -1452,14 +2067,26 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
-                  <input
-                    type="text"
-                    value={cms.faqs.h2}
-                    onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, h2: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
+                    <input
+                      type="text"
+                      value={cms.faqs.label || ''}
+                      placeholder="Leave blank to hide"
+                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, label: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
+                    <input
+                      type="text"
+                      value={cms.faqs.h2}
+                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, h2: e.target.value } })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3 pt-2">

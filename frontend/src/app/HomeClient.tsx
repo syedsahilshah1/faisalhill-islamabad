@@ -6,7 +6,7 @@ import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, ChevronUp, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
   Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users, Star, Quote, HeartHandshake, BadgeCheck, Phone,
-  ChevronLeft, FileDown, ExternalLink, Shield, CheckCircle
+  ChevronLeft, FileDown, ExternalLink, Shield, CheckCircle, Calendar
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem, type PlotItem, type BlogItem,
@@ -400,7 +400,7 @@ export default function HomeClient() {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 2 — STATS BAR (5 Verified Counters with Counting)  */}
+      {/* SECTION 2 — STATS BAR (5 Verified Animated Counters)       */}
       {/* ========================================================= */}
       <section className="bg-[#070e17] border-b border-white/10 pt-10 sm:pt-14 pb-10 sm:pb-12 shadow-xs relative z-20" id="stats-section">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12">
@@ -412,7 +412,7 @@ export default function HomeClient() {
                   <Maximize2 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
                 </div>
                 <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={11823} duration={2000} />
+                  <CountUpNumber end={11823.5} decimals={1} duration={2000} />
                 </div>
                 <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
                   {cms.statsBand.stat1.label || 'KANALS RDA-APPROVED'}
@@ -427,7 +427,7 @@ export default function HomeClient() {
                   <Building2 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
                 </div>
                 <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={7} duration={1500} />
+                  <CountUpNumber end={8} duration={1500} />
                 </div>
                 <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
                   {cms.statsBand.stat2.label || 'PLANNED BLOCKS'}
@@ -618,11 +618,15 @@ export default function HomeClient() {
       {/* ========================================================= */}
       {/* SECTION 6 — FAISAL HILLS OVERVIEW                          */}
       {/* ========================================================= */}
-      <section className="bg-white py-12 lg:py-16 border-b border-slate-100">
+      <section className="bg-white py-12 lg:py-16 border-b border-slate-100" id="overview-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Master-Planned Living</span>
+              {cms.overview.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
+                  {cms.overview.label}
+                </span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.overview.h2 || 'Faisal Hills Islamabad Overview'}
               </h2>
@@ -662,46 +666,9 @@ export default function HomeClient() {
       <section className="bg-slate-50 py-12 lg:py-16 border-b border-slate-200" id="location-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Location Analysis & Details */}
-            <div className="lg:col-span-6 space-y-4">
-              <ScrollReveal direction="up" delay={50}>
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Strategic Accessibility</span>
-                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
-                  {cms.location.h2 || 'Faisal Hills Islamabad — A Location That Sets It Apart'}
-                </h2>
-              </ScrollReveal>
-              <ScrollReveal direction="up" delay={100}>
-                <div className="space-y-3 text-slate-700 text-xs sm:text-sm leading-relaxed">
-                  <p>{cms.location.p1}</p>
-                  <div className={`${isLocationExpanded ? 'block' : 'hidden sm:block'} space-y-3`}>
-                    <p>{cms.location.p2}</p>
-                    <p>{cms.location.p3}</p>
-                  </div>
-                  {!isLocationExpanded && (
-                    <button
-                      type="button"
-                      onClick={() => setIsLocationExpanded(true)}
-                      className="sm:hidden text-xs font-bold text-[#7b002c] underline block pt-1"
-                    >
-                      Read Full Location Analysis
-                    </button>
-                  )}
-                </div>
-              </ScrollReveal>
-              <ScrollReveal direction="up" delay={150}>
-                <Link
-                  href={cms.location.linkHref || '/faisal-hills-location'}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:underline pt-2"
-                >
-                  <span>{cms.location.linkText || 'Explore Complete Location Map & Sector Boundaries'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </ScrollReveal>
-            </div>
-
-            {/* Right Column: Google Maps Interactive Embed & Live Pin */}
+            {/* Left Column: Google Maps Interactive Embed & Live Pin */}
             <div className="lg:col-span-6">
-              <ScrollReveal direction="left" delay={100}>
+              <ScrollReveal direction="right" delay={100}>
                 <div className="bg-white p-3 sm:p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden space-y-3">
                   <div className="relative w-full h-[320px] sm:h-[380px] rounded-2xl overflow-hidden border border-slate-150 bg-slate-100">
                     <iframe
@@ -732,20 +699,103 @@ export default function HomeClient() {
                 </div>
               </ScrollReveal>
             </div>
+
+            {/* Right Column: Location Analysis & Details */}
+            <div className="lg:col-span-6 space-y-4">
+              <ScrollReveal direction="up" delay={50}>
+                {cms.location.label ? (
+                  <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
+                    {cms.location.label}
+                  </span>
+                ) : null}
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
+                  {cms.location.h2 || 'Faisal Hills Islamabad: Main GT Road near Taxila'}
+                </h2>
+              </ScrollReveal>
+              <ScrollReveal direction="up" delay={100}>
+                <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                  {cms.location.p1}
+                </p>
+              </ScrollReveal>
+              <ScrollReveal direction="up" delay={150}>
+                <Link
+                  href={cms.location.linkHref || '/faisal-hills-location'}
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:underline pt-2"
+                >
+                  <span>{cms.location.linkText || 'Explore Complete Location Map & Sector Boundaries'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </ScrollReveal>
+            </div>
           </div>
+
+          {/* Getting There Route Connectivity Table */}
+          <ScrollReveal direction="up" delay={150}>
+            <div className="mt-10 pt-8 border-t border-slate-200/80 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  {cms.gettingThere?.label ? (
+                    <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.gettingThere.label}</span>
+                  ) : null}
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    {cms.gettingThere?.h3 || 'Getting There'}
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Verified travel estimates from Faisal Hills entrance
+                </p>
+              </div>
+
+              {/* Responsive Routes Table */}
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm">
+                    <thead>
+                      <tr className="bg-slate-100/80 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
+                        <th className="py-3 px-4 sm:px-6">Route</th>
+                        <th className="py-3 px-4 sm:px-6">Connects You To</th>
+                        <th className="py-3 px-4 sm:px-6 text-right sm:text-left">Drive Time</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-150 text-slate-700">
+                      {(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || []).map((row, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3.5 px-4 sm:px-6 font-bold text-slate-900 whitespace-nowrap">
+                            {row.route}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-6 text-slate-600">
+                            {row.connects}
+                          </td>
+                          <td className="py-3.5 px-4 sm:px-6 text-right sm:text-left whitespace-nowrap">
+                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
+                              idx === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-50 text-[#7b002c] border border-rose-100'
+                            }`}>
+                              {row.time}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 8 — NEARBY LANDMARKS (4 Cards Verified Badges)     */}
+      {/* SECTION 8 — NEARBY LANDMARKS (5 Cards Verified Badges)     */}
       {/* ========================================================= */}
       <section className="bg-white py-12 lg:py-16 border-b border-slate-100">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                {cms.landmarks.label || 'STRATEGIC CONNECTIVITY'}
-              </span>
+              {cms.landmarks.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
+                  {cms.landmarks.label}
+                </span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.landmarks.h2 || 'Nearby Landmarks of Faisal Hills'}
               </h2>
@@ -755,9 +805,9 @@ export default function HomeClient() {
             </ScrollReveal>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
             {(cms.landmarks.cards || initialHomepageCMS.landmarks.cards).map((lm, idx) => (
-              <ScrollReveal key={lm.id || idx} direction="up" delay={idx * 100}>
+              <ScrollReveal key={lm.id || idx} direction="up" delay={idx * 80}>
                 <div className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
                   <div className="relative h-44 overflow-hidden">
                     <img
@@ -791,7 +841,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Interactive Sector Map</span>
+              {cms.masterPlan.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.masterPlan.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.masterPlan.h2 || 'Faisal Hills Master Plan Map'}
               </h2>
@@ -833,7 +885,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Sectors & Layouts</span>
+              {cms.blocksSection.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.blocksSection.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.blocksSection.h2 || 'Explore Faisal Hills Blocks & Sectors'}
               </h2>
@@ -855,9 +909,11 @@ export default function HomeClient() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="max-w-3xl space-y-2">
               <ScrollReveal direction="up" delay={50}>
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                  {cms.plotsForSale.badge || 'VERIFIED INVENTORY & RESALE FILES'}
-                </span>
+                {cms.plotsForSale.badge ? (
+                  <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
+                    {cms.plotsForSale.badge}
+                  </span>
+                ) : null}
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                   Available Plots & Commercial Units in Faisal Hills
                 </h2>
@@ -1044,7 +1100,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Signature Architecture</span>
+              {cms.flagships.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.flagships.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.flagships.h2 || 'Faisal Hills High-Rise & Commercial Flagships'}
               </h2>
@@ -1123,7 +1181,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Financial Structure</span>
+              {cms.paymentPlan.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.paymentPlan.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.paymentPlan.h2 || 'Faisal Hills Islamabad Payment Plan 2026'}
               </h2>
@@ -1178,7 +1238,7 @@ export default function HomeClient() {
       {/* ========================================================= */}
       {/* SECTION 14 — 5-STEP BOOKING PROCESS                        */}
       {/* ========================================================= */}
-      <StickyHorizontalBookingSteps />
+      <StickyHorizontalBookingSteps data={cms.bookingSteps} />
 
       {/* ========================================================= */}
       {/* SECTION 15 — WHY INVEST (6 Verified Benefits - No CDA)     */}
@@ -1187,7 +1247,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Buyer Confidence</span>
+              {cms.whyInvest.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.whyInvest.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.whyInvest.h2 || 'Why Faisal Hills Is a Smart Property Investment in 2026'}
               </h2>
@@ -1223,7 +1285,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Modern Living</span>
+              {cms.amenities.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.amenities.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.amenities.h2 || 'Amenities Designed for Modern Living'}
               </h2>
@@ -1270,9 +1334,11 @@ export default function HomeClient() {
 
           <div className="max-w-2xl space-y-2 text-center md:text-left mx-auto md:mx-0">
             <ScrollReveal direction="up" delay={50}>
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block mb-1">
-                {cms.testimonials.label || 'CLIENT FEEDBACK'}
-              </span>
+              {cms.testimonials.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block mb-1">
+                  {cms.testimonials.label}
+                </span>
+              ) : null}
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight leading-tight text-center md:text-left">
                 {cms.testimonials.h2 || 'What Our Buyers Say'}
               </h2>
@@ -1351,7 +1417,9 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div className="space-y-2 max-w-2xl">
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">On-Ground Reality</span>
+              {cms.infrastructure.label ? (
+                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.infrastructure.label}</span>
+              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.infrastructure.h2 || 'Infrastructure of Faisal Hills'}
               </h2>
@@ -1411,7 +1479,9 @@ export default function HomeClient() {
       <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="gallery-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
-            <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Visual Updates</span>
+            {cms.photoGallery?.label ? (
+              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.photoGallery.label}</span>
+            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
               {cms.photoGallery.h2 || 'On-Site Development & Photo Gallery'}
             </h2>
@@ -1452,9 +1522,11 @@ export default function HomeClient() {
       <section className="bg-[#4c0215] text-white py-14 lg:py-18 border-b border-[#7b002c]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
-            <span className="text-amber-300 text-xs font-bold uppercase tracking-widest block">
-              {cms.discoverFtStats.label || 'DISCOVER FAISAL HILLS SCALE'}
-            </span>
+            {cms.discoverFtStats.label ? (
+              <span className="text-amber-300 text-xs font-bold uppercase tracking-widest block">
+                {cms.discoverFtStats.label}
+              </span>
+            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               11,823 Kanals of Master-Planned Living at Margalla Foothills
             </h2>
@@ -1479,7 +1551,6 @@ export default function HomeClient() {
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
             <div className="flex items-end justify-between">
               <div className="space-y-2">
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">Real Estate News</span>
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                   Latest Insights & Buying Guides
                 </h2>
@@ -1526,9 +1597,11 @@ export default function HomeClient() {
       <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200" id="faqs-section">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="space-y-2 text-center max-w-2xl mx-auto">
-            <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-              {cms.faqs.label || 'FAQ\'S'}
-            </span>
+            {cms.faqs.label ? (
+              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
+                {cms.faqs.label}
+              </span>
+            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
               {cms.faqs.h2 || 'Frequently Asked Questions (FAQs)'}
             </h2>
