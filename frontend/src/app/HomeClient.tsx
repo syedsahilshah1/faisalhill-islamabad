@@ -843,7 +843,7 @@ export default function HomeClient() {
             </ScrollReveal>
           </div>
 
-          <ExpandingProjectsShowcase blocks={blocks.length > 0 ? blocks : defaultFaisalHillsBlocks} />
+          <ExpandingProjectsShowcase items={defaultFaisalHillsBlocks} />
         </div>
       </section>
 

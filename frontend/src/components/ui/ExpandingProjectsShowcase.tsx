@@ -344,8 +344,8 @@ export default function ExpandingProjectsShowcase({
                         : 'max-h-0 opacity-0 pt-0'
                     }`}
                   >
-                    <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white bg-[#7b002c] hover:bg-[#9e1245] px-3.5 py-2 rounded-xl shadow-md border border-white/30 transition-all">
-                      <span>Explore Sector</span>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white bg-[#7b002c] hover:bg-[#9e1245] px-3.5 py-2 rounded-lg shadow-md border border-white/20 transition-all">
+                      <span>EXPLORE SECTOR</span>
                       <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
