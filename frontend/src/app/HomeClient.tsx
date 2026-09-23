@@ -6,12 +6,13 @@ import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, ChevronUp, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
   Trophy, GraduationCap, ShoppingBag, ArrowUpRight, BookOpen, Store, Home, Users, Star, Quote, HeartHandshake, BadgeCheck, Phone,
-  ChevronLeft, FileDown, ExternalLink, Shield, CheckCircle, Calendar
+  ChevronLeft, FileDown, ExternalLink, Shield, CheckCircle, Calendar, LayoutGrid, X,
+  MessageCircle
 } from 'lucide-react';
 import {
   blocksData, plotInventoryData, societyStats, paymentPlansData, initialGalleryData, type GalleryItem, type PlotItem, type BlogItem,
   fetchBlocks, fetchPlots, fetchGallery, fetchSettings, fetchBlogs, submitLead,
-  formatPlotPrice,
+  formatPlotPrice, initialBlogsData,
   defaultSocialLinks, defaultContactInfo, type SocialLinksData, type ContactInfoData, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl,
   type HomepageCMSData, initialHomepageCMS, fetchHomepageCMS
 } from '@/data/faisalHillsData';
@@ -33,6 +34,20 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 import { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+
+const getBlockUrl = (blockName: string): string => {
+  const b = (blockName || '').toLowerCase();
+  if (b.includes('executive')) return '/blocks/executive-block';
+  if (b.includes('prime')) return '/blocks/prime-block';
+  if (b.includes('gandhara') || b.includes('gandahara')) return '/blocks/gandahara-block';
+  if (b.includes('block a') || b.includes('a block')) return '/blocks/block-a';
+  if (b.includes('block b') || b.includes('b block')) return '/blocks/block-b';
+  if (b.includes('block c') || b.includes('c block')) return '/blocks/block-c';
+  if (b.includes('block d') || b.includes('d block')) return '/blocks/block-d';
+  if (b.includes('faisal jewel')) return '/blocks/faisal-jewel-islamabad';
+  if (b.includes('hills walk') || b.includes('hill walk')) return '/blocks/hills-walk';
+  return '/master-plan';
+};
 
 export default function HomeClient() {
   const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
@@ -98,6 +113,10 @@ export default function HomeClient() {
   const [activeBlockIndex, setActiveBlockIndex] = useState(0);
 
   const infraSliderRef = useRef<HTMLDivElement>(null);
+  const facilitiesSliderRef = useRef<HTMLDivElement>(null);
+  const [activeFacilityFilter, setActiveFacilityFilter] = useState<'all' | 'built' | 'inaugurated' | 'construction' | 'planned'>('all');
+  const [facilityViewMode, setFacilityViewMode] = useState<'carousel' | 'grid'>('carousel');
+  const [selectedFacilityModal, setSelectedFacilityModal] = useState<any | null>(null);
 
   const handleInfraScroll = (direction: 'left' | 'right') => {
     if (infraSliderRef.current) {
@@ -109,6 +128,68 @@ export default function HomeClient() {
     }
   };
 
+  const handleFacilityScroll = (direction: 'left' | 'right') => {
+    if (facilitiesSliderRef.current) {
+      const scrollDistance = facilitiesSliderRef.current.clientWidth * 0.75;
+      facilitiesSliderRef.current.scrollBy({
+        left: direction === 'left' ? -scrollDistance : scrollDistance,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const allFacilities = useMemo(() => {
+    return (cms.amenities?.cards && cms.amenities.cards.length > 0)
+      ? cms.amenities.cards
+      : initialHomepageCMS.amenities.cards;
+  }, [cms.amenities]);
+
+  const facilityCategoryCounts = useMemo(() => {
+    let built = 0;
+    let inaugurated = 0;
+    let construction = 0;
+    let planned = 0;
+
+    allFacilities.forEach((f) => {
+      const s = (f.statusBadge || '').toLowerCase();
+      if (s.includes('operational') || s.includes('built') || s.includes('completed')) built++;
+      else if (s.includes('inaugurated') || s.includes('planted')) inaugurated++;
+      else if (s.includes('construction') || s.includes('launched') || s.includes('development')) construction++;
+      else if (s.includes('planned')) planned++;
+    });
+
+    return { all: allFacilities.length, built, inaugurated, construction, planned };
+  }, [allFacilities]);
+
+  const filteredFacilities = useMemo(() => {
+    if (activeFacilityFilter === 'all') return allFacilities;
+    if (activeFacilityFilter === 'built') {
+      return allFacilities.filter(f => {
+        const s = (f.statusBadge || '').toLowerCase();
+        return s.includes('operational') || s.includes('built') || s.includes('completed');
+      });
+    }
+    if (activeFacilityFilter === 'inaugurated') {
+      return allFacilities.filter(f => {
+        const s = (f.statusBadge || '').toLowerCase();
+        return s.includes('inaugurated') || s.includes('planted');
+      });
+    }
+    if (activeFacilityFilter === 'construction') {
+      return allFacilities.filter(f => {
+        const s = (f.statusBadge || '').toLowerCase();
+        return s.includes('construction') || s.includes('launched') || s.includes('development');
+      });
+    }
+    if (activeFacilityFilter === 'planned') {
+      return allFacilities.filter(f => {
+        const s = (f.statusBadge || '').toLowerCase();
+        return s.includes('planned');
+      });
+    }
+    return allFacilities;
+  }, [allFacilities, activeFacilityFilter]);
+
   const filteredGallery = useMemo(() => {
     if (activeGalleryFilter === 'All') return galleryItems;
     return galleryItems.filter(item => item && item.category === activeGalleryFilter);
@@ -117,7 +198,7 @@ export default function HomeClient() {
   // Dynamic API state loading
   const [blocks, setBlocks] = useState(blocksData);
   const [plots, setPlots] = useState<PlotItem[]>(plotInventoryData);
-  const [blogs, setBlogs] = useState<BlogItem[]>([]);
+  const [blogs, setBlogs] = useState<BlogItem[]>(initialBlogsData);
   const [activePlotTab, setActivePlotTab] = useState<string>('all');
 
   const displayedPlots = useMemo(() => {
@@ -207,8 +288,8 @@ export default function HomeClient() {
         {/* Cinematic HD Architectural Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <Image
-            src={cms.hero.bgImage || '/images/faisal-hills-arc-monument-2.webp'}
-            alt="Faisal Hills Grand Monument Entrance"
+            src={cms.hero.bgImage || '/images/faisal-hills-arc-gate.webp'}
+            alt="Faisal Hills main entrance on GT Road near Taxila"
             fill
             priority
             fetchPriority="high"
@@ -225,82 +306,82 @@ export default function HomeClient() {
         {/* ======================================================= */}
         {/* DESKTOP HERO VIEW (2-Column inside Hero Section)        */}
         {/* ======================================================= */}
-        <div className="hidden lg:flex relative z-10 max-w-[1440px] mx-auto px-8 lg:px-12 min-h-[92vh] items-center pt-28 pb-16">
-          <div className="grid grid-cols-12 gap-12 items-center w-full">
-            {/* Left Col: Hero Title in One Line */}
-            <div className="col-span-7">
+        <div className="hidden lg:flex relative z-10 max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12 min-h-[85vh] xl:min-h-[88vh] items-center pt-24 pb-12">
+          <div className="grid grid-cols-12 gap-8 items-center w-full">
+            {/* Left Col: Hero Title */}
+            <div className="col-span-7 xl:col-span-8">
               <ScrollReveal direction="up" delay={50}>
-                <h1 className="font-serif font-bold text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl whitespace-nowrap">
+                <h1 className="font-serif font-bold text-3xl sm:text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl">
                   {cms.hero.h1 || 'Faisal Hills Islamabad'}
                 </h1>
               </ScrollReveal>
             </div>
 
-            {/* Right Col: Booking Form */}
-            <div className="col-span-5">
-              <ScrollReveal direction="left" delay={100}>
-                <div className="p-2 sm:p-4 space-y-5">
-                  <div className="border-b border-white/15 pb-4">
-                    <span className="font-serif font-extrabold text-2xl xl:text-3xl text-white block drop-shadow-md tracking-tight">
+            {/* Right Col: Sleek Transparent Booking Form */}
+            <div className="col-span-5 xl:col-span-4 flex justify-end">
+              <ScrollReveal direction="left" delay={100} className="w-full max-w-[360px]">
+                <div className="space-y-3.5">
+                  <div className="border-b border-white/20 pb-2.5">
+                    <span className="font-serif font-bold text-lg xl:text-xl text-white block drop-shadow-lg tracking-tight">
                       {cms.hero.formTitle || 'Book Your Plot / Flat'}
                     </span>
-                    <p className="text-xs text-slate-300 mt-1 font-medium drop-shadow-sm">
+                    <p className="text-[11px] text-slate-200 mt-0.5 font-medium drop-shadow-md">
                       {cms.hero.formSubtitle || 'Get verified 2026 rates, payment plan & plot selection guide.'}
                     </p>
                   </div>
 
                   {formSubmitted ? (
-                    <div className="bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-lg">
-                      <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                      <p className="text-base font-serif font-bold text-white">Inquiry Submitted Successfully!</p>
-                      <p className="font-normal text-emerald-300">Our Faisal Hills sales desk will contact you via WhatsApp shortly.</p>
+                    <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 p-4 rounded-xl text-xs font-bold space-y-1 animate-fadeIn text-center shadow-lg">
+                      <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                      <p className="text-sm font-serif font-bold text-white">Inquiry Submitted Successfully!</p>
+                      <p className="font-normal text-emerald-300 text-[11px]">Our sales desk will contact you shortly.</p>
                     </div>
                   ) : (
-                    <form onSubmit={handleHeroFormSubmit} className="space-y-4 pt-1">
+                    <form onSubmit={handleHeroFormSubmit} className="space-y-2.5 pt-0.5">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1.5">Full Name</label>
+                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
                         <input
                           type="text"
                           required
                           placeholder="Your Full Name"
                           value={leadName}
                           onChange={(e) => setLeadName(e.target.value)}
-                          className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#7b002c] focus:ring-2 focus:ring-[#7b002c]/30 shadow-xs transition-all"
+                          className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1.5">WhatsApp Number</label>
+                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
                         <input
                           type="text"
                           required
-                          placeholder="e.g. +92 300 1234567 / +44 / +971"
+                          placeholder="e.g. +92 300 1234567"
                           value={leadPhone}
                           onChange={(e) => setLeadPhone(e.target.value)}
-                          className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#7b002c] focus:ring-2 focus:ring-[#7b002c]/30 shadow-xs transition-all"
+                          className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1.5">Plot Size / Block / Question</label>
+                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
                         <textarea
                           rows={2}
                           placeholder="e.g. 10 Marla in Block A, or any question..."
                           value={leadQuery}
                           onChange={(e) => setLeadQuery(e.target.value)}
-                          className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#7b002c] focus:ring-2 focus:ring-[#7b002c]/30 shadow-xs transition-all resize-none"
+                          className="w-full px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md resize-none"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold uppercase tracking-widest rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.01] active:scale-95 border border-white/20 cursor-pointer"
+                        className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg transition-all duration-300 hover:scale-[1.01] active:scale-95 border border-white/20 cursor-pointer"
                       >
                         Submit Booking Inquiry
                       </button>
 
-                      <div className="flex items-center justify-center gap-1.5 text-slate-300 text-[11px] sm:text-xs pt-1 font-medium select-none">
-                        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <div className="flex items-center justify-center gap-1.5 text-slate-200 text-[10px] pt-0.5 font-medium select-none drop-shadow-sm">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{cms.hero.trustLine || 'Your information is 100% secure — we reply on WhatsApp.'}</span>
                       </div>
                     </form>
@@ -312,83 +393,80 @@ export default function HomeClient() {
         </div>
 
         {/* ======================================================= */}
-        {/* MOBILE HERO VIEW (Clean Title & Form)                   */}
+        {/* MOBILE HERO VIEW (Clean Title & Compact Form)           */}
         {/* ======================================================= */}
-        <div className="block lg:hidden relative z-10">
-          <div className="relative w-full min-h-[50vh] sm:min-h-[58vh] flex flex-col justify-start overflow-hidden">
-            <div className="relative z-10 pt-20 sm:pt-24 text-center px-4 max-w-4xl mx-auto space-y-2">
-              <ScrollReveal direction="up" delay={50}>
-                {/* Mobile version uses <p> to prevent duplicate <h1> */}
-                <p className="font-serif font-bold text-3xl sm:text-5xl text-white tracking-tight leading-tight drop-shadow-2xl">
-                  {cms.hero.h1 || 'Faisal Hills Islamabad'}
-                </p>
-              </ScrollReveal>
-            </div>
+        <div className="block lg:hidden relative z-10 px-4 pt-20 pb-10">
+          <div className="text-center max-w-xl mx-auto space-y-1.5 pb-6">
+            <ScrollReveal direction="up" delay={50}>
+              <p className="font-serif font-bold text-2xl sm:text-4xl text-white tracking-tight leading-tight drop-shadow-2xl">
+                {cms.hero.h1 || 'Faisal Hills Islamabad'}
+              </p>
+            </ScrollReveal>
           </div>
 
-          {/* Mobile Booking Form */}
-          <div className="relative z-30 max-w-2xl mx-auto px-4 mt-2 sm:mt-6 pb-14 sm:pb-16 w-full">
+          {/* Compact Mobile Booking Form */}
+          <div className="max-w-sm mx-auto w-full">
             <ScrollReveal direction="up" delay={100}>
-              <div className="p-2 sm:p-4 space-y-5">
-                <div className="border-b border-white/15 pb-3 text-center sm:text-left">
-                  <span className="font-serif font-extrabold text-2xl text-white block drop-shadow-md tracking-tight">
+              <div className="space-y-3">
+                <div className="border-b border-white/20 pb-2 text-center">
+                  <span className="font-serif font-bold text-lg text-white block drop-shadow-lg tracking-tight">
                     {cms.hero.formTitle || 'Book Your Plot / Flat'}
                   </span>
-                  <p className="text-xs text-slate-300 mt-1 font-medium drop-shadow-sm">{cms.hero.formSubtitle}</p>
+                  <p className="text-[11px] text-slate-200 mt-0.5 font-medium drop-shadow-md">{cms.hero.formSubtitle}</p>
                 </div>
 
                 {formSubmitted ? (
-                  <div className="bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 p-6 rounded-2xl text-xs font-bold space-y-2 animate-fadeIn text-center shadow-lg">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                    <h4 className="text-base font-serif text-white">Inquiry Submitted Successfully!</h4>
-                    <p className="font-normal text-emerald-300">Our Faisal Hills sales desk will contact you shortly.</p>
+                  <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 p-4 rounded-xl text-xs font-bold space-y-1 animate-fadeIn text-center shadow-lg">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                    <h4 className="text-sm font-serif font-bold text-white">Inquiry Submitted Successfully!</h4>
+                    <p className="font-normal text-emerald-300 text-[11px]">Our sales desk will contact you shortly.</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleHeroFormSubmit} className="space-y-3.5 pt-1">
+                  <form onSubmit={handleHeroFormSubmit} className="space-y-2.5 pt-0.5">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Full Name</label>
+                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
                       <input
                         type="text"
                         required
                         placeholder="Your Full Name"
                         value={leadName}
                         onChange={(e) => setLeadName(e.target.value)}
-                        className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-[#7b002c]"
+                        className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">WhatsApp Number</label>
+                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
                       <input
                         type="text"
                         required
-                        placeholder="e.g. +92 300 1234567 / +44 / +971"
+                        placeholder="e.g. +92 300 1234567"
                         value={leadPhone}
                         onChange={(e) => setLeadPhone(e.target.value)}
-                        className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-[#7b002c]"
+                        className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Plot Size / Block / Question</label>
+                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
                       <textarea
                         rows={2}
                         placeholder="e.g. 10 Marla in Block A, or any question..."
                         value={leadQuery}
                         onChange={(e) => setLeadQuery(e.target.value)}
-                        className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-[#7b002c] resize-none"
+                        className="w-full px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md resize-none"
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-lg transition-all"
+                      className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg transition-all cursor-pointer"
                     >
                       Submit Booking Inquiry
                     </button>
 
-                    <div className="flex items-center justify-center gap-1.5 text-slate-300 text-[11px] pt-1 font-medium">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <div className="flex items-center justify-center gap-1.5 text-slate-200 text-[10px] pt-0.5 font-medium drop-shadow-sm">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       <span>{cms.hero.trustLine || 'Your information is 100% secure — we reply on WhatsApp.'}</span>
                     </div>
                   </form>
@@ -459,9 +537,13 @@ export default function HomeClient() {
                 <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
                   <CountUpNumber end={100} suffix="%" duration={1800} />
                 </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
+                <Link
+                  href="/faisal-hills-noc-status"
+                  className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase hover:text-white hover:underline transition-colors"
+                  title="View verified RDA NOC details and legal status"
+                >
                   {cms.statsBand.stat4.label || 'RDA APPROVED NOC'}
-                </span>
+                </Link>
               </div>
             </ScrollReveal>
 
@@ -618,44 +700,56 @@ export default function HomeClient() {
       {/* ========================================================= */}
       {/* SECTION 6 — FAISAL HILLS OVERVIEW                          */}
       {/* ========================================================= */}
-      <section className="bg-white py-12 lg:py-16 border-b border-slate-100" id="overview-section">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
-            <ScrollReveal direction="up" delay={50}>
-              {cms.overview.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                  {cms.overview.label}
-                </span>
-              ) : null}
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-                {cms.overview.h2 || 'Faisal Hills Islamabad Overview'}
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={100}>
-              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-                {cms.overview.paragraph}
-              </p>
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={150}>
-              <Link
-                href={cms.overview.linkHref || '/about-us'}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:underline"
-              >
-                <span>{cms.overview.linkText || 'Discover More About Faisal Hills'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </ScrollReveal>
-          </div>
-          <div className="lg:col-span-5">
-            <ScrollReveal direction="left" delay={100}>
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200">
-                <img
-                  src={cms.overview.image || '/images/faisal-hills-overview.webp'}
-                  alt={cms.overview.imageAlt || 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </ScrollReveal>
+      <section className="bg-white py-14 lg:py-20 border-b border-slate-100" id="overview-section">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+
+            {/* Left Content Column */}
+            <div className="lg:col-span-5 space-y-6 text-left">
+              <ScrollReveal direction="up" delay={50}>
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
+                  {cms.overview.h2 || 'Faisal Hills Islamabad Overview'}
+                </h2>
+              </ScrollReveal>
+
+              <ScrollReveal direction="up" delay={100}>
+                <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+                  {cms.overview.paragraph}
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal direction="up" delay={150}>
+                <div className="pt-2">
+                  <Link
+                    href={cms.overview.linkHref || '/about-us'}
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <span>{cms.overview.linkText || 'Discover More About Faisal Hills'}</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right Image Column (Enlarged and Prominent) */}
+            <div className="lg:col-span-7">
+              <ScrollReveal direction="left" delay={100}>
+                <div className="relative w-full h-[320px] sm:h-[420px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
+                  <img
+                    src={cms.overview.image || '/images/faisal-hills-overview.webp'}
+                    alt={cms.overview.imageAlt || 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 right-4 sm:right-auto bg-slate-900/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 text-white text-xs font-semibold flex items-center gap-2 shadow-lg">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Main Boulevard & Monument Entrance • Margalla Hills</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+
           </div>
         </div>
       </section>
@@ -703,11 +797,6 @@ export default function HomeClient() {
             {/* Right Column: Location Analysis & Details */}
             <div className="lg:col-span-6 space-y-4">
               <ScrollReveal direction="up" delay={50}>
-                {cms.location.label ? (
-                  <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                    {cms.location.label}
-                  </span>
-                ) : null}
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                   {cms.location.h2 || 'Faisal Hills Islamabad: Main GT Road near Taxila'}
                 </h2>
@@ -734,9 +823,6 @@ export default function HomeClient() {
             <div className="mt-10 pt-8 border-t border-slate-200/80 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  {cms.gettingThere?.label ? (
-                    <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.gettingThere.label}</span>
-                  ) : null}
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                     {cms.gettingThere?.h3 || 'Getting There'}
                   </h3>
@@ -767,9 +853,8 @@ export default function HomeClient() {
                             {row.connects}
                           </td>
                           <td className="py-3.5 px-4 sm:px-6 text-right sm:text-left whitespace-nowrap">
-                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-                              idx === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-50 text-[#7b002c] border border-rose-100'
-                            }`}>
+                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${idx === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-50 text-[#7b002c] border border-rose-100'
+                              }`}>
                               {row.time}
                             </span>
                           </td>
@@ -791,11 +876,6 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              {cms.landmarks.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                  {cms.landmarks.label}
-                </span>
-              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.landmarks.h2 || 'Nearby Landmarks of Faisal Hills'}
               </h2>
@@ -835,45 +915,63 @@ export default function HomeClient() {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 9 — MASTER PLAN MAP VIEWER                         */}
+      {/* SECTION 9 — MASTER PLAN MAP VIEWER (2-Column Layout)       */}
       {/* ========================================================= */}
-      <section className="bg-white text-slate-900 py-14 lg:py-20 border-b border-slate-200" id="master-plan-section">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
-              {cms.masterPlan.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.masterPlan.label}</span>
-              ) : null}
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-                {cms.masterPlan.h2 || 'Faisal Hills Master Plan Map'}
-              </h2>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.masterPlan.paragraph}
-              </p>
-            </ScrollReveal>
-          </div>
+      <section className="bg-slate-50 text-slate-900 py-14 lg:py-20 border-b border-slate-200" id="master-plan-section">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-          <ScrollReveal direction="up" delay={100}>
-            <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-white">
-              <MasterPlanViewer />
+            {/* Left Column: Master Plan Content & Actions */}
+            <div className="lg:col-span-5 space-y-6 text-left">
+              <ScrollReveal direction="up" delay={50}>
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
+                  {cms.masterPlan.h2 || 'Faisal Hills Master Plan Map'}
+                </h2>
+              </ScrollReveal>
+
+              <ScrollReveal direction="up" delay={100}>
+                <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+                  {cms.masterPlan.paragraph || 'The official RDA-approved master plan of Faisal Hills Islamabad encompasses 11,823.5 kanals across eight well-planned sectors.'}
+                </p>
+                {cms.masterPlan.subParagraph ? (
+                  <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mt-2.5">
+                    {cms.masterPlan.subParagraph}
+                  </p>
+                ) : null}
+              </ScrollReveal>
+
+              {/* Call-to-Action Buttons */}
+              <ScrollReveal direction="up" delay={150}>
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsMapDownloadModalOpen(true)}
+                    className="px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer group"
+                  >
+                    <FileDown className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
+                    <span>{cms.masterPlan.downloadBtnText || 'Download Master Plan (PDF)'}</span>
+                  </button>
+
+                  <Link
+                    href="/master-plan"
+                    className="px-5 py-3.5 bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all flex items-center gap-2 shadow-xs"
+                  >
+                    <span>{cms.masterPlan.fullscreenBtnText || 'Launch Fullscreen Map'}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </ScrollReveal>
             </div>
-          </ScrollReveal>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <button
-              onClick={() => setIsMapDownloadModalOpen(true)}
-              className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <FileDown className="w-4 h-4" />
-              <span>{cms.masterPlan.downloadBtnText || 'Download Master Plan (PDF)'}</span>
-            </button>
-            <Link
-              href="/master-plan"
-              className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider rounded-full border border-slate-300 transition-all flex items-center gap-2"
-            >
-              <span>{cms.masterPlan.fullscreenBtnText || 'Launch Fullscreen Map'}</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+            {/* Right Column: Compact Interactive Ultra-HD Map Viewer */}
+            <div className="lg:col-span-7">
+              <ScrollReveal direction="left" delay={100}>
+                <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200">
+                  <MasterPlanViewer heightClass="h-[340px] sm:h-[420px] lg:h-[460px]" />
+                </div>
+              </ScrollReveal>
+            </div>
+
           </div>
         </div>
       </section>
@@ -885,9 +983,6 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              {cms.blocksSection.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.blocksSection.label}</span>
-              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.blocksSection.h2 || 'Explore Faisal Hills Blocks & Sectors'}
               </h2>
@@ -898,6 +993,199 @@ export default function HomeClient() {
           </div>
 
           <ExpandingProjectsShowcase items={defaultFaisalHillsBlocks} />
+
+          {/* Blocks, Possession and Plot Supply Matrix */}
+          <div className="pt-8 sm:pt-12 border-t border-slate-100 space-y-6">
+            <div className="max-w-3xl space-y-2">
+              <ScrollReveal direction="up" delay={50}>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7b002c]/10 text-[#7b002c] text-xs font-bold uppercase tracking-widest">
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Master Plan Breakdown</span>
+                </span>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  {cms.blocksSection.supplyHeading || 'Blocks, Possession and Plot Supply'}
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  {cms.blocksSection.supplySubline || 'The Faisal Hills master plan has eight blocks. Blocks nearest the GT Road are the most developed; blocks further in are newer, cheaper to enter and mostly sold on installments, but at earlier stages of development.'}
+                </p>
+              </ScrollReveal>
+            </div>
+
+            <ScrollReveal direction="up" delay={100}>
+              {/* Desktop / Tablet Table View */}
+              <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm bg-white">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+                        <th className="py-3.5 px-5 font-bold">Block</th>
+                        <th className="py-3.5 px-5 font-bold">Profile &amp; Orientation</th>
+                        <th className="py-3.5 px-5 font-bold whitespace-nowrap text-center">Approx. Residential Plots</th>
+                        <th className="py-3.5 px-5 font-bold whitespace-nowrap text-center">Sold As</th>
+                        <th className="py-3.5 px-5 font-bold">Possession Status</th>
+                        <th className="py-3.5 px-5 font-bold text-right">Inquire</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-sans">
+                      {(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).map((row, idx) => {
+                        const posLower = (row.possession || '').toLowerCase();
+                        let badgeStyle = 'bg-slate-100 text-slate-700 border-slate-200';
+                        let badgeIcon = <Clock className="w-3 h-3 text-slate-500" />;
+
+                        if (posLower.includes('available') || posLower.includes('residents')) {
+                          badgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                          badgeIcon = <CheckCircle2 className="w-3 h-3 text-emerald-600" />;
+                        } else if (posLower.includes('possession-ready') || posLower.includes('sector')) {
+                          badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
+                          badgeIcon = <Check className="w-3 h-3 text-teal-600" />;
+                        } else if (posLower.includes('under development') || posLower.includes('installments')) {
+                          badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+                          badgeIcon = <Clock className="w-3 h-3 text-amber-600" />;
+                        } else if (posLower.includes('not yet') || posLower.includes('progress')) {
+                          badgeStyle = 'bg-sky-50 text-sky-800 border-sky-200';
+                          badgeIcon = <Compass className="w-3 h-3 text-sky-600" />;
+                        }
+
+                        return (
+                          <tr key={row.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-5 align-top">
+                              <Link
+                                href={getBlockUrl(row.block)}
+                                className="font-serif font-bold text-sm text-slate-900 hover:text-[#7b002c] hover:underline transition-colors block"
+                                title={`View ${row.block} overview and plot rates`}
+                              >
+                                {row.block}
+                              </Link>
+                              {row.statusBadge && (
+                                <span className="inline-block mt-0.5 text-[10px] font-semibold text-[#7b002c]">
+                                  {row.statusBadge}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-4 px-5 text-slate-600 align-top max-w-xs leading-relaxed">
+                              {row.profile}
+                            </td>
+                            <td className="py-4 px-5 align-top text-center whitespace-nowrap">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                                {row.approxPlots}
+                              </span>
+                            </td>
+                            <td className="py-4 px-5 align-top text-center whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${row.soldAs.toLowerCase().includes('lump')
+                                  ? 'bg-rose-50 text-[#7b002c] border border-rose-100'
+                                  : 'bg-indigo-50 text-indigo-800 border border-indigo-100'
+                                }`}>
+                                {row.soldAs}
+                              </span>
+                            </td>
+                            <td className="py-4 px-5 align-top">
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeStyle}`}>
+                                {badgeIcon}
+                                <span>{row.possession}</span>
+                              </span>
+                            </td>
+                            <td className="py-4 px-5 align-top text-right whitespace-nowrap">
+                              <a
+                                href={formatWhatsAppUrl(
+                                  contact.salesHotline || socials.whatsapp,
+                                  `Hello, I would like to inquire about plot availability, current rates and possession status in ${row.block}, Faisal Hills Islamabad.`
+                                )}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition"
+                              >
+                                <MessageCircle className="w-3 h-3" />
+                                <span>Check Rates</span>
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Card Grid View */}
+              <div className="grid grid-cols-1 gap-3.5 md:hidden">
+                {(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).map((row, idx) => {
+                  const posLower = (row.possession || '').toLowerCase();
+                  let badgeStyle = 'bg-slate-100 text-slate-700 border-slate-200';
+                  let badgeIcon = <Clock className="w-3 h-3 text-slate-500" />;
+
+                  if (posLower.includes('available') || posLower.includes('residents')) {
+                    badgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                    badgeIcon = <CheckCircle2 className="w-3 h-3 text-emerald-600" />;
+                  } else if (posLower.includes('possession-ready') || posLower.includes('sector')) {
+                    badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
+                    badgeIcon = <Check className="w-3 h-3 text-teal-600" />;
+                  } else if (posLower.includes('under development') || posLower.includes('installments')) {
+                    badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+                    badgeIcon = <Clock className="w-3 h-3 text-amber-600" />;
+                  } else if (posLower.includes('not yet') || posLower.includes('progress')) {
+                    badgeStyle = 'bg-sky-50 text-sky-800 border-sky-200';
+                    badgeIcon = <Compass className="w-3 h-3 text-sky-600" />;
+                  }
+
+                  return (
+                    <div
+                      key={row.id || idx}
+                      className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div>
+                          <Link
+                            href={getBlockUrl(row.block)}
+                            className="font-serif font-bold text-base text-slate-900 hover:text-[#7b002c] hover:underline transition-colors block"
+                            title={`View ${row.block} overview and plot rates`}
+                          >
+                            {row.block}
+                          </Link>
+                          {row.statusBadge && (
+                            <span className="text-[10px] font-semibold text-[#7b002c]">
+                              {row.statusBadge}
+                            </span>
+                          )}
+                        </div>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${badgeStyle}`}>
+                          {badgeIcon}
+                          <span>{row.possession}</span>
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                        {row.profile}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <span className="text-[10px] text-slate-500 uppercase font-bold block">Plots</span>
+                          <span className="font-bold text-slate-800">{row.approxPlots}</span>
+                        </div>
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <span className="text-[10px] text-slate-500 uppercase font-bold block">Sold As</span>
+                          <span className="font-bold text-slate-800">{row.soldAs}</span>
+                        </div>
+                      </div>
+
+                      <a
+                        href={formatWhatsAppUrl(
+                          contact.salesHotline || socials.whatsapp,
+                          `Hello, I would like to inquire about plot availability, current rates and possession status in ${row.block}, Faisal Hills Islamabad.`
+                        )}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2 px-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 text-center"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Inquire About {row.block}</span>
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
@@ -909,11 +1197,6 @@ export default function HomeClient() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="max-w-3xl space-y-2">
               <ScrollReveal direction="up" delay={50}>
-                {cms.plotsForSale.badge ? (
-                  <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                    {cms.plotsForSale.badge}
-                  </span>
-                ) : null}
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                   Available Plots & Commercial Units in Faisal Hills
                 </h2>
@@ -931,6 +1214,7 @@ export default function HomeClient() {
             </Link>
           </div>
 
+
           {/* Block / Category Filter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
             {[
@@ -945,11 +1229,10 @@ export default function HomeClient() {
               <button
                 key={tab.id}
                 onClick={() => setActivePlotTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
-                  activePlotTab === tab.id
+                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${activePlotTab === tab.id
                     ? 'bg-[#7b002c] text-white shadow-md'
                     : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -1090,6 +1373,145 @@ export default function HomeClient() {
               </Link>
             </div>
           </div>
+
+          {/* Plots for Sale in Faisal Hills: Current Rates Table */}
+          <div className="pt-8 sm:pt-12 border-t border-slate-200/80 space-y-6">
+            <div className="max-w-3xl space-y-2">
+              <ScrollReveal direction="up" delay={50}>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  {cms.plotsForSale.ratesHeading || 'Plots for Sale in Faisal Hills: Current Rates'}
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  {cms.plotsForSale.ratesSubline || 'These are open-market asking prices. What a specific plot fetches depends on its position (corner, park-facing or on a main road), how developed its block is, and whether it is a balloted plot or an unballoted file.'}
+                </p>
+              </ScrollReveal>
+            </div>
+
+            <ScrollReveal direction="up" delay={100}>
+              {/* Desktop / Tablet Rates Table */}
+              <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+                        <th className="py-3.5 px-5 font-bold">Block</th>
+                        <th className="py-3.5 px-5 font-bold text-center">5 Marla</th>
+                        <th className="py-3.5 px-5 font-bold text-center">10 Marla</th>
+                        <th className="py-3.5 px-5 font-bold text-center">1 Kanal</th>
+                        <th className="py-3.5 px-5 font-bold text-right">Inquire Price</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-sans">
+                      {(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).map((row, idx) => (
+                        <tr key={row.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-4 px-5 align-middle">
+                            <span className="font-serif font-bold text-sm text-slate-900 block">
+                              {row.block}
+                            </span>
+                            {row.statusBadge && (
+                              <span className="inline-block mt-0.5 text-[10px] font-semibold text-[#7b002c]">
+                                {row.statusBadge}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                            {row.marla5 === '—' ? (
+                              <span className="text-slate-400 font-bold">—</span>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/80">
+                                {row.marla5}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                            {row.marla10 === '—' ? (
+                              <span className="text-slate-400 font-bold">—</span>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200/80">
+                                {row.marla10}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                            {row.kanal1 === '—' ? (
+                              <span className="text-slate-400 font-bold">—</span>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-50 text-[#7b002c] border border-rose-200/80">
+                                {row.kanal1}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-5 align-middle text-right whitespace-nowrap">
+                            <a
+                              href={formatWhatsAppUrl(
+                                contact.salesHotline || socials.whatsapp,
+                                `Hello, I want to inquire about current plot asking rates and verified files in ${row.block}, Faisal Hills Islamabad.`
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition cursor-pointer"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                              <span>Get Deal</span>
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Rates Cards */}
+              <div className="grid grid-cols-1 gap-3.5 md:hidden">
+                {(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).map((row, idx) => (
+                  <div
+                    key={row.id || idx}
+                    className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                      <h4 className="font-serif font-bold text-base text-slate-900">
+                        {row.block}
+                      </h4>
+                      {row.statusBadge && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#7b002c]/10 text-[#7b002c]">
+                          {row.statusBadge}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-0.5">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block">5 Marla</span>
+                        <span className="font-bold text-amber-900 text-[11px] block">{row.marla5}</span>
+                      </div>
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-0.5">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block">10 Marla</span>
+                        <span className="font-bold text-emerald-900 text-[11px] block">{row.marla10}</span>
+                      </div>
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 space-y-0.5">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block">1 Kanal</span>
+                        <span className="font-bold text-[#7b002c] text-[11px] block">{row.kanal1}</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={formatWhatsAppUrl(
+                        contact.salesHotline || socials.whatsapp,
+                        `Hello, I want to inquire about current plot asking rates and verified files in ${row.block}, Faisal Hills Islamabad.`
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2 px-3 rounded-xl bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 text-center"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>Inquire Rate for {row.block}</span>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
@@ -1100,9 +1522,6 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              {cms.flagships.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.flagships.label}</span>
-              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
                 {cms.flagships.h2 || 'Faisal Hills High-Rise & Commercial Flagships'}
               </h2>
@@ -1181,9 +1600,6 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              {cms.paymentPlan.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.paymentPlan.label}</span>
-              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.paymentPlan.h2 || 'Faisal Hills Islamabad Payment Plan 2026'}
               </h2>
@@ -1217,18 +1633,11 @@ export default function HomeClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Link
-              href="/faisal-hills-payment-plan"
-              className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all flex items-center gap-2"
-            >
-              <Calculator className="w-4 h-4" />
-              <span>{cms.paymentPlan.calcBtnText || 'Open Custom Calculator'}</span>
-            </Link>
             <button
               onClick={() => setIsPaymentPlanDownloadOpen(true)}
-              className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold uppercase tracking-wider rounded-full border border-slate-300 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+              className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2.5 cursor-pointer"
             >
-              <FileDown className="w-4 h-4 text-[#7b002c]" />
+              <FileDown className="w-4 h-4 text-white" />
               <span>{cms.paymentPlan.downloadBtnText || 'Download Plan (PDF)'}</span>
             </button>
           </div>
@@ -1247,9 +1656,6 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              {cms.whyInvest.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.whyInvest.label}</span>
-              ) : null}
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.whyInvest.h2 || 'Why Faisal Hills Is a Smart Property Investment in 2026'}
               </h2>
@@ -1279,52 +1685,370 @@ export default function HomeClient() {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 16 — AMENITIES (6 Image Cards)                     */}
+      {/* SECTION 16 — FACILITIES & PROJECTS: BUILT & PLANNED         */}
       {/* ========================================================= */}
-      <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200" id="amenities-section">
+      <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200 overflow-hidden" id="amenities-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
-              {cms.amenities.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.amenities.label}</span>
-              ) : null}
+
+          {/* Header & Controls Bar */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="max-w-2xl space-y-2.5">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-                {cms.amenities.h2 || 'Amenities Designed for Modern Living'}
+                {cms.amenities?.h2 || 'Facilities and Projects: Built and Planned'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.amenities.paragraph}
+                {cms.amenities?.paragraph || 'Explore the on-ground built reality and upcoming landmark developments across Faisal Hills.'}
               </p>
-            </ScrollReveal>
+            </div>
+
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-2.5 shrink-0 self-start lg:self-end">
+              <div className="bg-white border border-slate-200 p-1 rounded-full flex items-center shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setFacilityViewMode('carousel')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${facilityViewMode === 'carousel'
+                      ? 'bg-[#7b002c] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  title="Carousel Slider View"
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Slider</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFacilityViewMode('grid')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${facilityViewMode === 'grid'
+                      ? 'bg-[#7b002c] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  title="Grid Matrix View"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span>Grid</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(cms.amenities.cards || initialHomepageCMS.amenities.cards).map((am, idx) => (
-              <ScrollReveal key={am.id || idx} direction="up" delay={idx * 100}>
-                <div className="rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-xs hover:shadow-xl transition-all flex flex-col h-full">
-                  <div className="h-44 relative overflow-hidden">
-                    <img
-                      src={am.image || '/images/amenities/roads-infrastructure.webp'}
-                      alt={am.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-5 space-y-2.5 flex-1 flex flex-col justify-between">
-                    <h3 className="font-serif font-bold text-base text-slate-900">{am.title}</h3>
-                    <ul className="space-y-1.5 text-xs text-slate-600">
-                      {am.bullets?.map((bullet, bIdx) => (
-                        <li key={bIdx} className="flex items-start gap-2">
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+          {/* Interactive Category Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <button
+              type="button"
+              onClick={() => setActiveFacilityFilter('all')}
+              className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'all'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                }`}
+            >
+              <span>All Facilities</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeFacilityFilter === 'all' ? 'bg-white/20' : 'bg-slate-100'}`}>
+                {facilityCategoryCounts.all}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFacilityFilter('built')}
+              className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'built'
+                  ? 'bg-emerald-700 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-emerald-300'
+                }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Built &amp; Operational</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeFacilityFilter === 'built' ? 'bg-white/20' : 'bg-emerald-50 text-emerald-800'}`}>
+                {facilityCategoryCounts.built}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFacilityFilter('construction')}
+              className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'construction'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-amber-300'
+                }`}
+            >
+              <Clock className="w-3.5 h-3.5 text-amber-500" />
+              <span>Under Construction</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeFacilityFilter === 'construction' ? 'bg-white/20' : 'bg-amber-50 text-amber-800'}`}>
+                {facilityCategoryCounts.construction}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFacilityFilter('inaugurated')}
+              className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'inaugurated'
+                  ? 'bg-teal-700 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-teal-300'
+                }`}
+            >
+              <Trees className="w-3.5 h-3.5 text-teal-500" />
+              <span>Inaugurated &amp; Eco-Forest</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeFacilityFilter === 'inaugurated' ? 'bg-white/20' : 'bg-teal-50 text-teal-800'}`}>
+                {facilityCategoryCounts.inaugurated}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFacilityFilter('planned')}
+              className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'planned'
+                  ? 'bg-sky-700 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-sky-300'
+                }`}
+            >
+              <Compass className="w-3.5 h-3.5 text-sky-500" />
+              <span>Planned &amp; Future</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeFacilityFilter === 'planned' ? 'bg-white/20' : 'bg-sky-50 text-sky-800'}`}>
+                {facilityCategoryCounts.planned}
+              </span>
+            </button>
           </div>
+
+          {/* CAROUSEL VIEW (Default: Non-boring Horizontal Flow with Floating Side Arrows) */}
+          {facilityViewMode === 'carousel' ? (
+            <div className="relative group/facility-slider">
+              {/* Floating Left Arrow (<) */}
+              <button
+                type="button"
+                onClick={() => handleFacilityScroll('left')}
+                className="absolute -left-3 sm:-left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
+                aria-label="Previous facility"
+                title="Previous"
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+
+              {/* Floating Right Arrow (>) */}
+              <button
+                type="button"
+                onClick={() => handleFacilityScroll('right')}
+                className="absolute -right-3 sm:-right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
+                aria-label="Next facility"
+                title="Next"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+
+              {/* Slider Track */}
+              <div
+                ref={facilitiesSliderRef}
+                className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 px-1 no-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing"
+              >
+                {filteredFacilities.map((am, idx) => {
+                  const status = am.statusBadge || '';
+                  const sLower = status.toLowerCase();
+                  let badgeBg = 'bg-slate-900 text-white';
+                  let badgeIcon = <CheckCircle2 className="w-3 h-3 text-emerald-300" />;
+
+                  if (sLower.includes('operational') || sLower.includes('built') || sLower.includes('completed')) {
+                    badgeBg = 'bg-emerald-700 text-white';
+                    badgeIcon = <CheckCircle2 className="w-3 h-3 text-white" />;
+                  } else if (sLower.includes('inaugurated') || sLower.includes('planted')) {
+                    badgeBg = 'bg-teal-700 text-white';
+                    badgeIcon = <Trees className="w-3 h-3 text-white" />;
+                  } else if (sLower.includes('under construction') || sLower.includes('launched') || sLower.includes('development')) {
+                    badgeBg = 'bg-amber-600 text-white';
+                    badgeIcon = <Clock className="w-3 h-3 text-white" />;
+                  } else if (sLower.includes('planned')) {
+                    badgeBg = 'bg-sky-700 text-white';
+                    badgeIcon = <Compass className="w-3 h-3 text-white" />;
+                  }
+
+                  return (
+                    <div
+                      key={am.id || idx}
+                      onClick={() => setSelectedFacilityModal(am)}
+                      className="shrink-0 w-[280px] sm:w-[320px] md:w-[360px] bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-300 snap-start flex flex-col group transition-all duration-300 cursor-pointer"
+                    >
+                      {/* Top Image Box */}
+                      <div className="h-48 relative overflow-hidden bg-slate-100">
+                        <img
+                          src={am.image || '/images/amenities/roads-infrastructure.webp'}
+                          alt={am.title}
+                          className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+
+                        {/* Small Option at Top of Image (Status Label) */}
+                        {status && (
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wide uppercase shadow-md backdrop-blur-xs ${badgeBg}`}>
+                              {badgeIcon}
+                              <span>{status}</span>
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Quick Inspect Button on Top Right */}
+                        <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="w-7 h-7 rounded-full bg-white/90 text-slate-800 flex items-center justify-center shadow-md backdrop-blur-xs hover:bg-white">
+                            <Maximize2 className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content Body */}
+                      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2">
+                        <div className="space-y-1.5">
+                          <h3 className="font-serif font-bold text-sm sm:text-base text-slate-900 group-hover:text-[#7b002c] transition-colors line-clamp-2 leading-snug">
+                            {am.title}
+                          </h3>
+                          {am.desc && (
+                            <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-sans">
+                              {am.desc}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-[#7b002c] border-t border-slate-100">
+                          <span>View Details</span>
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            /* COMPACT GRID VIEW */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {filteredFacilities.map((am, idx) => {
+                const status = am.statusBadge || '';
+                const sLower = status.toLowerCase();
+                let badgeBg = 'bg-slate-900 text-white';
+                let badgeIcon = <CheckCircle2 className="w-3 h-3 text-emerald-300" />;
+
+                if (sLower.includes('operational') || sLower.includes('built') || sLower.includes('completed')) {
+                  badgeBg = 'bg-emerald-700 text-white';
+                  badgeIcon = <CheckCircle2 className="w-3 h-3 text-white" />;
+                } else if (sLower.includes('inaugurated') || sLower.includes('planted')) {
+                  badgeBg = 'bg-teal-700 text-white';
+                  badgeIcon = <Trees className="w-3 h-3 text-white" />;
+                } else if (sLower.includes('under construction') || sLower.includes('launched') || sLower.includes('development')) {
+                  badgeBg = 'bg-amber-600 text-white';
+                  badgeIcon = <Clock className="w-3 h-3 text-white" />;
+                } else if (sLower.includes('planned')) {
+                  badgeBg = 'bg-sky-700 text-white';
+                  badgeIcon = <Compass className="w-3 h-3 text-white" />;
+                }
+
+                return (
+                  <div
+                    key={am.id || idx}
+                    onClick={() => setSelectedFacilityModal(am)}
+                    className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-300 flex flex-col group transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="h-44 relative overflow-hidden bg-slate-100">
+                      <img
+                        src={am.image || '/images/amenities/roads-infrastructure.webp'}
+                        alt={am.title}
+                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+
+                      {status && (
+                        <div className="absolute top-3 left-3 z-10">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase shadow-md backdrop-blur-xs ${badgeBg}`}>
+                            {badgeIcon}
+                            <span>{status}</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
+                      <div className="space-y-1">
+                        <h3 className="font-serif font-bold text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors line-clamp-2 leading-snug">
+                          {am.title}
+                        </h3>
+                        {am.desc && (
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-sans">
+                            {am.desc}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between text-[11px] font-bold text-[#7b002c] border-t border-slate-100">
+                        <span>Details &amp; Status</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
         </div>
       </section>
+
+      {/* QUICK FACILITY DETAIL MODAL */}
+      {selectedFacilityModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative h-60 bg-slate-900">
+              <img
+                src={selectedFacilityModal.image || '/images/amenities/roads-infrastructure.webp'}
+                alt={selectedFacilityModal.title}
+                className="w-full h-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setSelectedFacilityModal(null)}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              {selectedFacilityModal.statusBadge && (
+                <div className="absolute bottom-3 left-3">
+                  <span className="px-3 py-1 bg-[#7b002c] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md">
+                    {selectedFacilityModal.statusBadge}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="space-y-1.5">
+                <h3 className="font-serif font-bold text-xl text-slate-900 leading-snug">
+                  {selectedFacilityModal.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                  {selectedFacilityModal.desc}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <a
+                  href={formatWhatsAppUrl(socials.whatsapp, `Hi, I would like to know more about ${selectedFacilityModal.title} in Faisal Hills.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider rounded-xl text-center flex items-center justify-center gap-2 shadow-sm transition"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Inquire on WhatsApp</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedFacilityModal(null);
+                    setIsLeadModalOpen(true);
+                  }}
+                  className="flex-1 py-3 bg-slate-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl text-center transition cursor-pointer"
+                >
+                  Book Site Visit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* SECTION 17 — TESTIMONIALS (Clean Initials Badges - No Stock) */}
@@ -1334,11 +2058,6 @@ export default function HomeClient() {
 
           <div className="max-w-2xl space-y-2 text-center md:text-left mx-auto md:mx-0">
             <ScrollReveal direction="up" delay={50}>
-              {cms.testimonials.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block mb-1">
-                  {cms.testimonials.label}
-                </span>
-              ) : null}
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight leading-tight text-center md:text-left">
                 {cms.testimonials.h2 || 'What Our Buyers Say'}
               </h2>
@@ -1415,60 +2134,64 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-white text-slate-900 py-14 lg:py-20 border-b border-slate-200" id="infrastructure-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
-            <div className="space-y-2 max-w-2xl">
-              {cms.infrastructure.label ? (
-                <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.infrastructure.label}</span>
-              ) : null}
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-                {cms.infrastructure.h2 || 'Infrastructure of Faisal Hills'}
-              </h2>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.infrastructure.paragraph}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleInfraScroll('left')}
-                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all cursor-pointer border border-slate-200 shadow-xs"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => handleInfraScroll('right')}
-                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all cursor-pointer border border-slate-200 shadow-xs"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+          <div className="space-y-2 max-w-2xl">
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              {cms.infrastructure.h2 || 'Infrastructure of Faisal Hills'}
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              {cms.infrastructure.paragraph}
+            </p>
           </div>
 
-          <div
-            ref={infraSliderRef}
-            className="flex gap-4 overflow-x-auto pb-4 no-scrollbar snap-x snap-mandatory"
-          >
-            {(cms.infrastructure.cards || initialHomepageCMS.infrastructure.cards).map((item, idx) => (
-              <div
-                key={item.id || idx}
-                className="shrink-0 w-[280px] sm:w-[320px] md:w-[360px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-lg snap-start flex flex-col group transition-all"
-              >
-                <div className="h-48 relative overflow-hidden">
-                  <img
-                    src={item.image || '/images/infrastructure/hills-walk-boulevard.webp'}
-                    alt={item.caption}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">
-                    {item.badge}
-                  </span>
+          {/* Slider Container with Floating Left and Right Navigation Arrows */}
+          <div className="relative group/infra-slider">
+            {/* Floating Left Arrow (<) */}
+            <button
+              type="button"
+              onClick={() => handleInfraScroll('left')}
+              className="absolute -left-3 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xs hover:text-[#7b002c] hover:border-[#7b002c]/30"
+              aria-label="Previous infrastructure slide"
+              title="Previous"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            {/* Floating Right Arrow (>) */}
+            <button
+              type="button"
+              onClick={() => handleInfraScroll('right')}
+              className="absolute -right-3 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xs hover:text-[#7b002c] hover:border-[#7b002c]/30"
+              aria-label="Next infrastructure slide"
+              title="Next"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            <div
+              ref={infraSliderRef}
+              className="flex gap-4 overflow-x-auto pb-4 px-1 no-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing"
+            >
+              {(cms.infrastructure.cards || initialHomepageCMS.infrastructure.cards).map((item, idx) => (
+                <div
+                  key={item.id || idx}
+                  className="shrink-0 w-[280px] sm:w-[320px] md:w-[360px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-lg snap-start flex flex-col group transition-all"
+                >
+                  <div className="h-48 relative overflow-hidden">
+                    <img
+                      src={item.image || '/images/infrastructure/hills-walk-boulevard.webp'}
+                      alt={item.caption}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span className="absolute top-3 left-3 bg-[#7b002c] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">
+                      {item.badge}
+                    </span>
+                  </div>
+                  <div className="p-4 flex-1 flex items-center bg-white border-t border-slate-100">
+                    <p className="text-xs font-semibold text-slate-800">{item.caption}</p>
+                  </div>
                 </div>
-                <div className="p-4 flex-1 flex items-center bg-white border-t border-slate-100">
-                  <p className="text-xs font-semibold text-slate-800">{item.caption}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1479,14 +2202,11 @@ export default function HomeClient() {
       <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="gallery-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
-            {cms.photoGallery?.label ? (
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">{cms.photoGallery.label}</span>
-            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-              {cms.photoGallery.h2 || 'On-Site Development & Photo Gallery'}
+              {cms.photoGallery?.h2 || 'On-Site Development & Photo Gallery'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-              {cms.photoGallery.paragraph}
+              {cms.photoGallery?.paragraph}
             </p>
           </div>
 
@@ -1522,11 +2242,6 @@ export default function HomeClient() {
       <section className="bg-[#4c0215] text-white py-14 lg:py-18 border-b border-[#7b002c]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
-            {cms.discoverFtStats.label ? (
-              <span className="text-amber-300 text-xs font-bold uppercase tracking-widest block">
-                {cms.discoverFtStats.label}
-              </span>
-            ) : null}
             <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
               11,823 Kanals of Master-Planned Living at Margalla Foothills
             </h2>
@@ -1581,7 +2296,7 @@ export default function HomeClient() {
                       <h3 className="font-serif font-bold text-sm text-slate-900 group-hover:text-[#7b002c] transition-colors line-clamp-2">
                         {b.title}
                       </h3>
-                      <p className="text-xs text-slate-600 line-clamp-2">{b.metaDescription || (b as any).excerpt || ''}</p>
+                      <p className="text-xs text-slate-600 line-clamp-2">{b.metaDescription || (b as any).excerpt || b.summary || ''}</p>
                     </div>
                   </div>
                 </Link>
@@ -1592,45 +2307,70 @@ export default function HomeClient() {
       )}
 
       {/* ========================================================= */}
-      {/* SECTION 22 — FAQS (8 Accordion Items - Verified RDA)       */}
+      {/* SECTION 22 — FAQS (Comprehensive Verified RDA FAQs)        */}
       {/* ========================================================= */}
-      <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200" id="faqs-section">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="space-y-2 text-center max-w-2xl mx-auto">
-            {cms.faqs.label ? (
-              <span className="text-[#7b002c] text-xs font-bold uppercase tracking-widest block">
-                {cms.faqs.label}
-              </span>
-            ) : null}
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-              {cms.faqs.h2 || 'Frequently Asked Questions (FAQs)'}
+      <section className="bg-slate-50 py-16 lg:py-24 border-b border-slate-200" id="faqs-section">
+        <div className="max-w-[1280px] mx-auto px-6 lg:px-12 space-y-10">
+          <div className="space-y-3 text-center max-w-3xl mx-auto">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+              {cms.faqs?.h2 || 'Frequently Asked Questions'}
             </h2>
+            <p className="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Find clear, verified answers regarding RDA NOC legal status, location, booking plans, plot dimensions, and handover possession in Faisal Hills.
+            </p>
           </div>
 
-          <div className="space-y-3 max-w-3xl mx-auto">
-            {(cms.faqs.items || initialHomepageCMS.faqs.items).map((faq, idx) => {
+          <div className="space-y-3.5 max-w-3xl mx-auto">
+            {(cms.faqs?.items || initialHomepageCMS.faqs.items).map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs transition-all"
+                  className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
+                      ? 'border-[#7b002c]/40 shadow-md ring-1 ring-[#7b002c]/10'
+                      : 'border-slate-200 shadow-xs hover:border-slate-300'
+                    }`}
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left font-serif font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:text-[#7b002c]"
+                    className="w-full p-4 sm:p-5 text-left font-serif font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:text-[#7b002c] transition-colors"
                   >
-                    <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-[#7b002c] shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />}
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <span className={`flex items-center justify-center shrink-0 w-6 h-6 rounded-full text-[11px] font-bold transition-colors ${isOpen ? 'bg-[#7b002c] text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                        {idx + 1}
+                      </span>
+                      <span className="leading-snug pt-0.5">{faq.q}</span>
+                    </div>
+                    <div className={`p-1.5 rounded-full transition-colors shrink-0 ${isOpen ? 'bg-[#7b002c]/10 text-[#7b002c]' : 'bg-slate-100 text-slate-500'
+                      }`}>
+                      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
                   </button>
                   {isOpen && (
-                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans border-t border-slate-100 pt-3">
+                    <div className="px-4 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans border-t border-slate-100/80 pt-3.5 pl-13 sm:pl-15">
                       {faq.a}
                     </div>
                   )}
                 </div>
               );
             })}
+          </div>
+
+          <div className="text-center pt-2">
+            <p className="text-xs sm:text-sm text-slate-500">
+              Have a question not answered here?{' '}
+              <a
+                href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I have a specific question regarding Faisal Hills.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-[#7b002c] hover:underline inline-flex items-center gap-1"
+              >
+                <span>Ask our sales team on WhatsApp</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+            </p>
           </div>
         </div>
       </section>
@@ -1704,6 +2444,7 @@ export default function HomeClient() {
       <PaymentPlanModal
         isOpen={isPaymentPlanDownloadOpen}
         onClose={() => setIsPaymentPlanDownloadOpen(false)}
+        imageSrc={cms.paymentPlan?.image || '/images/faisal-hills-payment-plan-2026.webp'}
       />
     </div>
   );

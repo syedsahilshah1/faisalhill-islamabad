@@ -4,15 +4,43 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Phone, Mail, MapPin, Facebook, Instagram, MessageSquare, Linkedin, Youtube, ShieldCheck, ArrowUpRight
+  Phone, Mail, MapPin, Facebook, Instagram, MessageSquare, Linkedin, Youtube, ShieldCheck, ArrowUpRight, CheckCircle2, Loader2
 } from 'lucide-react';
-import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl } from '@/data/faisalHillsData';
+import { defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl, submitLead } from '@/data/faisalHillsData';
 
 export default function Footer() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const [socials, setSocials] = useState<SocialLinksData>(defaultSocialLinks);
   const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isNewsletterSubmitting, setIsNewsletterSubmitting] = useState(false);
+  const [isNewsletterSuccess, setIsNewsletterSuccess] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanEmail = newsletterEmail.trim();
+    if (!cleanEmail || !cleanEmail.includes('@')) return;
+
+    setIsNewsletterSubmitting(true);
+    try {
+      await submitLead({
+        name: cleanEmail.split('@')[0] || 'Subscriber',
+        phone: cleanEmail,
+        interest: 'Newsletter Subscription',
+        message: `Subscribed to email updates: ${cleanEmail}`
+      });
+      setIsNewsletterSuccess(true);
+      setNewsletterEmail('');
+      setTimeout(() => {
+        setIsNewsletterSuccess(false);
+      }, 5000);
+    } catch (err) {
+      console.error('Failed to submit newsletter subscription:', err);
+    } finally {
+      setIsNewsletterSubmitting(false);
+    }
+  };
 
   // Hide footer on admin and auth recovery routes
   if (
@@ -284,19 +312,38 @@ export default function Footer() {
               SUBSCRIBE TO NEWSLETTER
             </h4>
 
-            <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-3">
-              <input
-                type="email"
-                placeholder="Enter Your Email"
-                className="w-full bg-transparent border-b border-white/60 py-2 px-1 text-xs text-white placeholder-white/50 focus:outline-none focus:border-white transition"
-              />
-              <button
-                type="submit"
-                className="bg-white text-[#4c0215] font-bold text-xs px-6 py-2 rounded-md hover:bg-slate-100 transition-colors shrink-0 shadow-md cursor-pointer"
-              >
-                Send
-              </button>
-            </form>
+            {isNewsletterSuccess ? (
+              <div className="flex items-center gap-2 py-2 text-xs text-emerald-300 font-semibold bg-emerald-950/40 px-3 rounded-lg border border-emerald-500/30">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <span>You have subscribed successfully!</span>
+              </div>
+            ) : (
+              <form onSubmit={handleNewsletterSubmit} className="flex items-center gap-3">
+                <input
+                  type="email"
+                  required
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  placeholder="Enter Your Email"
+                  disabled={isNewsletterSubmitting}
+                  className="w-full bg-transparent border-b border-white/60 py-2 px-1 text-xs text-white placeholder-white/50 focus:outline-none focus:border-white transition disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={isNewsletterSubmitting}
+                  className="bg-white text-[#4c0215] font-bold text-xs px-6 py-2 rounded-md hover:bg-slate-100 transition-colors shrink-0 shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {isNewsletterSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#4c0215]" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <span>Send</span>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Social Media Outline Icons Row */}

@@ -18,6 +18,8 @@ import {
   TestimonialItem,
   InfraCarouselItem,
   LandmarkCardItem,
+  BlockSupplyItem,
+  PlotMarketRateItem,
   FaqItem
 } from '@/data/faisalHillsData';
 
@@ -1083,10 +1085,25 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
 
           {/* 8. MASTER PLAN */}
           {activeSection === 'masterPlan' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-serif text-lg font-bold text-slate-900">Master Plan Map Section</h3>
-                <p className="text-xs text-slate-500">Configure title, PDF download links, and map viewer options.</p>
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Master Plan Map Section</h3>
+                  <p className="text-xs text-slate-500">Configure SEO narrative, technical society specs, and PDF download options.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Reset Master Plan section to default SEO copy and specs?')) {
+                      setCms({ ...cms, masterPlan: initialHomepageCMS.masterPlan });
+                      showNotification('success', 'Master Plan section reset to defaults.');
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer transition-all self-start sm:self-auto"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Reset Master Plan</span>
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -1107,22 +1124,105 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       type="text"
                       value={cms.masterPlan.h2}
                       onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, h2: e.target.value } })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Description Paragraph</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Main Description Paragraph (SEO Keyword-Rich)</label>
                   <textarea
-                    rows={3}
+                    rows={4}
                     value={cms.masterPlan.paragraph}
                     onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, paragraph: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Secondary Note / Exploration Sub-line (Optional)</label>
+                  <textarea
+                    rows={2}
+                    value={cms.masterPlan.subParagraph || ''}
+                    placeholder="Brief instruction on interactive zoom or vector blueprint..."
+                    onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, subParagraph: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* Key Spec Highlight Badges (4 Cards) */}
+                <div className="pt-4 border-t border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-serif text-sm font-bold text-slate-900">Key Society Blueprint Specs (4 Cards)</h4>
+                      <p className="text-[11px] text-slate-500">Highlighted badges displayed under the description on the left column.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentSpecs = cms.masterPlan.specs || initialHomepageCMS.masterPlan.specs || [];
+                        setCms({
+                          ...cms,
+                          masterPlan: {
+                            ...cms.masterPlan,
+                            specs: [...currentSpecs, { label: 'Feature Title', value: 'Feature Detail' }]
+                          }
+                        });
+                      }}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Spec Card</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(cms.masterPlan.specs || initialHomepageCMS.masterPlan.specs || []).map((spec, sIdx) => (
+                      <div key={sIdx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const currentSpecs = (cms.masterPlan.specs || initialHomepageCMS.masterPlan.specs || []).filter((_, i) => i !== sIdx);
+                            setCms({
+                              ...cms,
+                              masterPlan: { ...cms.masterPlan, specs: currentSpecs }
+                            });
+                          }}
+                          className="absolute top-2.5 right-2.5 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer transition-colors"
+                          title="Delete Spec"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[10px] font-bold text-[#7b002c] uppercase">Spec Card #{sIdx + 1}</span>
+                        <input
+                          type="text"
+                          value={spec.label}
+                          onChange={(e) => {
+                            const updated = [...(cms.masterPlan.specs || initialHomepageCMS.masterPlan.specs || [])];
+                            updated[sIdx] = { ...updated[sIdx], label: e.target.value };
+                            setCms({ ...cms, masterPlan: { ...cms.masterPlan, specs: updated } });
+                          }}
+                          placeholder="Label (e.g. Approved Area)"
+                          className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                        />
+                        <input
+                          type="text"
+                          value={spec.value}
+                          onChange={(e) => {
+                            const updated = [...(cms.masterPlan.specs || initialHomepageCMS.masterPlan.specs || [])];
+                            updated[sIdx] = { ...updated[sIdx], value: e.target.value };
+                            setCms({ ...cms, masterPlan: { ...cms.masterPlan, specs: updated } });
+                          }}
+                          placeholder="Value (e.g. 11,823.5 Kanals)"
+                          className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Buttons & Links */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Download Button Text</label>
                     <input
@@ -1142,16 +1242,54 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     />
                   </div>
                 </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Fullscreen Button Text</label>
+                  <input
+                    type="text"
+                    value={cms.masterPlan.fullscreenBtnText || 'Launch Fullscreen Map'}
+                    onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, fullscreenBtnText: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
               </div>
             </div>
           )}
 
           {/* 9. BLOCKS & SECTORS */}
           {activeSection === 'blocksSection' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-serif text-lg font-bold text-slate-900">Blocks &amp; Sectors Section</h3>
-                <p className="text-xs text-slate-500">Headers above the interactive expanding blocks showcase.</p>
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Blocks &amp; Sectors Section</h3>
+                  <p className="text-xs text-slate-500">Headers and the comprehensive Blocks, Possession &amp; Plot Supply breakdown table.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newRow: BlockSupplyItem = {
+                      id: `blk-sup-${Date.now()}`,
+                      block: 'New Block',
+                      profile: 'Block profile, orientation and accessibility details.',
+                      approxPlots: '1,000+',
+                      soldAs: 'Installments',
+                      possession: 'In Progress',
+                      statusBadge: 'Upcoming'
+                    };
+                    const existing = cms.blocksSection?.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [];
+                    setCms({
+                      ...cms,
+                      blocksSection: {
+                        ...cms.blocksSection,
+                        supplyRows: [...existing, newRow]
+                      }
+                    });
+                  }}
+                  className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm transition self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Block Supply Row</span>
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -1178,24 +1316,224 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Showcase Intro Paragraph</label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={cms.blocksSection.paragraph}
                     onChange={(e) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, paragraph: e.target.value } })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
+
+                {/* Plot Supply Table CMS Settings */}
+                <div className="pt-4 border-t border-slate-100 space-y-4">
+                  <h4 className="font-serif font-bold text-sm text-[#7b002c] uppercase tracking-wider">
+                    Blocks, Possession &amp; Plot Supply Table Content
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Supply Table Heading</label>
+                      <input
+                        type="text"
+                        value={cms.blocksSection.supplyHeading || 'Blocks, Possession and Plot Supply'}
+                        onChange={(e) => setCms({
+                          ...cms,
+                          blocksSection: {
+                            ...cms.blocksSection,
+                            supplyHeading: e.target.value
+                          }
+                        })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Supply Table Subline / Note</label>
+                      <input
+                        type="text"
+                        value={cms.blocksSection.supplySubline || 'The Faisal Hills master plan has eight blocks. Blocks nearest the GT Road are the most developed; blocks further in are newer, cheaper to enter and mostly sold on installments, but at earlier stages of development.'}
+                        onChange={(e) => setCms({
+                          ...cms,
+                          blocksSection: {
+                            ...cms.blocksSection,
+                            supplySubline: e.target.value
+                          }
+                        })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Rows List */}
+                  <div className="space-y-3 pt-2">
+                    {(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).map((row, idx) => (
+                      <div key={row.id || idx} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative group">
+                        <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-2">
+                          <span className="font-serif font-bold text-xs text-[#7b002c]">
+                            #{idx + 1} — {row.block || 'Block Row'}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            {idx > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                  const temp = rows[idx];
+                                  rows[idx] = rows[idx - 1];
+                                  rows[idx - 1] = temp;
+                                  setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                                }}
+                                className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded cursor-pointer"
+                                title="Move up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            {idx < (cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).length - 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                  const temp = rows[idx];
+                                  rows[idx] = rows[idx + 1];
+                                  rows[idx + 1] = temp;
+                                  setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                                }}
+                                className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded cursor-pointer"
+                                title="Move down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const rows = (cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).filter((_, i) => i !== idx);
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="p-1 text-rose-600 hover:bg-rose-100 rounded cursor-pointer"
+                              title="Delete row"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">Block Name</label>
+                            <input
+                              type="text"
+                              value={row.block}
+                              onChange={(e) => {
+                                const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                rows[idx] = { ...rows[idx], block: e.target.value };
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">Approx. Plots</label>
+                            <input
+                              type="text"
+                              value={row.approxPlots}
+                              placeholder="e.g. 1,450"
+                              onChange={(e) => {
+                                const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                rows[idx] = { ...rows[idx], approxPlots: e.target.value };
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">Sold As</label>
+                            <input
+                              type="text"
+                              value={row.soldAs}
+                              placeholder="e.g. Lump sum"
+                              onChange={(e) => {
+                                const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                rows[idx] = { ...rows[idx], soldAs: e.target.value };
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1 sm:col-span-2">
+                            <label className="block text-[11px] font-bold text-slate-700">Profile &amp; Highlights</label>
+                            <input
+                              type="text"
+                              value={row.profile}
+                              onChange={(e) => {
+                                const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                rows[idx] = { ...rows[idx], profile: e.target.value };
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">Possession Status</label>
+                            <input
+                              type="text"
+                              value={row.possession}
+                              placeholder="e.g. Available"
+                              onChange={(e) => {
+                                const rows = [...(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || [])];
+                                rows[idx] = { ...rows[idx], possession: e.target.value };
+                                setCms({ ...cms, blocksSection: { ...cms.blocksSection, supplyRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* 10. PLOTS FOR SALE CTA */}
+          {/* 10. PLOTS FOR SALE CTA & MARKET RATES */}
           {activeSection === 'plotsForSale' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-serif text-lg font-bold text-slate-900">Plots For Sale &amp; Resale CTA Bar</h3>
-                <p className="text-xs text-slate-500">Dark high-conversion callout bar directing buyers to WhatsApp or directory.</p>
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Plots For Sale &amp; Current Market Rates</h3>
+                  <p className="text-xs text-slate-500">CTA buttons, custom inquiry banners, and open-market benchmark asking price tables.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newRow: PlotMarketRateItem = {
+                      id: `rate-${Date.now()}`,
+                      block: 'New Block',
+                      marla5: 'PKR 45–65 lakh',
+                      marla10: 'PKR 0.90–1.30 crore',
+                      kanal1: 'PKR 1.50–2.20 crore',
+                      statusBadge: 'New Sector'
+                    };
+                    const existing = cms.plotsForSale?.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [];
+                    setCms({
+                      ...cms,
+                      plotsForSale: {
+                        ...cms.plotsForSale,
+                        ratesRows: [...existing, newRow]
+                      }
+                    });
+                  }}
+                  className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm transition self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Rates Row</span>
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -1211,7 +1549,7 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">CTA Heading</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">CTA Banner Heading</label>
                   <input
                     type="text"
                     value={cms.plotsForSale.ctaHeading}
@@ -1221,7 +1559,7 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">CTA Subtext</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">CTA Banner Subtext</label>
                   <textarea
                     rows={2}
                     value={cms.plotsForSale.ctaText}
@@ -1248,6 +1586,165 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       onChange={(e) => setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ctaBtn2Text: e.target.value } })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
+                  </div>
+                </div>
+
+                {/* Rates Table Configuration */}
+                <div className="pt-4 border-t border-slate-100 space-y-4">
+                  <h4 className="font-serif font-bold text-sm text-[#7b002c] uppercase tracking-wider">
+                    Plots for Sale: Current Rates Table Content
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Rates Table Heading</label>
+                      <input
+                        type="text"
+                        value={cms.plotsForSale.ratesHeading || 'Plots for Sale in Faisal Hills: Current Rates'}
+                        onChange={(e) => setCms({
+                          ...cms,
+                          plotsForSale: {
+                            ...cms.plotsForSale,
+                            ratesHeading: e.target.value
+                          }
+                        })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Rates Table Subline / Note</label>
+                      <input
+                        type="text"
+                        value={cms.plotsForSale.ratesSubline || 'These are open-market asking prices. What a specific plot fetches depends on its position (corner, park-facing or on a main road), how developed its block is, and whether it is a balloted plot or an unballoted file.'}
+                        onChange={(e) => setCms({
+                          ...cms,
+                          plotsForSale: {
+                            ...cms.plotsForSale,
+                            ratesSubline: e.target.value
+                          }
+                        })}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Rates Rows Editor */}
+                  <div className="space-y-3 pt-2">
+                    {(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).map((row, idx) => (
+                      <div key={row.id || idx} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative group">
+                        <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-2">
+                          <span className="font-serif font-bold text-xs text-[#7b002c]">
+                            #{idx + 1} — {row.block || 'Block Rate'}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            {idx > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                  const temp = rows[idx];
+                                  rows[idx] = rows[idx - 1];
+                                  rows[idx - 1] = temp;
+                                  setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                                }}
+                                className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded cursor-pointer"
+                                title="Move up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            {idx < (cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).length - 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                  const temp = rows[idx];
+                                  rows[idx] = rows[idx + 1];
+                                  rows[idx + 1] = temp;
+                                  setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                                }}
+                                className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded cursor-pointer"
+                                title="Move down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const rows = (cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).filter((_, i) => i !== idx);
+                                setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                              }}
+                              className="p-1 text-rose-600 hover:bg-rose-100 rounded cursor-pointer"
+                              title="Delete rate row"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                          <div className="space-y-1 sm:col-span-2 md:col-span-1">
+                            <label className="block text-[11px] font-bold text-slate-700">Block Name</label>
+                            <input
+                              type="text"
+                              value={row.block}
+                              onChange={(e) => {
+                                const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                rows[idx] = { ...rows[idx], block: e.target.value };
+                                setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">5 Marla Rate</label>
+                            <input
+                              type="text"
+                              value={row.marla5}
+                              placeholder="e.g. PKR 70–90 lakh"
+                              onChange={(e) => {
+                                const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                rows[idx] = { ...rows[idx], marla5: e.target.value };
+                                setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">10 Marla Rate</label>
+                            <input
+                              type="text"
+                              value={row.marla10}
+                              placeholder="e.g. PKR 1.25–1.50 crore"
+                              onChange={(e) => {
+                                const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                rows[idx] = { ...rows[idx], marla10: e.target.value };
+                                setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="block text-[11px] font-bold text-slate-700">1 Kanal Rate</label>
+                            <input
+                              type="text"
+                              value={row.kanal1}
+                              placeholder="e.g. PKR 2.00–2.90 crore (or —)"
+                              onChange={(e) => {
+                                const rows = [...(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || [])];
+                                rows[idx] = { ...rows[idx], kanal1: e.target.value };
+                                setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ratesRows: rows } });
+                              }}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1682,28 +2179,38 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
           )}
 
           {/* 15. AMENITIES */}
+          {/* 15. AMENITIES & FACILITIES */}
           {activeSection === 'amenities' && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-serif text-lg font-bold text-slate-900">Amenities &amp; Master Features</h3>
-                  <p className="text-xs text-slate-500">Edit amenities showcase cards and image assets.</p>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Facilities and Projects: Built and Planned</h3>
+                  <p className="text-xs text-slate-500">Manage on-ground amenities, operational facilities, and upcoming development projects.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     const newCard: AmenityCardItem = {
-                      id: `am-${Date.now()}`,
-                      title: 'New Community Facility',
-                      bullets: ['24/7 dedicated surveillance', 'Modern underground utilities', 'Landscaped environment'],
-                      image: '/images/faisal-hills-site-header.webp'
+                      id: `fac-${Date.now()}`,
+                      title: 'New Facility / Project',
+                      statusBadge: 'Planned',
+                      desc: 'Facility details and project specifications description.',
+                      image: '/images/amenities/roads-infrastructure.webp'
                     };
-                    setCms({ ...cms, amenities: { ...cms.amenities, cards: [...cms.amenities.cards, newCard] } });
+                    const existing = cms.amenities?.cards || [];
+                    setCms({
+                      ...cms,
+                      amenities: {
+                        ...cms.amenities,
+                        h2: cms.amenities?.h2 || 'Facilities and Projects: Built and Planned',
+                        cards: [...existing, newCard]
+                      }
+                    });
                   }}
-                  className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer"
+                  className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm transition self-start sm:self-auto"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Amenity</span>
+                  <Plus className="w-4 h-4" />
+                  <span>Add Facility Card</span>
                 </button>
               </div>
 
@@ -1713,9 +2220,17 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                     <input
                       type="text"
-                      value={cms.amenities.label || ''}
-                      placeholder="Leave blank to hide"
-                      onChange={(e) => setCms({ ...cms, amenities: { ...cms.amenities, label: e.target.value } })}
+                      value={cms.amenities?.label || ''}
+                      placeholder="e.g. World-Class Infrastructure"
+                      onChange={(e) => setCms({
+                        ...cms,
+                        amenities: {
+                          ...cms.amenities,
+                          h2: cms.amenities?.h2 || 'Facilities and Projects: Built and Planned',
+                          cards: cms.amenities?.cards || [],
+                          label: e.target.value
+                        }
+                      })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
@@ -1723,54 +2238,182 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Heading</label>
                     <input
                       type="text"
-                      value={cms.amenities.h2}
-                      onChange={(e) => setCms({ ...cms, amenities: { ...cms.amenities, h2: e.target.value } })}
+                      value={cms.amenities?.h2 || 'Facilities and Projects: Built and Planned'}
+                      onChange={(e) => setCms({
+                        ...cms,
+                        amenities: {
+                          ...cms.amenities,
+                          cards: cms.amenities?.cards || [],
+                          h2: e.target.value
+                        }
+                      })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  {cms.amenities.cards.map((card, idx) => (
-                    <div key={card.id || idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 relative">
-                      <button
-                        type="button"
-                        onClick={() => setCms({
-                          ...cms,
-                          amenities: {
-                            ...cms.amenities,
-                            cards: cms.amenities.cards.filter((_, i) => i !== idx)
-                          }
-                        })}
-                        className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <span className="text-[10px] font-bold text-[#7b002c] uppercase">Amenity #{idx + 1}</span>
-                      <input
-                        type="text"
-                        value={card.title}
-                        onChange={(e) => {
-                          const updated = [...cms.amenities.cards];
-                          updated[idx].title = e.target.value;
-                          setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
-                        }}
-                        placeholder="Title"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
-                      />
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Paragraph / Intro</label>
+                  <textarea
+                    rows={2}
+                    value={cms.amenities?.paragraph || ''}
+                    onChange={(e) => setCms({
+                      ...cms,
+                      amenities: {
+                        ...cms.amenities,
+                        cards: cms.amenities?.cards || [],
+                        paragraph: e.target.value
+                      }
+                    })}
+                    placeholder="Introductory paragraph for facilities section..."
+                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  {(cms.amenities?.cards || []).map((card, idx) => (
+                    <div key={card.id || idx} className="p-4 sm:p-5 bg-slate-50 hover:bg-slate-50/80 rounded-2xl border border-slate-200 space-y-3 relative group transition">
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 bg-[#7b002c]/10 text-[#7b002c] rounded-md text-[10px] font-bold uppercase tracking-wider">
+                            #{idx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-slate-800 truncate max-w-[180px] sm:max-w-xs">
+                            {card.title || 'Untitled Facility'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...(cms.amenities?.cards || [])];
+                                const temp = list[idx - 1];
+                                list[idx - 1] = list[idx];
+                                list[idx] = temp;
+                                setCms({ ...cms, amenities: { ...cms.amenities, cards: list } });
+                              }}
+                              className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 rounded-md cursor-pointer transition"
+                              title="Move Up"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          {idx < (cms.amenities?.cards?.length || 0) - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...(cms.amenities?.cards || [])];
+                                const temp = list[idx + 1];
+                                list[idx + 1] = list[idx];
+                                list[idx] = temp;
+                                setCms({ ...cms, amenities: { ...cms.amenities, cards: list } });
+                              }}
+                              className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 rounded-md cursor-pointer transition"
+                              title="Move Down"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const list = (cms.amenities?.cards || []).filter((_, i) => i !== idx);
+                              setCms({ ...cms, amenities: { ...cms.amenities, cards: list } });
+                            }}
+                            className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-100 rounded-md cursor-pointer transition ml-1"
+                            title="Delete Facility"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Facility / Project Name</label>
+                          <input
+                            type="text"
+                            value={card.title}
+                            onChange={(e) => {
+                              const updated = [...(cms.amenities?.cards || [])];
+                              updated[idx] = { ...updated[idx], title: e.target.value };
+                              setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
+                            }}
+                            placeholder="e.g. Roots International School"
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Top Status Label / Badge</label>
+                          <div className="space-y-1">
+                            <input
+                              type="text"
+                              value={card.statusBadge || ''}
+                              onChange={(e) => {
+                                const updated = [...(cms.amenities?.cards || [])];
+                                updated[idx] = { ...updated[idx], statusBadge: e.target.value };
+                                setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
+                              }}
+                              placeholder="e.g. Operational / Built / Planned"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-[#7b002c] focus:outline-none focus:border-[#7b002c]"
+                            />
+                            <div className="flex flex-wrap gap-1">
+                              {['Built', 'Operational', 'Inaugurated', 'Planted', 'Under construction', 'Launched; under development', 'Completed', 'Planned'].map((badgePreset) => (
+                                <button
+                                  key={badgePreset}
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = [...(cms.amenities?.cards || [])];
+                                    updated[idx] = { ...updated[idx], statusBadge: badgePreset };
+                                    setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
+                                  }}
+                                  className="text-[9px] px-1.5 py-0.5 bg-slate-200/80 hover:bg-[#7b002c] hover:text-white text-slate-700 rounded transition cursor-pointer"
+                                >
+                                  {badgePreset}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Description / Details</label>
+                        <textarea
+                          rows={2}
+                          value={card.desc || ''}
+                          onChange={(e) => {
+                            const updated = [...(cms.amenities?.cards || [])];
+                            updated[idx] = { ...updated[idx], desc: e.target.value };
+                            setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
+                          }}
+                          placeholder="Short description of this facility..."
+                          className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c]"
+                        />
+                      </div>
+
                       <ImageUploader
-                        label="Amenity Photo / Graphic"
+                        label="Facility Photo / Render"
                         value={card.image}
                         onChange={(val) => {
-                          const updated = [...cms.amenities.cards];
-                          updated[idx].image = val;
+                          const updated = [...(cms.amenities?.cards || [])];
+                          updated[idx] = { ...updated[idx], image: val };
                           setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
                         }}
-                        placeholder="/images/..."
+                        placeholder="/images/amenities/..."
                       />
                     </div>
                   ))}
                 </div>
+
+                {(!cms.amenities?.cards || cms.amenities.cards.length === 0) && (
+                  <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 text-xs">
+                    No facilities added yet. Click &ldquo;Add Facility Card&rdquo; above to create your first item.
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2043,26 +2686,28 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
           )}
 
           {/* 19. FAQS */}
+          {/* 19. FAQS */}
           {activeSection === 'faqs' && (
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-serif text-lg font-bold text-slate-900">Frequently Asked Questions (FAQPage Schema)</h3>
-                  <p className="text-xs text-slate-500">Indexed for Google rich snippet FAQs.</p>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">Frequently Asked Questions (Homepage &amp; FAQPage Schema)</h3>
+                  <p className="text-xs text-slate-500">Add, edit, reorder or remove questions displayed on the homepage and indexed for Google Rich Snippets.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     const newFaq: FaqItem = {
-                      q: 'Is Faisal Hills NOC fully approved by RDA?',
-                      a: 'Yes, Faisal Hills is 100% legally approved by Rawalpindi Development Authority (RDA) covering over 11,823 Kanals.'
+                      q: 'New Question title here...',
+                      a: 'Detailed answer explanation goes here.'
                     };
-                    setCms({ ...cms, faqs: { ...cms.faqs, items: [...cms.faqs.items, newFaq] } });
+                    const existing = cms.faqs?.items || [];
+                    setCms({ ...cms, faqs: { ...cms.faqs, h2: cms.faqs?.h2 || 'Frequently Asked Questions', items: [...existing, newFaq] } });
                   }}
-                  className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer"
+                  className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-sm transition self-start sm:self-auto"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add FAQ</span>
+                  <Plus className="w-4 h-4" />
+                  <span>Add FAQ Item</span>
                 </button>
               </div>
 
@@ -2072,9 +2717,9 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Top Badge / Tag (Optional)</label>
                     <input
                       type="text"
-                      value={cms.faqs.label || ''}
-                      placeholder="Leave blank to hide"
-                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, label: e.target.value } })}
+                      value={cms.faqs?.label || ''}
+                      placeholder="e.g. Got Questions?"
+                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, h2: cms.faqs?.h2 || 'Frequently Asked Questions', items: cms.faqs?.items || [], label: e.target.value } })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
@@ -2082,54 +2727,110 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section H2 Title</label>
                     <input
                       type="text"
-                      value={cms.faqs.h2}
-                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, h2: e.target.value } })}
+                      value={cms.faqs?.h2 || 'Frequently Asked Questions'}
+                      onChange={(e) => setCms({ ...cms, faqs: { ...cms.faqs, items: cms.faqs?.items || [], h2: e.target.value } })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-2">
-                  {cms.faqs.items.map((faq, idx) => (
-                    <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 relative">
-                      <button
-                        type="button"
-                        onClick={() => setCms({
-                          ...cms,
-                          faqs: {
-                            ...cms.faqs,
-                            items: cms.faqs.items.filter((_, i) => i !== idx)
-                          }
-                        })}
-                        className="absolute top-3 right-3 text-rose-500 hover:bg-rose-100 p-1 rounded-lg cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <span className="text-[10px] font-bold text-[#7b002c] uppercase">Question #{idx + 1}</span>
-                      <input
-                        type="text"
-                        value={faq.q}
-                        onChange={(e) => {
-                          const updated = [...cms.faqs.items];
-                          updated[idx].q = e.target.value;
-                          setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
-                        }}
-                        placeholder="Question"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
-                      />
-                      <textarea
-                        rows={3}
-                        value={faq.a}
-                        onChange={(e) => {
-                          const updated = [...cms.faqs.items];
-                          updated[idx].a = e.target.value;
-                          setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
-                        }}
-                        placeholder="Answer"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
-                      />
+                <div className="space-y-4 pt-2">
+                  {(cms.faqs?.items || []).map((faq, idx) => (
+                    <div key={idx} className="p-4 sm:p-5 bg-slate-50 hover:bg-slate-50/80 rounded-2xl border border-slate-200 space-y-3 relative group transition">
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 bg-[#7b002c]/10 text-[#7b002c] rounded-md text-[10px] font-bold uppercase tracking-wider">
+                            Q#{idx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-slate-700 truncate max-w-[200px] sm:max-w-md">
+                            {faq.q || 'Untitled Question'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...(cms.faqs?.items || [])];
+                                const temp = list[idx - 1];
+                                list[idx - 1] = list[idx];
+                                list[idx] = temp;
+                                setCms({ ...cms, faqs: { ...cms.faqs, items: list } });
+                              }}
+                              className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 rounded-md cursor-pointer transition"
+                              title="Move Up"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          {idx < (cms.faqs?.items?.length || 0) - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...(cms.faqs?.items || [])];
+                                const temp = list[idx + 1];
+                                list[idx + 1] = list[idx];
+                                list[idx] = temp;
+                                setCms({ ...cms, faqs: { ...cms.faqs, items: list } });
+                              }}
+                              className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 rounded-md cursor-pointer transition"
+                              title="Move Down"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const list = (cms.faqs?.items || []).filter((_, i) => i !== idx);
+                              setCms({ ...cms, faqs: { ...cms.faqs, items: list } });
+                            }}
+                            className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-100 rounded-md cursor-pointer transition ml-1"
+                            title="Delete FAQ"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Question</label>
+                        <input
+                          type="text"
+                          value={faq.q}
+                          onChange={(e) => {
+                            const updated = [...(cms.faqs?.items || [])];
+                            updated[idx] = { ...updated[idx], q: e.target.value };
+                            setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
+                          }}
+                          placeholder="Enter question text..."
+                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Answer</label>
+                        <textarea
+                          rows={3}
+                          value={faq.a}
+                          onChange={(e) => {
+                            const updated = [...(cms.faqs?.items || [])];
+                            updated[idx] = { ...updated[idx], a: e.target.value };
+                            setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
+                          }}
+                          placeholder="Enter answer details..."
+                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs leading-relaxed text-slate-800 focus:outline-none focus:border-[#7b002c]"
+                        />
+                      </div>
                     </div>
                   ))}
+
+                  {(!cms.faqs?.items || cms.faqs.items.length === 0) && (
+                    <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 text-xs">
+                      No FAQs added yet. Click &ldquo;Add FAQ Item&rdquo; above to create your first question.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

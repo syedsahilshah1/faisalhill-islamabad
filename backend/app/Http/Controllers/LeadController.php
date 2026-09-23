@@ -27,15 +27,19 @@ class LeadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
+            'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:100',
+            'email' => 'nullable|string|max:255',
             'interest' => 'nullable|string|max:255',
             'message' => 'nullable|string',
         ]);
 
+        $name = !empty($validated['name']) ? $validated['name'] : (!empty($validated['email']) ? explode('@', $validated['email'])[0] : 'Newsletter Subscriber');
+        $phone = !empty($validated['phone']) ? $validated['phone'] : (!empty($validated['email']) ? $validated['email'] : 'N/A');
+
         $lead = Lead::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
+            'name' => $name,
+            'phone' => $phone,
             'interest' => $validated['interest'] ?? 'General Inquiry',
             'message' => $validated['message'] ?? '',
             'submitted_at' => now()->format('d M Y, h:i A'),
@@ -43,31 +47,36 @@ class LeadController extends Controller
 
         $lead->submitted_at = $lead->created_at ? $lead->created_at->format('d M Y, h:i A') : now()->format('d M Y, h:i A');
 
-        // Send email alert to Superadmin(s)
-        try {
-            $superAdmins = User::where('role', 'super_admin')->pluck('email')->filter()->toArray();
-            
-            if (empty($superAdmins)) {
-                $defaultAdmin = env('MAIL_FROM_ADDRESS', 'info@faisalhillsislamabadfh.com');
-                $superAdmins = [$defaultAdmin];
+        // Send email alert to Superadmin(s) only for direct lead inquiries (skip newsletter subscriptions)
+        $isNewsletter = stripos($lead->interest, 'newsletter') !== false;
+
+        if (!$isNewsletter) {
+            try {
+                $superAdmins = User::where('role', 'super_admin')->pluck('email')->filter()->toArray();
+                
+                if (empty($superAdmins)) {
+                    $defaultAdmin = env('MAIL_FROM_ADDRESS', 'info@faisalhillsislamabadfh.com');
+                    $superAdmins = [$defaultAdmin];
+                }
+
+                $subject = "🔔 New Lead Inquiry: " . $lead->name . " (" . $lead->interest . ")";
+                $emailBody = "🔔 New Lead Inquiry Received on Faisal Hills Portal\n\n"
+                    . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    . "👤 Name: " . $lead->name . "\n"
+                    . "📞 Phone / Contact: " . $lead->phone . "\n"
+                    . "📌 Interest: " . $lead->interest . "\n"
+                    . "💬 Message: " . ($lead->message ?: 'No additional message') . "\n"
+                    . "⏰ Date/Time: " . now()->format('d M Y, h:i A') . "\n"
+                    . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                    . "Login to your admin panel to view all inquiries.";
+
+                Mail::raw($emailBody, function ($message) use ($superAdmins, $subject) {
+                    $message->to($superAdmins)
+                            ->subject($subject);
+                });
+            } catch (\Exception $e) {
+                Log::error('Lead notification email failed: ' . $e->getMessage());
             }
-
-            $emailBody = "🔔 New Lead Inquiry Received on Faisal Hills Portal\n\n"
-                . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                . "👤 Name: " . $lead->name . "\n"
-                . "📞 Phone: " . $lead->phone . "\n"
-                . "📌 Interest: " . $lead->interest . "\n"
-                . "💬 Message: " . ($lead->message ?: 'No additional message') . "\n"
-                . "⏰ Date/Time: " . now()->format('d M Y, h:i A') . "\n"
-                . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                . "Login to your admin panel to view all inquiries.";
-
-            Mail::raw($emailBody, function ($message) use ($superAdmins, $lead) {
-                $message->to($superAdmins)
-                        ->subject("🔔 New Lead Inquiry: " . $lead->name . " (" . $lead->interest . ")");
-            });
-        } catch (\Exception $e) {
-            Log::error('Lead notification email failed: ' . $e->getMessage());
         }
 
         return response()->json([

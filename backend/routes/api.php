@@ -86,6 +86,7 @@ Route::middleware(['auth:sanctum', 'active_user'])->group(function () {
     
     // Settings Admin
     Route::put('/settings', [SettingController::class, 'update']);
+    Route::match(['post', 'put'], '/settings/{key}', [SettingController::class, 'update']);
     
     // SEO Admin
     Route::put('/seo/global', [SeoController::class, 'updateGlobal']);

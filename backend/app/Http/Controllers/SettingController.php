@@ -24,35 +24,37 @@ class SettingController extends Controller
         });
 
         if ($settingValue === null) {
-            return response()->json(['message' => 'Setting not found'], 404);
+            return response()->json(null, 200);
         }
         return response()->json($settingValue);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, ?string $key = null)
     {
-        $validated = $request->validate([
-            'key' => 'required|string',
-            'value' => 'required',
-        ]);
+        $settingKey = $key ?? $request->input('key');
+        if (!$settingKey) {
+            return response()->json(['message' => 'Setting key is required'], 422);
+        }
+
+        $value = $request->has('value') ? $request->input('value') : $request->all();
 
         $setting = SiteSetting::updateOrCreate(
-            ['key' => $validated['key']],
-            ['value' => $validated['value']]
+            ['key' => $settingKey],
+            ['value' => $value]
         );
 
         // If last verified date is updated, sync it with society_stats.lastVerifiedDate
-        if ($validated['key'] === 'last_verified_date') {
+        if ($settingKey === 'last_verified_date') {
             $statsSetting = SiteSetting::where('key', 'society_stats')->first();
             if ($statsSetting) {
                 $stats = $statsSetting->value;
-                $stats['lastVerifiedDate'] = $validated['value'];
+                $stats['lastVerifiedDate'] = is_string($value) ? $value : ($value['lastVerifiedDate'] ?? '');
                 $statsSetting->update(['value' => $stats]);
             }
         }
 
         Cache::forget('fh_settings_all');
-        Cache::forget("fh_setting_{$validated['key']}");
+        Cache::forget("fh_setting_{$settingKey}");
 
         return response()->json([
             'message' => 'Setting updated successfully',

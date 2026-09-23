@@ -1,4 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="7" fill="#7b002c"/>
-  <text x="16" y="22.5" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">FH</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b0032"/>
+      <stop offset="100%" stop-color="#55001d"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fae08c"/>
+      <stop offset="100%" stop-color="#d49b28"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with subtle rounded corners (or circle for SERP) -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  
+  <!-- Gold Accent Inner Border -->
+  <rect x="24" y="24" width="464" height="464" rx="80" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-opacity="0.65"/>
+  
+  <!-- Mountain Margalla Peak Motif -->
+  <path d="M170 175 L225 110 L280 175 Z" fill="url(#goldGrad)" opacity="0.9"/>
+  <path d="M250 175 L290 125 L330 175 Z" fill="url(#goldGrad)" opacity="0.75"/>
+  <circle cx="225" cy="92" r="10" fill="url(#goldGrad)"/>
+
+  <!-- Serif Bold FH Monogram -->
+  <text x="256" y="340" 
+        font-family="Georgia, 'Times New Roman', 'Playfair Display', serif" 
+        font-size="200" 
+        font-weight="900" 
+        fill="#ffffff" 
+        text-anchor="middle" 
+        letter-spacing="-3">FH</text>
+        
+  <!-- Subtitle Tag -->
+  <text x="256" y="415" 
+        font-family="'Arial', 'Inter', system-ui, sans-serif" 
+        font-size="36" 
+        font-weight="800" 
+        fill="url(#goldGrad)" 
+        text-anchor="middle" 
+        letter-spacing="9">FAISAL HILLS</text>
 </svg>

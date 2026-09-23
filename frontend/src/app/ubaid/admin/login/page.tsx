@@ -375,6 +375,16 @@ export default function AdminLoginPage() {
           });
       }
 
+      // Strip any sensitive credentials from URL query params (e.g. from accidental GET form submissions)
+      if (window.location.search.includes('username=') || window.location.search.includes('password=')) {
+        const cleanParams = new URLSearchParams(window.location.search);
+        cleanParams.delete('username');
+        cleanParams.delete('password');
+        const cleanQuery = cleanParams.toString();
+        const cleanUrl = window.location.pathname + (cleanQuery ? `?${cleanQuery}` : '');
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
       if (tabParam && ['series', 'plots', 'blocks', 'legal', 'accounts', 'verification', 'leads', 'seo', 'gallery', 'blogs', 'users', 'security'].includes(tabParam)) {
@@ -789,6 +799,9 @@ export default function AdminLoginPage() {
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('faisal_admin_token', res.token);
           sessionStorage.setItem('faisal_admin_user', JSON.stringify(res.user));
+          if (window.location.search) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
         }
         setErrorMsg('');
       })
@@ -1850,7 +1863,7 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} method="POST" action="#" className="space-y-5">
             {errorMsg && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-xl text-xs font-semibold text-center">
                 {errorMsg}
