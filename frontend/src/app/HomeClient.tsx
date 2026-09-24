@@ -676,7 +676,7 @@ export default function HomeClient() {
 
           <ScrollReveal direction="up" delay={50}>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight text-center lg:text-left">
-              {cms.projectsByZedem.h2 || 'Our Projects by Zedem International'}
+              {cms.projectsByZedem.h2 || 'Our Projects'}
             </h2>
           </ScrollReveal>
 
