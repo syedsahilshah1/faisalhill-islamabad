@@ -1301,6 +1301,8 @@ export const initialSeoConfig: GlobalSeoSettings = {
   ]
 };
 export interface GalleryItem {
+  image: string;
+  desc: any;
   id: string;
   title: string;
   category: 'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance';
@@ -1317,7 +1319,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Entrance",
     imageUrl: "/images/faisal-hills-arc-gate.webp",
     description: "Grand Entrance Arc Portal on GT Road with 24/7 guarded security checkposts.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   },
   {
     id: "gal-2",
@@ -1325,7 +1329,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Towers",
     imageUrl: "/images/faisal-jewel-tower.webp",
     description: "Architectural 27-story five-star luxury hotel & high-rise apartment tower.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   },
   {
     id: "gal-3",
@@ -1333,7 +1339,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Infrastructure",
     imageUrl: "/images/faisal-hills-executive-boulevard.webp",
     description: "Wide asphalt carpeted boulevards with underground utilities and commercial plazas.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   },
   {
     id: "gal-4",
@@ -1341,7 +1349,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Infrastructure",
     imageUrl: "/images/faisal-hills-development-site.webp",
     description: "Heavy machinery active road cutting, sewerage laying and plot leveling.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   },
   {
     id: "gal-5",
@@ -1349,7 +1359,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Infrastructure",
     imageUrl: "/images/hills-walk-commercial-aerial.webp",
     description: "Aerial view of the pedestrian-friendly commercial boulevard near Margalla Hills.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   },
   {
     id: "gal-6",
@@ -1357,7 +1369,9 @@ export const initialGalleryData: GalleryItem[] = [
     category: "Entrance",
     imageUrl: "/images/faisal-hills-drone-view.webp",
     description: "Panoramic overhead drone view of blocks A, B, C, Executive & Prime Block.",
-    dateAdded: "August 2026"
+    dateAdded: "August 2026",
+    image: "",
+    desc: undefined
   }
 ];
 
@@ -1802,6 +1816,7 @@ export interface ResetPasswordPayload {
 export async function adminLogin(username: string, password: string): Promise<{ token: string; user: AdminUser }> {
   const base = getApiUrl();
   const url = `${base}/auth/login`;
+  const cleanUsername = username.trim();
 
   const res = await fetch(url, {
     method: 'POST',
@@ -1809,7 +1824,11 @@ export async function adminLogin(username: string, password: string): Promise<{ 
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ 
+      username: cleanUsername, 
+      email: cleanUsername, 
+      password 
+    }),
   });
 
   const text = await res.text();

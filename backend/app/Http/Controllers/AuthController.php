@@ -22,12 +22,30 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $request->validate([
-                'username' => 'required|string',
-                'password' => 'required|string',
-            ]);
+            $identifier = $request->input('username') ?? $request->input('email');
 
-            $throttleKey = Str::transliterate(Str::lower($request->input('username')) . '|' . $request->ip());
+            if (empty($identifier)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The username or email field is required.',
+                    'errors' => [
+                        'email' => ['The email field is required.'],
+                        'username' => ['The username field is required.']
+                    ]
+                ], 422);
+            }
+
+            if (empty($request->input('password'))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The password field is required.',
+                    'errors' => [
+                        'password' => ['The password field is required.']
+                    ]
+                ], 422);
+            }
+
+            $throttleKey = Str::transliterate(Str::lower($identifier) . '|' . $request->ip());
 
             if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
                 $seconds = RateLimiter::availableIn($throttleKey);
@@ -38,8 +56,8 @@ class AuthController extends Controller
             }
 
             // Support logging in by name (username) or email
-            $user = User::where('name', $request->username)
-                ->orWhere('email', $request->username)
+            $user = User::where('name', $identifier)
+                ->orWhere('email', $identifier)
                 ->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {

@@ -701,13 +701,13 @@ export default function HomeClient() {
       {/* SECTION 6 — FAISAL HILLS OVERVIEW                          */}
       {/* ========================================================= */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-100" id="overview-section">
-        <div className="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
             {/* Left Content Column */}
-            <div className="lg:col-span-5 space-y-6 text-left">
+            <div className="lg:col-span-6 space-y-6 text-left">
               <ScrollReveal direction="up" delay={50}>
-                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight">
                   {cms.overview.h2 || 'Faisal Hills Islamabad Overview'}
                 </h2>
               </ScrollReveal>
@@ -722,19 +722,19 @@ export default function HomeClient() {
                 <div className="pt-2">
                   <Link
                     href={cms.overview.linkHref || '/about-us'}
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-xl transition-all duration-300 group"
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group"
                   >
                     <span>{cms.overview.linkText || 'Discover More About Faisal Hills'}</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
                   </Link>
                 </div>
               </ScrollReveal>
             </div>
 
-            {/* Right Image Column (Enlarged and Prominent) */}
-            <div className="lg:col-span-7">
+            {/* Right Image Column (Matching Location Map Card Dimensions) */}
+            <div className="lg:col-span-6">
               <ScrollReveal direction="left" delay={100}>
-                <div className="relative w-full h-[320px] sm:h-[420px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
+                <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[445px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 group">
                   <img
                     src={cms.overview.image || '/images/faisal-hills-overview.webp'}
                     alt={cms.overview.imageAlt || 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'}
@@ -823,7 +823,7 @@ export default function HomeClient() {
             <div className="mt-10 pt-8 border-t border-slate-200/80 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#7b002c] tracking-tight">
                     {cms.gettingThere?.h3 || 'Getting There'}
                   </h3>
                 </div>
@@ -832,31 +832,28 @@ export default function HomeClient() {
                 </p>
               </div>
 
-              {/* Responsive Routes Table */}
+              {/* Responsive Routes Table with Grid Borders */}
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
+                  <table className="w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
-                      <tr className="bg-slate-100/80 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
-                        <th className="py-3 px-4 sm:px-6">Route</th>
-                        <th className="py-3 px-4 sm:px-6">Connects You To</th>
-                        <th className="py-3 px-4 sm:px-6 text-right sm:text-left">Drive Time</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
+                        <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[30%]">Route</th>
+                        <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[45%]">Connects You To</th>
+                        <th className="py-3.5 px-5 sm:px-6 text-left w-[25%]">Drive Time</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-150 text-slate-700">
+                    <tbody className="divide-y divide-slate-200 text-slate-700">
                       {(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || []).map((row, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-3.5 px-4 sm:px-6 font-bold text-slate-900 whitespace-nowrap">
+                        <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-4 px-5 sm:px-6 font-bold text-slate-900 text-left border-r border-slate-200 align-middle">
                             {row.route}
                           </td>
-                          <td className="py-3.5 px-4 sm:px-6 text-slate-600">
+                          <td className="py-4 px-5 sm:px-6 text-slate-600 text-left border-r border-slate-200 align-middle">
                             {row.connects}
                           </td>
-                          <td className="py-3.5 px-4 sm:px-6 text-right sm:text-left whitespace-nowrap">
-                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${idx === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-50 text-[#7b002c] border border-rose-100'
-                              }`}>
-                              {row.time}
-                            </span>
+                          <td className="py-4 px-5 sm:px-6 text-left font-bold text-[#7b002c] align-middle whitespace-nowrap">
+                            {row.time}
                           </td>
                         </tr>
                       ))}
@@ -876,7 +873,7 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.landmarks.h2 || 'Nearby Landmarks of Faisal Hills'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
@@ -924,7 +921,7 @@ export default function HomeClient() {
             {/* Left Column: Master Plan Content & Actions */}
             <div className="lg:col-span-5 space-y-6 text-left">
               <ScrollReveal direction="up" delay={50}>
-                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight">
                   {cms.masterPlan.h2 || 'Faisal Hills Master Plan Map'}
                 </h2>
               </ScrollReveal>
@@ -942,23 +939,27 @@ export default function HomeClient() {
 
               {/* Call-to-Action Buttons */}
               <ScrollReveal direction="up" delay={150}>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsMapDownloadModalOpen(true)}
-                    className="px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer group"
-                  >
-                    <FileDown className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
-                    <span>{cms.masterPlan.downloadBtnText || 'Download Master Plan (PDF)'}</span>
-                  </button>
+                <div className="space-y-3.5 pt-2">
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setIsMapDownloadModalOpen(true)}
+                      className="px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer group"
+                    >
+                      <FileDown className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
+                      <span>{cms.masterPlan.downloadBtnText || 'Download Master Plan (PDF)'}</span>
+                    </button>
+                  </div>
 
-                  <Link
-                    href="/master-plan"
-                    className="px-5 py-3.5 bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all flex items-center gap-2 shadow-xs"
-                  >
-                    <span>{cms.masterPlan.fullscreenBtnText || 'Launch Fullscreen Map'}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
+                  <div>
+                    <Link
+                      href="/master-plan"
+                      className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group"
+                    >
+                      <span>{cms.masterPlan.fullscreenBtnText || 'Launch Fullscreen Map'}</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
+                    </Link>
+                  </div>
                 </div>
               </ScrollReveal>
             </div>
@@ -983,7 +984,7 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.blocksSection.h2 || 'Explore Faisal Hills Blocks & Sectors'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1002,7 +1003,7 @@ export default function HomeClient() {
                   <Layers className="w-3.5 h-3.5" />
                   <span>Master Plan Breakdown</span>
                 </span>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight">
                   {cms.blocksSection.supplyHeading || 'Blocks, Possession and Plot Supply'}
                 </h3>
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1013,20 +1014,20 @@ export default function HomeClient() {
 
             <ScrollReveal direction="up" delay={100}>
               {/* Desktop / Tablet Table View */}
-              <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm bg-white">
+              <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
-                        <th className="py-3.5 px-5 font-bold">Block</th>
-                        <th className="py-3.5 px-5 font-bold">Profile &amp; Orientation</th>
-                        <th className="py-3.5 px-5 font-bold whitespace-nowrap text-center">Approx. Residential Plots</th>
-                        <th className="py-3.5 px-5 font-bold whitespace-nowrap text-center">Sold As</th>
-                        <th className="py-3.5 px-5 font-bold">Possession Status</th>
-                        <th className="py-3.5 px-5 font-bold text-right">Inquire</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
+                        <th className="py-3.5 px-5 border-r border-slate-200">Block</th>
+                        <th className="py-3.5 px-5 border-r border-slate-200">Profile &amp; Orientation</th>
+                        <th className="py-3.5 px-5 whitespace-nowrap text-center border-r border-slate-200">Approx. Residential Plots</th>
+                        <th className="py-3.5 px-5 whitespace-nowrap text-center border-r border-slate-200">Sold As</th>
+                        <th className="py-3.5 px-5 border-r border-slate-200">Possession Status</th>
+                        <th className="py-3.5 px-5 text-center">Inquire</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 font-sans">
+                    <tbody className="divide-y divide-slate-200 font-sans">
                       {(cms.blocksSection.supplyRows || initialHomepageCMS.blocksSection.supplyRows || []).map((row, idx) => {
                         const posLower = (row.possession || '').toLowerCase();
                         let badgeStyle = 'bg-slate-100 text-slate-700 border-slate-200';
@@ -1047,8 +1048,8 @@ export default function HomeClient() {
                         }
 
                         return (
-                          <tr key={row.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-4 px-5 align-top">
+                          <tr key={row.id || idx} className="hover:bg-slate-50/60 transition-colors">
+                            <td className="py-4 px-5 align-middle border-r border-slate-200">
                               <Link
                                 href={getBlockUrl(row.block)}
                                 className="font-serif font-bold text-sm text-slate-900 hover:text-[#7b002c] hover:underline transition-colors block"
@@ -1062,29 +1063,29 @@ export default function HomeClient() {
                                 </span>
                               )}
                             </td>
-                            <td className="py-4 px-5 text-slate-600 align-top max-w-xs leading-relaxed">
+                            <td className="py-4 px-5 text-slate-600 align-middle max-w-xs leading-relaxed border-r border-slate-200">
                               {row.profile}
                             </td>
-                            <td className="py-4 px-5 align-top text-center whitespace-nowrap">
+                            <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">
                                 {row.approxPlots}
                               </span>
                             </td>
-                            <td className="py-4 px-5 align-top text-center whitespace-nowrap">
+                            <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                               <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${row.soldAs.toLowerCase().includes('lump')
-                                  ? 'bg-rose-50 text-[#7b002c] border border-rose-100'
-                                  : 'bg-indigo-50 text-indigo-800 border border-indigo-100'
+                                ? 'bg-rose-50 text-[#7b002c] border border-rose-100'
+                                : 'bg-indigo-50 text-indigo-800 border border-indigo-100'
                                 }`}>
                                 {row.soldAs}
                               </span>
                             </td>
-                            <td className="py-4 px-5 align-top">
+                            <td className="py-4 px-5 align-middle border-r border-slate-200">
                               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeStyle}`}>
                                 {badgeIcon}
                                 <span>{row.possession}</span>
                               </span>
                             </td>
-                            <td className="py-4 px-5 align-top text-right whitespace-nowrap">
+                            <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
                               <a
                                 href={formatWhatsAppUrl(
                                   contact.salesHotline || socials.whatsapp,
@@ -1092,7 +1093,7 @@ export default function HomeClient() {
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition"
+                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition"
                               >
                                 <MessageCircle className="w-3 h-3" />
                                 <span>Check Rates</span>
@@ -1197,7 +1198,7 @@ export default function HomeClient() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="max-w-3xl space-y-2">
               <ScrollReveal direction="up" delay={50}>
-                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                   Available Plots & Commercial Units in Faisal Hills
                 </h2>
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1230,8 +1231,8 @@ export default function HomeClient() {
                 key={tab.id}
                 onClick={() => setActivePlotTab(tab.id)}
                 className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${activePlotTab === tab.id
-                    ? 'bg-[#7b002c] text-white shadow-md'
-                    : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  ? 'bg-[#7b002c] text-white shadow-md'
+                  : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
                   }`}
               >
                 {tab.label}
@@ -1378,7 +1379,7 @@ export default function HomeClient() {
           <div className="pt-8 sm:pt-12 border-t border-slate-200/80 space-y-6">
             <div className="max-w-3xl space-y-2">
               <ScrollReveal direction="up" delay={50}>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight">
                   {cms.plotsForSale.ratesHeading || 'Plots for Sale in Faisal Hills: Current Rates'}
                 </h3>
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1393,18 +1394,18 @@ export default function HomeClient() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
-                        <th className="py-3.5 px-5 font-bold">Block</th>
-                        <th className="py-3.5 px-5 font-bold text-center">5 Marla</th>
-                        <th className="py-3.5 px-5 font-bold text-center">10 Marla</th>
-                        <th className="py-3.5 px-5 font-bold text-center">1 Kanal</th>
-                        <th className="py-3.5 px-5 font-bold text-right">Inquire Price</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
+                        <th className="py-3.5 px-5 border-r border-slate-200">Block</th>
+                        <th className="py-3.5 px-5 text-center border-r border-slate-200">5 Marla</th>
+                        <th className="py-3.5 px-5 text-center border-r border-slate-200">10 Marla</th>
+                        <th className="py-3.5 px-5 text-center border-r border-slate-200">1 Kanal</th>
+                        <th className="py-3.5 px-5 text-center">Inquire Price</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 font-sans">
+                    <tbody className="divide-y divide-slate-200 font-sans">
                       {(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).map((row, idx) => (
-                        <tr key={row.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-5 align-middle">
+                        <tr key={row.id || idx} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-4 px-5 align-middle border-r border-slate-200">
                             <span className="font-serif font-bold text-sm text-slate-900 block">
                               {row.block}
                             </span>
@@ -1414,7 +1415,7 @@ export default function HomeClient() {
                               </span>
                             )}
                           </td>
-                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                             {row.marla5 === '—' ? (
                               <span className="text-slate-400 font-bold">—</span>
                             ) : (
@@ -1423,7 +1424,7 @@ export default function HomeClient() {
                               </span>
                             )}
                           </td>
-                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                             {row.marla10 === '—' ? (
                               <span className="text-slate-400 font-bold">—</span>
                             ) : (
@@ -1432,7 +1433,7 @@ export default function HomeClient() {
                               </span>
                             )}
                           </td>
-                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                             {row.kanal1 === '—' ? (
                               <span className="text-slate-400 font-bold">—</span>
                             ) : (
@@ -1441,7 +1442,7 @@ export default function HomeClient() {
                               </span>
                             )}
                           </td>
-                          <td className="py-4 px-5 align-middle text-right whitespace-nowrap">
+                          <td className="py-4 px-5 align-middle text-center whitespace-nowrap">
                             <a
                               href={formatWhatsAppUrl(
                                 contact.salesHotline || socials.whatsapp,
@@ -1449,7 +1450,7 @@ export default function HomeClient() {
                               )}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold shadow-xs transition cursor-pointer"
                             >
                               <MessageCircle className="w-3 h-3" />
                               <span>Get Deal</span>
@@ -1522,7 +1523,7 @@ export default function HomeClient() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="max-w-3xl space-y-2">
             <ScrollReveal direction="up" delay={50}>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.flagships.h2 || 'Faisal Hills High-Rise & Commercial Flagships'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1610,22 +1611,22 @@ export default function HomeClient() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">01</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card1.title || 'Booking Amount'}</h4>
               <p className="text-xs text-slate-600">{cms.paymentPlan.card1.desc}</p>
             </div>
-            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">02</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card2.title || 'Down Payment'}</h4>
               <p className="text-xs text-slate-600">{cms.paymentPlan.card2.desc}</p>
             </div>
-            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">03</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card3.title || 'Payment Schedule'}</h4>
               <p className="text-xs text-slate-600">{cms.paymentPlan.card3.desc}</p>
             </div>
-            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1.5">
+            <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">04</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card4.title || 'No Hidden Charges'}</h4>
               <p className="text-xs text-slate-600">{cms.paymentPlan.card4.desc}</p>
@@ -1693,7 +1694,7 @@ export default function HomeClient() {
           {/* Header & Controls Bar */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="max-w-2xl space-y-2.5">
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.amenities?.h2 || 'Facilities and Projects: Built and Planned'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -1708,8 +1709,8 @@ export default function HomeClient() {
                   type="button"
                   onClick={() => setFacilityViewMode('carousel')}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${facilityViewMode === 'carousel'
-                      ? 'bg-[#7b002c] text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#7b002c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                     }`}
                   title="Carousel Slider View"
                 >
@@ -1720,8 +1721,8 @@ export default function HomeClient() {
                   type="button"
                   onClick={() => setFacilityViewMode('grid')}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${facilityViewMode === 'grid'
-                      ? 'bg-[#7b002c] text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#7b002c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                     }`}
                   title="Grid Matrix View"
                 >
@@ -1738,8 +1739,8 @@ export default function HomeClient() {
               type="button"
               onClick={() => setActiveFacilityFilter('all')}
               className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'all'
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
                 }`}
             >
               <span>All Facilities</span>
@@ -1752,8 +1753,8 @@ export default function HomeClient() {
               type="button"
               onClick={() => setActiveFacilityFilter('built')}
               className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'built'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-emerald-300'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-emerald-300'
                 }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
@@ -1767,8 +1768,8 @@ export default function HomeClient() {
               type="button"
               onClick={() => setActiveFacilityFilter('construction')}
               className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'construction'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-amber-300'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-amber-300'
                 }`}
             >
               <Clock className="w-3.5 h-3.5 text-amber-500" />
@@ -1782,8 +1783,8 @@ export default function HomeClient() {
               type="button"
               onClick={() => setActiveFacilityFilter('inaugurated')}
               className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'inaugurated'
-                  ? 'bg-teal-700 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-teal-300'
+                ? 'bg-teal-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-teal-300'
                 }`}
             >
               <Trees className="w-3.5 h-3.5 text-teal-500" />
@@ -1797,8 +1798,8 @@ export default function HomeClient() {
               type="button"
               onClick={() => setActiveFacilityFilter('planned')}
               className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${activeFacilityFilter === 'planned'
-                  ? 'bg-sky-700 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:border-sky-300'
+                ? 'bg-sky-700 text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-sky-300'
                 }`}
             >
               <Compass className="w-3.5 h-3.5 text-sky-500" />
@@ -2135,7 +2136,7 @@ export default function HomeClient() {
       <section className="bg-white text-slate-900 py-14 lg:py-20 border-b border-slate-200" id="infrastructure-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-6">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
               {cms.infrastructure.h2 || 'Infrastructure of Faisal Hills'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
@@ -2197,47 +2198,7 @@ export default function HomeClient() {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 19 — PHOTO GALLERY                                 */}
-      {/* ========================================================= */}
-      <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="gallery-section">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-              {cms.photoGallery?.h2 || 'On-Site Development & Photo Gallery'}
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-              {cms.photoGallery?.paragraph}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(cms.photoGallery.items || initialHomepageCMS.photoGallery.items).map((item, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-xs hover:shadow-lg transition-all group flex flex-col"
-              >
-                <div className="h-52 relative overflow-hidden">
-                  <img
-                    src={item.image || '/images/gallery/arc-main-gate.webp'}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs">
-                    {item.category}
-                  </span>
-                </div>
-                <div className="p-4 space-y-1">
-                  <h3 className="font-serif font-bold text-sm text-slate-900">{item.title}</h3>
-                  <p className="text-[11px] text-slate-500">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* SECTION 20 — DISCOVER FAISAL TOWN GROUP (5 Stats)          */}
+      {/* SECTION 19 — DISCOVER FAISAL TOWN GROUP (5 Stats)          */}
       {/* ========================================================= */}
       <section className="bg-[#4c0215] text-white py-14 lg:py-18 border-b border-[#7b002c]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8 text-center">
@@ -2266,7 +2227,7 @@ export default function HomeClient() {
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
             <div className="flex items-end justify-between">
               <div className="space-y-2">
-                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                   Latest Insights & Buying Guides
                 </h2>
               </div>
@@ -2312,7 +2273,7 @@ export default function HomeClient() {
       <section className="bg-slate-50 py-16 lg:py-24 border-b border-slate-200" id="faqs-section">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-12 space-y-10">
           <div className="space-y-3 text-center max-w-3xl mx-auto">
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#7b002c] tracking-tight">
               {cms.faqs?.h2 || 'Frequently Asked Questions'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
@@ -2327,8 +2288,8 @@ export default function HomeClient() {
                 <div
                   key={idx}
                   className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
-                      ? 'border-[#7b002c]/40 shadow-md ring-1 ring-[#7b002c]/10'
-                      : 'border-slate-200 shadow-xs hover:border-slate-300'
+                    ? 'border-[#7b002c]/40 shadow-md ring-1 ring-[#7b002c]/10'
+                    : 'border-slate-200 shadow-xs hover:border-slate-300'
                     }`}
                 >
                   <button

@@ -638,6 +638,209 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   onChange={(val) => setCms({ ...cms, chairman: { ...cms.chairman, image: val } })}
                   placeholder="/images/faisal-hills-site-header.webp"
                 />
+
+                {/* --- SUBSECTION: OUR PROJECTS BY ZEDEM INTERNATIONAL --- */}
+                <div className="pt-6 border-t border-slate-200/80 space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                    <div>
+                      <h4 className="font-serif text-base font-bold text-[#7b002c]">
+                        Our Projects by Zedem International (Buttons &amp; Links)
+                      </h4>
+                      <p className="text-xs text-slate-600">
+                        Customize the heading and manage quick navigation button pills and their target URLs.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentProjects = cms.projectsByZedem?.projects || initialHomepageCMS.projectsByZedem.projects || [];
+                        setCms({
+                          ...cms,
+                          projectsByZedem: {
+                            ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                            h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                            projects: [
+                              ...currentProjects,
+                              { name: 'New Project', href: '/about-us' }
+                            ]
+                          }
+                        });
+                      }}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer self-start sm:self-auto"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Project Button</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Projects Section Heading (H2)
+                    </label>
+                    <input
+                      type="text"
+                      value={cms.projectsByZedem?.h2 ?? 'Our Projects by Zedem International'}
+                      placeholder="Our Projects by Zedem International"
+                      onChange={(e) => setCms({
+                        ...cms,
+                        projectsByZedem: {
+                          ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                          h2: e.target.value
+                        }
+                      })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                        Project Navigation Buttons ({((cms.projectsByZedem?.projects || initialHomepageCMS.projectsByZedem.projects) || []).length})
+                      </label>
+                      <span className="text-[11px] text-slate-400">
+                        Use arrows to reorder
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      {((cms.projectsByZedem?.projects || initialHomepageCMS.projectsByZedem.projects) || []).map((proj, idx) => {
+                        const projectsList = (cms.projectsByZedem?.projects || initialHomepageCMS.projectsByZedem.projects) || [];
+                        return (
+                          <div key={idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3 hover:border-slate-300 transition">
+                            <div className="flex items-center justify-between">
+                              <span className="px-2 py-0.5 bg-rose-100 text-[#7b002c] font-bold text-[10px] rounded-md tracking-wider">
+                                BUTTON #{idx + 1}
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  disabled={idx === 0}
+                                  onClick={() => {
+                                    if (idx === 0) return;
+                                    const updated = [...projectsList];
+                                    const temp = updated[idx - 1];
+                                    updated[idx - 1] = updated[idx];
+                                    updated[idx] = temp;
+                                    setCms({
+                                      ...cms,
+                                      projectsByZedem: {
+                                        ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                                        h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                                        projects: updated
+                                      }
+                                    });
+                                  }}
+                                  className="p-1.5 text-slate-500 hover:text-slate-800 disabled:opacity-30 rounded hover:bg-slate-200/60 cursor-pointer"
+                                  title="Move up"
+                                >
+                                  <ChevronUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={idx === projectsList.length - 1}
+                                  onClick={() => {
+                                    if (idx >= projectsList.length - 1) return;
+                                    const updated = [...projectsList];
+                                    const temp = updated[idx + 1];
+                                    updated[idx + 1] = updated[idx];
+                                    updated[idx] = temp;
+                                    setCms({
+                                      ...cms,
+                                      projectsByZedem: {
+                                        ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                                        h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                                        projects: updated
+                                      }
+                                    });
+                                  }}
+                                  className="p-1.5 text-slate-500 hover:text-slate-800 disabled:opacity-30 rounded hover:bg-slate-200/60 cursor-pointer"
+                                  title="Move down"
+                                >
+                                  <ChevronDown className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = projectsList.filter((_, i) => i !== idx);
+                                    setCms({
+                                      ...cms,
+                                      projectsByZedem: {
+                                        ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                                        h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                                        projects: updated
+                                      }
+                                    });
+                                  }}
+                                  className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer transition"
+                                  title="Delete button"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <label className="block text-[11px] font-semibold text-slate-600">Button Name / Label</label>
+                                <input
+                                  type="text"
+                                  value={proj.name}
+                                  placeholder="e.g. Faisal Town Phase 1"
+                                  onChange={(e) => {
+                                    const updated = [...projectsList];
+                                    updated[idx] = { ...updated[idx], name: e.target.value };
+                                    setCms({
+                                      ...cms,
+                                      projectsByZedem: {
+                                        ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                                        h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                                        projects: updated
+                                      }
+                                    });
+                                  }}
+                                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="block text-[11px] font-semibold text-slate-600">Target URL / Link</label>
+                                <input
+                                  type="text"
+                                  value={proj.href}
+                                  placeholder="e.g. /about-us or /faisal-hills-blocks"
+                                  onChange={(e) => {
+                                    const updated = [...projectsList];
+                                    updated[idx] = { ...updated[idx], href: e.target.value };
+                                    setCms({
+                                      ...cms,
+                                      projectsByZedem: {
+                                        ...(cms.projectsByZedem || initialHomepageCMS.projectsByZedem),
+                                        h2: cms.projectsByZedem?.h2 || 'Our Projects by Zedem International',
+                                        projects: updated
+                                      }
+                                    });
+                                  }}
+                                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono text-slate-900 focus:outline-none focus:border-[#7b002c]"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Live preview */}
+                            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200/60">
+                              <span className="text-[10px] uppercase font-bold text-slate-400">Preview:</span>
+                              <div className="inline-flex items-center px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-800 shadow-2xs">
+                                {proj.name || 'Untitled Button'}
+                              </div>
+                              <span className="text-[11px] text-slate-500 font-mono">
+                                &rarr; {proj.href || '#'}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       '/faisal-hills-location',
       '/plots',
       '/blogs',
+      '/gallery',
       '/contact',
       '/privacy-policy',
       '/terms-of-service',
