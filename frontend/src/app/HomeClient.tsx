@@ -725,13 +725,15 @@ export default function HomeClient() {
                 </p>
               </ScrollReveal>
               <ScrollReveal direction="up" delay={150}>
-                <Link
-                  href={cms.location.linkHref || '/faisal-hills-location'}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:underline pt-2"
-                >
-                  <span>{cms.location.linkText || 'Explore Complete Location Map & Sector Boundaries'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="pt-2">
+                  <Link
+                    href={cms.location.linkHref || '/faisal-hills-location'}
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group"
+                  >
+                    <span>{cms.location.linkText || 'Explore Complete Location Map & Sector Boundaries'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
+                  </Link>
+                </div>
               </ScrollReveal>
             </div>
           </div>
@@ -789,12 +791,12 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-white py-12 lg:py-16 border-b border-slate-100">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="space-y-2">
-            <ScrollReveal direction="up" delay={50}>
+          <div className="max-w-3xl">
+            <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.landmarks.h2 || 'Nearby Landmarks of Faisal Hills'}
               </h2>
-              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
                 {cms.landmarks.paragraph}
               </p>
             </ScrollReveal>
@@ -900,8 +902,8 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="blocks-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
+          <div className="max-w-3xl">
+            <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.blocksSection.h2 || 'Explore Faisal Hills Blocks & Sectors'}
               </h2>
@@ -915,8 +917,8 @@ export default function HomeClient() {
 
           {/* Blocks, Possession and Plot Supply Matrix */}
           <div className="pt-8 sm:pt-12 border-t border-slate-100 space-y-6">
-            <div className="max-w-3xl space-y-2">
-              <ScrollReveal direction="up" delay={50}>
+            <div className="max-w-3xl">
+              <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7b002c]/10 text-[#7b002c] text-xs font-bold uppercase tracking-widest">
                   <Layers className="w-3.5 h-3.5" />
                   <span>Master Plan Breakdown</span>
@@ -1114,8 +1116,8 @@ export default function HomeClient() {
       <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200" id="plots-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div className="max-w-3xl space-y-2">
-              <ScrollReveal direction="up" delay={50}>
+            <div className="max-w-3xl">
+              <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                   Available Plots & Commercial Units in Faisal Hills
                 </h2>
@@ -1126,10 +1128,10 @@ export default function HomeClient() {
             </div>
             <Link
               href="/plots"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:underline shrink-0"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group shrink-0"
             >
               <span>Explore All {plots.length > 0 ? plots.length : 40}+ Plots</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform font-bold" />
             </Link>
           </div>
 
@@ -1295,8 +1297,8 @@ export default function HomeClient() {
 
           {/* Plots for Sale in Faisal Hills: Current Rates Table */}
           <div className="pt-8 sm:pt-12 border-t border-slate-200/80 space-y-6">
-            <div className="max-w-3xl space-y-2">
-              <ScrollReveal direction="up" delay={50}>
+            <div className="max-w-3xl">
+              <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#7b002c] tracking-tight">
                   {cms.plotsForSale.ratesHeading || 'Plots for Sale in Faisal Hills: Current Rates'}
                 </h3>
@@ -1439,8 +1441,8 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-100">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
+          <div className="max-w-3xl">
+            <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.flagships.h2 || 'Faisal Hills High-Rise & Commercial Flagships'}
               </h2>
@@ -1471,10 +1473,10 @@ export default function HomeClient() {
                   </div>
                   <Link
                     href={cms.flagships.card1.btnHref || '/blocks/faisal-jewel-islamabad'}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:underline pt-2"
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group w-fit pt-2"
                   >
                     <span>{cms.flagships.card1.btnText || 'Explore Faisal Jewel'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
                   </Link>
                 </div>
               </div>
@@ -1500,10 +1502,10 @@ export default function HomeClient() {
                   </div>
                   <Link
                     href={cms.flagships.card2.btnHref || '/blocks/hills-walk'}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:underline pt-2"
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group w-fit pt-2"
                   >
                     <span>{cms.flagships.card2.btnText || 'Explore Hills Walk'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
                   </Link>
                 </div>
               </div>
@@ -1517,8 +1519,8 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-slate-50 py-14 lg:py-20 border-b border-slate-200" id="payment-plan-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
+          <div className="max-w-3xl">
+            <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.paymentPlan.h2 || 'Faisal Hills Islamabad Payment Plan 2026'}
               </h2>
@@ -1573,8 +1575,8 @@ export default function HomeClient() {
       {/* ========================================================= */}
       <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="why-invest-section">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <ScrollReveal direction="up" delay={50}>
+          <div className="max-w-3xl">
+            <ScrollReveal direction="up" delay={50} className="space-y-2.5 sm:space-y-3">
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                 {cms.whyInvest.h2 || 'Why Faisal Hills Is a Smart Property Investment in 2026'}
               </h2>
@@ -2144,14 +2146,17 @@ export default function HomeClient() {
         <section className="bg-white py-14 lg:py-20 border-b border-slate-200" id="blogs-section">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-8">
             <div className="flex items-end justify-between">
-              <div className="space-y-2">
+              <div className="space-y-2 sm:space-y-3">
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight">
                   Latest Insights & Buying Guides
                 </h2>
               </div>
-              <Link href="/blogs" className="text-xs font-bold text-[#7b002c] hover:underline flex items-center gap-1">
+              <Link
+                href="/blogs"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7b002c] hover:text-[#9e1245] border-b border-[#7b002c] pb-0.5 transition-all group"
+              >
                 <span>View All Articles</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform font-bold" />
               </Link>
             </div>
 
