@@ -366,8 +366,8 @@ export default function Navbar() {
                 height={55}
                 className={`w-auto object-contain transition-all duration-300 ${
                   isSolidNav
-                    ? 'h-9 sm:h-10 lg:h-11 xl:h-13 filter-none'
-                    : 'h-11 sm:h-13 lg:h-14 xl:h-17 brightness-0 invert'
+                    ? 'h-8 sm:h-9 lg:h-10 xl:h-11 filter-none'
+                    : 'h-9 sm:h-11 lg:h-12 xl:h-14 brightness-0 invert'
                 }`}
               />
               <span className="sr-only">Faisal Hills Islamabad</span>
@@ -515,9 +515,11 @@ export default function Navbar() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
               <Link href="/" onClick={() => setMobileMenuOpen(false)} aria-label="Faisal Hills Islamabad Home" className="flex items-center py-1">
                 <img
-                  src="/images/faisal-town-group-logo.webp"
+                  src="/images/faisal-town-logo.webp"
                   alt="Faisal Town Group"
-                  className="h-13 sm:h-15 w-auto object-contain"
+                  width={150}
+                  height={45}
+                  className="h-8 sm:h-9 max-h-9 w-auto object-contain"
                 />
                 <span className="sr-only">Faisal Hills Islamabad</span>
               </Link>

@@ -299,29 +299,30 @@ export default function HomeClient() {
           />
         </div>
 
-        {/* Contrast Tint for Readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/40 to-[#070e17] lg:bg-gradient-to-r lg:from-black/90 lg:via-black/65 lg:to-black/40 pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-[#070e17] via-[#070e17]/80 to-transparent pointer-events-none z-10" />
+        {/* Contrast Tint for Readability while keeping background image vivid and clear */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/20 to-black/75 lg:bg-gradient-to-r lg:from-black/75 lg:via-black/45 lg:to-black/25 pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[#070e17] to-transparent pointer-events-none z-10" />
 
         {/* ======================================================= */}
-        {/* DESKTOP HERO VIEW (2-Column inside Hero Section)        */}
+        {/* RESPONSIVE HERO VIEW (Single Canonical <h1> for SEO)    */}
         {/* ======================================================= */}
-        <div className="hidden lg:flex relative z-10 max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12 min-h-[85vh] xl:min-h-[88vh] items-center pt-24 pb-12">
-          <div className="grid grid-cols-12 gap-8 items-center w-full">
-            {/* Left Col: Hero Title */}
-            <div className="col-span-7 xl:col-span-8">
+        <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 min-h-[85vh] xl:min-h-[88vh] flex items-center pt-24 pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
+            
+            {/* Hero Title (Canonical single <h1> for the entire page) */}
+            <div className="lg:col-span-7 xl:col-span-8 text-center lg:text-left">
               <ScrollReveal direction="up" delay={50}>
-                <h1 className="font-serif font-bold text-3xl sm:text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl">
+                <h1 className="font-serif font-bold text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl">
                   {cms.hero.h1 || 'Faisal Hills Islamabad'}
                 </h1>
               </ScrollReveal>
             </div>
 
-            {/* Right Col: Sleek Transparent Booking Form */}
-            <div className="col-span-5 xl:col-span-4 flex justify-end">
-              <ScrollReveal direction="left" delay={100} className="w-full max-w-[360px]">
+            {/* Booking Form (Lowered on mobile with mt-28 sm:mt-36 for Arch visibility, aligned right on desktop) */}
+            <div className="lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end mt-28 sm:mt-36 lg:mt-0">
+              <ScrollReveal direction="left" delay={100} className="w-full max-w-sm lg:max-w-[360px]">
                 <div className="space-y-3.5">
-                  <div className="border-b border-white/20 pb-2.5">
+                  <div className="border-b border-white/20 pb-2.5 text-center lg:text-left">
                     <span className="font-serif font-bold text-lg xl:text-xl text-white block drop-shadow-lg tracking-tight">
                       {cms.hero.formTitle || 'Book Your Plot / Flat'}
                     </span>
@@ -339,48 +340,48 @@ export default function HomeClient() {
                   ) : (
                     <form onSubmit={handleHeroFormSubmit} className="space-y-2.5 pt-0.5">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
+                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
                         <input
                           type="text"
                           required
                           placeholder="Your Full Name"
                           value={leadName}
                           onChange={(e) => setLeadName(e.target.value)}
-                          className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md"
+                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
+                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
                         <input
                           type="text"
                           required
                           placeholder="e.g. +92 300 1234567"
                           value={leadPhone}
                           onChange={(e) => setLeadPhone(e.target.value)}
-                          className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md"
+                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
-                        <textarea
-                          rows={2}
+                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
+                        <input
+                          type="text"
                           placeholder="e.g. 10 Marla in Block A, or any question..."
                           value={leadQuery}
                           onChange={(e) => setLeadQuery(e.target.value)}
-                          className="w-full px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-md resize-none"
+                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg transition-all duration-300 hover:scale-[1.01] active:scale-95 border border-white/20 cursor-pointer"
+                        className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-xl transition-all duration-300 hover:scale-[1.01] active:scale-95 border border-white/20 cursor-pointer"
                       >
                         Submit Booking Inquiry
                       </button>
 
-                      <div className="flex items-center justify-center gap-1.5 text-slate-200 text-[10px] pt-0.5 font-medium select-none drop-shadow-sm">
+                      <div className="flex items-center justify-center gap-1.5 text-white/90 text-[10px] pt-0.5 font-medium select-none drop-shadow-sm">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{cms.hero.trustLine || 'Your information is 100% secure — we reply on WhatsApp.'}</span>
                       </div>
@@ -389,90 +390,7 @@ export default function HomeClient() {
                 </div>
               </ScrollReveal>
             </div>
-          </div>
-        </div>
 
-        {/* ======================================================= */}
-        {/* MOBILE HERO VIEW (Clean Title & Compact Form)           */}
-        {/* ======================================================= */}
-        <div className="block lg:hidden relative z-10 px-4 pt-20 pb-10">
-          <div className="text-center max-w-xl mx-auto space-y-1.5 pb-6">
-            <ScrollReveal direction="up" delay={50}>
-              <p className="font-serif font-bold text-2xl sm:text-4xl text-white tracking-tight leading-tight drop-shadow-2xl">
-                {cms.hero.h1 || 'Faisal Hills Islamabad'}
-              </p>
-            </ScrollReveal>
-          </div>
-
-          {/* Compact Mobile Booking Form */}
-          <div className="max-w-sm mx-auto w-full">
-            <ScrollReveal direction="up" delay={100}>
-              <div className="space-y-3">
-                <div className="border-b border-white/20 pb-2 text-center">
-                  <span className="font-serif font-bold text-lg text-white block drop-shadow-lg tracking-tight">
-                    {cms.hero.formTitle || 'Book Your Plot / Flat'}
-                  </span>
-                  <p className="text-[11px] text-slate-200 mt-0.5 font-medium drop-shadow-md">{cms.hero.formSubtitle}</p>
-                </div>
-
-                {formSubmitted ? (
-                  <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 p-4 rounded-xl text-xs font-bold space-y-1 animate-fadeIn text-center shadow-lg">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                    <h4 className="text-sm font-serif font-bold text-white">Inquiry Submitted Successfully!</h4>
-                    <p className="font-normal text-emerald-300 text-[11px]">Our sales desk will contact you shortly.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleHeroFormSubmit} className="space-y-2.5 pt-0.5">
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Your Full Name"
-                        value={leadName}
-                        onChange={(e) => setLeadName(e.target.value)}
-                        className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. +92 300 1234567"
-                        value={leadPhone}
-                        onChange={(e) => setLeadPhone(e.target.value)}
-                        className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-200 uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
-                      <textarea
-                        rows={2}
-                        placeholder="e.g. 10 Marla in Block A, or any question..."
-                        value={leadQuery}
-                        onChange={(e) => setLeadQuery(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs focus:outline-none focus:border-[#7b002c] shadow-md resize-none"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg transition-all cursor-pointer"
-                    >
-                      Submit Booking Inquiry
-                    </button>
-
-                    <div className="flex items-center justify-center gap-1.5 text-slate-200 text-[10px] pt-0.5 font-medium drop-shadow-sm">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>{cms.hero.trustLine || 'Your information is 100% secure — we reply on WhatsApp.'}</span>
-                    </div>
-                  </form>
-                )}
-              </div>
-            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -840,7 +758,7 @@ export default function HomeClient() {
                       <tr className="bg-slate-50 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
                         <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[30%]">Route</th>
                         <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[45%]">Connects You To</th>
-                        <th className="py-3.5 px-5 sm:px-6 text-left w-[25%]">Drive Time</th>
+                        <th className="py-3.5 px-5 sm:px-6 text-center w-[25%]">Drive Time</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 text-slate-700">
@@ -852,7 +770,7 @@ export default function HomeClient() {
                           <td className="py-4 px-5 sm:px-6 text-slate-600 text-left border-r border-slate-200 align-middle">
                             {row.connects}
                           </td>
-                          <td className="py-4 px-5 sm:px-6 text-left font-bold text-[#7b002c] align-middle whitespace-nowrap">
+                          <td className="py-4 px-5 sm:px-6 text-center font-bold text-[#7b002c] align-middle whitespace-nowrap">
                             {row.time}
                           </td>
                         </tr>
@@ -1817,7 +1735,7 @@ export default function HomeClient() {
               <button
                 type="button"
                 onClick={() => handleFacilityScroll('left')}
-                className="absolute -left-3 sm:-left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
+                className="absolute -left-3 sm:-left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
                 aria-label="Previous facility"
                 title="Previous"
               >
@@ -1828,7 +1746,7 @@ export default function HomeClient() {
               <button
                 type="button"
                 onClick={() => handleFacilityScroll('right')}
-                className="absolute -right-3 sm:-right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
+                className="absolute -right-3 sm:-right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition-all duration-300 shadow-xl border border-slate-200/90 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md hover:text-[#7b002c] hover:border-[#7b002c]/30"
                 aria-label="Next facility"
                 title="Next"
               >
