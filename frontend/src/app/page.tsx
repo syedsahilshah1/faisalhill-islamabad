@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { fetchSeo, initialHomepageCMS } from '@/data/faisalHillsData';
+import { fetchSeo, fetchHomepageCMS, initialHomepageCMS } from '@/data/faisalHillsData';
 import HomeClient from './HomeClient';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
@@ -53,7 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cms = await fetchHomepageCMS();
+
   const orgSchema = {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
@@ -77,7 +79,7 @@ export default function HomePage() {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: (initialHomepageCMS.faqs?.items || []).map((faq) => ({
+    mainEntity: (cms.faqs?.items || initialHomepageCMS.faqs?.items || []).map((faq) => ({
       '@type': 'Question',
       name: faq.q,
       acceptedAnswer: {
@@ -97,7 +99,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <HomeClient />
+      <HomeClient initialCms={cms} />
     </>
   );
 }

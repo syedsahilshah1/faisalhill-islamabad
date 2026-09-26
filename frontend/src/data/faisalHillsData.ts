@@ -3171,7 +3171,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     h2: 'Faisal Hills Master Plan Map & Sector Layout',
     paragraph: 'The official RDA-approved master plan of Faisal Hills Islamabad encompasses 11,823.5 kanals across eight well-planned sectors: Executive, Block A, Block B, Block B Extension, Block C, Block D, Prime Block, and Hill Estate View. Centered along a 225-foot Main Boulevard with the scenic Margalla Hills in view, the master plan features 5 Marla to 2 Kanal residential plots, high-rise commercial avenues including Faisal Jewel and Hills Walk, parks, schools, and medical facilities.',
     subParagraph: 'Explore sector boundaries, street cut numbers, and commercial zones with our interactive Ultra-HD blueprint viewer, or download the official high-resolution PDF for offline reference.',
-    downloadBtnText: 'Download Master Plan (PDF)',
+    downloadBtnText: 'Download Master Plan',
     downloadPdfUrl: '/FAISAL HILLS MASTER PLAN.pdf',
     fullscreenBtnText: 'Launch Fullscreen Map',
     previewImage: '/images/faisal-hills-master-plan-preview.webp',
@@ -3359,7 +3359,7 @@ export const initialHomepageCMS: HomepageCMSData = {
     },
     image: '/images/faisal-hills-payment-plan-chart.webp',
     imageCaption: 'Official payment schedule — verify the latest version before booking.',
-    downloadBtnText: 'Download Plan (PDF)',
+    downloadBtnText: 'Download Payment Plan',
     bookBtnText: 'Book Plot On This Plan'
   },
   bookingSteps: {
@@ -3788,6 +3788,16 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
           heroData.bgImage = '/images/faisal-hills-arc-gate.webp';
         }
 
+        let paymentData = { ...initialHomepageCMS.paymentPlan, ...(parsed.paymentPlan || {}) };
+        if (!paymentData.downloadBtnText || paymentData.downloadBtnText.includes('(PDF)') || paymentData.downloadBtnText === 'Download Plan') {
+          paymentData.downloadBtnText = 'Download Payment Plan';
+        }
+
+        let masterData = { ...initialHomepageCMS.masterPlan, ...(parsed.masterPlan || {}) };
+        if (masterData.downloadBtnText?.includes('(PDF)')) {
+          masterData.downloadBtnText = 'Download Master Plan';
+        }
+
         return {
           ...initialHomepageCMS,
           ...parsed,
@@ -3799,11 +3809,11 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
           location: { ...initialHomepageCMS.location, ...(parsed.location || {}) },
           gettingThere: { ...initialHomepageCMS.gettingThere, ...(parsed.gettingThere || {}) },
           landmarks: { ...initialHomepageCMS.landmarks, ...(parsed.landmarks || {}) },
-          masterPlan: { ...initialHomepageCMS.masterPlan, ...(parsed.masterPlan || {}) },
+          masterPlan: masterData,
           blocksSection: mergedBlocks,
           plotsForSale: mergedPlots,
           flagships: { ...initialHomepageCMS.flagships, ...(parsed.flagships || {}) },
-          paymentPlan: { ...initialHomepageCMS.paymentPlan, ...(parsed.paymentPlan || {}) },
+          paymentPlan: paymentData,
           bookingSteps: { ...initialHomepageCMS.bookingSteps, ...(parsed.bookingSteps || {}) },
           whyInvest: { ...initialHomepageCMS.whyInvest, ...(parsed.whyInvest || {}) },
           amenities: mergedAmenities,
@@ -3826,9 +3836,19 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
     if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
       return initialHomepageCMS;
     }
+    const paymentData = { ...initialHomepageCMS.paymentPlan, ...(data.paymentPlan || {}) };
+    if (!paymentData.downloadBtnText || paymentData.downloadBtnText.includes('(PDF)') || paymentData.downloadBtnText === 'Download Plan') {
+      paymentData.downloadBtnText = 'Download Payment Plan';
+    }
+    const masterData = { ...initialHomepageCMS.masterPlan, ...(data.masterPlan || {}) };
+    if (masterData.downloadBtnText?.includes('(PDF)')) {
+      masterData.downloadBtnText = 'Download Master Plan';
+    }
     return {
       ...initialHomepageCMS,
-      ...data
+      ...data,
+      paymentPlan: paymentData,
+      masterPlan: masterData
     };
   } catch {
     return initialHomepageCMS;

@@ -48,6 +48,7 @@ function PlotSearchContent() {
   const queryCategory = searchParams.get('category');
   const queryBlock = searchParams.get('block');
   const queryQ = searchParams.get('q') || searchParams.get('search');
+  const queryStatus = searchParams.get('status') || searchParams.get('possession');
 
   const [selectedBlock, setSelectedBlock] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -69,7 +70,8 @@ function PlotSearchContent() {
     if (queryCategory) setSelectedCategory(queryCategory);
     if (queryBlock) setSelectedBlock(queryBlock);
     if (queryQ) setSearchQuery(queryQ);
-  }, [querySize, queryCategory, queryBlock, queryQ]);
+    if (queryStatus) setSelectedStatus(queryStatus);
+  }, [querySize, queryCategory, queryBlock, queryQ, queryStatus]);
 
   useEffect(() => {
     fetchPlots()
@@ -101,9 +103,12 @@ function PlotSearchContent() {
 
         // Category filter
         if (selectedCategory !== 'all') {
-          if (selectedCategory === 'Residential' && plot.category !== 'Residential') return false;
-          if (selectedCategory === 'Commercial' && plot.category !== 'Commercial') return false;
-          if (selectedCategory === 'Apartment' && plot.category !== 'Apartment') return false;
+          const cat = selectedCategory.toLowerCase();
+          const plotCat = (plot.category || '').toLowerCase();
+          const plotPropType = (plot.propertyType || '').toLowerCase();
+          if (cat.includes('res') && !plotCat.includes('res') && !plotPropType.includes('res')) return false;
+          if (cat.includes('com') && !plotCat.includes('com') && !plotPropType.includes('com')) return false;
+          if (cat.includes('apart') && !plotCat.includes('apart')) return false;
         }
 
         // Size filter
@@ -115,15 +120,18 @@ function PlotSearchContent() {
           if (sFilter === '10 marla' && !pSize.includes('10 marla')) return false;
           if (sFilter === '14 marla' && !pSize.includes('14 marla')) return false;
           if (sFilter === '1 kanal' && !pSize.includes('1 kanal') && !pSize.includes('12 marla')) return false;
+          if (sFilter === '2 kanal' && !pSize.includes('2 kanal')) return false;
           if (sFilter === 'apartments' && plot.category !== 'Apartment') return false;
         }
 
         // Status filter
         if (selectedStatus !== 'all') {
-          if (selectedStatus === 'available' && plot.status !== 'Available') return false;
-          if (selectedStatus === 'commercial' && plot.category !== 'Commercial') return false;
-          if (selectedStatus === 'boulevard' && !plot.facing?.toLowerCase().includes('boulevard')) return false;
-          if (selectedStatus === 'corner' && !plot.facing?.toLowerCase().includes('corner')) return false;
+          const s = selectedStatus.toLowerCase();
+          if (s === 'available' && plot.status !== 'Available') return false;
+          if (s === 'commercial' && plot.category !== 'Commercial') return false;
+          if (s === 'boulevard' && !plot.facing?.toLowerCase().includes('boulevard')) return false;
+          if (s === 'corner' && !plot.facing?.toLowerCase().includes('corner')) return false;
+          if (s === 'possession' && !((plot.status && plot.status.toLowerCase().includes('possession')) || (plot.description && plot.description.toLowerCase().includes('possession')) || (plot.features && plot.features.some((f: string) => f.toLowerCase().includes('possession'))) || plot.status === 'Available')) return false;
         }
 
         // Search query

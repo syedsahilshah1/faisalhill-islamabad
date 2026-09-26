@@ -482,7 +482,7 @@ export default function PaymentPlanModal({
                     ) : (
                       <>
                         <Download className="w-4 h-4" />
-                        <span>Download Plan Now</span>
+                        <span>Download Payment Plan</span>
                       </>
                     )}
                   </button>

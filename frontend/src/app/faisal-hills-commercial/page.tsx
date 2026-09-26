@@ -367,7 +367,7 @@ export default async function FaisalHillsCommercialPage() {
                   className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
                 >
                   <FileText className="w-4 h-4 text-white" />
-                  <span>Download Master Plan (PDF)</span>
+                  <span>Download Master Plan</span>
                 </a>
 
                 <Link
@@ -394,7 +394,7 @@ export default async function FaisalHillsCommercialPage() {
                   className="inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-[#7b002c] hover:bg-[#9e1245] px-5 py-3.5 rounded-xl border border-[#7b002c] shadow-md transition-all active:scale-95 cursor-pointer text-center"
                 >
                   <FileText className="w-4 h-4 text-white" />
-                  <span>Download Master Plan (PDF)</span>
+                  <span>Download Master Plan</span>
                 </a>
 
                 <Link

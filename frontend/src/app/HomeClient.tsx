@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Building2, ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2,
   Sparkles, TrendingUp, Trees, Landmark, Layers, HelpCircle, MessageSquare, PhoneCall, Award, Calculator, Clock, ChevronRight, ChevronDown, ChevronUp, Waves, Utensils, Car, Lock, Compass, Check, FileText, Camera, Maximize2, Image as ImageIcon,
@@ -49,7 +50,12 @@ const getBlockUrl = (blockName: string): string => {
   return '/master-plan';
 };
 
-export default function HomeClient() {
+interface HomeClientProps {
+  initialCms?: HomepageCMSData;
+}
+
+export default function HomeClient({ initialCms }: HomeClientProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -60,8 +66,26 @@ export default function HomeClient() {
   const [isWhyChooseExpanded, setIsWhyChooseExpanded] = useState(false);
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
 
+  // Hero Search State
+  const [heroBlock, setHeroBlock] = useState('all');
+  const [heroCategory, setHeroCategory] = useState('Residential');
+  const [heroSize, setHeroSize] = useState('5 Marla');
+  const [heroPossession, setHeroPossession] = useState('all');
+
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (heroBlock && heroBlock !== 'all') params.set('block', heroBlock);
+    if (heroCategory && heroCategory !== 'all') params.set('category', heroCategory);
+    if (heroSize && heroSize !== 'all') params.set('size', heroSize);
+    if (heroPossession && heroPossession !== 'all') params.set('status', heroPossession);
+
+    const queryString = params.toString();
+    router.push(queryString ? `/plots?${queryString}` : '/plots');
+  };
+
   // Dynamic CMS State (100% Editable from Superadmin Dashboard)
-  const [cms, setCms] = useState<HomepageCMSData>(initialHomepageCMS);
+  const [cms, setCms] = useState<HomepageCMSData>(initialCms || initialHomepageCMS);
 
   // Dynamic Contact & Social info synced with Admin Dashboard
   const [contact, setContact] = useState<ContactInfoData>(defaultContactInfo);
@@ -281,9 +305,9 @@ export default function HomeClient() {
     <div className="bg-slate-50 min-h-screen text-slate-900 pb-24 font-sans selection:bg-[#7b002c] selection:text-white">
 
       {/* ========================================================= */}
-      {/* SECTION 1 — HERO & BOOKING FORM                           */}
+      {/* SECTION 1 — HERO & SEARCH BAR                             */}
       {/* ========================================================= */}
-      <section className="relative w-full bg-[#070e17] text-white overflow-hidden" id="hero-section">
+      <section className="relative w-full h-screen min-h-[600px] max-h-[1080px] bg-[#070e17] text-white flex flex-col justify-between overflow-hidden" id="hero-section">
 
         {/* Cinematic HD Architectural Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -293,196 +317,261 @@ export default function HomeClient() {
             fill
             priority
             fetchPriority="high"
-            sizes="(max-width: 768px) 100vw, (max-width: 1440px) 100vw, 1440px"
-            quality={90}
-            className="object-cover object-center"
+            sizes="100vw"
+            quality={95}
+            className="object-cover object-[center_38%] sm:object-[center_40%] lg:object-[center_42%] scale-100"
           />
         </div>
 
-        {/* Contrast Tint for Readability while keeping background image vivid and clear */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/20 to-black/75 lg:bg-gradient-to-r lg:from-black/75 lg:via-black/45 lg:to-black/25 pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[#070e17] to-transparent pointer-events-none z-10" />
+        {/* Cinematic Clean Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/20 pointer-events-none" />
 
-        {/* ======================================================= */}
-        {/* RESPONSIVE HERO VIEW (Single Canonical <h1> for SEO)    */}
-        {/* ======================================================= */}
-        <div className="relative z-10 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 min-h-[85vh] xl:min-h-[88vh] flex items-center pt-24 pb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
-            
-            {/* Hero Title (Canonical single <h1> for the entire page) */}
-            <div className="lg:col-span-7 xl:col-span-8 text-center lg:text-left">
-              <ScrollReveal direction="up" delay={50}>
-                <h1 className="font-serif font-bold text-2xl sm:text-3xl lg:text-5xl xl:text-6xl text-white tracking-tight leading-tight drop-shadow-2xl">
-                  {cms.hero.h1 || 'Faisal Hills Islamabad'}
-                </h1>
-              </ScrollReveal>
-            </div>
+        {/* 1. TOP: Centered Heading (With clear comfortable gap below Navbar) */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pt-24 sm:pt-28 lg:pt-32 shrink-0 text-center">
+          <ScrollReveal direction="up" delay={40} className="w-full max-w-4xl mx-auto">
+            <h1 className="font-serif font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight drop-shadow-[0_6px_16px_rgba(0,0,0,0.85)]">
+              {cms.hero.h1 || 'Faisal Hills Islamabad'}
+            </h1>
+          </ScrollReveal>
+        </div>
 
-            {/* Booking Form (Lowered on mobile with mt-28 sm:mt-36 for Arch visibility, aligned right on desktop) */}
-            <div className="lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end mt-28 sm:mt-36 lg:mt-0">
-              <ScrollReveal direction="left" delay={100} className="w-full max-w-sm lg:max-w-[360px]">
-                <div className="space-y-3.5">
-                  <div className="border-b border-white/20 pb-2.5 text-center lg:text-left">
-                    <span className="font-serif font-bold text-lg xl:text-xl text-white block drop-shadow-lg tracking-tight">
-                      {cms.hero.formTitle || 'Book Your Plot / Flat'}
-                    </span>
-                    <p className="text-[11px] text-slate-200 mt-0.5 font-medium drop-shadow-md">
-                      {cms.hero.formSubtitle || 'Get verified 2026 rates, payment plan & plot selection guide.'}
-                    </p>
+        {/* 2. MIDDLE: Dynamic open viewport framing the Arch Monument clearly */}
+        <div className="flex-1 w-full min-h-[30px]" />
+
+        {/* 3. BOTTOM: Compact Search Filter Card & Transparent 5-Stat Counting Band */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 shrink-0 flex flex-col items-center gap-1.5 sm:gap-2 pb-2.5 sm:pb-3.5">
+
+          {/* Ultra-Sleek & Compact Search Filter Card */}
+          <ScrollReveal direction="up" delay={80} className="w-full max-w-4xl lg:max-w-[880px] mx-auto">
+            <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.45)] p-2 sm:p-2.5 border border-white text-slate-900">
+
+              {/* Form Filter Row */}
+              <form onSubmit={handleHeroSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-1.5 sm:gap-2 items-end text-left">
+
+                {/* BLOCK */}
+                <div className="lg:col-span-3 space-y-0.5">
+                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                    BLOCK
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={heroBlock}
+                      onChange={(e) => setHeroBlock(e.target.value)}
+                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                    >
+                      <option value="all">Any block</option>
+                      <option value="executive-block">Executive Block</option>
+                      <option value="block-a">Block A</option>
+                      <option value="block-b">Block B</option>
+                      <option value="block-c">Block C</option>
+                      <option value="block-d">Block D</option>
+                      <option value="prime-block">Prime Block</option>
+                      <option value="faisal-jewel-islamabad">Faisal Jewel</option>
+                      <option value="hills-walk">Hills Walk</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
-
-                  {formSubmitted ? (
-                    <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 p-4 rounded-xl text-xs font-bold space-y-1 animate-fadeIn text-center shadow-lg">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                      <p className="text-sm font-serif font-bold text-white">Inquiry Submitted Successfully!</p>
-                      <p className="font-normal text-emerald-300 text-[11px]">Our sales desk will contact you shortly.</p>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleHeroFormSubmit} className="space-y-2.5 pt-0.5">
-                      <div>
-                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">Full Name</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Your Full Name"
-                          value={leadName}
-                          onChange={(e) => setLeadName(e.target.value)}
-                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">WhatsApp Number</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. +92 300 1234567"
-                          value={leadPhone}
-                          onChange={(e) => setLeadPhone(e.target.value)}
-                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-bold text-white uppercase tracking-wider mb-1 drop-shadow-sm">Plot Size / Block / Question</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 10 Marla in Block A, or any question..."
-                          value={leadQuery}
-                          onChange={(e) => setLeadQuery(e.target.value)}
-                          className="w-full px-3.5 py-2.5 bg-white text-slate-900 placeholder:text-slate-400 border border-white/40 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#7b002c] shadow-lg"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-xl transition-all duration-300 hover:scale-[1.01] active:scale-95 border border-white/20 cursor-pointer"
-                      >
-                        Submit Booking Inquiry
-                      </button>
-
-                      <div className="flex items-center justify-center gap-1.5 text-white/90 text-[10px] pt-0.5 font-medium select-none drop-shadow-sm">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>{cms.hero.trustLine || 'Your information is 100% secure — we reply on WhatsApp.'}</span>
-                      </div>
-                    </form>
-                  )}
                 </div>
-              </ScrollReveal>
+
+                {/* CATEGORY */}
+                <div className="lg:col-span-3 space-y-0.5">
+                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                    CATEGORY
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={heroCategory}
+                      onChange={(e) => setHeroCategory(e.target.value)}
+                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                    >
+                      <option value="Residential">Residential plot</option>
+                      <option value="Commercial">Commercial plot</option>
+                      <option value="Apartment">Apartment / Unit</option>
+                      <option value="all">Any category</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* PLOT SIZE */}
+                <div className="lg:col-span-2 space-y-0.5">
+                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                    PLOT SIZE
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={heroSize}
+                      onChange={(e) => setHeroSize(e.target.value)}
+                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                    >
+                      <option value="5 Marla">5 Marla</option>
+                      <option value="8 Marla">8 Marla</option>
+                      <option value="10 Marla">10 Marla</option>
+                      <option value="14 Marla">14 Marla</option>
+                      <option value="1 Kanal">1 Kanal</option>
+                      <option value="2 Kanal">2 Kanal</option>
+                      <option value="all">Any size</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* POSSESSION */}
+                <div className="lg:col-span-2 space-y-0.5">
+                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                    POSSESSION
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={heroPossession}
+                      onChange={(e) => setHeroPossession(e.target.value)}
+                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                    >
+                      <option value="all">Any status</option>
+                      <option value="possession">Possession</option>
+                      <option value="available">Non-Possession</option>
+                      <option value="boulevard">Main Boulevard</option>
+                      <option value="corner">Corner Plot</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* SEARCH BUTTON */}
+                <div className="lg:col-span-2">
+                  <button
+                    type="submit"
+                    className="w-full h-8 sm:h-8.5 bg-[#7b002c] hover:bg-[#600022] active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <Search className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>SEARCH</span>
+                  </button>
+                </div>
+
+              </form>
+
+              {/* Bottom Trust & Actions Row - Compact */}
+              <div className="mt-1.5 pt-1.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+
+                {/* Trust line */}
+                <div className="flex items-center gap-1 text-slate-600 text-[10px] font-medium">
+                  <Lock className="w-3 h-3 text-slate-500 shrink-0" />
+                  <span>Verified with developer before booking.</span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center flex-wrap gap-1.5 justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsPaymentPlanLightboxOpen(true)}
+                    className="px-2.5 py-0.5 rounded-full border border-slate-300 text-slate-800 hover:text-[#7b002c] hover:border-[#7b002c]/50 bg-white hover:bg-slate-50 text-[10.5px] font-semibold transition-all shadow-2xs cursor-pointer"
+                  >
+                    2026 payment plan
+                  </button>
+
+                  <a
+                    href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I would like to inquire about plot inventory and payment plans in Faisal Hills.')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-0.5 rounded-full bg-[#e8f5e9] text-[#1b5e20] border border-[#a5d6a7] hover:bg-[#c8e6c9] text-[10.5px] font-semibold flex items-center gap-1 transition-all shadow-2xs"
+                  >
+                    <MessageCircle className="w-3 h-3 text-[#2e7d32] fill-[#2e7d32]/20 shrink-0" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+
+              </div>
+
             </div>
+          </ScrollReveal>
 
+          {/* Transparent 5-Stat Counting Band (Instantly Visible & Animated on Mount) */}
+          <div className="w-full border-t border-white/20 pt-2 sm:pt-2.5" id="stats-section">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 items-center justify-items-center text-center">
+
+              {/* Stat 1: 11,823 Kanals RDA Approved */}
+              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
+                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
+                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    <CountUpNumber
+                      end={parseInt(String(cms.statsBand?.stat1?.value || '11823').replace(/[^0-9]/g, ''), 10) || 11823}
+                      duration={1800}
+                    />
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                    {cms.statsBand?.stat1?.label || 'KANALS RDA APPROVED'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stat 2: 7 Planned Blocks */}
+              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
+                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
+                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    <CountUpNumber
+                      end={parseInt(String(cms.statsBand?.stat2?.value || '7').replace(/[^0-9]/g, ''), 10) || 7}
+                      duration={1200}
+                    />
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                    {cms.statsBand?.stat2?.label || 'PLANNED BLOCKS'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stat 3: 100% RDA Approved NOC */}
+              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
+                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
+                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    <CountUpNumber
+                      end={parseInt(String(cms.statsBand?.stat4?.value || '100').replace(/[^0-9]/g, ''), 10) || 100}
+                      suffix="%"
+                      duration={1500}
+                    />
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                    {cms.statsBand?.stat4?.label || 'RDA APPROVED NOC'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stat 4: 32,000+ Plots */}
+              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
+                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
+                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    <CountUpNumber
+                      end={parseInt(String(cms.statsBand?.stat5?.value || '32000').replace(/[^0-9]/g, ''), 10) || 32000}
+                      suffix="+"
+                      duration={1800}
+                    />
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                    {cms.statsBand?.stat5?.label || 'RESIDENTIAL & COMMERCIAL PLOTS'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stat 5: 2016 Launched */}
+              <div className="w-full flex justify-center text-center col-span-2 sm:col-span-1 lg:col-span-1">
+                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
+                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    <CountUpNumber
+                      end={parseInt(String(cms.statsBand?.stat3?.value || '2016').replace(/[^0-9]/g, ''), 10) || 2016}
+                      duration={1200}
+                    />
+                  </div>
+                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                    {cms.statsBand?.stat3?.label || 'LAUNCHED'}
+                  </span>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
+
       </section>
-
-      {/* ========================================================= */}
-      {/* SECTION 2 — STATS BAR (5 Verified Animated Counters)       */}
-      {/* ========================================================= */}
-      <section className="bg-[#070e17] border-b border-white/10 pt-10 sm:pt-14 pb-10 sm:pb-12 shadow-xs relative z-20" id="stats-section">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8 items-center justify-items-center text-center">
-            {/* Stat 1 */}
-            <ScrollReveal direction="up" delay={50} className="w-full flex justify-center text-center">
-              <div className="flex flex-col items-center justify-center space-y-1.5 group text-center mx-auto">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 text-rose-300 flex items-center justify-center">
-                  <Maximize2 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={11823.5} decimals={1} duration={2000} />
-                </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
-                  {cms.statsBand.stat1.label || 'KANALS RDA-APPROVED'}
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Stat 2 */}
-            <ScrollReveal direction="up" delay={150} className="w-full flex justify-center text-center">
-              <div className="flex flex-col items-center justify-center space-y-1.5 group text-center mx-auto">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 text-rose-300 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={8} duration={1500} />
-                </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
-                  {cms.statsBand.stat2.label || 'PLANNED BLOCKS'}
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Stat 3 */}
-            <ScrollReveal direction="up" delay={250} className="w-full col-span-2 md:col-span-1 flex justify-center text-center">
-              <div className="flex flex-col items-center justify-center space-y-1.5 group text-center mx-auto">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 text-rose-300 flex items-center justify-center">
-                  <Award className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={2016} duration={1800} />
-                </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
-                  {cms.statsBand.stat3.label || 'LAUNCHED'}
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Stat 4 */}
-            <ScrollReveal direction="up" delay={350} className="w-full flex justify-center text-center">
-              <div className="flex flex-col items-center justify-center space-y-1.5 group text-center mx-auto">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 text-rose-300 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={100} suffix="%" duration={1800} />
-                </div>
-                <Link
-                  href="/faisal-hills-noc-status"
-                  className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase hover:text-white hover:underline transition-colors"
-                  title="View verified RDA NOC details and legal status"
-                >
-                  {cms.statsBand.stat4.label || 'RDA APPROVED NOC'}
-                </Link>
-              </div>
-            </ScrollReveal>
-
-            {/* Stat 5 */}
-            <ScrollReveal direction="up" delay={450} className="w-full flex justify-center items-center text-center">
-              <div className="flex flex-col items-center justify-center space-y-1.5 group text-center mx-auto">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 text-rose-300 flex items-center justify-center">
-                  <Trees className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5]" />
-                </div>
-                <div className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform">
-                  <CountUpNumber end={32000} suffix="+" duration={2000} />
-                </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-300 tracking-wider uppercase">
-                  {cms.statsBand.stat5.label || 'RESIDENTIAL & COMMERCIAL PLOTS'}
-                </span>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
       {/* ========================================================= */}
       {/* SECTION 3 — CHAIRMAN SECTION                              */}
       {/* ========================================================= */}
@@ -1559,7 +1648,7 @@ export default function HomeClient() {
               className="px-8 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2.5 cursor-pointer"
             >
               <FileDown className="w-4 h-4 text-white" />
-              <span>{cms.paymentPlan.downloadBtnText || 'Download Plan (PDF)'}</span>
+              <span>{cms.paymentPlan.downloadBtnText || 'Download Payment Plan'}</span>
             </button>
           </div>
         </div>
