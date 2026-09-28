@@ -19,7 +19,7 @@ export default function CountUpNumber({
   duration = 1800,
   decimals = 0,
   className = '',
-  autoStart = true
+  autoStart = false
 }: CountUpNumberProps) {
   const spanRef = useRef<HTMLSpanElement>(null);
   const animatedRef = useRef(false);
@@ -63,7 +63,6 @@ export default function CountUpNumber({
     };
 
     if (autoStart) {
-      // Start immediately on mount after a small initial tick for smooth visual experience
       const timer = setTimeout(startCounting, 150);
       return () => clearTimeout(timer);
     }
@@ -74,13 +73,14 @@ export default function CountUpNumber({
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
+        const [entry] = entries;
         if (entry.isIntersecting) {
           startCounting();
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0 }
+      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
     );
 
     observer.observe(el);
@@ -96,3 +96,4 @@ export default function CountUpNumber({
     </span>
   );
 }
+

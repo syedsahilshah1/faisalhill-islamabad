@@ -338,26 +338,26 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
         {/* 2. MIDDLE: Dynamic open viewport framing the Arch Monument clearly */}
         <div className="flex-1 w-full min-h-[30px]" />
 
-        {/* 3. BOTTOM: Compact Search Filter Card & Transparent 5-Stat Counting Band */}
-        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 shrink-0 flex flex-col items-center gap-1.5 sm:gap-2 pb-2.5 sm:pb-3.5">
+        {/* 3. BOTTOM: Search Filter Card */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 shrink-0 flex flex-col items-center pb-8 sm:pb-10 lg:pb-12">
 
-          {/* Ultra-Sleek & Compact Search Filter Card */}
-          <ScrollReveal direction="up" delay={80} className="w-full max-w-4xl lg:max-w-[880px] mx-auto">
-            <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.45)] p-2 sm:p-2.5 border border-white text-slate-900">
+          {/* Ultra-Sleek & Enhanced Search Filter Card */}
+          <ScrollReveal direction="up" delay={80} className="w-full max-w-4xl lg:max-w-[960px] mx-auto">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.5)] p-3.5 sm:p-4 md:p-5 border border-white text-slate-900">
 
               {/* Form Filter Row */}
-              <form onSubmit={handleHeroSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-1.5 sm:gap-2 items-end text-left">
+              <form onSubmit={handleHeroSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2 sm:gap-3 items-end text-left">
 
                 {/* BLOCK */}
-                <div className="lg:col-span-3 space-y-0.5">
-                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                <div className="lg:col-span-3 space-y-1">
+                  <label className="block text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-700 pl-0.5">
                     BLOCK
                   </label>
                   <div className="relative">
                     <select
                       value={heroBlock}
                       onChange={(e) => setHeroBlock(e.target.value)}
-                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                      className="w-full h-9 sm:h-10 bg-white text-slate-900 text-xs sm:text-[13px] font-semibold border border-slate-300 rounded-xl px-3 pr-7 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
                     >
                       <option value="all">Any block</option>
                       <option value="executive-block">Executive Block</option>
@@ -369,40 +369,40 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                       <option value="faisal-jewel-islamabad">Faisal Jewel</option>
                       <option value="hills-walk">Hills Walk</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* CATEGORY */}
-                <div className="lg:col-span-3 space-y-0.5">
-                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                <div className="lg:col-span-3 space-y-1">
+                  <label className="block text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-700 pl-0.5">
                     CATEGORY
                   </label>
                   <div className="relative">
                     <select
                       value={heroCategory}
                       onChange={(e) => setHeroCategory(e.target.value)}
-                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                      className="w-full h-9 sm:h-10 bg-white text-slate-900 text-xs sm:text-[13px] font-semibold border border-slate-300 rounded-xl px-3 pr-7 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
                     >
                       <option value="Residential">Residential plot</option>
                       <option value="Commercial">Commercial plot</option>
                       <option value="Apartment">Apartment / Unit</option>
                       <option value="all">Any category</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* PLOT SIZE */}
-                <div className="lg:col-span-2 space-y-0.5">
-                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                <div className="lg:col-span-2 space-y-1">
+                  <label className="block text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-700 pl-0.5">
                     PLOT SIZE
                   </label>
                   <div className="relative">
                     <select
                       value={heroSize}
                       onChange={(e) => setHeroSize(e.target.value)}
-                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                      className="w-full h-9 sm:h-10 bg-white text-slate-900 text-xs sm:text-[13px] font-semibold border border-slate-300 rounded-xl px-3 pr-7 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
                     >
                       <option value="5 Marla">5 Marla</option>
                       <option value="8 Marla">8 Marla</option>
@@ -412,20 +412,20 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                       <option value="2 Kanal">2 Kanal</option>
                       <option value="all">Any size</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* POSSESSION */}
-                <div className="lg:col-span-2 space-y-0.5">
-                  <label className="block text-[9.5px] font-extrabold uppercase tracking-wider text-slate-700 pl-0.5">
+                <div className="lg:col-span-2 space-y-1">
+                  <label className="block text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-700 pl-0.5">
                     POSSESSION
                   </label>
                   <div className="relative">
                     <select
                       value={heroPossession}
                       onChange={(e) => setHeroPossession(e.target.value)}
-                      className="w-full h-8 sm:h-8.5 bg-white text-slate-900 text-xs font-semibold border border-slate-300 rounded-lg px-2 pr-6 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+                      className="w-full h-9 sm:h-10 bg-white text-slate-900 text-xs sm:text-[13px] font-semibold border border-slate-300 rounded-xl px-3 pr-7 appearance-none focus:outline-none focus:ring-2 focus:ring-[#7b002c] focus:border-transparent transition-all cursor-pointer shadow-2xs hover:border-slate-400"
                     >
                       <option value="all">Any status</option>
                       <option value="possession">Possession</option>
@@ -433,7 +433,7 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                       <option value="boulevard">Main Boulevard</option>
                       <option value="corner">Corner Plot</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
@@ -441,30 +441,30 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                 <div className="lg:col-span-2">
                   <button
                     type="submit"
-                    className="w-full h-8 sm:h-8.5 bg-[#7b002c] hover:bg-[#600022] active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
+                    className="w-full h-9 sm:h-10 bg-[#7b002c] hover:bg-[#600022] active:scale-[0.98] text-white font-bold text-xs sm:text-[13px] uppercase tracking-wider rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <Search className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <Search className="w-4 h-4 stroke-[2.5]" />
                     <span>SEARCH</span>
                   </button>
                 </div>
 
               </form>
 
-              {/* Bottom Trust & Actions Row - Compact */}
-              <div className="mt-1.5 pt-1.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+              {/* Bottom Trust & Actions Row */}
+              <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
 
                 {/* Trust line */}
-                <div className="flex items-center gap-1 text-slate-600 text-[10px] font-medium">
-                  <Lock className="w-3 h-3 text-slate-500 shrink-0" />
+                <div className="flex items-center gap-1 text-slate-600 text-[11px] sm:text-xs font-medium">
+                  <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <span>Verified with developer before booking.</span>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center flex-wrap gap-1.5 justify-center">
+                <div className="flex items-center flex-wrap gap-2 justify-center">
                   <button
                     type="button"
                     onClick={() => setIsPaymentPlanLightboxOpen(true)}
-                    className="px-2.5 py-0.5 rounded-full border border-slate-300 text-slate-800 hover:text-[#7b002c] hover:border-[#7b002c]/50 bg-white hover:bg-slate-50 text-[10.5px] font-semibold transition-all shadow-2xs cursor-pointer"
+                    className="px-3 py-1 rounded-full border border-slate-300 text-slate-800 hover:text-[#7b002c] hover:border-[#7b002c]/50 bg-white hover:bg-slate-50 text-[11px] sm:text-xs font-semibold transition-all shadow-2xs cursor-pointer"
                   >
                     2026 payment plan
                   </button>
@@ -473,9 +473,9 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                     href={formatWhatsAppUrl(socials.whatsapp, 'Hi, I would like to inquire about plot inventory and payment plans in Faisal Hills.')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-0.5 rounded-full bg-[#e8f5e9] text-[#1b5e20] border border-[#a5d6a7] hover:bg-[#c8e6c9] text-[10.5px] font-semibold flex items-center gap-1 transition-all shadow-2xs"
+                    className="px-3 py-1 rounded-full bg-[#e8f5e9] text-[#1b5e20] border border-[#a5d6a7] hover:bg-[#c8e6c9] text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs"
                   >
-                    <MessageCircle className="w-3 h-3 text-[#2e7d32] fill-[#2e7d32]/20 shrink-0" />
+                    <MessageCircle className="w-3.5 h-3.5 text-[#2e7d32] fill-[#2e7d32]/20 shrink-0" />
                     <span>WhatsApp</span>
                   </a>
                 </div>
@@ -485,92 +485,96 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
             </div>
           </ScrollReveal>
 
-          {/* Transparent 5-Stat Counting Band (Instantly Visible & Animated on Mount) */}
-          <div className="w-full border-t border-white/20 pt-2 sm:pt-2.5" id="stats-section">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 items-center justify-items-center text-center">
-
-              {/* Stat 1: 11,823 Kanals RDA Approved */}
-              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
-                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
-                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <CountUpNumber
-                      end={parseInt(String(cms.statsBand?.stat1?.value || '11823').replace(/[^0-9]/g, ''), 10) || 11823}
-                      duration={1800}
-                    />
-                  </div>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                    {cms.statsBand?.stat1?.label || 'KANALS RDA APPROVED'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stat 2: 7 Planned Blocks */}
-              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
-                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
-                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <CountUpNumber
-                      end={parseInt(String(cms.statsBand?.stat2?.value || '7').replace(/[^0-9]/g, ''), 10) || 7}
-                      duration={1200}
-                    />
-                  </div>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                    {cms.statsBand?.stat2?.label || 'PLANNED BLOCKS'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stat 3: 100% RDA Approved NOC */}
-              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
-                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
-                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <CountUpNumber
-                      end={parseInt(String(cms.statsBand?.stat4?.value || '100').replace(/[^0-9]/g, ''), 10) || 100}
-                      suffix="%"
-                      duration={1500}
-                    />
-                  </div>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                    {cms.statsBand?.stat4?.label || 'RDA APPROVED NOC'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stat 4: 32,000+ Plots */}
-              <div className="w-full flex justify-center text-center lg:border-r lg:border-white/15">
-                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
-                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <CountUpNumber
-                      end={parseInt(String(cms.statsBand?.stat5?.value || '32000').replace(/[^0-9]/g, ''), 10) || 32000}
-                      suffix="+"
-                      duration={1800}
-                    />
-                  </div>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                    {cms.statsBand?.stat5?.label || 'RESIDENTIAL & COMMERCIAL PLOTS'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Stat 5: 2016 Launched */}
-              <div className="w-full flex justify-center text-center col-span-2 sm:col-span-1 lg:col-span-1">
-                <div className="flex flex-col items-center justify-center space-y-0.5 group text-center mx-auto px-1.5">
-                  <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight group-hover:scale-105 transition-transform drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-                    <CountUpNumber
-                      end={parseInt(String(cms.statsBand?.stat3?.value || '2016').replace(/[^0-9]/g, ''), 10) || 2016}
-                      duration={1200}
-                    />
-                  </div>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-100 tracking-wider uppercase drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-                    {cms.statsBand?.stat3?.label || 'LAUNCHED'}
-                  </span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
         </div>
 
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 2 — STATS BAND BAR                                */}
+      {/* ========================================================= */}
+      <section className="bg-white text-slate-900 py-6 sm:py-8 lg:py-9 border-b border-slate-200 shadow-xs relative z-10" id="stats-section">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 items-center justify-items-center text-center">
+
+            {/* Stat 1: 11,823 Kanals RDA Approved */}
+            <ScrollReveal direction="up" delay={50} className="w-full flex justify-center text-center lg:border-r lg:border-slate-200">
+              <div className="flex flex-col items-center justify-center space-y-1 group text-center mx-auto px-2">
+                <div className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber
+                    end={parseInt(String(cms.statsBand?.stat1?.value || '11823').replace(/[^0-9]/g, ''), 10) || 11823}
+                    duration={1800}
+                  />
+                </div>
+                <span className="text-[10px] sm:text-[11.5px] font-bold text-slate-600 tracking-wider uppercase">
+                  {cms.statsBand?.stat1?.label || 'KANALS RDA APPROVED'}
+                </span>
+              </div>
+            </ScrollReveal>
+
+            {/* Stat 2: 7 Planned Blocks */}
+            <ScrollReveal direction="up" delay={100} className="w-full flex justify-center text-center lg:border-r lg:border-slate-200">
+              <div className="flex flex-col items-center justify-center space-y-1 group text-center mx-auto px-2">
+                <div className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber
+                    end={parseInt(String(cms.statsBand?.stat2?.value || '7').replace(/[^0-9]/g, ''), 10) || 7}
+                    duration={1200}
+                  />
+                </div>
+                <span className="text-[10px] sm:text-[11.5px] font-bold text-slate-600 tracking-wider uppercase">
+                  {cms.statsBand?.stat2?.label || 'PLANNED BLOCKS'}
+                </span>
+              </div>
+            </ScrollReveal>
+
+            {/* Stat 3: 100% RDA Approved NOC */}
+            <ScrollReveal direction="up" delay={150} className="w-full flex justify-center text-center lg:border-r lg:border-slate-200">
+              <div className="flex flex-col items-center justify-center space-y-1 group text-center mx-auto px-2">
+                <div className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber
+                    end={parseInt(String(cms.statsBand?.stat4?.value || '100').replace(/[^0-9]/g, ''), 10) || 100}
+                    suffix="%"
+                    duration={1500}
+                  />
+                </div>
+                <span className="text-[10px] sm:text-[11.5px] font-bold text-slate-600 tracking-wider uppercase">
+                  {cms.statsBand?.stat4?.label || 'RDA APPROVED NOC'}
+                </span>
+              </div>
+            </ScrollReveal>
+
+            {/* Stat 4: 32,000+ Plots */}
+            <ScrollReveal direction="up" delay={200} className="w-full flex justify-center text-center lg:border-r lg:border-slate-200">
+              <div className="flex flex-col items-center justify-center space-y-1 group text-center mx-auto px-2">
+                <div className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber
+                    end={parseInt(String(cms.statsBand?.stat5?.value || '32000').replace(/[^0-9]/g, ''), 10) || 32000}
+                    suffix="+"
+                    duration={1800}
+                  />
+                </div>
+                <span className="text-[10px] sm:text-[11.5px] font-bold text-slate-600 tracking-wider uppercase">
+                  {cms.statsBand?.stat5?.label || 'RESIDENTIAL & COMMERCIAL PLOTS'}
+                </span>
+              </div>
+            </ScrollReveal>
+
+            {/* Stat 5: 2016 Launched */}
+            <ScrollReveal direction="up" delay={250} className="w-full flex justify-center text-center col-span-2 sm:col-span-1 lg:col-span-1">
+              <div className="flex flex-col items-center justify-center space-y-1 group text-center mx-auto px-2">
+                <div className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#7b002c] tracking-tight leading-tight group-hover:scale-105 transition-transform">
+                  <CountUpNumber
+                    end={parseInt(String(cms.statsBand?.stat3?.value || '2016').replace(/[^0-9]/g, ''), 10) || 2016}
+                    duration={1200}
+                  />
+                </div>
+                <span className="text-[10px] sm:text-[11.5px] font-bold text-slate-600 tracking-wider uppercase">
+                  {cms.statsBand?.stat3?.label || 'LAUNCHED'}
+                </span>
+              </div>
+            </ScrollReveal>
+
+          </div>
+        </div>
       </section>
       {/* ========================================================= */}
       {/* SECTION 3 — CHAIRMAN SECTION                              */}
