@@ -2,18 +2,32 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
-  Image as ImageIcon, Sparkles, Building2, MapPin, Layers, PhoneCall, MessageCircle, HelpCircle,
-  Star, ShieldCheck, Eye, Compass, Award, FileText, Check, DollarSign, ListChecks,
-  Upload, Camera, Link2, X, ExternalLink
-} from 'lucide-react';
-import {
   BlocksPageCMSData,
   initialBlocksPageCMS,
   fetchBlocksPageCMS,
   saveBlocksPageCMS,
-  mergeBlocksCMS
+  mergeBlocksCMS,
+  PrimeBlockCMSData,
+  initialPrimeBlockCMS,
+  fetchPrimeBlockCMS,
+  savePrimeBlockCMS,
+  mergePrimeBlockCMS,
+  cleanVerifyText,
+  BlockInfo,
+  blocksData,
+  fetchBlocks,
+  apiUpdateBlock,
+  apiUpdateSetting,
+  GalleryItem,
+  fetchGallery
 } from '@/data/faisalHillsData';
+import {
+  Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
+  Image as ImageIcon, Sparkles, Building2, MapPin, Layers, PhoneCall, MessageCircle, HelpCircle,
+  Star, ShieldCheck, Eye, Compass, Award, FileText, Check, DollarSign, ListChecks,
+  Upload, Camera, Link2, X, ExternalLink, Loader2, Globe,
+  Trees
+} from 'lucide-react';
 
 function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
   return new Promise((resolve) => {
@@ -164,12 +178,28 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   );
 };
 
-export default function BlocksPageCmsTab() {
+interface BlocksPageCmsTabProps {
+  token?: string | null;
+}
+
+export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [cms, setCms] = useState<BlocksPageCMSData>(initialBlocksPageCMS);
+  const [primeCms, setPrimeCms] = useState<PrimeBlockCMSData>(initialPrimeBlockCMS);
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
+
+  // Individual Block Detail Management State
+  const [blocksList, setBlocksList] = useState<BlockInfo[]>(blocksData);
+  const [selectedBlockSlug, setSelectedBlockSlug] = useState<string>('executive-block');
+  const [editingBlock, setEditingBlock] = useState<BlockInfo | null>(blocksData[0]);
+  const [isSavingBlock, setIsSavingBlock] = useState(false);
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
+  const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | 'commercialHero' | null>(null);
+  const [commercialHeroImage, setCommercialHeroImage] = useState<string>('/images/hills-walk-commercial-aerial.webp');
+  const [isSavingCommercialHero, setIsSavingCommercialHero] = useState(false);
+  const [newHighlightText, setNewHighlightText] = useState<string>('');
 
   // Load live data on mount
   useEffect(() => {
@@ -177,30 +207,184 @@ export default function BlocksPageCmsTab() {
       if (data) setCms(mergeBlocksCMS(data));
     });
 
+    fetchPrimeBlockCMS().then((pData) => {
+      if (pData) setPrimeCms(mergePrimeBlockCMS(pData));
+    });
+
+    fetchBlocks().then((data) => {
+      if (data && data.length > 0) {
+        try {
+          if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem('faisal_blocks_custom_v1');
+            if (stored) {
+              const customMap = JSON.parse(stored);
+              const merged = data.map(b => customMap[b.slug] ? { ...b, ...customMap[b.slug] } : b);
+              setBlocksList(merged);
+              const cur = merged.find(b => b.slug === selectedBlockSlug) || merged[0];
+              setEditingBlock(cur);
+              return;
+            }
+          }
+        } catch {}
+        setBlocksList(data);
+        const cur = data.find(b => b.slug === selectedBlockSlug) || data[0];
+        setEditingBlock(cur);
+      }
+    });
+
+    fetchGallery().then((g) => {
+      if (g && g.length > 0) setGalleryList(g);
+    });
+
+    try {
+      if (typeof window !== 'undefined') {
+        const commImg = localStorage.getItem('faisal_commercial_hero_image');
+        if (commImg) setCommercialHeroImage(commImg);
+      }
+    } catch {}
+
     const handleStorage = () => {
       try {
         const local = localStorage.getItem('faisal_blocks_cms');
         if (local) setCms(mergeBlocksCMS(JSON.parse(local)));
       } catch {}
+      try {
+        const pLocal = localStorage.getItem('faisal_prime_block_cms');
+        if (pLocal) setPrimeCms(mergePrimeBlockCMS(JSON.parse(pLocal)));
+      } catch {}
     };
 
     window.addEventListener('faisal_blocks_cms_updated', handleStorage);
+    window.addEventListener('faisal_prime_block_cms_updated', handleStorage);
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('faisal_blocks_cms_updated', handleStorage);
+      window.removeEventListener('faisal_prime_block_cms_updated', handleStorage);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
 
+  const handleSelectBlockToEdit = (slug: string) => {
+    setSelectedBlockSlug(slug);
+    const found = blocksList.find(b => b.slug === slug) || blocksData.find(b => b.slug === slug);
+    if (found) {
+      setEditingBlock({ ...found });
+    }
+  };
+
+  const safeSaveBlocksLocally = (block: Partial<BlockInfo>) => {
+    try {
+      if (typeof window !== 'undefined') {
+        const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+        existing[block.slug || ''] = block;
+        localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
+        window.dispatchEvent(new Event('faisal_blocks_updated'));
+      }
+    } catch (e) {
+      console.warn("Local storage quota exceeded for block images; saving lightweight metadata cache.");
+      try {
+        if (typeof window !== 'undefined') {
+          const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
+          const lightweight = {
+            ...block,
+            heroImage: block.heroImage?.startsWith('data:') ? '' : block.heroImage,
+            masterPlanImage: block.masterPlanImage?.startsWith('data:') ? '' : block.masterPlanImage
+          };
+          existing[block.slug || ''] = lightweight;
+          localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
+          window.dispatchEvent(new Event('faisal_blocks_updated'));
+        }
+      } catch (innerErr) {}
+    }
+  };
+
+  const handleSaveBlock = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editingBlock) return;
+    setIsSavingBlock(true);
+    
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+
+    setBlocksList(prev => prev.map(b => (b.slug === editingBlock.slug || (editingBlock.id && b.id === editingBlock.id)) ? { ...b, ...editingBlock } as BlockInfo : b));
+    safeSaveBlocksLocally(editingBlock);
+
+    if (activeToken) {
+      try {
+        const identifier = editingBlock.slug || editingBlock.id || '';
+        if (identifier) {
+          const updated = await apiUpdateBlock(identifier, editingBlock, activeToken);
+          setBlocksList(prev => prev.map(b => (b.id === updated.id || b.slug === updated.slug) ? updated : b));
+          setEditingBlock(updated);
+        }
+      } catch (err) {
+        console.error('API block update error, saved locally:', err);
+      }
+    }
+
+    setIsSavingBlock(false);
+    setStatusMsg(`Block "${editingBlock.name}" updated and published successfully!`);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3500);
+  };
+
+  const handleSaveCommercialHero = async () => {
+    setIsSavingCommercialHero(true);
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faisal_commercial_hero_image', commercialHeroImage);
+    }
+    
+    if (activeToken) {
+      try {
+        await apiUpdateSetting('commercial_hero_image', commercialHeroImage, activeToken);
+      } catch (err) {
+        console.error('Failed to update commercial hero image via API:', err);
+      }
+    }
+    setIsSavingCommercialHero(false);
+    setStatusMsg('Commercial Hub hero background image updated and published successfully!');
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3500);
+  };
+
+  const handleAddHighlight = () => {
+    if (!newHighlightText.trim() || !editingBlock) return;
+    const currentHighlights = editingBlock.highlights || [];
+    setEditingBlock({
+      ...editingBlock,
+      highlights: [...currentHighlights, newHighlightText.trim()]
+    });
+    setNewHighlightText('');
+  };
+
+  const handleRemoveHighlight = (idx: number) => {
+    if (!editingBlock || !editingBlock.highlights) return;
+    setEditingBlock({
+      ...editingBlock,
+      highlights: editingBlock.highlights.filter((_, i) => i !== idx)
+    });
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     setStatusMsg('');
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') || undefined : undefined;
-    const ok = await saveBlocksPageCMS(cms, token);
+    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') || undefined : undefined);
+    const okBlocks = await saveBlocksPageCMS(cms, activeToken);
+    const okPrime = await savePrimeBlockCMS(primeCms, activeToken);
+    if (editingBlock) {
+      safeSaveBlocksLocally(editingBlock);
+      if (activeToken) {
+        const identifier = editingBlock.slug || editingBlock.id || '';
+        if (identifier) {
+          apiUpdateBlock(identifier, editingBlock, activeToken).catch(() => {});
+        }
+      }
+    }
     setIsSaving(false);
-    if (ok) {
+    if (okBlocks || okPrime) {
       setSaveSuccess(true);
-      setStatusMsg('Blocks page content successfully saved and published live!');
+      setStatusMsg('Blocks and Prime Block content successfully saved and published live!');
       setTimeout(() => setSaveSuccess(false), 4000);
     } else {
       setStatusMsg('Saved locally in browser. Note: API sync pending backend authentication.');
@@ -210,18 +394,21 @@ export default function BlocksPageCmsTab() {
   };
 
   const handleResetToAuditedDefaults = () => {
-    if (window.confirm('Are you sure you want to reset all Blocks Page sections to official audited defaults?')) {
+    if (window.confirm('Are you sure you want to reset all Blocks and Prime Block sections to official audited defaults?')) {
       setCms(initialBlocksPageCMS);
+      setPrimeCms(initialPrimeBlockCMS);
       setStatusMsg('Reset to audited defaults. Click "Save Live Changes" to publish.');
     }
   };
 
   const sectionTabs = [
     { id: 'hero', label: '🌟 Hero & Counters', icon: Sparkles },
+    { id: 'individualBlocks', label: '🏛️ Sector Detail Pages (/blocks/[slug])', icon: Building2 },
+    { id: 'primeBlock', label: '⭐ Prime Block CMS', icon: Star },
     { id: 'glance', label: '📊 At a Glance Table', icon: Layers },
     { id: 'stages', label: '📜 Growth Stages', icon: FileText },
     { id: 'map', label: '🗺️ Map & Road Placement', icon: MapPin },
-    { id: 'blocks', label: '🏢 7 Block Profiles', icon: Building2 },
+    { id: 'blocks', label: '🏢 7 Block Profiles (Overview)', icon: Layers },
     { id: 'dimensions', label: '📐 Plot Sizes & Marla', icon: Compass },
     { id: 'prices', label: '💰 Plot Prices & Supply', icon: DollarSign },
     { id: 'status', label: '🏗️ Development & Infra', icon: Award },
@@ -233,6 +420,7 @@ export default function BlocksPageCmsTab() {
 
   return (
     <div className="space-y-6">
+    
       
       {/* Top Controls Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -533,6 +721,699 @@ export default function BlocksPageCmsTab() {
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: INDIVIDUAL SECTOR PAGES & MEDIA (/blocks/[slug]) */}
+      {/* ========================================================= */}
+      {activeSection === 'individualBlocks' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
+                <Building2 className="w-4 h-4 text-[#7b002c]" />
+                <span>Individual Society Blocks & Media Management</span>
+              </div>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Edit Sector Headings, Descriptions, Media & NOC Details
+              </h3>
+              <p className="text-xs text-slate-600 mt-1">
+                Select any block below to manage its specific hero banner, layout map, pricing ranges, and content for <code className="text-[#7b002c] font-mono bg-slate-100 px-1 py-0.5 rounded">/blocks/[slug]</code>.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                {blocksList.length} Society Blocks
+              </span>
+              <a
+                href={`/blocks/${selectedBlockSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-rose-50 text-[#7b002c] border border-rose-200 hover:bg-rose-100 transition inline-flex items-center gap-1.5"
+              >
+                <span>View Live Block</span>
+                <Globe className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* Block Selection Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+            {blocksList.map((b) => (
+              <button
+                key={b.id || b.slug}
+                onClick={() => handleSelectBlockToEdit(b.slug)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
+                  selectedBlockSlug === b.slug
+                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-102'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Commercial Hub Hero Banner Card */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-rose-200/80 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shadow-sm">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-lg text-slate-900">
+                    Commercial Hub Hero Background Banner
+                  </h4>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Live Route: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/faisal-hills-commercial</code>
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/faisal-hills-commercial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
+                >
+                  <span>View Commercial Page</span>
+                  <Globe className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleSaveCommercialHero}
+                  disabled={isSavingCommercialHero}
+                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                >
+                  {isSavingCommercialHero ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save Commercial Banner</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div className="lg:col-span-7 space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                    <span>Upload or Select Commercial Banner</span>
+                  </label>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('commercialHero')}
+                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                              if (dataUrl) {
+                                setCommercialHeroImage(dataUrl);
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-slate-600">Background Image URL:</span>
+                  <input
+                    type="text"
+                    value={commercialHeroImage}
+                    onChange={(e) => setCommercialHeroImage(e.target.value)}
+                    placeholder="e.g. /images/commercial/flagship-store.webp or https://..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
+                  {[
+                    { label: 'Flagship Store', url: '/images/commercial/flagship-store.webp' },
+                    { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.webp' },
+                    { label: 'Food Court Hub', url: '/images/commercial/food-court.webp' },
+                    { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
+                    { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
+                  ].map((preset, pIdx) => (
+                    <button
+                      key={pIdx}
+                      type="button"
+                      onClick={() => setCommercialHeroImage(preset.url)}
+                      className="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-[#7b002c] border border-slate-200 font-medium transition cursor-pointer"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-slate-600 block">Live Banner Preview:</span>
+                  <div className="h-44 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
+                    <img
+                      src={commercialHeroImage}
+                      alt="Commercial Hero Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/50 flex flex-col justify-end p-4 text-white">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300">Commercial Hub</span>
+                      <strong className="font-serif text-sm line-clamp-1">Faisal Hills Commercial Plots for Sale</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Block Edit Form */}
+          {editingBlock && (
+            <form onSubmit={handleSaveBlock} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold font-serif text-xl border border-[#7b002c]/20">
+                    {editingBlock.name?.replace('Block ', '').charAt(0) || 'B'}
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                      Editing: {editingBlock.name}
+                    </h4>
+                    <span className="text-xs text-slate-500 font-medium">
+                      Sector Slug: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/blocks/{editingBlock.slug}</code>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`/blocks/${editingBlock.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
+                  >
+                    <span>View Public Page</span>
+                    <Globe className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    type="submit"
+                    disabled={isSavingBlock}
+                    className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
+                  >
+                    {isSavingBlock ? (
+                      <>
+                        <Loader2 className="w-4 h-4 text-white animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 text-white" />
+                        <span>Save &amp; Publish Block</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* 1. Hero Background Image Section */}
+                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Hero Background Banner Image</span>
+                    </label>
+                    {editingBlock.heroImage && (
+                      <button
+                        type="button"
+                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, heroImage: '' }) : null)}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Image
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('hero')}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                              if (dataUrl) {
+                                setEditingBlock(prev => prev ? ({ ...prev, heroImage: dataUrl }) : null);
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={editingBlock.heroImage || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, heroImage: e.target.value }) : null)}
+                    placeholder="Or paste image URL (e.g. /images/... or https://...)"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
+                    {[
+                      { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
+                      { label: 'Drone Site View', url: '/images/faisal-hills-drone-view.webp' },
+                      { label: 'Sports Arena View', url: '/images/faisal-hills-sports-arena.webp' },
+                      { label: 'European Promenade', url: '/images/hills-walk-commercial-aerial.webp' },
+                      { label: 'Margalla Springs', url: '/images/faisal-hills-site-header.webp' },
+                    ].map((preset, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, heroImage: preset.url }) : null)}
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition cursor-pointer"
+                      >
+                        + {preset.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {editingBlock.heroImage && (
+                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
+                      <img
+                        src={editingBlock.heroImage}
+                        alt="Hero Background Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Hero Banner Preview
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Master Plan Map Image Section */}
+                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
+                      <span>Master Plan / Layout Map Image</span>
+                    </label>
+                    {editingBlock.masterPlanImage && (
+                      <button
+                        type="button"
+                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: '' }) : null)}
+                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                      >
+                        Remove Map
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryPickerTarget('masterPlan')}
+                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Choose from Photo Gallery</span>
+                    </button>
+
+                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Upload Map File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            compressImageFile(file, 2560, 0.88).then((dataUrl) => {
+                              if (dataUrl) {
+                                setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: dataUrl }) : null);
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={editingBlock.masterPlanImage || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: e.target.value }) : null)}
+                    placeholder="Or paste map image URL..."
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+
+                  {editingBlock.masterPlanImage && (
+                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
+                      <img
+                        src={editingBlock.masterPlanImage}
+                        alt="Master Plan Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
+                        Master Plan Layout Preview
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Block Name & Title */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Block Name / Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingBlock.name || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
+                    placeholder="e.g. Executive Block"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 4. Tagline / Subtitle */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Main Heading / Tagline / Subtitle *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingBlock.subtitle || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, subtitle: e.target.value }) : null)}
+                    placeholder="e.g. Main Entrance & Commercial Hub with RDA-Approved Freehold Plots"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 5. NOC Approval Status */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">NOC Approval Status</label>
+                  <input
+                    type="text"
+                    value={editingBlock.nocStatus || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, nocStatus: e.target.value }) : null)}
+                    placeholder="e.g. 100% RDA Approved (MP&TE/F-PH-1/21)"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 6. Last Verified Date */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Last Verified / Update Date</label>
+                  <input
+                    type="text"
+                    value={editingBlock.verificationDate || 'August 2026'}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, verificationDate: e.target.value }) : null)}
+                    placeholder="e.g. August 2026"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 7. Residential Price Range */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Residential Price Range</label>
+                  <input
+                    type="text"
+                    value={editingBlock.priceRange?.residential || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({
+                      ...prev,
+                      priceRange: { ...prev.priceRange, residential: e.target.value, commercial: prev.priceRange?.commercial || '' }
+                    }) : null)}
+                    placeholder="e.g. PKR 65 Lacs – 1.85 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 8. Commercial Price Range */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Commercial Price Range</label>
+                  <input
+                    type="text"
+                    value={editingBlock.priceRange?.commercial || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({
+                      ...prev,
+                      priceRange: { ...prev.priceRange, commercial: e.target.value, residential: prev.priceRange?.residential || '' }
+                    }) : null)}
+                    placeholder="e.g. PKR 2.8 Crore – 5.5 Crore"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 9. Total Plots Count */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Total Plots Count</label>
+                  <input
+                    type="number"
+                    value={editingBlock.totalPlots || 1200}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, totalPlots: Number(e.target.value) }) : null)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 10. Category Tag */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Category Status</label>
+                  <select
+                    value={editingBlock.category || 'developed'}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, category: e.target.value as any }) : null)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
+                  >
+                    <option value="developed">Developed (Possession Ready)</option>
+                    <option value="upcoming">Upcoming (Fast-Paced Development)</option>
+                    <option value="commercial_project">Commercial Project / Hub</option>
+                  </select>
+                </div>
+
+                {/* 11. Location Details */}
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Location &amp; Highway Access Details</label>
+                  <input
+                    type="text"
+                    value={editingBlock.locationDetails || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, locationDetails: e.target.value }) : null)}
+                    placeholder="e.g. Direct Frontage on Main GT Road (N-5) with 220ft Central Boulevard Access"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 12. Detailed Description */}
+                <div className="md:col-span-2 space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800">Block Overview &amp; Comprehensive Description</label>
+                  <textarea
+                    rows={4}
+                    value={editingBlock.description || ''}
+                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, description: e.target.value }) : null)}
+                    placeholder="Enter comprehensive overview, possession updates, lifestyle facilities, and investment potential..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                  />
+                </div>
+
+                {/* 13. Key Highlights & Features Manager */}
+                <div className="md:col-span-2 space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <span>Key Sector Highlights &amp; Features</span>
+                    <span className="text-[10px] text-slate-500 font-normal">{(editingBlock.highlights || []).length} highlights active</span>
+                  </label>
+
+                  {/* Existing Highlights Pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {(editingBlock.highlights || []).map((highlight, hIdx) => (
+                      <span
+                        key={hIdx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs"
+                      >
+                        <span>✓ {highlight}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveHighlight(hIdx)}
+                          className="text-slate-400 hover:text-red-600 transition cursor-pointer ml-1"
+                          title="Remove highlight"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Add New Highlight Input */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
+                    <input
+                      type="text"
+                      value={newHighlightText}
+                      onChange={(e) => setNewHighlightText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddHighlight();
+                        }
+                      }}
+                      placeholder="Add a new highlight (e.g. Grand Jamia Mosque, 220ft Boulevard) and press Add..."
+                      className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddHighlight}
+                      className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                    >
+                      + Add Highlight
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span className="text-xs text-slate-500 italic">
+                  Changes save directly to the database and update this sector's public page immediately.
+                </span>
+                <button
+                  type="submit"
+                  disabled={isSavingBlock}
+                  className="px-7 py-3 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition cursor-pointer hover:scale-102"
+                >
+                  {isSavingBlock ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Publishing Block Updates...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 text-white" />
+                      <span>Save &amp; Publish Block Updates</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Photo Gallery Picker Modal */}
+          {galleryPickerTarget && (
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h4 className="font-serif font-bold text-xl text-slate-900 flex items-center gap-2">
+                      <Camera className="w-5 h-5 text-[#7b002c]" />
+                      <span>Select Photo for {galleryPickerTarget === 'hero' ? 'Hero Background Banner' : galleryPickerTarget === 'commercialHero' ? 'Commercial Hub Banner' : 'Master Plan Map'}</span>
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Click any photo from your gallery below to set it instantly.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryPickerTarget(null)}
+                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Gallery Image Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {galleryList.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        if (galleryPickerTarget === 'hero') {
+                          setEditingBlock(prev => prev ? ({ ...prev, heroImage: item.imageUrl }) : null);
+                        } else if (galleryPickerTarget === 'commercialHero') {
+                          setCommercialHeroImage(item.imageUrl);
+                        } else {
+                          setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: item.imageUrl }) : null);
+                        }
+                        setGalleryPickerTarget(null);
+                      }}
+                      className="group relative rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-[#7b002c] shadow-xs hover:shadow-lg transition-all duration-300 aspect-video bg-slate-900 cursor-pointer text-left"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                      <div className="absolute bottom-2 left-2 right-2 text-white">
+                        <span className="text-[9px] uppercase tracking-wider font-bold bg-[#7b002c] px-1.5 py-0.5 rounded text-white inline-block mb-1">
+                          {item.category}
+                        </span>
+                        <div className="text-[11px] font-bold truncate group-hover:text-amber-300">
+                          {item.title}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setGalleryPickerTarget(null)}
+                    className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                  >
+                    Close Picker
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       )}
 
@@ -1719,6 +2600,853 @@ export default function BlocksPageCmsTab() {
                 onChange={(e) => setCms({ ...cms, cta: { ...cms.cta, aboutPageNote: e.target.value } })}
                 className="w-full px-4 py-2 bg-slate-50 border rounded-xl text-xs text-slate-600"
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: PRIME BLOCK OVERVIEW CMS                         */}
+      {/* ========================================================= */}
+      {activeSection === 'primeBlock' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase tracking-wider">
+                  Specific Block CMS
+                </span>
+                <h3 className="text-lg font-bold text-slate-900 font-serif">
+                  Faisal Hills Prime Block Overview Editor
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Manage the main overview section, paragraph content, and internal linking on <code className="bg-slate-100 px-1 py-0.5 rounded text-[#7b002c]">/blocks/prime-block</code>.
+              </p>
+            </div>
+            <a
+              href="/blocks/prime-block"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#7b002c] hover:bg-rose-50 border border-rose-200 rounded-xl transition cursor-pointer self-start sm:self-auto"
+            >
+              <span>View Prime Block Page</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Editor Form Columns */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Section Heading */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Overview Section Heading
+                </label>
+                <input
+                  type="text"
+                  value={primeCms.overview.heading}
+                  onChange={(e) =>
+                    setPrimeCms({
+                      ...primeCms,
+                      overview: { ...primeCms.overview, heading: e.target.value }
+                    })
+                  }
+                  placeholder="Faisal Hills Prime Block Overview"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                />
+              </div>
+
+              {/* Overview Paragraph 1 */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Overview Paragraph 1 <span className="text-emerald-600 font-normal">(Location & Boulevard Context)</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={primeCms.overview.visibleParagraph}
+                  onChange={(e) =>
+                    setPrimeCms({
+                      ...primeCms,
+                      overview: { ...primeCms.overview, visibleParagraph: e.target.value }
+                    })
+                  }
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Default: Mentions Prime Block front location on the 225 ft boulevard, adjoining Block A & Executive Block.
+                </p>
+              </div>
+
+              {/* Overview Paragraph 2 */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Overview Paragraph 2 <span className="text-[#7b002c] font-normal">(Installment vs Construction & Links)</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={primeCms.overview.expandedParagraph1}
+                  onChange={(e) =>
+                    setPrimeCms({
+                      ...primeCms,
+                      overview: { ...primeCms.overview, expandedParagraph1: e.target.value }
+                    })
+                  }
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Mentions carpeted roads, underground utilities, parks, mosque, commercial areas, installment plans vs ready possession.
+                </p>
+              </div>
+
+              {/* Overview Paragraph 3 */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Overview Paragraph 3 <span className="text-[#7b002c] font-normal">(Location / District Clarification)</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={primeCms.overview.expandedParagraph2}
+                  onChange={(e) =>
+                    setPrimeCms({
+                      ...primeCms,
+                      overview: { ...primeCms.overview, expandedParagraph2: e.target.value }
+                    })
+                  }
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Clarifies Rawalpindi District / Taxila location vs marketed Islamabad address, via GT Road & Margalla Avenue.
+                </p>
+              </div>
+
+              {/* Cross-Link Configs */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5 text-[#7b002c]" />
+                  <span>Interactive Inter-Page Block Links</span>
+                </h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Block A Link Text</label>
+                    <input
+                      type="text"
+                      value={primeCms.overview.blockALinkText}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          overview: { ...primeCms.overview, blockALinkText: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Block A URL Target</label>
+                    <input
+                      type="text"
+                      value={primeCms.overview.blockALinkHref}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          overview: { ...primeCms.overview, blockALinkHref: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Executive Block Link Text</label>
+                    <input
+                      type="text"
+                      value={primeCms.overview.executiveBlockLinkText}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          overview: { ...primeCms.overview, executiveBlockLinkText: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Executive Block URL Target</label>
+                    <input
+                      type="text"
+                      value={primeCms.overview.executiveBlockLinkHref}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          overview: { ...primeCms.overview, executiveBlockLinkHref: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Section Heading */}
+              <div className="pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-4 h-4 text-[#7b002c]" />
+                  <h4 className="text-sm font-bold text-slate-900 font-serif">
+                    Location & Accessibility Section
+                  </h4>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Location Section Heading
+                  </label>
+                  <input
+                    type="text"
+                    value={primeCms.location.heading}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, heading: e.target.value }
+                      })
+                    }
+                    placeholder="Faisal Hills Prime Block Location"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                  />
+                </div>
+              </div>
+
+              {/* Location Main Paragraph */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Location Main Paragraph <span className="text-emerald-600 font-normal">(Visible Text)</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={primeCms.location.mainParagraph}
+                  onChange={(e) =>
+                    setPrimeCms({
+                      ...primeCms,
+                      location: { ...primeCms.location, mainParagraph: e.target.value }
+                    })
+                  }
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                />
+              </div>
+
+              {/* Location Bullet Points */}
+              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Location Key Points <span className="text-[#7b002c] font-normal">(Bullet List)</span>
+                </label>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 1 (Adjoining Areas)</label>
+                  <input
+                    type="text"
+                    value={primeCms.location.bullet1}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, bullet1: e.target.value }
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 2 (Taxila Connectivity)</label>
+                  <input
+                    type="text"
+                    value={primeCms.location.bullet2}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, bullet2: e.target.value }
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 3 (Islamabad Side)</label>
+                  <input
+                    type="text"
+                    value={primeCms.location.bullet3}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, bullet3: e.target.value }
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 4 (Highway & Airport Links)</label>
+                  <input
+                    type="text"
+                    value={primeCms.location.bullet4}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, bullet4: e.target.value }
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Drive Times Note</label>
+                  <textarea
+                    rows={2}
+                    value={primeCms.location.driveTimesNote}
+                    onChange={(e) =>
+                      setPrimeCms({
+                        ...primeCms,
+                        location: { ...primeCms.location, driveTimesNote: e.target.value }
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Location Page Link Text</label>
+                    <input
+                      type="text"
+                      value={primeCms.location.locationPageLinkText}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          location: { ...primeCms.location, locationPageLinkText: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Location Page URL</label>
+                    <input
+                      type="text"
+                      value={primeCms.location.locationPageLinkHref}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          location: { ...primeCms.location, locationPageLinkHref: e.target.value }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Plan Section Editor */}
+              <div className="pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSign className="w-4 h-4 text-[#7b002c]" />
+                  <h4 className="text-sm font-bold text-slate-900 font-serif">
+                    Payment Plan Section Editor
+                  </h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Payment Plan Section Heading
+                    </label>
+                    <input
+                      type="text"
+                      value={primeCms.paymentPlanSection?.heading || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          paymentPlanSection: {
+                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
+                            heading: e.target.value
+                          }
+                        })
+                      }
+                      placeholder="Faisal Hills Prime Block Payment Plan"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Payment Plan Intro Paragraph
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={primeCms.paymentPlanSection?.intro || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          paymentPlanSection: {
+                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
+                            intro: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Why Different Prices Paragraph 1
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={primeCms.paymentPlanSection?.whyDifferentParagraph1 || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          paymentPlanSection: {
+                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
+                            whyDifferentParagraph1: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Facilities & Amenities Section Editor */}
+              <div className="pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Trees className="w-4 h-4 text-[#7b002c]" />
+                  <h4 className="text-sm font-bold text-slate-900 font-serif">
+                    Facilities & Amenities Section Editor
+                  </h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Section Heading
+                    </label>
+                    <input
+                      type="text"
+                      value={primeCms.facilitiesSection?.heading || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          facilitiesSection: {
+                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
+                            heading: e.target.value
+                          }
+                        })
+                      }
+                      placeholder="Facilities and Amenities in Prime Block"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Intro Paragraph
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={primeCms.facilitiesSection?.intro || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          facilitiesSection: {
+                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
+                            intro: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Construction & Planning Footer Note
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={primeCms.facilitiesSection?.footerNote || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          facilitiesSection: {
+                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
+                            footerNote: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Why Buyers Choose Section Editor */}
+              <div className="pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-[#7b002c]" />
+                  <h4 className="text-sm font-bold text-slate-900 font-serif">
+                    Why Buyers Choose & Considerations Section Editor
+                  </h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-1">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Badge Text
+                      </label>
+                      <input
+                        type="text"
+                        value={primeCms.whyChooseSection?.badge || ''}
+                        onChange={(e) =>
+                          setPrimeCms({
+                            ...primeCms,
+                            whyChooseSection: {
+                              ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
+                              badge: e.target.value
+                            }
+                          })
+                        }
+                        placeholder="WHY PRIME BLOCK"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Main Section Heading
+                      </label>
+                      <input
+                        type="text"
+                        value={primeCms.whyChooseSection?.heading || ''}
+                        onChange={(e) =>
+                          setPrimeCms({
+                            ...primeCms,
+                            whyChooseSection: {
+                              ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
+                              heading: e.target.value
+                            }
+                          })
+                        }
+                        placeholder="Why Buyers Choose Prime Block, and What to Weigh"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Advantages Heading
+                    </label>
+                    <input
+                      type="text"
+                      value={primeCms.whyChooseSection?.advantagesHeading || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          whyChooseSection: {
+                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
+                            advantagesHeading: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Considerations Heading
+                    </label>
+                    <input
+                      type="text"
+                      value={primeCms.whyChooseSection?.considerationsHeading || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          whyChooseSection: {
+                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
+                            considerationsHeading: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      Verifiable Information Policy Disclaimer
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={primeCms.whyChooseSection?.disclaimerNote || ''}
+                      onChange={(e) =>
+                        setPrimeCms({
+                          ...primeCms,
+                          whyChooseSection: {
+                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
+                            disclaimerNote: e.target.value
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Interactive Preview Box */}
+            <div className="lg:col-span-5">
+              <div className="sticky top-24 bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-white shadow-xl space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-amber-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Live Preview</span>
+                  </div>
+                  <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
+                    Real-time Render
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>Overview Preview</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.overview.heading || 'Faisal Hills Prime Block Overview'}
+                  </h4>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {primeCms.overview.visibleParagraph}
+                  </p>
+
+                  <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-400">
+                      <span>Expanded Content Preview:</span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {primeCms.overview.expandedParagraph1}{' '}
+                      <span className="text-amber-400 underline font-semibold">
+                        (→ {primeCms.overview.blockALinkText} page)
+                      </span>{' '}
+                      or the{' '}
+                      <span className="text-amber-400 underline font-semibold">
+                        (→ {primeCms.overview.executiveBlockLinkText} page)
+                      </span>.
+                    </p>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {primeCms.overview.expandedParagraph2}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Location Live Preview */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] font-semibold">
+                    <MapPin className="w-3 h-3 text-rose-400" />
+                    <span>Location Preview</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.location.heading || 'Faisal Hills Prime Block Location'}
+                  </h4>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {primeCms.location.mainParagraph}
+                  </p>
+
+                  <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2 text-xs text-slate-300">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-400">
+                      <span>Key Location Highlights:</span>
+                    </div>
+                    <ul className="list-disc pl-4 space-y-1 text-slate-300">
+                      <li>{primeCms.location.bullet1}</li>
+                      <li>{primeCms.location.bullet2}</li>
+                      <li>{primeCms.location.bullet3}</li>
+                      <li>{primeCms.location.bullet4}</li>
+                    </ul>
+                    <p className="text-slate-400 pt-1">
+                      {primeCms.location.driveTimesNote}{' '}
+                      <span className="text-rose-400 underline font-semibold">
+                        {primeCms.location.locationPageLinkText} (→ location page)
+                      </span>.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Facilities & Amenities Live Preview */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[11px] font-semibold">
+                    <Trees className="w-3 h-3 text-cyan-400" />
+                    <span>Facilities & Amenities (8 Cards)</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.facilitiesSection?.heading || 'Facilities and Amenities in Prime Block'}
+                  </h4>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {primeCms.facilitiesSection?.intro || initialPrimeBlockCMS.facilitiesSection?.intro}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                    {(primeCms.facilitiesSection?.cards || initialPrimeBlockCMS.facilitiesSection?.cards || []).map((card, i) => (
+                      <div key={i} className="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                        <span className="font-bold text-amber-400 block truncate">{card.label}</span>
+                        <span className="text-slate-300 line-clamp-2">{card.title}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[10px] text-amber-300 italic pt-1">
+                    {primeCms.facilitiesSection?.footerNote || initialPrimeBlockCMS.facilitiesSection?.footerNote}
+                  </p>
+                </div>
+
+                {/* Plot Sizes Live Preview */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold">
+                    <Layers className="w-3 h-3 text-indigo-400" />
+                    <span>Plot Sizes Table Preview</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.plotSizesSection?.heading || 'Plot Sizes in Prime Block'}
+                  </h4>
+
+                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
+                    <table className="w-full text-left text-slate-300">
+                      <thead className="bg-slate-800 text-slate-200">
+                        <tr>
+                          <th className="p-2">Dims</th>
+                          <th className="p-2">Sq Ft</th>
+                          <th className="p-2">Sq Yds</th>
+                          <th className="p-2">Listed As</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {(primeCms.plotSizesSection?.rows || initialPrimeBlockCMS.plotSizesSection?.rows || []).map((r, i) => (
+                          <tr key={i} className="hover:bg-slate-800/40">
+                            <td className="p-2 font-bold text-white">{cleanVerifyText(r.dimensions)}</td>
+                            <td className="p-2">{r.areaSqFt}</td>
+                            <td className="p-2">{r.areaSqYds}</td>
+                            <td className="p-2 text-rose-300">{cleanVerifyText(r.commonlyListed)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Payment Plan Live Preview */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
+                    <DollarSign className="w-3 h-3 text-emerald-400" />
+                    <span>Payment Plan Preview</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.paymentPlanSection?.heading || 'Faisal Hills Prime Block Payment Plan'}
+                  </h4>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {primeCms.paymentPlanSection?.intro || initialPrimeBlockCMS.paymentPlanSection?.intro}
+                  </p>
+
+                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
+                    <table className="w-full text-left text-slate-300">
+                      <thead className="bg-slate-800 text-slate-200">
+                        <tr>
+                          <th className="p-2">Size</th>
+                          <th className="p-2">Total</th>
+                          <th className="p-2">Down</th>
+                          <th className="p-2">Quarterly</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {(primeCms.paymentPlanSection?.tableRows || initialPrimeBlockCMS.paymentPlanSection?.tableRows || []).map((r, i) => (
+                          <tr key={i} className="hover:bg-slate-800/40">
+                            <td className="p-2 font-bold text-white">{cleanVerifyText(r.size)}</td>
+                            <td className="p-2 text-[#e25c80]">{cleanVerifyText(r.totalPrice)}</td>
+                            <td className="p-2">{cleanVerifyText(r.downPayment)}</td>
+                            <td className="p-2 text-emerald-400">{cleanVerifyText(r.quarterlyInstallment)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Why Buyers Choose & Considerations Live Preview */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] font-semibold">
+                    <Sparkles className="w-3 h-3 text-[#e25c80]" />
+                    <span>Why Choose & Considerations Preview</span>
+                  </span>
+
+                  <h4 className="text-base font-bold text-white font-serif">
+                    {primeCms.whyChooseSection?.heading || 'Why Buyers Choose Prime Block, and What to Weigh'}
+                  </h4>
+
+                  <div className="space-y-2">
+                    <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 space-y-1.5">
+                      <span className="text-[11px] font-bold text-emerald-400 block">
+                        {primeCms.whyChooseSection?.advantagesHeading || 'Why Buyers Choose Prime Block'} (5 Advantages)
+                      </span>
+                      <ul className="text-[10px] text-slate-300 space-y-1 list-disc pl-3.5">
+                        {(primeCms.whyChooseSection?.advantages || initialPrimeBlockCMS.whyChooseSection?.advantages || []).map((adv, idx) => (
+                          <li key={idx}><span className="font-semibold text-emerald-300">{adv.title}:</span> {adv.desc}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/60 space-y-1.5">
+                      <span className="text-[11px] font-bold text-amber-400 block">
+                        {primeCms.whyChooseSection?.considerationsHeading || 'If you are buying as an investment, weigh these first:'}
+                      </span>
+                      <ul className="text-[10px] text-slate-300 space-y-1 list-disc pl-3.5">
+                        {(primeCms.whyChooseSection?.considerations || initialPrimeBlockCMS.whyChooseSection?.considerations || []).map((con, idx) => (
+                          <li key={idx}><span className="font-semibold text-amber-300">{con.title}:</span> {con.desc}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <p className="text-[10px] text-slate-400 italic">
+                      Policy: {primeCms.whyChooseSection?.disclaimerNote || initialPrimeBlockCMS.whyChooseSection?.disclaimerNote}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>{isSaving ? 'Saving Changes...' : 'Save & Publish Prime CMS'}</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

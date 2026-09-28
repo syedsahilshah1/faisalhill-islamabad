@@ -821,7 +821,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   </div>
                 </div>
               </div>
-            ))}
+            ))} 
           </div>
 
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs sm:text-sm text-slate-700 leading-relaxed">

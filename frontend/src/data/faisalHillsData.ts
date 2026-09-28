@@ -25,6 +25,7 @@ export interface BlockInfo {
 }
 
 export interface PlotItem {
+  title?: string;
   id: string;
   plotNumber?: string;
   blockSlug: string;
@@ -1609,32 +1610,72 @@ export async function safeFetch(url: string, init?: RequestInit, timeoutMs = 250
 
 let _cachedBlocks: BlockInfo[] = [];
 
+function applyLocalBlockOverrides(blocks: BlockInfo[]): BlockInfo[] {
+  if (typeof window === 'undefined') return blocks;
+  try {
+    const raw = localStorage.getItem('faisal_blocks_custom_v1');
+    if (!raw) return blocks;
+    const customMap: Record<string, Partial<BlockInfo>> = JSON.parse(raw);
+    return blocks.map(b => {
+      const override = customMap[b.slug] || (b.id ? customMap[b.id] : undefined);
+      return override ? { ...b, ...override } : b;
+    });
+  } catch {
+    return blocks;
+  }
+}
+
 export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
   if (!forceRefresh && _cachedBlocks.length > 0) {
-    return _cachedBlocks;
+    return applyLocalBlockOverrides(_cachedBlocks);
   }
   try {
     const res = await safeFetch(`${getApiUrl()}/blocks`, { next: { revalidate: 300 } });
-    if (!res || !res.ok) return blocksData;
+    if (!res || !res.ok) {
+      _cachedBlocks = blocksData;
+      return applyLocalBlockOverrides(blocksData);
+    }
     const data = await res.json();
     _cachedBlocks = data.map(mapBlockToCamel);
-    return _cachedBlocks;
+    return applyLocalBlockOverrides(_cachedBlocks);
   } catch (e) {
-    return blocksData; // fallback
+    _cachedBlocks = blocksData;
+    return applyLocalBlockOverrides(blocksData); // fallback
   }
 }
 
 export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
+  let baseBlock: BlockInfo | null = null;
   try {
     const res = await safeFetch(`${getApiUrl()}/blocks/${slug}`, { next: { revalidate: 300 } });
-    if (!res || !res.ok) {
-      return blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null;
+    if (res && res.ok) {
+      const data = await res.json();
+      baseBlock = mapBlockToCamel(data);
     }
-    const data = await res.json();
-    return mapBlockToCamel(data);
   } catch (e) {
-    return blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null; // fallback
+    baseBlock = null;
   }
+
+  if (!baseBlock) {
+    baseBlock = blocksData.find(b => b.slug === slug || b.id === slug || (slug === 'faisal-jewel-islamabad' && (b.id === 'faisal-jewels' || b.slug === 'faisal-jewels'))) || null;
+  }
+
+  if (!baseBlock) return null;
+
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem('faisal_blocks_custom_v1');
+      if (raw) {
+        const customMap: Record<string, Partial<BlockInfo>> = JSON.parse(raw);
+        const override = customMap[baseBlock.slug] || (baseBlock.id ? customMap[baseBlock.id] : undefined);
+        if (override) {
+          return { ...baseBlock, ...override };
+        }
+      }
+    } catch {}
+  }
+
+  return baseBlock;
 }
 
 let _cachedPlots: PlotItem[] = [];
@@ -4509,6 +4550,405 @@ export async function saveBlocksPageCMS(cmsData: BlocksPageCMSData, token?: stri
 
   try {
     const res = await safeFetch(`${getApiUrl()}/settings/faisal_blocks_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export interface PrimeBlockCMSData {
+  overview: {
+    heading: string;
+    visibleParagraph: string;
+    expandedParagraph1: string;
+    expandedParagraph2: string;
+    blockALinkText: string;
+    blockALinkHref: string;
+    executiveBlockLinkText: string;
+    executiveBlockLinkHref: string;
+    locationLinkText?: string;
+    locationLinkHref?: string;
+  };
+  location: {
+    heading: string;
+    mainParagraph: string;
+    bullet1: string;
+    bullet2: string;
+    bullet3: string;
+    bullet4: string;
+    driveTimesNote: string;
+    locationPageLinkText: string;
+    locationPageLinkHref: string;
+  };
+  plotSizesSection?: {
+    heading: string;
+    subline?: string;
+    marlaNote?: string;
+    rows: Array<{
+      dimensions: string;
+      areaSqFt: string;
+      areaSqYds: string;
+      commonlyListed: string;
+    }>;
+  };
+  paymentPlanSection?: {
+    heading: string;
+    intro: string;
+    tableRows: Array<{
+      size: string;
+      totalPrice: string;
+      downPayment: string;
+      quarterlyInstallment: string;
+      lumpSumPrice: string;
+    }>;
+    termNote: string;
+    extraChargesTitle: string;
+    extraCharges: Array<{
+      label: string;
+      desc: string;
+    }>;
+    whyDifferentHeading: string;
+    whyDifferentParagraph1: string;
+    whyDifferentParagraph2: string;
+    paymentPlanLinkText: string;
+    paymentPlanLinkHref: string;
+  };
+  facilitiesSection?: {
+    heading: string;
+    intro: string;
+    footerNote: string;
+    cards: Array<{
+      id: number;
+      label: string;
+      title: string;
+      image?: string;
+      desc?: string;
+    }>;
+  };
+  whyChooseSection?: {
+    badge: string;
+    heading: string;
+    advantagesHeading: string;
+    advantages: Array<{
+      title: string;
+      desc: string;
+    }>;
+    considerationsHeading: string;
+    considerations: Array<{
+      title: string;
+      desc: string;
+    }>;
+    disclaimerNote: string;
+  };
+}
+
+export const initialPrimeBlockCMS: PrimeBlockCMSData = {
+  overview: {
+    heading: 'Faisal Hills Prime Block Overview',
+    visibleParagraph: "Prime Block sits at the front of Faisal Hills, planned along the 225 ft main boulevard that runs from the society's GT Road entrance. Its western side adjoins Block A and the Executive Block, so the society's established commercial area, school and mosque are already next door.",
+    expandedParagraph1: "The block is planned with carpeted roads, underground utilities, parks, a mosque and its own commercial areas. Because development is still in progress, it suits buyers who want to enter Faisal Hills on an instalment plan and build later, rather than families who need to start construction now.",
+    expandedParagraph2: "Although it is marketed as Faisal Hills Prime Block Islamabad, the society lies in Rawalpindi District near Taxila, with Islamabad reached via the GT Road and Margalla Avenue.",
+    blockALinkText: 'Block A',
+    blockALinkHref: '/blocks/block-a',
+    executiveBlockLinkText: 'Executive Block',
+    executiveBlockLinkHref: '/blocks/executive-block',
+    locationLinkText: 'Faisal Hills location',
+    locationLinkHref: '/faisal-hills-location'
+  },
+  location: {
+    heading: 'Faisal Hills Prime Block Location',
+    mainParagraph: "Prime Block is reached through the society's main gate on the Main GT Road (N-5) near Taxila. From the gate, the 225 ft boulevard leads into the block; internal main roads within it are reported at 100 ft. Every Faisal Hills block shares the same GT Road entrance, so Prime Block has the same connectivity as the established blocks.",
+    bullet1: 'Block A, the Executive Block and the Faisal Jewel development, immediately adjoining',
+    bullet2: 'Taxila Chowk and Taxila city on the GT Road',
+    bullet3: 'Sector B-17 (Multi Gardens) and Faisal Margalla City on the Islamabad side',
+    bullet4: 'Margalla Avenue, the M-1 Motorway corridor and New Islamabad International Airport',
+    driveTimesNote: 'Drive times quoted online vary widely, so we publish only times our team has measured, with the date and time of day. Full directions are on our',
+    locationPageLinkText: 'Faisal Hills location',
+    locationPageLinkHref: '/faisal-hills-location'
+  },
+  plotSizesSection: {
+    heading: 'Plot Sizes in Prime Block',
+    subline: 'Official plot dimensions, square footage, square yard calculations, and commonly listed market classifications:',
+    rows: [
+      { dimensions: '25 × 50', areaSqFt: '1,250', areaSqYds: '139', commonlyListed: '5 Marla (also written 5.55 Marla)' },
+      { dimensions: '30 × 60', areaSqFt: '1,800', areaSqYds: '200', commonlyListed: '8 Marla' },
+      { dimensions: '35 × 70', areaSqFt: '2,450', areaSqYds: '272', commonlyListed: '10 Marla (also written 10.89 Marla)' },
+      { dimensions: '40 × 80', areaSqFt: '3,200', areaSqYds: '356', commonlyListed: '14 Marla' },
+      { dimensions: '50 × 90', areaSqFt: '4,500', areaSqYds: '500', commonlyListed: '1 Kanal' },
+      { dimensions: '2 Kanal', areaSqFt: '—', areaSqYds: '—', commonlyListed: 'Listed by some sources only' }
+    ],
+    marlaNote: ""
+  },
+  paymentPlanSection: {
+    heading: 'Faisal Hills Prime Block Payment Plan',
+    intro: 'Prime Block is offered on a down payment followed by quarterly instalments, with a discount for payment in full. The schedule below is the one currently issued by the developer.',
+    tableRows: [
+      { size: '5 Marla (25 × 50)', totalPrice: 'PKR 32,50,000', downPayment: 'PKR 6,50,000 (20%)', quarterlyInstallment: 'PKR 1,45,000 × 16 Qtrs', lumpSumPrice: 'PKR 29,25,000' },
+      { size: '8 Marla (30 × 60)', totalPrice: 'PKR 48,00,000', downPayment: 'PKR 9,60,000 (20%)', quarterlyInstallment: 'PKR 2,15,000 × 16 Qtrs', lumpSumPrice: 'PKR 43,20,000' },
+      { size: '10 Marla (35 × 70)', totalPrice: 'PKR 58,50,000', downPayment: 'PKR 11,70,000 (20%)', quarterlyInstallment: 'PKR 2,65,000 × 16 Qtrs', lumpSumPrice: 'PKR 52,65,000' },
+      { size: '14 Marla (40 × 80)', totalPrice: 'PKR 76,50,000', downPayment: 'PKR 15,30,000 (20%)', quarterlyInstallment: 'PKR 3,45,000 × 16 Qtrs', lumpSumPrice: 'PKR 68,85,000' },
+      { size: '1 Kanal (50 × 90)', totalPrice: 'PKR 99,00,000', downPayment: 'PKR 19,80,000 (20%)', quarterlyInstallment: 'PKR 4,50,000 × 16 Qtrs', lumpSumPrice: 'PKR 89,10,000' }
+    ],
+    termNote: 'Plan as issued. Number of instalments and term: 16 quarterly instalments over 48 months (4 years). Prices are set by the developer and can change without notice.',
+    extraChargesTitle: 'What you pay besides the plot price',
+    extraCharges: [
+      { label: 'Registration fee', desc: 'payable at booking, non-refundable.' },
+      { label: 'Development charges', desc: 'sources disagree on whether these are included in the plot price or billed separately. Confirm before booking.' },
+      { label: 'Possession charges', desc: 'payable at handover.' },
+      { label: 'Position premiums', desc: 'corner, main-road, park-facing and boulevard-facing plots are priced above standard plots.' },
+      { label: 'Transfer fee', desc: 'applies when a plot or file changes hands later.' }
+    ],
+    whyDifferentHeading: 'Why you will see different Prime Block prices online',
+    whyDifferentParagraph1: 'The block has been quoted under more than one schedule since launch, and older pages stay online without dates. Plans quoted publicly have included an 18-month plan in 2024, a 3.5-year plan of 14 quarterly instalments at launch in December 2025, a shorter plan of 10 quarterly instalments during 2026, and a 48-month plan of 16 quarterly instalments. One developer-linked page has also described the block as cash payment only.',
+    whyDifferentParagraph2: 'Only the schedule the developer issues for the current month applies to a new booking. If a price looks unusually low, check which plan it came from and when it was published. Our',
+    paymentPlanLinkText: 'Faisal Hills payment plan',
+    paymentPlanLinkHref: '/faisal-hills-payment-plan'
+  },
+  facilitiesSection: {
+    heading: 'Facilities and Amenities in Prime Block',
+    intro: "Prime Block is planned to the same infrastructure standard as the rest of Faisal Hills. These facilities are part of the block's layout and are being developed with it:",
+    footerNote: 'In a block still under construction these are planned rather than built, so we describe them as planned and update this page after each site visit.',
+    cards: [
+      {
+        id: 1,
+        label: '225 FT BOULEVARD',
+        title: 'Wide carpeted roads and main boulevard',
+        image: '/images/faisal-hills-drone-view.webp',
+        desc: 'Wide 225ft and 150ft carpeted road networks with modern streetscaping, LED lighting and green dividers.'
+      },
+      {
+        id: 2,
+        label: 'MARGALLA VIEWS',
+        title: 'Margalla Hills backdrop',
+        image: '/images/faisal-hills-aerial-panoramic.webp',
+        desc: 'Breathtaking high-elevation vistas over the Margalla Hills and serene natural green topography.'
+      },
+      {
+        id: 3,
+        label: 'FAMILY PARKS',
+        title: 'Community parks and green belts',
+        image: '/images/faisal-hills-glow-park.webp',
+        desc: 'Dedicated family park spaces with jogging tracks, children play zones, and manicured landscaping.'
+      },
+      {
+        id: 4,
+        label: 'COMMERCIAL AREAS',
+        title: 'Commercial plots and daily-needs market',
+        image: '/images/faisal-jewel-building.webp',
+        desc: 'Ground+5 commercial plots positioned along main intersections, ideal for supermarkets and brand outlets.'
+      },
+      {
+        id: 5,
+        label: 'SPORTS & WELLNESS',
+        title: 'Sports ground and walking tracks',
+        image: '/images/hills-walk-commercial-aerial.webp',
+        desc: 'Dedicated sports facilities for youth, outdoor workout fitness gyms, and badminton courts.'
+      },
+      {
+        id: 6,
+        label: 'GATED SECURITY',
+        title: 'Gated community with 24/7 security',
+        image: '/images/faisal-hills-arc-gate.webp',
+        desc: 'Round-the-clock security checkpoints, motorized patrolling units, and full perimeter boundary walls.'
+      },
+      {
+        id: 7,
+        label: 'EDUCATION',
+        title: 'School sites within the block and nearby campuses',
+        image: '/images/roots-international-school-faisal-hills.webp',
+        desc: 'Allocated institutional plots for recognized school networks and international curriculum academies.'
+      },
+      {
+        id: 8,
+        label: 'MOSQUE',
+        title: "Block mosque and the society's Grand Jamia Mosque",
+        image: '/images/faisal-hills-arc-gate.webp',
+        desc: 'Architecturally stunning air-conditioned Jamia Mosque with spacious ablution areas and Islamic center.'
+      }
+    ]
+  },
+  whyChooseSection: {
+    badge: 'WHY PRIME BLOCK',
+    heading: 'Why Buyers Choose Prime Block, and What to Weigh',
+    advantagesHeading: 'Why Buyers Choose Prime Block',
+    advantages: [
+      {
+        title: 'Lower entry price',
+        desc: 'As the newest block, Prime Block is priced below the developed blocks for equivalent sizes.'
+      },
+      {
+        title: 'Instalment plan',
+        desc: 'A down payment followed by quarterly instalments, rather than full payment.'
+      },
+      {
+        title: 'Position at the front of the society',
+        desc: 'Planned on the main boulevard beside the established Block A.'
+      },
+      {
+        title: 'Margalla Hills backdrop',
+        desc: 'Open views and a quieter setting at the foothills.'
+      },
+      {
+        title: 'Part of an RDA-approved scheme',
+        desc: 'Prime Block falls within the Faisal Hills master plan covered by the RDA NOC.'
+      }
+    ],
+    considerationsHeading: 'If you are buying as an investment, weigh these first:',
+    considerations: [
+      {
+        title: 'Development timeline',
+        desc: 'When you can start building depends on work that is not finished.'
+      },
+      {
+        title: 'Terms have changed before',
+        desc: 'The instalment count and prices have been revised since launch, so a plan quoted to you may not be the current one.'
+      },
+      {
+        title: 'Resale is thinner here',
+        desc: 'Resale is thinner here than in the developed blocks.'
+      },
+      {
+        title: 'Position premiums & charges',
+        desc: 'Position premiums and possession charges add to the headline price.'
+      },
+      {
+        title: 'Possession claims conflict',
+        desc: 'Possession claims conflict across published sources, so get yours in writing.'
+      }
+    ],
+    disclaimerNote: 'We do not publish expected returns or appreciation figures for Prime Block, because no verifiable source supports them.'
+  }
+};
+
+export function cleanVerifyText(text?: string): string {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/\[\s*VERIFY[^\]]*\]/gi, '').replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.').trim();
+}
+
+export function mergePrimeBlockCMS(incoming: any): PrimeBlockCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialPrimeBlockCMS;
+  const incLoc = incoming.location || {};
+  const incPlot = incoming.plotSizesSection || {};
+  const incPay = incoming.paymentPlanSection || {};
+  const incFac = incoming.facilitiesSection || {};
+  const incWhy = incoming.whyChooseSection || {};
+
+  return {
+    overview: {
+      ...initialPrimeBlockCMS.overview,
+      ...(incoming.overview || {})
+    },
+    location: {
+      ...initialPrimeBlockCMS.location,
+      ...incLoc,
+      heading: cleanVerifyText(incLoc.heading || initialPrimeBlockCMS.location.heading),
+      mainParagraph: cleanVerifyText(incLoc.mainParagraph || initialPrimeBlockCMS.location.mainParagraph),
+      bullet1: cleanVerifyText(incLoc.bullet1 || initialPrimeBlockCMS.location.bullet1),
+      bullet2: cleanVerifyText(incLoc.bullet2 || initialPrimeBlockCMS.location.bullet2),
+      bullet3: cleanVerifyText(incLoc.bullet3 || initialPrimeBlockCMS.location.bullet3),
+      bullet4: cleanVerifyText(incLoc.bullet4 || initialPrimeBlockCMS.location.bullet4),
+      driveTimesNote: cleanVerifyText(incLoc.driveTimesNote || initialPrimeBlockCMS.location.driveTimesNote)
+    },
+    plotSizesSection: {
+      ...initialPrimeBlockCMS.plotSizesSection!,
+      ...incPlot,
+      heading: cleanVerifyText(incPlot.heading || initialPrimeBlockCMS.plotSizesSection?.heading),
+      rows: (incPlot.rows || initialPrimeBlockCMS.plotSizesSection?.rows || []).map((r: any) => ({
+        dimensions: cleanVerifyText(r.dimensions),
+        areaSqFt: r.areaSqFt,
+        areaSqYds: r.areaSqYds,
+        commonlyListed: cleanVerifyText(r.commonlyListed)
+      }))
+    },
+    paymentPlanSection: {
+      ...initialPrimeBlockCMS.paymentPlanSection!,
+      ...incPay,
+      heading: cleanVerifyText(incPay.heading || initialPrimeBlockCMS.paymentPlanSection?.heading),
+      intro: cleanVerifyText(incPay.intro || initialPrimeBlockCMS.paymentPlanSection?.intro),
+      tableRows: (incPay.tableRows || initialPrimeBlockCMS.paymentPlanSection?.tableRows || []).map((r: any) => ({
+        size: cleanVerifyText(r.size),
+        totalPrice: cleanVerifyText(r.totalPrice),
+        downPayment: cleanVerifyText(r.downPayment),
+        quarterlyInstallment: cleanVerifyText(r.quarterlyInstallment),
+        lumpSumPrice: cleanVerifyText(r.lumpSumPrice)
+      })),
+      termNote: cleanVerifyText(incPay.termNote || initialPrimeBlockCMS.paymentPlanSection?.termNote),
+      extraChargesTitle: cleanVerifyText(incPay.extraChargesTitle || initialPrimeBlockCMS.paymentPlanSection?.extraChargesTitle),
+      extraCharges: (incPay.extraCharges || initialPrimeBlockCMS.paymentPlanSection?.extraCharges || []).map((c: any) => ({
+        label: cleanVerifyText(c.label),
+        desc: cleanVerifyText(c.desc)
+      })),
+      whyDifferentHeading: cleanVerifyText(incPay.whyDifferentHeading || initialPrimeBlockCMS.paymentPlanSection?.whyDifferentHeading),
+      whyDifferentParagraph1: cleanVerifyText(incPay.whyDifferentParagraph1 || initialPrimeBlockCMS.paymentPlanSection?.whyDifferentParagraph1),
+      whyDifferentParagraph2: cleanVerifyText(incPay.whyDifferentParagraph2 || initialPrimeBlockCMS.paymentPlanSection?.whyDifferentParagraph2),
+      paymentPlanLinkText: cleanVerifyText(incPay.paymentPlanLinkText || initialPrimeBlockCMS.paymentPlanSection?.paymentPlanLinkText),
+      paymentPlanLinkHref: incPay.paymentPlanLinkHref || initialPrimeBlockCMS.paymentPlanSection?.paymentPlanLinkHref
+    },
+    facilitiesSection: {
+      ...initialPrimeBlockCMS.facilitiesSection!,
+      ...incFac,
+      heading: cleanVerifyText(incFac.heading || initialPrimeBlockCMS.facilitiesSection?.heading),
+      intro: cleanVerifyText(incFac.intro || initialPrimeBlockCMS.facilitiesSection?.intro),
+      footerNote: cleanVerifyText(incFac.footerNote || initialPrimeBlockCMS.facilitiesSection?.footerNote),
+      cards: (incFac.cards || initialPrimeBlockCMS.facilitiesSection?.cards || []).map((c: any) => ({
+        id: c.id,
+        label: cleanVerifyText(c.label),
+        title: cleanVerifyText(c.title),
+        image: c.image || '',
+        desc: cleanVerifyText(c.desc)
+      }))
+    },
+    whyChooseSection: {
+      ...initialPrimeBlockCMS.whyChooseSection!,
+      ...incWhy,
+      badge: cleanVerifyText(incWhy.badge || initialPrimeBlockCMS.whyChooseSection?.badge),
+      heading: cleanVerifyText(incWhy.heading || initialPrimeBlockCMS.whyChooseSection?.heading),
+      advantagesHeading: cleanVerifyText(incWhy.advantagesHeading || initialPrimeBlockCMS.whyChooseSection?.advantagesHeading),
+      advantages: (incWhy.advantages || initialPrimeBlockCMS.whyChooseSection?.advantages || []).map((a: any) => ({
+        title: cleanVerifyText(a.title),
+        desc: cleanVerifyText(a.desc)
+      })),
+      considerationsHeading: cleanVerifyText(incWhy.considerationsHeading || initialPrimeBlockCMS.whyChooseSection?.considerationsHeading),
+      considerations: (incWhy.considerations || initialPrimeBlockCMS.whyChooseSection?.considerations || []).map((c: any) => ({
+        title: cleanVerifyText(c.title),
+        desc: cleanVerifyText(c.desc)
+      })),
+      disclaimerNote: cleanVerifyText(incWhy.disclaimerNote || initialPrimeBlockCMS.whyChooseSection?.disclaimerNote)
+    }
+  };
+}
+
+export async function fetchPrimeBlockCMS(): Promise<PrimeBlockCMSData> {
+  const remote = await fetchSettingByKey<PrimeBlockCMSData>('faisal_prime_block_cms');
+  if (remote) return mergePrimeBlockCMS(remote);
+
+  if (typeof window !== 'undefined') {
+    try {
+      const local = localStorage.getItem('faisal_prime_block_cms');
+      if (local) return mergePrimeBlockCMS(JSON.parse(local));
+    } catch {}
+  }
+  return initialPrimeBlockCMS;
+}
+
+export async function savePrimeBlockCMS(cmsData: PrimeBlockCMSData, token?: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_prime_block_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_prime_block_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_prime_block_cms`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

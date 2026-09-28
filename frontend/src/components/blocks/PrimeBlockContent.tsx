@@ -6,7 +6,12 @@ import {
   PlotItem,
   plotInventoryData,
   fetchPlots,
-  formatPlotPrice
+  formatPlotPrice,
+  PrimeBlockCMSData,
+  initialPrimeBlockCMS,
+  fetchPrimeBlockCMS,
+  mergePrimeBlockCMS,
+  cleanVerifyText
 } from '@/data/faisalHillsData';
 import {
   ShieldCheck,
@@ -42,7 +47,9 @@ import {
   Home,
   Tag,
   Filter,
-  DollarSign
+  DollarSign,
+  Scale,
+  Info
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import PaymentPlanModal from '@/components/ui/PaymentPlanModal';
@@ -130,65 +137,73 @@ const primeFixedPriceSchedule: PrimePriceRow[] = [
 const primeGalleryItems = [
   {
     id: 1,
-    title: 'Prime Block Grand Boulevards & Wide Paved Roads',
+    label: '225 FT BOULEVARD',
+    tag: '225 FT BOULEVARD',
+    title: 'Wide carpeted roads and main boulevard',
     category: 'infrastructure',
-    tag: '225ft Main Boulevard',
     image: '/images/faisal-hills-drone-view.webp',
     desc: 'Wide 225ft and 150ft carpeted road networks with modern streetscaping, LED lighting and green dividers.'
   },
   {
     id: 2,
-    title: 'Scenic Margalla Ridge Panoramic Crest Enclave',
+    label: 'MARGALLA VIEWS',
+    tag: 'MARGALLA VIEWS',
+    title: 'Margalla Hills backdrop',
     category: 'nature',
-    tag: 'Margalla Views',
     image: '/images/faisal-hills-aerial-panoramic.webp',
     desc: 'Breathtaking high-elevation vistas over the Margalla Hills and serene natural green topography.'
   },
   {
     id: 3,
-    title: 'Prime Block Community Park & Family Greens',
+    label: 'FAMILY PARKS',
+    tag: 'FAMILY PARKS',
+    title: 'Community parks and green belts',
     category: 'infrastructure',
-    tag: 'Family Parks',
     image: '/images/faisal-hills-glow-park.webp',
     desc: 'Dedicated family park spaces with jogging tracks, children play zones, and manicured landscaping.'
   },
   {
     id: 4,
-    title: 'Commercial Plazas & High-End Retail Hubs',
+    label: 'COMMERCIAL AREAS',
+    tag: 'COMMERCIAL AREAS',
+    title: 'Commercial plots and daily-needs market',
     category: 'infrastructure',
-    tag: 'Commercial Plazas',
     image: '/images/faisal-jewel-building.webp',
     desc: 'Ground+5 commercial plots positioned along main intersections, ideal for supermarkets and brand outlets.'
   },
   {
     id: 5,
-    title: 'Sports Grounds, Futsal Turf & Fitness Greens',
+    label: 'SPORTS & WELLNESS',
+    tag: 'SPORTS & WELLNESS',
+    title: 'Sports ground and walking tracks',
     category: 'infrastructure',
-    tag: 'Sports & Wellness',
     image: '/images/hills-walk-commercial-aerial.webp',
     desc: 'Dedicated sports facilities for youth, outdoor workout fitness gyms, and badminton courts.'
   },
   {
     id: 6,
-    title: '24/7 Gated Security & Smart Surveillance Grid',
+    label: 'GATED SECURITY',
+    tag: 'GATED SECURITY',
+    title: 'Gated community with 24/7 security',
     category: 'infrastructure',
-    tag: 'Safe Society',
     image: '/images/faisal-hills-arc-gate.webp',
     desc: 'Round-the-clock security checkpoints, motorized patrolling units, and full perimeter boundary walls.'
   },
   {
     id: 7,
-    title: 'Modern Educational Campuses & Schooling Zone',
+    label: 'EDUCATION',
+    tag: 'EDUCATION',
+    title: 'School sites within the block and nearby campuses',
     category: 'infrastructure',
-    tag: 'Education Hub',
     image: '/images/roots-international-school-faisal-hills.webp',
     desc: 'Allocated institutional plots for recognized school networks and international curriculum academies.'
   },
   {
     id: 8,
-    title: 'Grand Jamia Mosque & Neighborhood Prayer Halls',
+    label: 'MOSQUE',
+    tag: 'MOSQUE',
+    title: "Block mosque and the society's Grand Jamia Mosque",
     category: 'infrastructure',
-    tag: 'Jamia Mosque',
     image: '/images/faisal-hills-arc-gate.webp',
     desc: 'Architecturally stunning air-conditioned Jamia Mosque with spacious ablution areas and Islamic center.'
   }
@@ -232,122 +247,162 @@ const defaultPrimeSellingPlots = [
   {
     id: 'prime-plot-5m-1',
     plotNumber: 'PR-142',
+    title: '5 Marla Residential Plot',
     blockName: 'Prime Block',
     category: 'Residential',
     size: '5 Marla',
     dimensions: '25 × 50',
-    facing: 'Park Facing',
-    priceFormatted: 'PKR 34.5 Lac',
-    downPayment: 'PKR 6,90,000 (20%)',
+    facing: 'Park facing',
+    priceFormatted: 'PKR 32.5 Lac',
+    downPayment: 'PKR 6,50,000',
     status: 'Available',
-    badge: 'Near Park',
+    badge: 'Park Facing',
     image: '/images/faisal-hills-drone-view.webp',
-    features: ['Direct Walking Distance to Park', '100% Level Ground', '4-Year Installments']
+    features: ['Park Facing', 'Level Plot']
   },
   {
     id: 'prime-plot-8m-1',
     plotNumber: 'PR-218',
+    title: '8 Marla Residential Plot',
     blockName: 'Prime Block',
     category: 'Residential',
     size: '8 Marla',
     dimensions: '30 × 60',
-    facing: 'Main Boulevard 225ft',
-    priceFormatted: 'PKR 51.0 Lac',
-    downPayment: 'PKR 10,20,000 (20%)',
-    status: 'Hot Deal',
-    badge: 'Boulevard Front',
+    facing: 'Boulevard facing',
+    priceFormatted: 'PKR 48.0 Lac',
+    downPayment: 'PKR 9,60,000',
+    status: 'Available',
+    badge: '225 ft Boulevard',
     image: '/images/faisal-hills-aerial-panoramic.webp',
-    features: ['Wide 225ft Road Access', 'High Elevation Ridge View', 'Commercial Walkability']
+    features: ['225 ft Boulevard', 'Level Plot']
   },
   {
     id: 'prime-plot-10m-1',
     plotNumber: 'PR-305',
+    title: '10 Marla Residential Plot',
     blockName: 'Prime Block',
     category: 'Residential',
     size: '10 Marla',
     dimensions: '35 × 70',
-    facing: 'Corner + Green Belt',
-    priceFormatted: 'PKR 62.0 Lac',
-    downPayment: 'PKR 12,40,000 (20%)',
-    status: 'Ready to Book',
+    facing: 'Corner',
+    priceFormatted: 'PKR 58.5 Lac',
+    downPayment: 'PKR 11,70,000',
+    status: 'Available',
     badge: 'Corner Plot',
     image: '/images/faisal-hills-glow-park.webp',
-    features: ['Double Corner Extra Land', 'Lush Green Belt View', 'Instant Allotment File']
+    features: ['Corner Plot', 'Level Plot']
+  },
+  {
+    id: 'prime-plot-14m-1',
+    plotNumber: '',
+    title: '14 Marla Residential Plot',
+    blockName: 'Prime Block',
+    category: 'Residential',
+    size: '14 Marla',
+    dimensions: '40 × 80',
+    facing: 'Boulevard facing',
+    priceFormatted: 'PKR 76.5 Lac',
+    downPayment: 'PKR 15,30,000',
+    status: 'Available',
+    badge: '225 ft Boulevard',
+    image: '/images/faisal-hills-drone-view.webp',
+    features: ['225 ft Boulevard', 'Level Plot']
   },
   {
     id: 'prime-plot-1k-1',
     plotNumber: 'PR-450',
+    title: '1 Kanal Residential Plot',
     blockName: 'Prime Block',
     category: 'Residential',
     size: '1 Kanal',
     dimensions: '50 × 90',
-    facing: 'Margalla Hill View',
-    priceFormatted: 'PKR 1.05 Crore',
-    downPayment: 'PKR 21,00,000 (20%)',
-    status: 'Signature Plot',
-    badge: 'VIP Ridge',
+    facing: 'Park facing',
+    priceFormatted: 'PKR 99.0 Lac',
+    downPayment: 'PKR 19,80,000',
+    status: 'Available',
+    badge: 'Park Facing',
     image: '/images/faisal-hills-arc-gate.webp',
-    features: ['Top-Tier Margalla Panorama', 'Private Cul-de-Sac Street', 'Gated VIP Security']
+    features: ['Park Facing', 'Level Plot']
+  },
+  {
+    id: 'prime-plot-5m-standard',
+    plotNumber: '',
+    title: '5 Marla Residential Plot',
+    blockName: 'Prime Block',
+    category: 'Residential',
+    size: '5 Marla',
+    dimensions: '25 × 50',
+    facing: 'Standard',
+    priceFormatted: 'PKR 32.5 Lac',
+    downPayment: 'PKR 6,50,000',
+    status: 'Available',
+    badge: 'Level Plot',
+    image: '/images/faisal-hills-glow-garden.webp',
+    features: ['Level Plot']
   },
   {
     id: 'prime-plot-com-1',
     plotNumber: 'PR-COM-08',
+    title: '4 Marla Commercial Plot',
     blockName: 'Prime Block',
     category: 'Commercial',
-    size: '4 Marla Plaza',
+    size: '4 Marla',
     dimensions: '30 × 30',
-    facing: 'Main Boulevard',
+    facing: 'Boulevard facing',
     priceFormatted: 'PKR 1.95 Crore',
-    downPayment: 'PKR 39,00,000 (20%)',
-    status: 'High ROI',
-    badge: 'Commercial Hub',
-    image: '/images/faisal-jewel-building.webp',
-    features: ['Ground + 5 Commercial Height', '225ft Road Frontage', 'High Rental Footfall']
+    downPayment: 'PKR 39,00,000',
+    status: 'Available',
+    badge: '225 ft Boulevard',
+    image: '/images/faisal-hills-development-site.webp',
+    features: ['225 ft Boulevard', 'Level Plot']
   },
   {
     id: 'prime-plot-com-2',
     plotNumber: 'PR-COM-15',
+    title: '5.33 Marla Commercial Plot',
     blockName: 'Prime Block',
     category: 'Commercial',
-    size: '5.33 Marla Plaza',
+    size: '5.33 Marla',
     dimensions: '40 × 30',
-    facing: 'Civic Center',
+    facing: 'Corner',
     priceFormatted: 'PKR 2.65 Crore',
-    downPayment: 'PKR 53,00,000 (20%)',
-    status: 'Prime Frontage',
-    badge: 'Civic Core',
-    image: '/images/faisal-hills-drone-view.webp',
-    features: ['Central Civic Market Position', 'Dedicated Customer Parking', 'Ideal for Bank / Brand']
+    downPayment: 'PKR 53,00,000',
+    status: 'Available',
+    badge: 'Corner Plot',
+    image: '/images/faisal-hills-main-gate-gt-road.webp',
+    features: ['Corner Plot', '225 ft Boulevard']
   },
   {
     id: 'prime-plot-com-3',
-    plotNumber: 'PR-COM-24',
+    plotNumber: '',
+    title: '6 Marla Commercial Plot',
     blockName: 'Prime Block',
     category: 'Commercial',
-    size: '6 Marla Corner',
+    size: '6 Marla',
     dimensions: '35 × 40',
-    facing: 'Main Boulevard Corner',
+    facing: 'Boulevard facing',
     priceFormatted: 'PKR 3.10 Crore',
-    downPayment: 'PKR 62,00,000 (20%)',
-    status: 'Corner Plot',
-    badge: 'Double Corner',
-    image: '/images/faisal-hills-site-header.webp',
-    features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
+    downPayment: 'PKR 62,00,000',
+    status: 'Available',
+    badge: '225 ft Boulevard',
+    image: '/images/faisal-hills-arc-monument.webp',
+    features: ['225 ft Boulevard', 'Corner Plot']
   },
   {
     id: 'prime-plot-com-4',
-    plotNumber: 'PR-COM-32',
+    plotNumber: '',
+    title: '8 Marla Commercial Plot',
     blockName: 'Prime Block',
     category: 'Commercial',
-    size: '8 Marla Corporate',
+    size: '8 Marla',
     dimensions: '40 × 45',
-    facing: 'Boulevard Junction',
+    facing: 'Standard',
     priceFormatted: 'PKR 4.20 Crore',
-    downPayment: 'PKR 84,00,000 (20%)',
-    status: 'Corporate File',
-    badge: 'Mega Hub',
-    image: '/images/faisal-hills-executive-sector.webp',
-    features: ['Multi-Storey Brand Approval', 'Maximum Vehicle Visibility', 'Direct GT Road Link']
+    downPayment: 'PKR 84,00,000',
+    status: 'Available',
+    badge: 'Level Plot',
+    image: '/images/faisal-hills-arc-view.webp',
+    features: ['Level Plot', '225 ft Boulevard']
   }
 ];
 
@@ -356,13 +411,32 @@ export default function PrimeBlockContent() {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isPaymentPlanLightboxOpen, setIsPaymentPlanLightboxOpen] = useState(false);
   const [isPaymentPlanDownloadOpen, setIsPaymentPlanDownloadOpen] = useState(false);
-  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
-  const [isLocationExpanded, setIsLocationExpanded] = useState(false);
-  const [isMasterPlanExpanded, setIsMasterPlanExpanded] = useState(false);
-  const [isDevStatusExpanded, setIsDevStatusExpanded] = useState(false);
   const [activeWhyInvestOption, setActiveWhyInvestOption] = useState<number | null>(0);
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'infrastructure' | 'nature' | 'amenities'>('all');
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
+
+  // Dynamic live CMS state for Prime Block
+  const [cms, setCms] = useState<PrimeBlockCMSData>(initialPrimeBlockCMS);
+
+  useEffect(() => {
+    fetchPrimeBlockCMS().then(data => {
+      if (data) setCms(mergePrimeBlockCMS(data));
+    });
+
+    const syncPrime = () => {
+      try {
+        const cached = localStorage.getItem('faisal_prime_block_cms');
+        if (cached) setCms(mergePrimeBlockCMS(JSON.parse(cached)));
+      } catch {}
+    };
+
+    window.addEventListener('faisal_prime_block_cms_updated', syncPrime);
+    window.addEventListener('storage', syncPrime);
+    return () => {
+      window.removeEventListener('faisal_prime_block_cms_updated', syncPrime);
+      window.removeEventListener('storage', syncPrime);
+    };
+  }, []);
 
   // Dynamic live plot inventory sync from Laravel Backend Dashboard / LocalStorage / API
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
@@ -418,10 +492,10 @@ export default function PrimeBlockContent() {
     '/images/faisal-hills-aerial-panoramic.webp',
     '/images/faisal-hills-arc-gate.webp',
     '/images/faisal-hills-glow-park.webp',
-    '/images/faisal-hills-aerial-panoramic.webp',
-    '/images/hills-walk-commercial-aerial.webp',
-    '/images/faisal-jewel-building.webp',
-    '/images/roots-international-school-faisal-hills.webp'
+    '/images/faisal-hills-development-site.webp',
+    '/images/faisal-hills-main-gate-gt-road.webp',
+    '/images/faisal-hills-arc-monument.webp',
+    '/images/faisal-hills-arc-view.webp'
   ];
 
   const primePlots = useMemo(() => {
@@ -433,24 +507,25 @@ export default function PrimeBlockContent() {
     // 2. Map and normalize live plots so they fit the card layout
     const liveMapped = liveBlockPlots.map((plot, idx) => ({
       id: plot.id,
-      plotNumber: plot.plotNumber || `PR-${idx + 100}`,
+      plotNumber: plot.plotNumber || '',
+      title: plot.title || `${plot.size} ${plot.category || 'Residential'} Plot`,
       blockName: plot.blockName || 'Prime Block',
       category: plot.category || 'Residential',
       size: plot.size,
       dimensions: plot.dimensions || '25 × 50',
-      facing: plot.facing || 'Park Facing',
+      facing: plot.facing || 'Standard',
       priceFormatted: plot.priceFormatted || (plot.price ? formatPlotPrice(plot.price) : 'Contact for Price'),
-      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs (20%)` : '20% Down Payment'),
-      status: plot.status || 'Ready to Book',
-      badge: (plot as any).badge || (plot.facing?.toLowerCase().includes('park') ? 'Park Facing' : '4-Year Plan'),
+      downPayment: (plot as any).downPayment || (plot.price ? `PKR ${((plot.price * 0.2) / 100000).toFixed(1)} Lacs` : 'Confirmed Schedule'),
+      status: plot.status || 'Available',
+      badge: (plot as any).badge || (plot.facing?.toLowerCase().includes('park') ? 'Park Facing' : 'Level Plot'),
       image: plot.image || defaultPrimePlotImages[idx % defaultPrimePlotImages.length],
-      features: plot.features && plot.features.length > 0 ? plot.features : ['Near 225ft Boulevard', 'Underground Utilities', 'Immediate Verification']
+      features: plot.features && plot.features.length > 0 ? plot.features.slice(0, 2) : ['Level Plot']
     }));
 
     // 3. Combine with default fallback plots if not already present
     const combined: any[] = [...liveMapped];
     defaultPrimeSellingPlots.forEach(defPlot => {
-      if (!combined.some(c => c.id === defPlot.id || c.plotNumber.toUpperCase() === defPlot.plotNumber.toUpperCase())) {
+      if (!combined.some(c => c.id === defPlot.id || (c.plotNumber && defPlot.plotNumber && c.plotNumber.toUpperCase() === defPlot.plotNumber.toUpperCase()))) {
         combined.push(defPlot);
       }
     });
@@ -490,40 +565,32 @@ export default function PrimeBlockContent() {
                 <div className="space-y-3">
                   <TextReveal
                     as="h2"
-                    text="Prime Block Overview & Vision"
+                    text={cms.overview.heading || 'Faisal Hills Prime Block Overview'}
                     className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                     staggerDelay={65}
                     direction="left"
                   />
-                  <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                  <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                     <p>
-                      <strong>Faisal Hills Prime Block</strong> is the premier, master-planned residential and commercial sector developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group & Zedem International</Link>. Occupying the highest elevation ridge of the entire society, Prime Block commands scenic, unobstructed panoramas of the Margalla Hills while enjoying direct connectivity to the Grand Entrance and the Main GT Road (N-5).
+                      {cms.overview.visibleParagraph || "Prime Block sits at the front of Faisal Hills, planned along the 225 ft main boulevard that runs from the society's GT Road entrance. Its western side adjoins Block A and the Executive Block, so the society's established commercial area, school and mosque are already next door."}
                     </p>
 
-                    {isOverviewExpanded && (
-                      <div className="space-y-3 animate-fadeIn">
-                        <p>
-                          Unlike standard resale sectors where prices fluctuate dynamically across plot series, Prime Block is introduced with <strong>official fixed launch rates</strong> and an accessible <strong>4-year (48-month) flexible installment plan</strong>. This makes it the highest priority investment choice for families seeking to build modern homes and savvy investors securing early-phase capital growth.
-                        </p>
-                        <p>
-                          Featuring an expansive 225ft wide Main Boulevard, 100% underground high-capacity electrification, modern drainage networks, dedicated school campuses, and vibrant commercial plazas, Prime Block is engineered as a self-sustaining luxury lifestyle zone.
-                        </p>
-                        <div className="p-4 bg-gradient-to-r from-rose-50/90 via-rose-50/50 to-amber-50/60 rounded-2xl border border-rose-200/80 text-xs sm:text-sm text-slate-800 font-medium flex items-start gap-3 shadow-2xs">
-                          <CheckCircle2 className="w-5 h-5 text-[#7b002c] shrink-0 mt-0.5" />
-                          <span>
-                            <strong>Investor Insight:</strong> Prime Block's official installment schedule allows buyers to lock in pre-development pricing before on-ground possession milestones trigger immediate capital appreciation.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                      className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
-                    >
-                      {isOverviewExpanded ? 'See less' : 'See more'}
-                    </button>
+                    <p>
+                      {cms.overview.expandedParagraph1 || "The block is planned with carpeted roads, underground utilities, parks, a mosque and its own commercial areas. Because development is still in progress, it suits buyers who want to enter Faisal Hills on an instalment plan and build later, rather than families who need to start construction now."}
+                      {' '}For ready possession, see{' '}
+                      <Link href={cms.overview.blockALinkHref || '/blocks/block-a'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
+                        <span>{cms.overview.blockALinkText || 'Block A'}</span>
+                        <ArrowRight className="w-3.5 h-3.5 inline font-bold" />
+                      </Link>
+                      {' '}or the{' '}
+                      <Link href={cms.overview.executiveBlockLinkHref || '/blocks/executive-block'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
+                        <span>{cms.overview.executiveBlockLinkText || 'Executive Block'}</span>
+                        <ArrowRight className="w-3.5 h-3.5 inline font-bold" />
+                      </Link>.
+                    </p>
+                    <p>
+                      {cms.overview.expandedParagraph2 || "Although it is marketed as Faisal Hills Prime Block Islamabad, the society lies in Rawalpindi District near Taxila, with Islamabad reached via the GT Road and Margalla Avenue."}
+                    </p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -567,62 +634,73 @@ export default function PrimeBlockContent() {
       {/* 2. LOCATION & STRATEGIC ACCESSIBILITY                      */}
       {/* ========================================================= */}
       <section id="location" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative">
 
           {/* Left Column: Accessibility & Commute Badges */}
-          <div className="lg:col-span-7 space-y-6">
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
             <ScrollReveal direction="left" delay={50}>
-              <div className="space-y-3">
+              <div className="space-y-4">
 
                 <TextReveal
                   as="h2"
-                  text="Prime Block Location & Map"
+                  text={cms.location?.heading || "Faisal Hills Prime Block Location"}
                   className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                   staggerDelay={65}
                   direction="left"
                 />
-                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3.5 font-sans">
                   <p>
-                    Prime Block is located right along the Main GT Road corridor near the Grand Society Entrance. With immediate access to Margalla Avenue, Srinagar Highway, and the M-1 Motorway, residents enjoy effortless commutes across Islamabad and Rawalpindi.
+                    {cms.location?.mainParagraph || "Prime Block is reached through the society's main gate on the Main GT Road (N-5) near Taxila. From the gate, the 225 ft boulevard leads into the block; internal main roads within it are reported at 100 ft. Every Faisal Hills block shares the same GT Road entrance, so Prime Block has the same connectivity as the established blocks."}
                   </p>
-                  {isLocationExpanded && (
-                    <div className="space-y-3 animate-fadeIn">
-                      <p>
-                        Perched atop the highest natural elevation ridge in the society, Prime Block enjoys clean mountain breezes, lush green horizons, and immediate arterial connectivity without any traffic bottlenecks.
-                      </p>
-                      <p>
-                        Its strategic road grid connects directly into the Grand Commercial Boulevard and Central Civic Zone, ensuring fast travel times to educational hubs, sports arenas, and business centers across Faisal Hills.
-                      </p>
-                    </div>
-                  )}
-                    <button
-                      type="button"
-                      onClick={() => setIsLocationExpanded(!isLocationExpanded)}
-                      className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
+
+                  <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                    <li>
+                      {cms.location?.bullet1 || "Block A, the Executive Block and the Faisal Jewel development, immediately adjoining"}
+                    </li>
+                    <li>
+                      {cms.location?.bullet2 || "Taxila Chowk and Taxila city on the GT Road"}
+                    </li>
+                    <li>
+                      {cms.location?.bullet3 || "Sector B-17 (Multi Gardens) and Faisal Margalla City on the Islamabad side"}
+                    </li>
+                    <li>
+                      {cms.location?.bullet4 || "Margalla Avenue, the M-1 Motorway corridor and New Islamabad International Airport"}
+                    </li>
+                  </ul>
+
+                  <p className="text-slate-700 pt-1">
+                    {cms.location?.driveTimesNote || "Drive times quoted online vary widely, so we publish only times our team has measured, with the date and time of day. Full directions are on our"}{' '}
+                    <Link
+                      href={cms.location?.locationPageLinkHref || "/faisal-hills-location"}
+                      className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5"
                     >
-                      {isLocationExpanded ? 'See less' : 'See more'}
-                    </button>
+                      <span>{cms.location?.locationPageLinkText || "Faisal Hills location"}</span>
+                      <span className="text-xs"> (→ location page)</span>
+                    </Link>.
+                  </p>
                 </div>
               </div>
             </ScrollReveal>
 
           </div>
 
-          {/* Right Column: Sticky Live Interactive Google Map Embed */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 self-start space-y-3">
-            <div className="relative w-full h-[380px] sm:h-[420px] lg:h-[460px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
-              <iframe
-                title="Prime Block Exact Location Google Map"
-                src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full"
-              />
-            </div>
+          {/* Right Column: Full-Height Live Interactive Google Map Embed */}
+          <div className="lg:col-span-5 flex flex-col h-full min-h-[380px] lg:min-h-[460px]">
+            <ScrollReveal direction="right" delay={80} className="w-full h-full flex-1 flex flex-col">
+              <div className="relative w-full h-full min-h-[380px] lg:min-h-full rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100 flex-1">
+                <iframe
+                  title="Prime Block Exact Location Google Map"
+                  src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full min-h-[380px] lg:min-h-full"
+                />
+              </div>
+            </ScrollReveal>
           </div>
 
         </div>
@@ -711,24 +789,14 @@ export default function PrimeBlockContent() {
                   The master plan for Prime Block is engineered to offer self-contained luxury living. Residential sectors are nestled alongside lush green parks, central Jamia mosques, and modern commercial markets connected by 225ft wide dual-carriageway boulevards.
                 </p>
 
-                {isMasterPlanExpanded && (
-                  <div className="space-y-4 text-sm text-slate-600 leading-relaxed animate-fadeIn">
-                    <p>
-                      Every residential street is planned with a minimum width of 40 to 60 feet, complete with underground drainage channels, dedicated tree-lined pedestrian footpaths, and fiber-optic ducts.
-                    </p>
-                    <p>
-                      Commercial zones in Prime Block are positioned strategically around central roundabouts, giving quick walkability for daily groceries without compromising the quiet residential ambience of inner avenues.
-                    </p>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => setIsMasterPlanExpanded(!isMasterPlanExpanded)}
-                  className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
-                >
-                  {isMasterPlanExpanded ? 'See less' : 'See more'}
-                </button>
+                <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-sans">
+                  <p>
+                    Every residential street is planned with a minimum width of 40 to 60 feet, complete with underground drainage channels, dedicated tree-lined pedestrian footpaths, and fiber-optic ducts.
+                  </p>
+                  <p>
+                    Commercial zones in Prime Block are positioned strategically around central roundabouts, giving quick walkability for daily groceries without compromising the quiet residential ambience of inner avenues.
+                  </p>
+                </div>
               </div>
 
               {/* Action Buttons */}
@@ -759,68 +827,289 @@ export default function PrimeBlockContent() {
       </section>
 
       {/* ========================================================= */}
+      {/* 4. PLOT SIZES IN PRIME BLOCK                              */}
+      {/* ========================================================= */}
+      <section id="plot-sizes" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text={cms.plotSizesSection?.heading || "Plot Sizes in Prime Block"}
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl">
+              {cms.plotSizesSection?.subline || "Official plot dimensions, square footage, square yard calculations, and commonly listed market classifications:"}
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Desktop & Tablet Table */}
+        <ScrollReveal direction="up" delay={70}>
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+            <table className="w-full text-left text-xs sm:text-sm text-slate-800 border-collapse">
+              <thead className="bg-slate-900 text-white uppercase text-[11px] font-bold tracking-wider">
+                <tr className="border-b border-slate-800">
+                  <th className="py-4 px-5 border-r border-slate-800 font-bold">Dimensions (ft)</th>
+                  <th className="py-4 px-5 border-r border-slate-800 font-bold">Area (sq ft)</th>
+                  <th className="py-4 px-5 border-r border-slate-800 font-bold">Area (sq yds)</th>
+                  <th className="py-4 px-5 font-bold">Commonly listed as</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-white font-medium">
+                {(cms.plotSizesSection?.rows || initialPrimeBlockCMS.plotSizesSection?.rows || []).map((row, idx) => (
+                  <tr key={idx} className="even:bg-slate-50/70 hover:bg-rose-50/40 transition-colors">
+                    <td className="py-3.5 px-5 font-bold text-slate-900 border-r border-slate-200">
+                      {cleanVerifyText(row.dimensions)}
+                    </td>
+                    <td className="py-3.5 px-5 font-semibold text-slate-700 border-r border-slate-200">
+                      {row.areaSqFt}
+                    </td>
+                    <td className="py-3.5 px-5 font-semibold text-slate-700 border-r border-slate-200">
+                      {row.areaSqYds}
+                    </td>
+                    <td className="py-3.5 px-5 font-bold text-[#7b002c]">
+                      {cleanVerifyText(row.commonlyListed)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards (Responsive View) */}
+          <div className="grid grid-cols-1 gap-3 md:hidden">
+            {(cms.plotSizesSection?.rows || initialPrimeBlockCMS.plotSizesSection?.rows || []).map((row, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs"
+              >
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dimensions</span>
+                  <span className="font-bold text-slate-900 text-sm">{cleanVerifyText(row.dimensions)}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-slate-600">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Area (sq ft)</span>
+                    <strong className="text-slate-800 font-semibold">{row.areaSqFt}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Area (sq yds)</span>
+                    <strong className="text-slate-800 font-semibold">{row.areaSqYds}</strong>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500">Listed as:</span>
+                  <strong className="font-bold text-[#7b002c] text-xs">{cleanVerifyText(row.commonlyListed)}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
       {/* 5. PLOT PRICING PLAN & INSTALLMENT SCHEDULE               */}
       {/* ========================================================= */}
       <section id="payment-plan" className="scroll-mt-28 space-y-8">
         
-        {/* Official Faisal Hills Payment Plan Image Showcase (Clickable Fullscreen & Lead-Gated Download) */}
         <ScrollReveal direction="up" delay={50}>
-          <div className="bg-white p-5 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+            {/* Header & Intro */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <TextReveal
                   as="h2"
-                  text="Faisal Hills Prime Block Payment Plan"
+                  text={cms.paymentPlanSection?.heading || "Faisal Hills Prime Block Payment Plan"}
                   className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                   staggerDelay={65}
                   direction="left"
                 />
-                <p className="text-xs sm:text-sm text-slate-600 max-w-2xl font-sans">
-                  Official 48-month installment breakdown, booking down payments, and verified company launch schedule for all residential plot sizes:
+                <p className="text-xs sm:text-sm text-slate-700 max-w-3xl font-sans leading-relaxed">
+                  {cms.paymentPlanSection?.intro || "Prime Block is offered on a down payment followed by quarterly instalments, with a discount for payment in full. The schedule below is the one currently issued by the developer."}
                 </p>
               </div>
               <div className="hidden sm:flex items-center gap-2.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsPaymentPlanDownloadOpen(true)}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all flex items-center gap-2 cursor-pointer"
+                  className="px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm"
                 >
-                  <Download className="w-4 h-4 text-[#7b002c]" />
+                  <Download className="w-4 h-4 text-white" />
                   <span>Download PDF Plan</span>
                 </button>
               </div>
             </div>
 
-            {/* Payment Plan Image Card with Fullscreen Zoom trigger */}
-            <div
-              onClick={() => setIsPaymentPlanLightboxOpen(true)}
-              className="relative w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-md"
-              title="Click to Open Fullscreen & Zoom Payment Plan"
-            >
-              <img
-                src="/images/faisal-hills-payment-plan-2026.webp"
-                alt="Faisal Hills Prime Block Official Payment Plan Schedule & Rates"
-                className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"
-              />
-              <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                <span className="bg-black/80 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-white/20 flex items-center gap-2 shadow-2xl">
-                  <Maximize2 className="w-4 h-4 text-rose-300" />
-                  <span>Click to View Fullscreen & Zoom Plan</span>
-                </span>
+            {/* Confirmed Schedule Table (Desktop / Tablet) */}
+            <div className="space-y-3">
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-slate-900">
+                Official Prime Block Installment Schedule
+              </h3>
+
+              <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+                <table className="w-full text-left text-xs sm:text-sm text-slate-800 border-collapse">
+                  <thead className="bg-slate-900 text-white uppercase text-[11px] font-bold tracking-wider">
+                    <tr className="border-b border-slate-800">
+                      <th className="py-4 px-5 border-r border-slate-800 font-bold">Plot size</th>
+                      <th className="py-4 px-5 border-r border-slate-800 font-bold">Total price</th>
+                      <th className="py-4 px-5 border-r border-slate-800 font-bold">Down payment</th>
+                      <th className="py-4 px-5 border-r border-slate-800 font-bold">Quarterly instalment</th>
+                      <th className="py-4 px-5 font-bold">Lump-sum price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 bg-white font-medium">
+                    {(cms.paymentPlanSection?.tableRows || initialPrimeBlockCMS.paymentPlanSection?.tableRows || []).map((row, idx) => (
+                      <tr key={idx} className="even:bg-slate-50/70 hover:bg-rose-50/40 transition-colors">
+                        <td className="py-3.5 px-5 font-bold text-slate-900 border-r border-slate-200">
+                          {cleanVerifyText(row.size)}
+                        </td>
+                        <td className="py-3.5 px-5 font-bold text-[#7b002c] border-r border-slate-200">
+                          {cleanVerifyText(row.totalPrice)}
+                        </td>
+                        <td className="py-3.5 px-5 font-semibold text-slate-700 border-r border-slate-200">
+                          {cleanVerifyText(row.downPayment)}
+                        </td>
+                        <td className="py-3.5 px-5 font-semibold text-slate-700 border-r border-slate-200">
+                          {cleanVerifyText(row.quarterlyInstallment)}
+                        </td>
+                        <td className="py-3.5 px-5 font-bold text-emerald-700">
+                          {cleanVerifyText(row.lumpSumPrice)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards View for Payment Schedule */}
+              <div className="grid grid-cols-1 gap-3 md:hidden">
+                {(cms.paymentPlanSection?.tableRows || initialPrimeBlockCMS.paymentPlanSection?.tableRows || []).map((row, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs"
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Plot Size</span>
+                      <span className="font-bold text-slate-900 text-sm">{cleanVerifyText(row.size)}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-slate-600">
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Total Price</span>
+                        <strong className="text-[#7b002c] font-bold text-xs">{cleanVerifyText(row.totalPrice)}</strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Down Payment</span>
+                        <strong className="text-slate-800 font-semibold">{cleanVerifyText(row.downPayment)}</strong>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t border-slate-200 grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Quarterly:</span>
+                        <strong className="text-slate-700 text-[11px]">{cleanVerifyText(row.quarterlyInstallment)}</strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-500 block">Lump-Sum (10% Off):</span>
+                        <strong className="font-bold text-emerald-700 text-xs">{cleanVerifyText(row.lumpSumPrice)}</strong>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-xs text-slate-500 pt-1 font-sans">
+                {cms.paymentPlanSection?.termNote || "Plan as issued. Number of instalments and term: 16 quarterly instalments over 48 months (4 years). Prices are set by the developer and can change without notice."}
+              </p>
+            </div>
+
+            {/* What you pay besides the plot price */}
+            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-[#7b002c]" />
+                <h3 className="font-serif text-lg font-bold text-slate-900">
+                  {cms.paymentPlanSection?.extraChargesTitle || "What you pay besides the plot price"}
+                </h3>
+              </div>
+
+              <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 font-sans">
+                {(cms.paymentPlanSection?.extraCharges || initialPrimeBlockCMS.paymentPlanSection?.extraCharges || []).map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-[#7b002c] font-bold mt-0.5">•</span>
+                    <span>
+                      <strong className="font-bold text-slate-900">{cleanVerifyText(item.label)}:</strong>{' '}
+                      {cleanVerifyText(item.desc)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Why you will see different Prime Block prices online */}
+            <div className="p-6 bg-amber-50/60 rounded-2xl border border-amber-200/80 space-y-3 font-sans">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-amber-800" />
+                <h3 className="font-serif text-lg font-bold text-slate-900">
+                  {cms.paymentPlanSection?.whyDifferentHeading || "Why you will see different Prime Block prices online"}
+                </h3>
+              </div>
+
+              <div className="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
+                <p>
+                  {cms.paymentPlanSection?.whyDifferentParagraph1 || "The block has been quoted under more than one schedule since launch, and older pages stay online without dates. Plans quoted publicly have included an 18-month plan in 2024, a 3.5-year plan of 14 quarterly instalments at launch in December 2025, a shorter plan of 10 quarterly instalments during 2026, and a 48-month plan of 16 quarterly instalments. One developer-linked page has also described the block as cash payment only."}
+                </p>
+                <p>
+                  {cms.paymentPlanSection?.whyDifferentParagraph2 || "Only the schedule the developer issues for the current month applies to a new booking. If a price looks unusually low, check which plan it came from and when it was published. Our"}{' '}
+                  <Link
+                    href={cms.paymentPlanSection?.paymentPlanLinkHref || "/faisal-hills-payment-plan"}
+                    className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5"
+                  >
+                    <span>{cms.paymentPlanSection?.paymentPlanLinkText || "Faisal Hills payment plan"}</span>
+                    <span className="text-xs"> (→ payment plan page)</span>
+                  </Link>{' '}
+                  carries the society-wide schedule.
+                </p>
               </div>
             </div>
 
-            {/* Mobile View: Download PDF Button Below Picture */}
-            <div className="flex sm:hidden items-center justify-center pt-1">
-              <button
-                type="button"
-                onClick={() => setIsPaymentPlanDownloadOpen(true)}
-                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95"
+            {/* Official Faisal Hills Payment Plan Image Showcase (Clickable Fullscreen & Lead-Gated Download) */}
+            <div className="pt-2 border-t border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Official Document Preview</span>
+                <span className="text-xs text-slate-500">Click to zoom</span>
+              </div>
+
+              <div
+                onClick={() => setIsPaymentPlanLightboxOpen(true)}
+                className="relative w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-md"
+                title="Click to Open Fullscreen & Zoom Payment Plan"
               >
-                <Download className="w-4 h-4 text-[#7b002c]" />
-                <span>Download PDF Plan</span>
-              </button>
+                <img
+                  src="/images/faisal-hills-payment-plan-2026.webp"
+                  alt="Faisal Hills Prime Block Official Payment Plan Schedule & Rates"
+                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"
+                />
+                <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                  <span className="bg-black/80 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full border border-white/20 flex items-center gap-2 shadow-2xl">
+                    <Maximize2 className="w-4 h-4 text-rose-300" />
+                    <span>Click to View Fullscreen & Zoom Plan</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Mobile View: Download PDF Button Below Picture */}
+              <div className="flex sm:hidden items-center justify-center pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsPaymentPlanDownloadOpen(true)}
+                  className="w-full py-3 bg-[#7b002c] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95"
+                >
+                  <Download className="w-4 h-4 text-white" />
+                  <span>Download PDF Plan</span>
+                </button>
+              </div>
             </div>
+
           </div>
         </ScrollReveal>
       </section>
@@ -834,28 +1123,28 @@ export default function PrimeBlockContent() {
             <div className="space-y-2">
               <TextReveal
                 as="h2"
-                text="Prime Block Plots for Sale — Direct Booking & Verified Files"
+                text="Prime Block Plots for Sale"
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-                Explore available residential plots and commercial plazas in Prime Block with transparent 4-year installment pricing, zero dealer markup, and immediate allotment file verification.
+                Available residential and commercial plots in Prime Block. Each listing shows size, facing and the down payment, and every file is checked with the developer before you pay.
               </p>
             </div>
 
-            {/* Filter Tabs */}
+            {/* Filters: All Plots · Residential · Commercial */}
             <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shrink-0">
               <button
                 type="button"
                 onClick={() => setPlotCategoryFilter('all')}
-                className={`hidden sm:inline-block px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   plotCategoryFilter === 'all'
                     ? 'bg-[#7b002c] text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                All Plots ({primePlots.length})
+                All Plots
               </button>
               <button
                 type="button"
@@ -887,97 +1176,118 @@ export default function PrimeBlockContent() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
           {primePlots
             .filter(plot => plotCategoryFilter === 'all' || plot.category.toLowerCase() === plotCategoryFilter)
-            .map((plot, idx) => (
-              <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
-                <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
-                  <div>
-                    {/* Plot Image Container -> Links to /plots filtered */}
-                    <Link
-                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
-                      className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
-                    >
-                      <img
-                        src={plot.image}
-                        alt={plot.plotNumber}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+            .map((plot, idx) => {
+              const displayTitle = plot.plotNumber ? `#${plot.plotNumber}` : (plot.title || `${plot.size} ${plot.category} Plot`);
+              const allowedTags = Array.isArray(plot.features)
+                ? plot.features.filter((f: string) => ['Park Facing', 'Corner Plot', '225 ft Boulevard', 'Level Plot'].includes(f)).slice(0, 2)
+                : [];
+              const finalTags = allowedTags.length > 0 ? allowedTags : (plot.badge && ['Park Facing', 'Corner Plot', '225 ft Boulevard', 'Level Plot'].includes(plot.badge) ? [plot.badge] : []);
 
-                      {/* Plot Number & Block */}
-                      <div className="absolute bottom-1.5 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 text-white">
-                        <span className="text-[8px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
-                        <h4 className="font-serif font-bold text-sm sm:text-xl group-hover:text-amber-300 transition-colors">#{plot.plotNumber}</h4>
-                      </div>
-                    </Link>
-
-                    {/* Specs Details -> Links to /plots filtered */}
-                    <Link
-                      href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
-                      className="p-2.5 sm:p-5 space-y-2 sm:space-y-3.5 block cursor-pointer hover:bg-slate-50/60 transition-colors"
-                    >
-                      <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs text-slate-600">
-                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Size:</span>
-                          <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size}</span>
-                        </div>
-                        <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Dims:</span>
-                          <strong className="text-slate-900 font-semibold">{plot.dimensions}</strong>
-                        </div>
-                        <div className="hidden sm:flex justify-between items-center pb-1.5 border-b border-slate-100">
-                          <span className="text-slate-500 font-medium">Orientation:</span>
-                          <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Down:</span>
-                          <span className="text-[#7b002c] font-bold text-[9px] sm:text-xs">{plot.downPayment.split(' ')[0]} {plot.downPayment.split(' ')[1] || ''}</span>
-                        </div>
-                      </div>
-
-                      {/* Feature Pills */}
-                      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
-                        {Array.isArray(plot.features) && plot.features.slice(0, 2).map((feat: string, fIdx: number) => (
-                          <span
-                            key={fIdx}
-                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
-                          >
-                            {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </Link>
-                  </div>
-
-                  {/* Price & Action Buttons Footer */}
-                  <div className="p-2.5 sm:p-4 pt-2 sm:pt-3 border-t border-slate-100 mt-1 sm:mt-2 space-y-2 sm:space-y-2.5">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[8px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Price</span>
-                      <span className="font-serif font-bold text-xs sm:text-base text-[#7b002c] truncate">{plot.priceFormatted}</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1 sm:gap-2">
+              return (
+                <ScrollReveal key={plot.id} direction="up" delay={(idx % 4) * 80}>
+                  <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
+                    <div>
+                      {/* Plot Image Container -> Links to /plots filtered */}
                       <Link
-                        href={`/plots/${plot.id}`}
-                        className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 text-center"
+                        href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
+                        className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                       >
-                        <span>Details</span>
-                        <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        <img
+                          src={plot.image}
+                          alt={displayTitle}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+
+                        {/* Plot Title (Plot number if confirmed, otherwise size + category) */}
+                        <div className="absolute bottom-1.5 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 text-white">
+                          <span className="text-[8px] sm:text-[10px] text-slate-300 font-medium block uppercase tracking-wider">{plot.blockName}</span>
+                          <h4 className="font-serif font-bold text-xs sm:text-base group-hover:text-amber-300 transition-colors truncate">
+                            {displayTitle}
+                          </h4>
+                        </div>
                       </Link>
 
-                      <a
-                        href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in buying Prime Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share file details.`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                      {/* Specs Details -> Links to /plots filtered */}
+                      <Link
+                        href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
+                        className="p-2.5 sm:p-5 space-y-2 sm:space-y-3 block cursor-pointer hover:bg-slate-50/60 transition-colors"
                       >
-                        <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                        <span>Book</span>
-                      </a>
+                        <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs text-slate-600">
+                          {/* Size and dimensions */}
+                          <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                            <span className="text-slate-500 font-medium">Size & Dims:</span>
+                            <span className="text-slate-900 font-bold group-hover:text-[#7b002c] transition-colors">{plot.size} · {plot.dimensions}</span>
+                          </div>
+
+                          {/* Facing */}
+                          <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                            <span className="text-slate-500 font-medium">Facing:</span>
+                            <strong className="text-slate-900 font-semibold">{plot.facing}</strong>
+                          </div>
+
+                          {/* Down payment */}
+                          <div className="flex justify-between items-center pb-1 sm:pb-1.5 border-b border-slate-100">
+                            <span className="text-slate-500 font-medium">Down Payment:</span>
+                            <span className="text-[#7b002c] font-bold text-[9px] sm:text-xs">{plot.downPayment}</span>
+                          </div>
+                        </div>
+
+                        {/* Tags (Maximum Two: Park Facing, Corner Plot, 225 ft Boulevard, Level Plot) */}
+                        {finalTags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {finalTags.map((tag: string, tIdx: number) => (
+                              <span
+                                key={tIdx}
+                                className="text-[9px] sm:text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium border border-slate-200/60"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </Link>
+                    </div>
+
+                    {/* Price & Action Buttons Footer */}
+                    <div className="p-2.5 sm:p-4 pt-2 sm:pt-3 border-t border-slate-100 mt-1 space-y-2 sm:space-y-2.5">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[8px] sm:text-[10px] text-slate-500 uppercase font-semibold tracking-wider">Total Price</span>
+                        <span className="font-serif font-bold text-xs sm:text-base text-[#7b002c] truncate">{plot.priceFormatted}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1 sm:gap-2">
+                        <Link
+                          href={`/plots/${plot.id}`}
+                          className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 text-center"
+                        >
+                          <span>Details</span>
+                          <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        </Link>
+
+                        <a
+                          href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in buying Prime Block ${displayTitle} (${plot.size} - ${plot.priceFormatted}). Please share file details.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
+                        >
+                          <Phone className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                          <span>Book</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              );
+            })}
+        </div>
+
+        {/* Verification Note Box */}
+        <div className="p-4 sm:p-5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex items-start gap-3.5 text-xs text-amber-950">
+          <ShieldCheck className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+          <p className="text-amber-800/90 leading-relaxed text-[11px] sm:text-xs">
+            Every plot number, price and down payment on this grid must be confirmed as real and currently available before publishing. Where a specific plot cannot be confirmed, show the size and facing without a plot number.
+          </p>
         </div>
 
         {/* Sell Your Prime Block Plot Banner */}
@@ -1025,13 +1335,13 @@ export default function PrimeBlockContent() {
             <div className="space-y-1.5">
               <TextReveal
                 as="h2"
-                text="Facilities and Amenities in Prime Block"
+                text={cleanVerifyText(cms.facilitiesSection?.heading || initialPrimeBlockCMS.facilitiesSection?.heading || 'Facilities and Amenities in Prime Block')}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                 staggerDelay={60}
                 direction="left"
               />
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Prime Block is planned with world-class facilities and modern municipal infrastructure:
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
+                {cleanVerifyText(cms.facilitiesSection?.intro || initialPrimeBlockCMS.facilitiesSection?.intro || "Prime Block is planned to the same infrastructure standard as the rest of Faisal Hills. These facilities are part of the block's layout and are being developed with it:")}
               </p>
             </div>
 
@@ -1066,13 +1376,13 @@ export default function PrimeBlockContent() {
           onMouseLeave={() => setIsAmenitiesAutoScrolling(true)}
           className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
         >
-          {primeGalleryItems.map((item, idx) => (
-            <div key={item.id} className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
+          {(cms.facilitiesSection?.cards || initialPrimeBlockCMS.facilitiesSection?.cards || primeGalleryItems).map((item, idx) => (
+            <div key={item.id || idx} className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
               <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
-                <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full">
+                <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full flex flex-col">
                   <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
                     <img
-                      src={item.image}
+                      src={item.image || primeGalleryItems[idx % primeGalleryItems.length]?.image || '/images/faisal-hills-drone-view.webp'}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1088,7 +1398,7 @@ export default function PrimeBlockContent() {
                                     <Landmark className="w-4 h-4" />}
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">{item.tag}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300 block">{item.label || (item as any).tag}</span>
                       <strong className="text-sm font-serif font-bold text-white block leading-snug">{item.title}</strong>
                     </div>
                   </div>
@@ -1097,6 +1407,15 @@ export default function PrimeBlockContent() {
             </div>
           ))}
         </div>
+
+        {/* Informative planned construction note */}
+        <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3">
+          <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-900 leading-relaxed font-medium">
+            <span className="font-bold">Construction & Planning Note: </span>
+            {cleanVerifyText(cms.facilitiesSection?.footerNote || initialPrimeBlockCMS.facilitiesSection?.footerNote || 'In a block still under construction these are planned rather than built, so we describe them as planned and update this page after each site visit.')}
+          </p>
+        </div>
       </section>
 
       {/* ========================================================= */}
@@ -1104,96 +1423,92 @@ export default function PrimeBlockContent() {
       {/* ========================================================= */}
       <div className="space-y-10">
 
-        {/* Why Invest Cards */}
-        <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        {/* Section 11: Why Buyers Choose Prime Block, and What to Weigh */}
+        <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
           <ScrollReveal direction="up" delay={50}>
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>ROI & Capital Growth</span>
+                <span>{cleanVerifyText(cms.whyChooseSection?.badge || initialPrimeBlockCMS.whyChooseSection?.badge || 'WHY PRIME BLOCK')}</span>
               </div>
               <TextReveal
                 as="h2"
-                text="Why Invest in Faisal Hills Prime Block"
+                text={cleanVerifyText(cms.whyChooseSection?.heading || initialPrimeBlockCMS.whyChooseSection?.heading || 'Why Buyers Choose Prime Block, and What to Weigh')}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                 staggerDelay={65}
                 direction="left"
               />
-              <p className="text-slate-600 text-sm">
-                Why buyers and overseas Pakistanis rank Prime Block as the top priority sector:
-              </p>
             </div>
           </ScrollReveal>
 
-          {/* Mobile View: Compact Interactive Options List */}
-          <div className="block sm:hidden space-y-2.5">
-            {[
-              { title: "Official Launch Rates", desc: "No speculative dealer markup or fluctuating 'on'. Guaranteed official company pricing." },
-              { title: "48-Month Flexible Plan", desc: "16 easy quarterly installments offering manageable cash flows for salaried and business buyers." },
-              { title: "Margalla Ridge Elevation", desc: "Scenic mountain breezes and elevated topography giving scenic views and fresh air." },
-              { title: "225ft Boulevard Axis", desc: "Direct frontage on the grand 225ft main boulevard connecting directly to GT Road N-5." },
-              { title: "RDA Approved Legal Security", desc: "Comprehensive NOC approval with 100% legal security and verified land titles." },
-              { title: "High Capital Appreciation", desc: "High appreciation velocity as balloting approaches and on-ground utilities complete." }
-            ].map((item, idx) => {
-              const isSelected = activeWhyInvestOption === idx;
-              return (
-                <div
-                  key={idx}
-                  onClick={() => setActiveWhyInvestOption(isSelected ? null : idx)}
-                  className={`rounded-2xl border transition-all cursor-pointer overflow-hidden ${
-                    isSelected
-                      ? 'bg-rose-50/50 border-[#7b002c]/40 shadow-xs'
-                      : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/60'
-                  }`}
-                >
-                  <div className="p-3.5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                        isSelected ? 'bg-[#7b002c] text-white' : 'bg-slate-200 text-slate-700'
-                      }`}>
-                        {idx + 1}
-                      </div>
-                      <strong className={`font-semibold text-xs transition-colors ${
-                        isSelected ? 'text-[#7b002c]' : 'text-slate-900'
-                      }`}>
-                        {item.title}
-                      </strong>
-                    </div>
-                    <ChevronDown
-                      className={`w-4 h-4 text-slate-500 shrink-0 transform transition-transform duration-300 ${
-                        isSelected ? 'rotate-180 text-[#7b002c]' : ''
-                      }`}
-                    />
+          {/* Two Distinct Comparative Columns */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            
+            {/* Column 1: Advantages (Why Buyers Choose Prime Block) */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-emerald-50/40 border border-emerald-200/80 flex flex-col justify-between space-y-5">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <CheckCircle2 className="w-5 h-5" />
                   </div>
-
-                  {isSelected && (
-                    <div className="px-3.5 pb-3.5 pt-0 text-xs text-slate-600 leading-relaxed font-sans border-t border-rose-100/80 mt-1 pt-2 animate-fadeIn">
-                      {item.desc}
-                    </div>
-                  )}
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                    {cleanVerifyText(cms.whyChooseSection?.advantagesHeading || initialPrimeBlockCMS.whyChooseSection?.advantagesHeading || 'Why Buyers Choose Prime Block')}
+                  </h3>
                 </div>
-              );
-            })}
+
+                <div className="space-y-3 pt-1">
+                  {(cms.whyChooseSection?.advantages || initialPrimeBlockCMS.whyChooseSection?.advantages || []).map((adv, idx) => (
+                    <div key={idx} className="p-3.5 rounded-2xl bg-white border border-emerald-100 shadow-2xs hover:border-emerald-300 transition-all flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                        ✓
+                      </div>
+                      <div className="space-y-0.5 text-xs sm:text-sm">
+                        <strong className="text-slate-900 font-bold block">{cleanVerifyText(adv.title)}</strong>
+                        <p className="text-slate-600 leading-relaxed font-sans">{cleanVerifyText(adv.desc)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Column 2: Considerations (What to Weigh First) */}
+            <div className="p-6 sm:p-7 rounded-3xl bg-amber-50/40 border border-amber-200/80 flex flex-col justify-between space-y-5">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow-xs">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
+                    {cleanVerifyText(cms.whyChooseSection?.considerationsHeading || initialPrimeBlockCMS.whyChooseSection?.considerationsHeading || 'If you are buying as an investment, weigh these first:')}
+                  </h3>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  {(cms.whyChooseSection?.considerations || initialPrimeBlockCMS.whyChooseSection?.considerations || []).map((con, idx) => (
+                    <div key={idx} className="p-3.5 rounded-2xl bg-white border border-amber-100 shadow-2xs hover:border-amber-300 transition-all flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                        !
+                      </div>
+                      <div className="space-y-0.5 text-xs sm:text-sm">
+                        <strong className="text-slate-900 font-bold block">{cleanVerifyText(con.title)}</strong>
+                        <p className="text-slate-600 leading-relaxed font-sans">{cleanVerifyText(con.desc)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          {/* Desktop View: 6-Card Grid */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-            {[
-              { title: "Official Launch Rates", desc: "No speculative dealer markup or fluctuating 'on'. Guaranteed official company pricing." },
-              { title: "48-Month Flexible Plan", desc: "16 easy quarterly installments offering manageable cash flows for salaried and business buyers." },
-              { title: "Margalla Ridge Elevation", desc: "Scenic mountain breezes and elevated topography giving scenic views and fresh air." },
-              { title: "225ft Boulevard Axis", desc: "Direct frontage on the grand 225ft main boulevard connecting directly to GT Road N-5." },
-              { title: "RDA Approved Legal Security", desc: "Comprehensive NOC approval with 100% legal security and verified land titles." },
-              { title: "High Capital Appreciation", desc: "High appreciation velocity as balloting approaches and on-ground utilities complete." }
-            ].map((item, idx) => (
-              <ScrollReveal key={idx} direction="up" delay={(idx % 3) * 60}>
-                <div className="p-5 bg-slate-50/70 rounded-2xl border border-slate-200/80 space-y-2 hover:border-[#7b002c]/40 hover:bg-white transition-all hover:scale-[1.02] h-full shadow-2xs">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <strong className="text-slate-900 block font-bold text-sm">{item.title}</strong>
-                  <span className="text-slate-600 leading-relaxed block">{item.desc}</span>
-                </div>
-              </ScrollReveal>
-            ))}
+          {/* Transparent Policy Callout / Disclaimer Note */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
+            <Info className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+              <span className="font-bold text-slate-900">Verifiable Information Policy: </span>
+              {cleanVerifyText(cms.whyChooseSection?.disclaimerNote || initialPrimeBlockCMS.whyChooseSection?.disclaimerNote || 'We do not publish expected returns or appreciation figures for Prime Block, because no verifiable source supports them.')}
+            </p>
           </div>
         </section>
 
@@ -1219,24 +1534,14 @@ export default function PrimeBlockContent() {
                     Development in Prime Block is progressing with high momentum under Zedem International's heavy machinery fleet. Earthwork, levelling of elevated ridges, and laying of 225ft boulevard foundations are under active execution.
                   </p>
 
-                  {isDevStatusExpanded && (
-                    <div className="space-y-4 animate-fadeIn">
-                      <p>
-                        Underground sewerage channels, utility ducting, and water storage reservoirs are being laid in tandem with road cutting to ensure smooth possession delivery within the stipulated 4-year timeline.
-                      </p>
-                      <p>
-                        Because Prime Block is situated directly along the main boulevard network, infrastructure machinery has uninterrupted direct access, ensuring speedy development pace compared to inner terrain sectors.
-                      </p>
-                    </div>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
-                    className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
-                  >
-                    {isDevStatusExpanded ? 'See less' : 'See more'}
-                  </button>
+                  <div className="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed font-sans">
+                    <p>
+                      Underground sewerage channels, utility ducting, and water storage reservoirs are being laid in tandem with road cutting to ensure smooth possession delivery within the stipulated 4-year timeline.
+                    </p>
+                    <p>
+                      Because Prime Block is situated directly along the main boulevard network, infrastructure machinery has uninterrupted direct access, ensuring speedy development pace compared to inner terrain sectors.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Quick Status Metrics (Optimized responsive typography & layout) */}
