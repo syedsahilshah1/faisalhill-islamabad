@@ -14,6 +14,7 @@ import SeoDashboardTab from '@/components/admin/SeoDashboardTab';
 import AdminManagementTab from '@/components/admin/AdminManagementTab';
 import SecuritySettingsTab from '@/components/admin/SecuritySettingsTab';
 import HomepageCmsTab from '@/components/admin/HomepageCmsTab';
+import BlocksPageCmsTab from '@/components/admin/BlocksPageCmsTab';
 import {
   formatPKR,
   formatPriceRange,
@@ -135,7 +136,7 @@ export default function AdminLoginPage() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
+  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'blocks_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
@@ -1991,6 +1992,7 @@ export default function AdminLoginPage() {
 
   const allAvailableTabs = [
     { id: 'homepage_cms' as const, label: '🏠 Homepage CMS Editor', icon: Home, badge: 'All 24 Sections', requiredPerm: 'manage_homepage_cms' },
+    { id: 'blocks_cms' as const, label: '🧱 Blocks Page CMS', icon: Layers, badge: 'All Sections & Tables', requiredPerm: 'manage_homepage_cms' },
     { id: 'series' as const, label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync', requiredPerm: 'manage_plots' },
     { id: 'plots' as const, label: `Plots Inventory (${plots.length})`, icon: Layers, requiredPerm: 'manage_plots' },
     { id: 'blocks' as const, label: `Blocks & BG Images (${blocksList.length})`, icon: Building2, requiredPerm: 'manage_plots' },
@@ -2173,6 +2175,16 @@ export default function AdminLoginPage() {
         )}
       </div>
 
+
+      {/* TAB: HOMEPAGE CMS EDITOR */}
+      {activeTab === 'homepage_cms' && (
+        <HomepageCmsTab token={token} />
+      )}
+
+      {/* TAB: BLOCKS PAGE CMS EDITOR */}
+      {activeTab === 'blocks_cms' && (
+        <BlocksPageCmsTab />
+      )}
 
       {/* TAB: PLOT SERIES & PRICE ENGINE */}
       {activeTab === 'series' && (
@@ -5951,10 +5963,7 @@ export default function AdminLoginPage() {
           </div>
         </div>
       )}
-      {/* TAB: HOMEPAGE CMS VISUAL & SECTION EDITOR */}
-      {activeTab === 'homepage_cms' && (
-        <HomepageCmsTab token={token} />
-      )}
+
 
       {/* TAB: ADMINISTRATOR MANAGEMENT (SUPER ADMIN / MANAGE USERS) */}
       {activeTab === 'users' && (currentUser?.role === 'super_admin' || hasPermission('manage_users')) && (

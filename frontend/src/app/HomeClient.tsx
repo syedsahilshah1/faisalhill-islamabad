@@ -307,7 +307,7 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
       {/* ========================================================= */}
       {/* SECTION 1 — HERO & SEARCH BAR                             */}
       {/* ========================================================= */}
-      <section className="relative w-full h-screen min-h-[600px] max-h-[1080px] bg-[#070e17] text-white flex flex-col justify-between overflow-hidden" id="hero-section">
+      <section className="relative w-full min-h-[100dvh] lg:h-screen lg:min-h-[600px] lg:max-h-[1080px] bg-[#070e17] text-white flex flex-col justify-between overflow-hidden" id="hero-section">
 
         {/* Cinematic HD Architectural Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -831,10 +831,10 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
             </div>
           </div>
 
-          {/* Getting There Route Connectivity Table */}
+          {/* Getting There Route Connectivity Table (Responsive Table Matching Screenshot) */}
           <ScrollReveal direction="up" delay={150}>
             <div className="mt-10 pt-8 border-t border-slate-200/80 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-2">
                 <div>
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#7b002c] tracking-tight">
                     {cms.gettingThere?.h3 || 'Getting There'}
@@ -845,27 +845,40 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                 </p>
               </div>
 
-              {/* Responsive Routes Table with Grid Borders */}
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              {/* Clean Responsive Table Container */}
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
-                        <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[30%]">Route</th>
-                        <th className="py-3.5 px-5 sm:px-6 text-left border-r border-slate-200 w-[45%]">Connects You To</th>
-                        <th className="py-3.5 px-5 sm:px-6 text-center w-[25%]">Drive Time</th>
+                      <tr className="bg-slate-50/70 border-b border-slate-200 text-[#7b002c] uppercase font-bold text-[11px] sm:text-xs tracking-wider">
+                        <th className="py-3 sm:py-3.5 px-3.5 sm:px-6 text-left border-r border-slate-200 w-[40%] sm:w-[30%]">
+                          Route
+                        </th>
+                        <th className="py-3 sm:py-3.5 px-3.5 sm:px-6 text-left border-r sm:border-r border-slate-200 w-[60%] sm:w-[45%]">
+                          Connects You To
+                        </th>
+                        <th className="hidden sm:table-cell py-3 sm:py-3.5 px-3.5 sm:px-6 text-center w-[25%]">
+                          Drive Time
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 text-slate-700">
+                    <tbody className="divide-y divide-slate-200 text-slate-700 font-sans">
                       {(cms.gettingThere?.routes || initialHomepageCMS.gettingThere?.routes || []).map((row, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="py-4 px-5 sm:px-6 font-bold text-slate-900 text-left border-r border-slate-200 align-middle">
-                            {row.route}
+                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="py-3.5 sm:py-4 px-3.5 sm:px-6 font-bold text-slate-900 text-left border-r border-slate-200 align-middle text-xs sm:text-sm">
+                            <div className="space-y-1">
+                              <span>{row.route}</span>
+                              {row.time && (
+                                <span className="block sm:hidden text-[10px] font-bold text-[#7b002c] bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-md w-fit">
+                                  {row.time}
+                                </span>
+                              )}
+                            </div>
                           </td>
-                          <td className="py-4 px-5 sm:px-6 text-slate-600 text-left border-r border-slate-200 align-middle">
+                          <td className="py-3.5 sm:py-4 px-3.5 sm:px-6 text-slate-600 text-left border-r sm:border-r border-slate-200 align-middle text-xs sm:text-sm leading-relaxed">
                             {row.connects}
                           </td>
-                          <td className="py-4 px-5 sm:px-6 text-center font-bold text-[#7b002c] align-middle whitespace-nowrap">
+                          <td className="hidden sm:table-cell py-3.5 sm:py-4 px-3.5 sm:px-6 text-center font-bold text-[#7b002c] align-middle whitespace-nowrap text-xs sm:text-sm">
                             {row.time}
                           </td>
                         </tr>

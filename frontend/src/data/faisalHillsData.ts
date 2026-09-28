@@ -3912,6 +3912,618 @@ export const ALL_DASHBOARD_PERMISSIONS: { key: UserPermissionKey; label: string;
   { key: 'manage_users', label: 'User & Permission Management', description: 'Create new users and assign role permissions (Superadmin only)', desc: 'Create new users and assign role permissions (Superadmin only)' }
 ];
 
+// -------------------------------------------------------------
+// Blocks Page CMS Interfaces & Full Defaults
+// -------------------------------------------------------------
+
+export interface BlocksPageCMSData {
+  glance: any;
+  stages: any;
+  mapSection: any;
+  dimensions: any;
+  prices: any;
+  statusSection: any;
+  hero: {
+    counters: any;
+    h1: string;
+    heroImage: string;
+    kpiCards: {
+      card1: { value: number; unit: string; label: string };
+      card2: { value: string; label: string };
+      card3: { value: string; label: string };
+      card4: { value: string; label: string };
+    };
+  };
+  atAGlance: {
+    h2: string;
+    rows: {
+      id: string;
+      name: string;
+      slug: string;
+      character: string;
+      approxPlots: string;
+      plotSizes: string;
+      howSold: string;
+      possession: string;
+    }[];
+    footnote: string;
+  };
+  growthStages: {
+    h2: string;
+    paragraph: string;
+    stages: {
+      stage: string;
+      blocks: string;
+      meaning: string;
+    }[];
+    distinctionNote: string;
+  };
+  blockMap: {
+    h2: string;
+    paragraph: string;
+    connectors: string[];
+    whereItSits: {
+      id: string;
+      name: string;
+      borders: string;
+      access: string;
+    }[];
+    mapFootnote: string;
+    readingPlotNumbersTitle: string;
+    readingPlotNumbersText: string;
+  };
+  blocksOneByOne: {
+    id: string;
+    name: string;
+    slug: string;
+    tagline: string;
+    character: string;
+    badge: string;
+    heroImage: string;
+    detailedCopy: string;
+    plotSizes: string;
+    howSold: string;
+    possession: string;
+    suits: string;
+  }[];
+  plotSizesSection: {
+    h2: string;
+    subline: string;
+    matrix: {
+      dimensions: string;
+      areaSqFt: string;
+      exec: boolean;
+      a: boolean;
+      prime: boolean;
+      b: boolean;
+      bExt: boolean;
+      c: boolean;
+      d: boolean | string;
+    }[];
+    footnote: string;
+  };
+  marlaConversions: {
+    h2: string;
+    intro: string;
+    rows: {
+      dimensions: string;
+      areaSqFt: string;
+      at272: string;
+      at250: string;
+      at225: string;
+      usuallySold: string;
+    }[];
+    callout: string;
+  };
+  plotPrices: {
+    h2: string;
+    subline: string;
+    rows: {
+      id: string;
+      name: string;
+      fiveMarla: string;
+      oneKanal: string;
+    }[];
+    footnote: string;
+  };
+  developmentStatus: {
+    h2: string;
+    subline: string;
+    rows: {
+      name: string;
+      roads: string;
+      houses: string;
+      reported: string;
+    }[];
+    footnote: string;
+    infrastructure: {
+      h3: string;
+      paragraph: string;
+      cards: { title: string; desc: string }[];
+    };
+  };
+  decisionMatrix: {
+    decisionCards: any;
+    glossaryTerms: any;
+    h2: string;
+    subline: string;
+    rows: {
+      goal: string;
+      consider: string;
+      tradeOff: string;
+    }[];
+  };
+  glossary: {
+    h2: string;
+    subline: string;
+    terms: { term: string; definition: string }[];
+    premiumNote: string;
+  };
+  dueDiligence: {
+    h2: string;
+    subline: string;
+    steps: { number: number; title: string; desc: string }[];
+  };
+  faqs: {
+    h2: string;
+    subline: string;
+    items: { question: string; answer: string }[];
+  };
+  cta: {
+    h2: string;
+    paragraph: string;
+    whatsappNumber: string;
+    phoneNumber: string;
+    headOffice: string;
+    aboutPageNote: string;
+  };
+}
+
+export const initialBlocksPageCMS: BlocksPageCMSData = {
+  hero: {
+    h1: 'Faisal Hills Blocks and Sectors: Map, Plot Sizes and Status',
+    heroImage: '/images/faisal-hills-aerial-panoramic.webp',
+    kpiCards: {
+      card1: { value: 7, unit: 'Blocks', label: 'Confirmed Sectors' },
+      card2: { value: 'Ready', label: 'Possession in A, Exec & B/C' },
+      card3: { value: '5M – 2K', label: 'Plot Sizing Range' },
+      card4: { value: 'RDA', label: 'Approved Layout Scheme' }
+    },
+    counters: undefined
+  },
+  atAGlance: {
+    h2: 'Faisal Hills Blocks at a Glance',
+    rows: [
+      { id: 'executive-block', name: 'Executive Block', slug: 'executive-block', character: 'Main entrance; commercial centre', approxPlots: '1,450', plotSizes: '5 Marla – 1 Kanal', howSold: 'Full payment', possession: 'Available' },
+      { id: 'block-a', name: 'Block A', slug: 'block-a', character: 'Oldest residential block', approxPlots: '6,000–8,000', plotSizes: '5 Marla – 2 Kanal', howSold: 'Full payment', possession: 'Available' },
+      { id: 'prime-block', name: 'Prime Block', slug: 'prime-block', character: 'Newest block', approxPlots: 'Master plan scheduled', plotSizes: '5.55 Marla – 2 Kanal', howSold: 'Installments', possession: 'Not yet' },
+      { id: 'block-b', name: 'Block B', slug: 'block-b', character: 'Large residential block', approxPlots: '8,050', plotSizes: '5 Marla – 1 Kanal', howSold: 'Full payment / Resale', possession: 'In parts' },
+      { id: 'block-b-extension', name: 'Block B Extension', slug: 'block-b-extension', character: 'Small hillside block', approxPlots: '650', plotSizes: '5 – 10 Marla', howSold: 'Installments', possession: 'Not yet' },
+      { id: 'block-c', name: 'Block C', slug: 'block-c', character: 'Large residential block', approxPlots: '8,350', plotSizes: '5 Marla – 1 Kanal', howSold: 'Full payment / Resale', possession: 'In parts' },
+      { id: 'block-d', name: 'Block D', slug: 'block-d', character: 'Later addition', approxPlots: '2,350–2,435', plotSizes: '5 Marla – 1 Kanal', howSold: 'Installments', possession: 'Confirm plot-by-plot' }
+    ],
+    footnote: 'Plot counts are approximate: rounded from a plot-by-size breakdown published by a sales partner, and not yet checked against the official master plan. Sale mode and possession as last reported with the society office. Commercial plots are reported in most blocks; the Executive Block holds the main commercial centre.'
+  },
+  growthStages: {
+    h2: 'How Many Blocks Does Faisal Hills Have?',
+    paragraph: 'Seven blocks are named most often, but other sources say anything from four to eight. The difference comes from how the society grew.',
+    stages: [
+      { stage: 'Original master plan', blocks: 'A, B, C and Executive', meaning: 'Older map downloads and some property portals still show only these four.' },
+      { stage: 'Added later', blocks: 'D (next to Block C), Prime (beside Block A), B Extension (beside Block B)', meaning: 'A map that stops at Block C is out of date, not wrong.' },
+      { stage: 'Listed by some partners', blocks: 'Hill Estate View', meaning: 'No payment plan confirmed; do not buy a file until the society office confirms it in writing.' },
+      { stage: 'Named by one source only', blocks: '"Golf Block"', meaning: 'Other sources mention a golf course as a master-plan feature, not a block; treat Golf Block offers with caution.' }
+    ],
+    distinctionNote: 'Faisal Hills Phase 2 is a separate scheme with its own layout plan and approval, not a block of Faisal Hills. Blocks and sectors mean the same thing here: listings often say "Sector A" for Block A.'
+  },
+  blockMap: {
+    h2: 'Faisal Hills Block Map',
+    paragraph: 'The main entrance is on the Main GT Road (N-5) near Taxila, beside the Executive Block. A main boulevard runs in past Block A; Block B lies between Blocks A and C, and the later blocks sit further in, toward the M-1 motorway side.',
+    connectors: [
+      '225ft Grand Boulevard central spine',
+      'Direct GT Road (N-5) gateway entrance',
+      'M-1 Motorway corridor connection'
+    ],
+    whereItSits: [
+      { id: 'executive-block', name: 'Executive Block', borders: 'GT Road; Block A', access: 'Main gate on GT Road' },
+      { id: 'block-a', name: 'Block A', borders: 'Executive Block; Prime Block; Block B', access: 'Main boulevard (225 ft)' },
+      { id: 'prime-block', name: 'Prime Block', borders: 'Block A', access: 'Planned second GT Road gate / Main boulevard' },
+      { id: 'block-b', name: 'Block B', borders: 'Block A; Block C', access: 'Main boulevard' },
+      { id: 'block-b-extension', name: 'Block B Extension', borders: 'Block B', access: 'Connected via Block B' },
+      { id: 'block-c', name: 'Block C', borders: 'Block B; Block D', access: '100 ft main roads' },
+      { id: 'block-d', name: 'Block D', borders: 'Block C', access: 'Connected via Block C' }
+    ],
+    mapFootnote: "Listings describe Block D's position in at least four different ways, and Block B Extension's neighbours in three. Before buying, check any block's position on the current approved map at the society office.",
+    readingPlotNumbersTitle: 'Reading plot numbers',
+    readingPlotNumbersText: 'Listings often mention plot-number "series", such as the "800 series" in the Executive Block. These are ranges of plot numbers within a block. Always match a plot\'s block and number against the current approved map rather than an older download.'
+  },
+  blocksOneByOne: [
+    {
+      id: 'executive-block',
+      name: 'Executive Block',
+      slug: 'executive-block',
+      tagline: 'GT Road Entrance & Commercial Hub',
+      character: 'Main entrance; commercial centre',
+      badge: 'Commercial & Civic Gateway',
+      heroImage: '/images/faisal-hills-executive-block.webp',
+      detailedCopy: "The society's commercial and civic centre, at the GT Road entrance. It contains Faisal Jewel, the Roots International School campus, a mosque, a cricket ground and Faisal Mansion, reported as the society's head office. Residential plots run from 5 Marla to 1 Kanal, alongside commercial plots with GT Road visibility. The developer's latest published update lists plots here as full payment only.",
+      plotSizes: '5 Marla – 1 Kanal',
+      howSold: 'Full payment',
+      possession: 'Available',
+      suits: 'Commercial buyers, and anyone who wants to build immediately near the entrance.'
+    },
+    {
+      id: 'block-a',
+      name: 'Block A',
+      slug: 'block-a',
+      tagline: 'Oldest & Most Established Community',
+      character: 'Oldest residential block',
+      badge: 'Most Populated Sector',
+      heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+      detailedCopy: 'The oldest and largest established residential block, next to the Executive Block, with carpeted roads, an operational mosque and families in residence. Plots run from 5 Marla to 2 Kanal, plus commercial plots. Published totals range from about 6,000 to over 8,000 residential plots. Sold on full payment only, according to the developer\'s latest update.',
+      plotSizes: '5 Marla – 2 Kanal',
+      howSold: 'Full payment',
+      possession: 'Available',
+      suits: 'Families and investors who want a lived-in block.'
+    },
+    {
+      id: 'prime-block',
+      name: 'Prime Block',
+      slug: 'prime-block',
+      tagline: 'Newest Sector with Installment Plans',
+      character: 'Newest block',
+      badge: 'Installment Opportunity',
+      heroImage: '/images/faisal-hills-drone-view.webp',
+      detailedCopy: 'The newest block, beside Block A. It is currently the main option for buyers who need a developer installment plan, with plots from 5.55 Marla to 2 Kanal plus commercial plots. Ask for the Prime Block layout map at booking and check your plot\'s position against the boulevard and the planned commercial area.',
+      plotSizes: '5.55 Marla – 2 Kanal',
+      howSold: 'Installments',
+      possession: 'Not yet',
+      suits: 'Installment buyers who can wait for development.'
+    },
+    {
+      id: 'block-b',
+      name: 'Block B',
+      slug: 'block-b',
+      tagline: 'Central Sector with Margalla Views',
+      character: 'Large residential block',
+      badge: 'Largest Land Area',
+      heroImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+      detailedCopy: 'A large residential block between Blocks A and C, with reported views of the Margalla Hills, and described by several sources as the largest block by land area. Plots run from 5 Marla to 1 Kanal, and the master plan reportedly includes a graveyard site here. Possession-ready plots have been offered in parts of the block.',
+      plotSizes: '5 Marla – 1 Kanal',
+      howSold: 'Full payment / Resale',
+      possession: 'In parts',
+      suits: 'Families wanting a quieter residential setting below Block A prices.'
+    },
+    {
+      id: 'block-b-extension',
+      name: 'Block B Extension',
+      slug: 'block-b-extension',
+      tagline: 'Small Hillside Residential Block',
+      character: 'Small hillside block',
+      badge: 'Hillside Enclave',
+      heroImage: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
+      detailedCopy: 'A small block of about 650 plots, 5 to 10 Marla only, created to meet demand for Block B. It sits on hilly terrain, and roads were under construction as of 2026. Check the level of any plot, and whether it needs earthwork, before budgeting for construction.',
+      plotSizes: '5 – 10 Marla',
+      howSold: 'Installments',
+      possession: 'Not yet',
+      suits: 'Budget buyers who want the Block B area and can wait.'
+    },
+    {
+      id: 'block-c',
+      name: 'Block C',
+      slug: 'block-c',
+      tagline: 'Large High-Growth Sector near Motorway',
+      character: 'Large residential block',
+      badge: 'Value & Scale',
+      heroImage: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80',
+      detailedCopy: 'One of the largest blocks, further from the entrance, with about 8,350 residential plots, most of them 5 and 8 Marla, and a large number of commercial plots. Main roads are built and internal streets are at different stages, with fewer houses so far than in Blocks A and B. Some plots have possession.',
+      plotSizes: '5 Marla – 1 Kanal',
+      howSold: 'Full payment / Resale',
+      possession: 'In parts',
+      suits: 'Buyers with a longer time horizon who want a lower entry price.'
+    },
+    {
+      id: 'block-d',
+      name: 'Block D',
+      slug: 'block-d',
+      tagline: 'Later Addition next to Block C',
+      character: 'Later addition',
+      badge: 'Suburban Addition',
+      heroImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+      detailedCopy: 'A later addition next to Block C, with about 2,350 to 2,435 plots depending on the source. Plots run from 5 Marla to 1 Kanal, with 2 Kanal plots listed in some plans. Installments were reported in recent cycles. Sources contradict each other on possession, so confirm it plot by plot.',
+      plotSizes: '5 Marla – 1 Kanal',
+      howSold: 'Installments',
+      possession: 'Confirm plot-by-plot',
+      suits: 'Entry-level buyers comfortable checking possession for each plot.'
+    }
+  ],
+  plotSizesSection: {
+    h2: 'Plot Sizes by Block',
+    subline: 'Dimension and square footage distribution across all Faisal Hills blocks.',
+    matrix: [
+      { dimensions: '25 × 50', areaSqFt: '1,250', exec: true, a: true, prime: true, b: true, bExt: true, c: true, d: true },
+      { dimensions: '30 × 60', areaSqFt: '1,800', exec: true, a: true, prime: true, b: true, bExt: true, c: true, d: true },
+      { dimensions: '35 × 70', areaSqFt: '2,450', exec: true, a: true, prime: true, b: true, bExt: true, c: true, d: true },
+      { dimensions: '40 × 80', areaSqFt: '3,200', exec: true, a: true, prime: true, b: true, bExt: false, c: false, d: true },
+      { dimensions: '50 × 90', areaSqFt: '4,500', exec: true, a: true, prime: true, b: true, bExt: false, c: true, d: true },
+      { dimensions: '2 Kanal', areaSqFt: '9,000–9,600', exec: false, a: true, prime: true, b: false, bExt: false, c: false, d: 'Select' }
+    ],
+    footnote: "A tick (✓) means the size exists in the block's published plot schedule, not that plots are currently for sale."
+  },
+  marlaConversions: {
+    h2: 'Why the Same Plot is Sold Under Different Marla Sizes',
+    intro: 'Three Marla sizes are in use in Faisal Hills listings: the standard revenue Marla of 272.25 sq ft, a 250 sq ft Marla common in listings, and the 225 sq ft Marla used in the developer\'s recent plans. The same plot can therefore appear under different sizes:',
+    rows: [
+      { dimensions: '25 × 50', areaSqFt: '1,250', at272: '4.59 Marla', at250: '5 Marla', at225: '5.56 Marla', usuallySold: '5 Marla' },
+      { dimensions: '30 × 60', areaSqFt: '1,800', at272: '6.61 Marla', at250: '7.2 Marla', at225: '8 Marla', usuallySold: '7 or 8 Marla' },
+      { dimensions: '35 × 70', areaSqFt: '2,450', at272: '9 Marla', at250: '9.8 Marla', at225: '10.89 Marla', usuallySold: '10 Marla' },
+      { dimensions: '40 × 80', areaSqFt: '3,200', at272: '11.75 Marla', at250: '12.8 Marla', at225: '14.22 Marla', usuallySold: '12 or 14 Marla' },
+      { dimensions: '50 × 90', areaSqFt: '4,500', at272: '16.53 Marla', at250: '18 Marla', at225: '20 Marla', usuallySold: '1 Kanal' }
+    ],
+    callout: 'That is why listings show sizes like "4.5", "5.56", "12" or "14.22" Marla for standard Faisal Hills plots. A Faisal Hills "1 Kanal" plot of 4,500 sq ft is also smaller than a revenue-record Kanal of 5,445 sq ft. Always compare plots, and prices, by exact dimensions and square feet.'
+  },
+  plotPrices: {
+    h2: 'Plot Prices and Supply by Block',
+    subline: 'Prices follow supply and development. The Executive Block has about 1,450 residential plots near the entrance, while Blocks B and C together hold roughly 16,000, most of them small. Asking prices reflect that gap.',
+    rows: [
+      { id: 'executive-block', name: 'Executive Block', fiveMarla: 'PKR 70–90 lakh', oneKanal: 'PKR 2.00–2.90 crore' },
+      { id: 'block-a', name: 'Block A', fiveMarla: 'PKR 55–70 lakh', oneKanal: 'PKR 1.45–2.25 crore' },
+      { id: 'prime-block', name: 'Prime Block', fiveMarla: 'PKR 45–70 lakh', oneKanal: 'PKR 1.75–2.50 crore' },
+      { id: 'block-b', name: 'Block B', fiveMarla: 'PKR 40–65 lakh', oneKanal: 'PKR 1.15–1.75 crore' },
+      { id: 'block-b-extension', name: 'Block B Extension', fiveMarla: 'PKR 45–65 lakh', oneKanal: '—' },
+      { id: 'block-c', name: 'Block C', fiveMarla: 'PKR 35–60 lakh', oneKanal: 'PKR 1.20–1.75 crore' },
+      { id: 'block-d', name: 'Block D', fiveMarla: 'PKR 40–55 lakh', oneKanal: 'PKR 1.40–2.10 crore' }
+    ],
+    footnote: 'Open-market asking prices as of recent verified cycles. Live listings checked in September 2026 were broadly in line, with some Block A 5 Marla plots listed slightly above this range. Corner, park-facing and boulevard plots, level terrain and balloted plots command more.'
+  },
+  developmentStatus: {
+    h2: 'Development Status by Block',
+    subline: 'Verified ground progress, utilities readiness, and inhabited villa distribution.',
+    rows: [
+      { name: 'Executive', roads: 'Developed', houses: 'Houses and commercial buildings; construction ongoing', reported: 'Verified 2026' },
+      { name: 'Block A', roads: 'Carpeted roads; mosque operational', houses: 'Families living in hundreds of built villas', reported: 'Verified 2026' },
+      { name: 'Prime', roads: 'Early stage earthwork and road alignment', houses: 'Not yet inhabited (infrastructure phase)', reported: 'Verified 2026' },
+      { name: 'Block B', roads: 'Largely developed', houses: 'Houses built and under construction', reported: 'Verified 2026' },
+      { name: 'Block B Extension', roads: 'Roads under construction', houses: 'Not yet (earthwork & grid leveling)', reported: 'Verified 2026' },
+      { name: 'Block C', roads: 'Main roads built; internal streets in progress', houses: 'Few houses so far; construction picking pace', reported: 'September 2026' },
+      { name: 'Block D', roads: 'Initial groundwork and sector road plotting', houses: 'Not yet inhabited', reported: 'Verified 2026' }
+    ],
+    footnote: 'For dated photographs of each block, see our development updates.',
+    infrastructure: {
+      h3: 'Society-Wide Infrastructure',
+      paragraph: 'The public record of shared infrastructure confirms major engineering milestones: the grand main entrance gate and 225ft boulevard are complete, alongside the Fatima Tuz Zahra Jamia Masjid for about 3,000 worshippers, Allah Wala Chowk, a direct bridge connecting to Taxila city, and an engineered bridge over the nullah linked to GT Road by a 150 ft wide access road. Land has also been acquired for a planned second GT Road gate.',
+      cards: [
+        { title: '225ft Grand Boulevard', desc: 'Carpeted central spine connecting GT Road to inner sectors.' },
+        { title: '3,000-Capacity Masjid', desc: 'Fully functional central Jamia Mosque with Quran academy.' },
+        { title: 'Taxila City Bridge', desc: 'Direct bridge connection over nullah for smooth transit.' },
+        { title: 'Second Gate Acquisition', desc: 'Additional GT Road gateway acquisition in progress.' }
+      ]
+    }
+  },
+  decisionMatrix: {
+    h2: 'Which Block Fits Your Plan',
+    subline: 'Align your capital allocation and holding horizon with the right sector.',
+    rows: [
+      { goal: 'Build a home now', consider: 'Executive, A; possession-ready plots in B and C', tradeOff: 'Highest prices; full payment' },
+      { goal: 'Pay in installments', consider: 'Prime, D, B Extension', tradeOff: 'Earlier-stage development' },
+      { goal: 'Buy commercial property', consider: 'Executive Block', tradeOff: 'Highest entry cost' },
+      { goal: 'Enter at the lowest price', consider: 'C, D, B', tradeOff: 'Longer wait for full development' },
+      { goal: 'Avoid earthwork costs', consider: 'Level plots in developed blocks', tradeOff: 'Check terrain plot by plot' }
+    ],
+    decisionCards: undefined,
+    glossaryTerms: undefined
+  },
+  glossary: {
+    h2: "Terms You'll See in Faisal Hills Listings",
+    subline: 'Understand the standard market vocabulary before negotiating or signing an agreement.',
+    terms: [
+      { term: 'File', definition: 'A booking right to a plot not yet assigned a number or location; the final position depends on balloting.' },
+      { term: 'Balloted Plot', definition: 'A plot with an assigned number and confirmed physical location on the official map.' },
+      { term: 'Possession', definition: 'Physical handover of the plot by the society so architectural construction can immediately begin.' },
+      { term: 'NDC (No Demand Certificate)', definition: 'Official document confirming no financial dues or penalties are outstanding before plot transfer.' },
+      { term: 'Solid Land / Cut Land', definition: 'Listing shorthand for plots on natural ground versus plots formed by cutting into slopes (which may need more earthwork).' },
+      { term: 'Series (e.g. 800 series)', definition: 'A range of plot numbers grouped within a block designating a specific lane or sub-pocket.' }
+    ],
+    premiumNote: 'Corner, Park-Facing, Boulevard-Facing: Positions that usually carry a higher market price or a 10% to 15% category premium charge at booking.'
+  },
+  dueDiligence: {
+    h2: 'Check a Block Before You Commit',
+    subline: 'Follow this verified checklist before making down payments or signing transfer papers.',
+    steps: [
+      { number: 1, title: 'Confirm Plot & Block on Plan', desc: 'Confirm the block and plot number on the current approved layout plan at the society office.' },
+      { number: 2, title: 'Verify Legal Authority Approval', desc: 'Confirm scheme approval with the Rawalpindi Development Authority (RDA).' },
+      { number: 3, title: 'Confirm Exact Plot Possession', desc: 'Confirm possession for that exact plot number, not just the generalized block status.' },
+      { number: 4, title: 'Conduct On-Site Physical Check', desc: 'Check the terrain and natural ground contour on-site, especially in hillside sectors like B Extension.' },
+      { number: 5, title: 'Confirm Sale Mode & Dues', desc: 'Confirm the sale mode: full payment or installments, development charges, and any position premiums.' },
+      { number: 6, title: 'Confirm Transfer & NDC Papers', desc: 'Confirm transfer requirements, including the NDC and official transfer fees in writing.' }
+    ]
+  },
+  faqs: {
+    h2: 'Frequently Asked Questions',
+    subline: 'Everything you need to know regarding block counts, possession, plot sizing, and commercial areas.',
+    items: [
+      { question: 'How many blocks does Faisal Hills have?', answer: 'Seven blocks are named most often: Executive, Prime, A, B, B Extension, C and D. Some partners also list Hill Estate View, and older maps show only four.' },
+      { question: 'Why do some Faisal Hills maps show only four blocks?', answer: 'The original master plan covered Blocks A, B, C and Executive. Blocks D, Prime and B Extension were added later, and some portals and older downloads have not been updated.' },
+      { question: 'Is there a Golf Block in Faisal Hills?', answer: 'Only one source we found lists a Golf Block; other sources do not. Confirm with the society office before considering any Golf Block offer.' },
+      { question: 'Which blocks are developed and have possession?', answer: 'The Executive Block and Block A are the most developed, with residents and possession. Possession-ready plots have been offered in parts of Blocks B and C, and reports on Block D conflict. Confirm possession plot by plot.' },
+      { question: 'Where is the main commercial area of Faisal Hills?', answer: 'In the Executive Block at the GT Road entrance, which contains Faisal Jewel and most commercial activity. Other blocks have smaller commercial plots.' },
+      { question: 'Which blocks are on GT Road?', answer: 'The Executive Block sits at the main entrance on the Main GT Road (N-5). Some sources also describe Prime Block as running along GT Road.' },
+      { question: 'Which is the largest block?', answer: 'Block B is described as the largest by land area. Blocks B and C each have over 8,000 residential plots.' },
+      { question: 'What is the difference between Block B and Block B Extension?', answer: 'Block B is the larger, more developed block. B Extension is a smaller hillside addition of about 650 plots of 5 to 10 Marla, at an earlier stage.' },
+      { question: 'Is Faisal Hills Phase 2 a block?', answer: 'No. It is a separate scheme with its own layout plan and approval.' },
+      { question: 'Why is the same plot listed as 12 or 14 Marla?', answer: 'A 40 × 80 ft plot is 11.75 Marla at 272.25 sq ft, 12.8 at 250 sq ft and 14.22 at 225 sq ft. Compare plots by dimensions and square feet.' }
+    ]
+  },
+  cta: {
+    h2: 'Compare Blocks With Us',
+    paragraph: "Tell us your budget, preferred plot size and whether you need installments. We'll share current availability by block along with the official schedule, and can arrange a site visit to see the blocks side by side.",
+    whatsappNumber: '+92 333 1113177',
+    phoneNumber: '+92 333 1113177',
+    headOffice: 'Faisal Mansion, Executive Block, Main GT Road, Taxila / Rawalpindi.',
+    aboutPageNote: 'Reviewed by Senior Property Advisor of Faisal Hills Islamabad Advisory Desk. Block details are drawn from published master-plan data, developer updates and society office confirmations.'
+  },
+  glance: undefined,
+  stages: undefined,
+  mapSection: undefined,
+  dimensions: undefined,
+  prices: undefined,
+  statusSection: undefined
+};
+
+export function mergeBlocksCMS(incoming: any): BlocksPageCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialBlocksPageCMS;
+  return {
+  hero: {
+    ...initialBlocksPageCMS.hero,
+    ...(incoming.hero || {}),
+    kpiCards: {
+      card1: { ...initialBlocksPageCMS.hero.kpiCards.card1, ...(incoming.hero?.kpiCards?.card1 || {}) },
+      card2: { ...initialBlocksPageCMS.hero.kpiCards.card2, ...(incoming.hero?.kpiCards?.card2 || {}) },
+      card3: { ...initialBlocksPageCMS.hero.kpiCards.card3, ...(incoming.hero?.kpiCards?.card3 || {}) },
+      card4: { ...initialBlocksPageCMS.hero.kpiCards.card4, ...(incoming.hero?.kpiCards?.card4 || {}) },
+    }
+  },
+  atAGlance: {
+    ...initialBlocksPageCMS.atAGlance,
+    ...(incoming.atAGlance || {}),
+    rows: Array.isArray(incoming.atAGlance?.rows) && incoming.atAGlance.rows.length > 0
+      ? incoming.atAGlance.rows
+      : initialBlocksPageCMS.atAGlance.rows
+  },
+  growthStages: {
+    ...initialBlocksPageCMS.growthStages,
+    ...(incoming.growthStages || {}),
+    stages: Array.isArray(incoming.growthStages?.stages) && incoming.growthStages.stages.length > 0
+      ? incoming.growthStages.stages
+      : initialBlocksPageCMS.growthStages.stages
+  },
+  blockMap: {
+    ...initialBlocksPageCMS.blockMap,
+    ...(incoming.blockMap || {}),
+    connectors: Array.isArray(incoming.blockMap?.connectors)
+      ? incoming.blockMap.connectors
+      : initialBlocksPageCMS.blockMap.connectors,
+    whereItSits: Array.isArray(incoming.blockMap?.whereItSits) && incoming.blockMap.whereItSits.length > 0
+      ? incoming.blockMap.whereItSits
+      : initialBlocksPageCMS.blockMap.whereItSits
+  },
+  blocksOneByOne: Array.isArray(incoming.blocksOneByOne) && incoming.blocksOneByOne.length > 0
+    ? incoming.blocksOneByOne
+    : initialBlocksPageCMS.blocksOneByOne,
+  plotSizesSection: {
+    ...initialBlocksPageCMS.plotSizesSection,
+    ...(incoming.plotSizesSection || {}),
+    matrix: Array.isArray(incoming.plotSizesSection?.matrix) && incoming.plotSizesSection.matrix.length > 0
+      ? incoming.plotSizesSection.matrix
+      : initialBlocksPageCMS.plotSizesSection.matrix
+  },
+  marlaConversions: {
+    ...initialBlocksPageCMS.marlaConversions,
+    ...(incoming.marlaConversions || {}),
+    rows: Array.isArray(incoming.marlaConversions?.rows) && incoming.marlaConversions.rows.length > 0
+      ? incoming.marlaConversions.rows
+      : initialBlocksPageCMS.marlaConversions.rows
+  },
+  plotPrices: {
+    ...initialBlocksPageCMS.plotPrices,
+    ...(incoming.plotPrices || {}),
+    rows: Array.isArray(incoming.plotPrices?.rows) && incoming.plotPrices.rows.length > 0
+      ? incoming.plotPrices.rows
+      : initialBlocksPageCMS.plotPrices.rows
+  },
+  developmentStatus: {
+    ...initialBlocksPageCMS.developmentStatus,
+    ...(incoming.developmentStatus || {}),
+    rows: Array.isArray(incoming.developmentStatus?.rows) && incoming.developmentStatus.rows.length > 0
+      ? incoming.developmentStatus.rows
+      : initialBlocksPageCMS.developmentStatus.rows,
+    infrastructure: {
+      ...initialBlocksPageCMS.developmentStatus.infrastructure,
+      ...(incoming.developmentStatus?.infrastructure || {}),
+      cards: Array.isArray(incoming.developmentStatus?.infrastructure?.cards)
+        ? incoming.developmentStatus.infrastructure.cards
+        : initialBlocksPageCMS.developmentStatus.infrastructure.cards
+    }
+  },
+  decisionMatrix: {
+    ...initialBlocksPageCMS.decisionMatrix,
+    ...(incoming.decisionMatrix || {}),
+    rows: Array.isArray(incoming.decisionMatrix?.rows) && incoming.decisionMatrix.rows.length > 0
+      ? incoming.decisionMatrix.rows
+      : initialBlocksPageCMS.decisionMatrix.rows
+  },
+  glossary: {
+    ...initialBlocksPageCMS.glossary,
+    ...(incoming.glossary || {}),
+    terms: Array.isArray(incoming.glossary?.terms) && incoming.glossary.terms.length > 0
+      ? incoming.glossary.terms
+      : initialBlocksPageCMS.glossary.terms
+  },
+  dueDiligence: {
+    ...initialBlocksPageCMS.dueDiligence,
+    ...(incoming.dueDiligence || {}),
+    steps: Array.isArray(incoming.dueDiligence?.steps) && incoming.dueDiligence.steps.length > 0
+      ? incoming.dueDiligence.steps
+      : initialBlocksPageCMS.dueDiligence.steps
+  },
+  faqs: {
+    ...initialBlocksPageCMS.faqs,
+    ...(incoming.faqs || {}),
+    items: Array.isArray(incoming.faqs?.items) && incoming.faqs.items.length > 0
+      ? incoming.faqs.items
+      : initialBlocksPageCMS.faqs.items
+  },
+  cta: {
+    ...initialBlocksPageCMS.cta,
+    ...(incoming.cta || {})
+  },
+  glance: undefined,
+  stages: undefined,
+  mapSection: undefined,
+  dimensions: undefined,
+  prices: undefined,
+  statusSection: undefined
+  };
+}
+
+export async function fetchBlocksPageCMS(): Promise<BlocksPageCMSData> {
+  const remote = await fetchSettingByKey<BlocksPageCMSData>('faisal_blocks_cms');
+  if (remote) return mergeBlocksCMS(remote);
+
+  if (typeof window !== 'undefined') {
+    try {
+      const local = localStorage.getItem('faisal_blocks_cms');
+      if (local) return mergeBlocksCMS(JSON.parse(local));
+    } catch {}
+  }
+  return initialBlocksPageCMS;
+}
+
+export async function saveBlocksPageCMS(cmsData: BlocksPageCMSData, token?: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_blocks_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_blocks_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_blocks_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+
+
 
 
 
