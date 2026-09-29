@@ -44,7 +44,10 @@ import {
   Filter,
   DollarSign,
   TrendingUp,
-  X
+  X,
+  AlertTriangle,
+  Info,
+  Scale
 } from 'lucide-react';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -525,67 +528,56 @@ export default function BlockAContent() {
     <div className="space-y-12 lg:space-y-16 pt-2 font-sans text-slate-800">
 
       {/* ========================================================= */}
-      {/* 1. SECTOR A OVERVIEW & VISION                             */}
+      {/* 1. SECTOR A OVERVIEW & QUICK SPECS SUMMARY                */}
       {/* ========================================================= */}
-      <section id="overview" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Text */}
-          <div className="lg:col-span-7 space-y-6">
+      <section id="overview" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+        
+        {/* Page Byline / Verification Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Official Verified Block Guide</span>
+          </div>
+          <div className="text-xs text-slate-500 font-medium flex items-center gap-3">
+            <span>Reviewed & Verified</span>
+            <span>•</span>
+            <span className="text-emerald-700 font-bold">100% On-Ground Possession</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Left Column: Narrative */}
+          <div className="lg:col-span-7 space-y-5">
             <ScrollReveal direction="left" delay={50}>
               <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Hills Block A Overview"
+                  text="Faisal Hills Block A: Plot Prices, Possession and Plots for Sale"
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
 
-                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    Positioned directly adjacent to the Faisal Hills Grand Main Gate off GT Road, <strong>Block A</strong> stands as the flagship delivered sector of the society. Holding full <strong>RDA approval</strong>, this mature neighbourhood hosts hundreds of thriving family villas, the iconic <strong>Grand Jamia Mosque</strong>, a 12-Kanal central family park, and fully operational commercial markets.{!isOverviewExpanded && (
-                      <>
-                        {' '}
-                        <button
-                          type="button"
-                          onClick={() => setIsOverviewExpanded(true)}
-                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
-                        >
-                          See more
-                        </button>
-                      </>
-                    )}
+                    <strong>Block A</strong> is the largest established residential block in Faisal Hills, positioned between Block B and the Executive Block, reached directly from the GT Road (N-5) entrance along the main boulevard. Roads are carpeted, utilities are fully operational, and hundreds of families already live here—so buyers can build immediately rather than wait.
                   </p>
 
-                  {isOverviewExpanded && (
-                    <div className="space-y-3 animate-fadeIn">
-                      <p>
-                        With 100% underground electricity, Sui gas, continuous filtered water supply, and wide carpeted boulevards, Block A is the gold standard for immediate home construction and family living.
-                      </p>
-                      <p>
-                        Its established infrastructure also makes it the highest-demand rental sector in the entire scheme, delivering secure, inflation-hedged yields for property investors.{' '}
-                        <button
-                          type="button"
-                          onClick={() => setIsOverviewExpanded(false)}
-                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
-                        >
-                          See less
-                        </button>
-                      </p>
-                    </div>
-                  )}
+                  <p>
+                    It is also the society's most actively traded block. Developer inventory is reported to be exhausted, so almost every purchase here is a resale transfer settled in full rather than a fresh booking instalment plan.
+                  </p>
                 </div>
               </div>
             </ScrollReveal>
           </div>
 
           {/* Right Column: Visual Showcase Card */}
-          <div className="lg:col-span-5 w-full">
+          <div className="lg:col-span-5 w-full flex flex-col justify-between space-y-4">
             <ScrollReveal direction="right" delay={100}>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-950 min-h-[340px] sm:min-h-[380px] flex flex-col justify-between group">
+              <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between group">
                 <img
                   src="/images/faisal-hills-jamia-mosque.webp"
-                  alt="Block A Grand Jamia Mosque"
+                  alt="Block A Grand Jamia Mosque and Resident Community"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/30" />
@@ -596,22 +588,42 @@ export default function BlockAContent() {
                     Grand Jamia Mosque • Block A
                   </span>
                   <span className="text-[10px] font-semibold text-emerald-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-400/30">
-                    Live Operational
+                    Live & Populated
                   </span>
                 </div>
 
                 {/* Bottom Highlight Overlay */}
                 <div className="relative z-10 p-6 space-y-3">
                   <div className="space-y-1">
-                    <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
+                    <h3 className="font-serif font-bold text-xl sm:text-2xl text-white drop-shadow-md">
                       Established Living with 500+ Resident Families
                     </h3>
+                    <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                      Carpeted streets, underground utilities, operational schools, and full ready possession.
+                    </p>
                   </div>
                 </div>
               </div>
             </ScrollReveal>
+
+            {/* Quick Contact CTA */}
+            <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-100 flex items-center justify-between gap-3">
+              <div className="text-xs text-slate-700">
+                <strong className="text-slate-900 block font-bold">Ask for Verified Available Plots & Rates</strong>
+                <span>Instant inquiry via WhatsApp or Direct Call</span>
+              </div>
+              <a
+                href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20ask%20for%20verified%20available%20plots%20and%20today%27s%20rate%20in%20Block%20A."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold rounded-xl shrink-0 transition-colors shadow-xs"
+              >
+                Inquire Rates
+              </a>
+            </div>
           </div>
         </div>
+        
       </section>
 
       {/* ========================================================= */}
@@ -623,47 +635,36 @@ export default function BlockAContent() {
           {/* Left Column: Narrative Content */}
           <div className="lg:col-span-7 space-y-6">
             <ScrollReveal direction="left" delay={50}>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <TextReveal
                   as="h2"
-                  text="Faisal Hills Block A Location & Commute Accessibility"
+                  text="Where Block A Is: Strategic Access & Location"
                   className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
-                <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
+                <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    Block A benefits from the most privileged entrance position in Faisal Hills, eliminating society internal traffic delays and providing effortless access to the National Highway (GT Road N-5).{!isLocationExpanded && (
-                      <>
-                        {' '}
-                        <button
-                          type="button"
-                          onClick={() => setIsLocationExpanded(true)}
-                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
-                        >
-                          See more
-                        </button>
-                      </>
-                    )}
+                    Block A sits between Block B and the Executive Block, off the society's main boulevard. Because it borders the Executive Block, the school, mosque and commercial area near the main GT Road entrance are just a short drive away.
                   </p>
-
-                  {isLocationExpanded && (
-                    <div className="space-y-3 animate-fadeIn">
-                      <p>
-                        Directly linked with Quaid Avenue, Wah Cantt, and the M-1 Motorway corridor, Sector A ensures rapid commuting to Islamabad Zero Point and Rawalpindi City.
-                      </p>
-                      <p>
-                        The sector sits in close proximity to major educational institutions, hospitals, and the upcoming commercial centers of Faisal Hills.{' '}
-                        <button
-                          type="button"
-                          onClick={() => setIsLocationExpanded(false)}
-                          className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors"
-                        >
-                          See less
-                        </button>
-                      </p>
+                  <p>
+                    Faisal Hills is marketed as an Islamabad address. The society itself lies in Rawalpindi District near Taxila, under the regulatory jurisdiction of the Rawalpindi Development Authority (RDA).
+                  </p>
+                  
+                  <div className="pt-2">
+                    <strong className="text-slate-900 font-bold block mb-2 text-xs uppercase tracking-wider">Key Connecting Corridors from Block A:</strong>
+                    <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                      {['Islamabad via Margalla Avenue', 'Islamabad via Srinagar Highway', 'Sector B-17 (Multi Gardens)', 'Taxila Cantt', 'M-1 Motorway', 'New Islamabad International Airport'].map((route, rIdx) => (
+                        <span key={rIdx} className="px-3 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200">
+                          📍 {route}
+                        </span>
+                      ))}
                     </div>
-                  )}
+                  </div>
+
+                  <p className="text-xs text-slate-600 pt-2 italic border-l-2 border-[#7b002c] pl-3">
+                    <strong>Measured Drive Times Policy:</strong> Published drive times for this block range from 5 minutes to 45 minutes depending on online sources. We publish measured times based on our team driving the route with exact distance and time of day.
+                  </p>
                 </div>
               </div>
             </ScrollReveal>
@@ -671,7 +672,7 @@ export default function BlockAContent() {
 
           {/* Right Column: Google Map Embed */}
           <div className="lg:col-span-5 space-y-3">
-            <div className="relative w-full h-[300px] sm:h-[340px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+            <div className="relative w-full h-[320px] sm:h-[360px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
               <iframe
                 title="Faisal Hills Block A Exact Location Google Map"
                 src="https://maps.google.com/maps?q=Faisal+Hills+Block+A+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
@@ -683,6 +684,9 @@ export default function BlockAContent() {
                 referrerPolicy="no-referrer-when-downgrade"
                 className="w-full h-full"
               />
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium text-center">
+              <span>Nearby: HITEC University, UET Taxila, Taxila Museum, Wah Cantt, Faisal Margalla City</span>
             </div>
           </div>
 
@@ -697,68 +701,19 @@ export default function BlockAContent() {
           <div className="space-y-2">
             <TextReveal
               as="h2"
-              text="Nearby Landmarks & Commute Distances from Block A"
+              text="Nearby Landmarks & Measured Commute Times"
               className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
               staggerDelay={65}
               direction="left"
             />
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
-              Verified drive times and connectivity distances to major universities, hospitals, airports, and city centers from Sector A.
+              Verified drive times and connectivity distances measured from Sector A main boulevard:
             </p>
           </div>
         </ScrollReveal>
 
-        {/* Mobile View: Compact Options Accordion List */}
-        <div className="block sm:hidden space-y-2">
-          {blockATravelTimes.map((dest, idx) => {
-            const isSelected = activeLandmarkIndex === idx;
-            return (
-              <div
-                key={idx}
-                onClick={() => setActiveLandmarkIndex(isSelected ? null : idx)}
-                className={`rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
-                  isSelected
-                    ? 'bg-rose-50/60 border-[#7b002c]/40 shadow-xs'
-                    : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/70'
-                }`}
-              >
-                <div className="p-3 flex items-center justify-between gap-2.5">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors ${
-                      isSelected ? 'bg-[#7b002c] text-white' : 'bg-slate-200 text-slate-700'
-                    }`}>
-                      <MapPin className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="font-serif font-bold text-xs text-slate-900 truncate">
-                      {dest.destination}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] font-bold text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                      {dest.time}
-                    </span>
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${
-                        isSelected ? 'rotate-180 text-[#7b002c]' : ''
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                {isSelected && (
-                  <div className="px-3.5 pb-3 pt-1 text-[11px] text-slate-600 border-t border-rose-100/80 flex items-center justify-between animate-fadeIn bg-white/60">
-                    <span>Distance: <strong className="text-slate-900 font-semibold">{dest.distance}</strong></span>
-                    <span className="italic text-slate-500">{dest.note}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
         {/* Desktop & Tablet View: Grid Cards */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
           {blockATravelTimes.map((dest, idx) => (
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-rose-300 transition-all space-y-2">
@@ -779,14 +734,261 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 4. MASTER PLAN & LAYOUT BLUEPRINT                         */}
+      {/* 4. BLOCK A MAP & MASTER PLAN                              */}
       {/* ========================================================= */}
       <section id="master-plan" className="scroll-mt-28 bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Block A Map and Master Plan Layout"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl leading-relaxed">
+              Laid out around the main boulevard with residential streets behind it and commercial plots on wider roads. Always check plot position, facing and street width before committing.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsMapModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#7b002c] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#9e1245] shadow-sm transition-all cursor-pointer shrink-0"
+          >
+            <Download className="w-4 h-4" />
+            <span>Download Master Map PDF</span>
+          </button>
+        </div>
+
+        <ScrollReveal direction="up" delay={100}>
+          <div
+            onClick={() => setIsMapModalOpen(true)}
+            className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[440px] p-2 sm:p-4"
+          >
+            <img
+              src="/images/faisal-hills-master-plan-map.webp"
+              alt="Faisal Hills Block A Master Plan Layout Blueprint"
+              className="w-full h-auto max-h-[520px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+              <span className="px-4 py-2 rounded-xl bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-2">
+                <Maximize2 className="w-4 h-4 text-[#7b002c]" />
+                <span>Click to Enlarge & Download High-Res Map</span>
+              </span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 leading-relaxed font-medium">
+          <span className="font-bold text-slate-900">Road Width Specifications: </span>
+          Main boulevard is planned at 225-foot width, with main sector roads running 110–120 feet, and residential streets built between 40 to 60 feet wide.
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 5. PLOT SIZES IN BLOCK A & MARLA CALCULATION GUIDE        */}
+      {/* ========================================================= */}
+      <section id="plot-sizes" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2">
             <TextReveal
               as="h2"
-              text="Faisal Hills Block A Master Plan"
+              text="Plot Sizes in Block A: Dimensions & Marla Calculations"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl">
+              Official plot dimensions, total square footage, square yard conversions, and market classifications:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Plot Sizes Specs Table */}
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+          <table className="w-full text-left text-xs sm:text-sm font-sans">
+            <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+              <tr>
+                <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800">Dimensions (ft)</th>
+                <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800">Area (sq ft)</th>
+                <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800">Area (sq yds)</th>
+                <th className="p-3.5 sm:p-4 font-bold text-amber-300">Sold & Marketed As</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white font-medium">
+              {[
+                { dim: '25 × 50', sqft: '1,250', sqyds: '139', sold: '5 Marla' },
+                { dim: '30 × 60', sqft: '1,800', sqyds: '200', sold: '8 Marla' },
+                { dim: '35 × 70', sqft: '2,450', sqyds: '272', sold: '10 Marla' },
+                { dim: '40 × 80', sqft: '3,200', sqyds: '356', sold: '14 Marla' },
+                { dim: '50 × 90', sqft: '4,500', sqyds: '500', sold: '1 Kanal' },
+                { dim: '75 × 120', sqft: '9,000', sqyds: '1,000', sold: '2 Kanal' },
+              ].map((row, idx) => (
+                <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">{row.dim}</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700 font-mono border-r border-slate-200">{row.sqft}</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700 font-mono border-r border-slate-200">{row.sqyds}</td>
+                  <td className="p-3.5 sm:p-4 font-bold text-[#7b002c]">{row.sold}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Non-Standard Sizes & Marla Calculation Guide Box */}
+        <div className="p-5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
+          <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+            <Info className="w-4 h-4 text-amber-700 shrink-0" />
+            <span>Understanding Non-Standard Plot Sizes & Marla Standards</span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+            Block A listings regularly include 6 Marla plots (30 × 50 ft), along with 5.5 Marla, 10.9 Marla and 1.2 Kanal descriptions. Some are genuinely non-standard plots; others are standard plots measured with a different Marla size, since Faisal Hills official schedules use a <strong>225 sq ft Marla</strong> while many property portal listings use 250 sq ft.
+          </p>
+          <div className="p-3 rounded-xl bg-white border border-amber-200/80 text-xs text-slate-800 font-semibold">
+            💡 <strong>Buyer Tip:</strong> Always compare offers by dimensions and total square feet, not by the Marla figure in the headline. A plot advertised as 10 Marla may measure 2,250 or 2,450 square feet.
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 6. BLOCK A PLOT PRICES & PER-SQUARE-FOOT ANALYSIS         */}
+      {/* ========================================================= */}
+      <section id="pricing-matrix" className="scroll-mt-28 space-y-8">
+        
+        {/* Table 1: Published Range vs Recent Asking Prices */}
+        <div className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div className="space-y-2">
+                <TextReveal
+                  as="h2"
+                  text="Block A Plot Prices: Asking Prices & Market Bands"
+                  className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                  staggerDelay={65}
+                  direction="left"
+                />
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
+                  Two sets of figures circulate in the market: published historical bands and active asking prices advertised by sellers.
+                </p>
+              </div>
+
+              <a
+                href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20the%20latest%20Block%20A%20plot%20price%20quotation."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold transition shadow-sm shrink-0"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Get Live Price Quote</span>
+              </a>
+            </div>
+          </ScrollReveal>
+
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+            <table className="w-full text-left text-xs sm:text-sm font-sans">
+              <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800">Plot Size</th>
+                  <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800 text-amber-300">Published Market Range</th>
+                  <th className="p-3.5 sm:p-4 font-bold text-emerald-300">Recent Asking Prices (Resale)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white font-medium">
+                {[
+                  { size: '5 Marla', range: 'PKR 55 to 70 lakh', asking: 'PKR 55 to 95 lakh (most 72 to 85 lakh)' },
+                  { size: '8 Marla', range: 'PKR 75 lakh to 1.25 crore', asking: 'Around PKR 1.22 crore (Margalla-facing)' },
+                  { size: '10 Marla', range: 'PKR 95 lakh to 1.4 crore', asking: 'PKR 1.35 to 1.65 crore' },
+                  { size: '14 Marla', range: 'PKR 1.2 to 1.7 crore', asking: 'Rates on request (Sample limited)' },
+                  { size: '1 Kanal', range: 'PKR 1.45 to 2.25 crore', asking: 'Rates on request (Sample limited)' },
+                  { size: '2 Kanal', range: 'PKR 2.7 to 3.5 crore', asking: 'PKR 3.1 to 3.2 crore (Signature Value)' },
+                ].map((row, idx) => (
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                    <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">{row.size}</td>
+                    <td className="p-3.5 sm:p-4 text-slate-700 border-r border-slate-200">{row.range}</td>
+                    <td className="p-3.5 sm:p-4 font-serif font-bold text-[#7b002c]">{row.asking}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-slate-500 italic">
+            Corner, main double road (MDR), park-facing and Margalla-facing plots sell above standard plots in the same street. Treat unusually low quotes (e.g. 30–45 lakh for 5M) with caution as they often refer to outdated launch rates.
+          </p>
+        </div>
+
+        {/* Table 2: Larger Plots Cost Less Per Square Foot */}
+        <div className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div className="space-y-2">
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900">
+              Larger Plots Cost Less Per Square Foot (Rate Analysis)
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed max-w-3xl">
+              Converting asking prices to a rate per square foot shows a consistent, verifiable land value pattern across Sector A:
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+            <table className="w-full text-left text-xs sm:text-sm font-sans">
+              <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th className="p-3.5 sm:p-4 font-bold border-r border-slate-800">Plot Category / Size</th>
+                  <th className="p-3.5 sm:p-4 font-bold text-amber-300">Approx. Rate Per Sq. Ft.</th>
+                  <th className="p-3.5 sm:p-4 font-bold text-emerald-300">Value Efficiency Note</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white font-medium">
+                <tr className="even:bg-slate-50/60">
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">5 Marla</td>
+                  <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] border-r border-slate-200">PKR 4,400 to 7,600 / sq ft</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700">Highest entry demand & liquidity premium</td>
+                </tr>
+                <tr className="even:bg-slate-50/60">
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">8 to 10 Marla</td>
+                  <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] border-r border-slate-200">PKR 5,500 to 6,800 / sq ft</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700">Balanced family villa option</td>
+                </tr>
+                <tr className="even:bg-slate-50/60">
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">1.2 Kanal</td>
+                  <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] border-r border-slate-200">Around PKR 5,200 / sq ft</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700">Executive land size</td>
+                </tr>
+                <tr className="even:bg-slate-50/60">
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 border-r border-slate-200">2 Kanal</td>
+                  <td className="p-3.5 sm:p-4 font-bold text-emerald-700 border-r border-slate-200">Around PKR 3,500 / sq ft</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-800 font-bold">Best value per sq ft in the block (~50% lower rate)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs text-slate-700 leading-relaxed font-medium">
+            💡 <strong>Land Value Takeaway:</strong> A 2 Kanal plot works out at roughly half the rate per square foot of a typical 5 Marla plot. If your budget reaches a larger plot, you buy considerably more land per rupee. Smaller plots carry the premium because demand for them is deeper and they resell faster.
+          </div>
+        </div>
+
+        {/* Files vs Possession Plots Explanation */}
+        <div className="p-5 rounded-2xl bg-slate-900 text-white space-y-2 shadow-md">
+          <h4 className="font-serif font-bold text-base text-amber-300">Files versus Possession Plots in Block A</h4>
+          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+            A file is a booking whose instalments may still be running. A possession plot has been handed over and can be built on immediately. Possession plots trade at a premium over files in the same block and street. Block A listings usually state <strong>"possession"</strong>, <strong>"NDC open"</strong> or <strong>"all dues clear"</strong>, and those status terms move the price significantly.
+          </p>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 7. SPECIAL PROPERTY TYPES: 2 KANAL, COMMERCIAL & APARTMENTS */}
+      {/* ========================================================= */}
+      <section id="special-properties" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Building className="w-3.5 h-3.5" />
+              <span>Signature Opportunities</span>
+            </div>
+            <TextReveal
+              as="h2"
+              text="2 Kanal Plots, Commercials & Apartments in Block A"
               className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
               staggerDelay={65}
               direction="left"
@@ -794,28 +996,52 @@ export default function BlockAContent() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal direction="up" delay={100}>
-          <div
-            onClick={() => setIsMapModalOpen(true)}
-            className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[460px] p-2 sm:p-4"
-          >
-            <img
-              src="/images/faisal-hills-master-plan-map.webp"
-              alt="Faisal Hills Block A Master Plan Layout"
-              className="w-full h-auto max-h-[560px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
-            />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-              <span className="px-4 py-2 rounded-xl bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-2">
-                <Maximize2 className="w-4 h-4 text-[#7b002c]" />
-                <span>Click to Enlarge & Download</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* 2 Kanal Plots */}
+          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-3">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800 bg-rose-100 px-2.5 py-0.5 rounded-full inline-block">
+                Exclusive Estate
               </span>
+              <h3 className="font-serif font-bold text-lg text-slate-900">2 Kanal Plots in Block A</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Block A is one of only two blocks in Faisal Hills offering 2 Kanal plots (75 × 120 ft). They suit buyers building a large custom mansion rather than quick resales, offering the best rate per sq. ft. in the sector (~PKR 3,500/sq ft).
+              </p>
             </div>
           </div>
-        </ScrollReveal>
+
+          {/* Commercial Plots */}
+          <div className="p-6 rounded-2xl bg-amber-50/50 border border-amber-200 flex flex-col justify-between space-y-3">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full inline-block">
+                Commercial Hub
+              </span>
+              <h3 className="font-serif font-bold text-lg text-slate-900">Commercial Plots (9.6M – 2 Kanal)</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Commercial plots run from 9.6 Marla up to 2 Kanal. Boulevard-facing commercial plots (~2.1 Kanal) have been listed around PKR 26 crore (~PKR 27,500/sq ft), roughly 4–5 times the residential land rate.
+              </p>
+            </div>
+          </div>
+
+          {/* Apartments in Block A */}
+          <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-200 flex flex-col justify-between space-y-3">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full inline-block">
+                Finished Living
+              </span>
+              <h3 className="font-serif font-bold text-lg text-slate-900">Apartments: ZN Tower 1 & Serene Hills</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Mixed-use projects like <strong>ZN Tower 1</strong> (Block A Markaz, 1-3 bed apartments & shops) and <strong>Serene Hills</strong> offer finished units from ~PKR 13,000/sq ft.
+              </p>
+            </div>
+          </div>
+
+        </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 5. VERIFIED AVAILABLE PLOTS FOR SALE                      */}
+      {/* 8. VERIFIED AVAILABLE PLOTS FOR SALE                      */}
       {/* ========================================================= */}
       <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
@@ -966,185 +1192,309 @@ export default function BlockAContent() {
               </ScrollReveal>
             ))}
         </div>
+      </section>
 
-        {/* Sell Your Block A Plot Banner */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-950 via-[#4a081a] to-slate-950 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white/10">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+      {/* ========================================================= */}
+      {/* 9. WHO BLOCK A SUITS & WHAT TO WEIGH                      */}
+      {/* ========================================================= */}
+      <section id="who-suits" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Owner Resale & Liquidation Desk</span>
+              <span>Buyer Evaluation</span>
             </div>
-            <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
-              Want to Sell or Rent Out Your Block A Property?
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Connect with genuine cash buyers and qualified tenants for immediate plot liquidation or villa renting in Sector A.
+            <TextReveal
+              as="h2"
+              text="Who Block A Suits, and What to Weigh First"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl">
+              Block A suits families who want to build immediately in a finished block, buyers seeking larger plots at the best rate per sq. ft., and investors who value deep resale inventory (~400 active listings).
             </p>
           </div>
+        </ScrollReveal>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
-            <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20sell%2Frent%20my%20property%20in%20Faisal%20Hills%20Block%20A."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg hover:scale-105"
-            >
-              <Phone className="w-4 h-4" />
-              <span>WhatsApp Resale Desk</span>
-            </a>
-            <a
-              href="tel:+923331113177"
-              className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
-            >
-              <span>Call Direct Line</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Pros Column */}
+          <div className="p-6 rounded-3xl bg-emerald-50/40 border border-emerald-200/80 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+              <h3 className="font-serif font-bold text-lg text-slate-900">Why Buyers Choose Block A</h3>
+            </div>
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span><strong>Immediate Construction:</strong> Full ready possession with active utilities and 500+ resident families.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span><strong>Best Value on Larger Plots:</strong> 2 Kanal plots offer ~PKR 3,500/sq ft (half the per-sq-ft rate of 5M).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                <span><strong>Highest Resale Liquidity:</strong> Deepest market inventory in Faisal Hills (~400 listings).</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Considerations Column */}
+          <div className="p-6 rounded-3xl bg-amber-50/40 border border-amber-200/80 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <Scale className="w-6 h-6 text-amber-600" />
+              <h3 className="font-serif font-bold text-lg text-slate-900">Important Considerations Before Buying</h3>
+            </div>
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
+              <li className="flex items-start gap-2">
+                <span className="text-amber-700 font-bold">!</span>
+                <span><strong>Wide Price Spread:</strong> 5 Marla prices span 55 to 95 lakh depending on street, land level and facing.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-700 font-bold">!</span>
+                <span><strong>No Instalment Plan:</strong> Developer inventory is sold out; transactions are full cash resale transfers.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-amber-700 font-bold">!</span>
+                <span><strong>Diligence on Transfer:</strong> Verification relies on NDC, allotment letter and possession letter.</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 6. VERIFIED PRICING SCHEDULE MATRIX                       */}
+      {/* 10. HOW YOU BUY IN BLOCK A: STEP-BY-STEP RESALE & TRANSFER */}
       {/* ========================================================= */}
-      <section id="pricing-matrix" className="scroll-mt-28 space-y-6">
+      <section id="transfer-guide" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
         <ScrollReveal direction="up" delay={50}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div className="space-y-2">
-              <TextReveal
-                as="h2"
-                text="Faisal Hills Block A Plot Prices & Schedule"
-                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                staggerDelay={65}
-                direction="left"
-              />
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                Verified on-ground price valuations for residential and commercial plots in Sector A with ready possession.
-              </p>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold uppercase tracking-wider">
+              <FileText className="w-3.5 h-3.5 text-[#7b002c]" />
+              <span>Resale & Legal Transfer Guide</span>
             </div>
-
-            <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20the%20latest%20Block%20A%20plot%20price%20quotation."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold transition shadow-sm self-start sm:self-auto"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>Get Live Price Quote</span>
-            </a>
+            <TextReveal
+              as="h2"
+              text="How You Buy in Block A: Resale & Transfer Procedure"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
+              Because developer inventory is reported to be sold out, purchases in Block A are resale transfers completed directly at the society office on GT Road, Taxila.
+            </p>
           </div>
         </ScrollReveal>
 
-        {/* Mobile View: Clean Responsive Cards */}
-        <div className="block sm:hidden space-y-3">
-          {dynamicPriceSchedule.map((row, idx) => (
-            <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
-                  <span className="font-bold text-sm text-slate-900">{row.size}</span>
-                </div>
-                <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium ${
-                  row.category === 'Commercial' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'
-                }`}>
-                  {row.category}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Dimensions</span>
-                  <strong className="text-slate-800 font-mono">{row.dimensions}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Area</span>
-                  <strong className="text-slate-800">{row.sqYards}</strong>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Price Range</span>
-                  <span className="font-serif font-bold text-sm text-[#7b002c]">{row.priceRange}</span>
-                </div>
-                <a
-                  href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#7b002c] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#9e1245] transition-all"
-                >
-                  <span>Inquire</span>
-                  <ChevronRight className="w-3 h-3" />
-                </a>
-              </div>
+        {/* 7-Step Transfer Process */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { step: '01', title: 'Agree Terms with Seller', desc: 'Confirm plot price, transfer fee allocation, and settlement of outstanding society dues.' },
+            { step: '02', title: 'Verify Ownership at Office', desc: 'Confirm seller allotment letter name matches seller CNIC at the society transfer desk.' },
+            { step: '03', title: 'Check Transfer History', desc: 'Inspect plot file for repeated quick flip transfers or encumbrances.' },
+            { step: '04', title: 'Obtain Official NDC', desc: 'Verify No Demand Certificate (NDC) confirming all developer dues are paid in full.' },
+            { step: '05', title: 'Inspect Possession Letter', desc: 'Ask for original physical possession letter where plot is possession-granted.' },
+            { step: '06', title: 'Complete Office Transfer', desc: 'Execute official transfer with both parties present; release full payment upon recording.' },
+            { step: '07', title: 'Collect Transferred File', desc: 'Receive updated allotment letter and transfer receipt issued in your name.' },
+          ].map((item, idx) => (
+            <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span className="text-xs font-serif font-bold text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                Step {item.step}
+              </span>
+              <h4 className="font-serif font-bold text-sm text-slate-900">{item.title}</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* Desktop View: Full Table */}
-        <ScrollReveal direction="up" delay={100}>
-          <div className="hidden sm:block bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
-                  <tr>
-                    <th className="p-4 sm:p-5">Plot Category & Size</th>
-                    <th className="p-4 sm:p-5">Dimensions</th>
-                    <th className="p-4 sm:p-5">Area (Sq. Yds)</th>
-                    <th className="p-4 sm:p-5">Current Price Range</th>
-                    <th className="p-4 sm:p-5">Possession Status</th>
-                    <th className="p-4 sm:p-5 text-right">Inquiry</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-sans">
-                  {dynamicPriceSchedule.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-rose-50/40 transition-colors">
-                      <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
-                        <span>{row.size}</span>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                          row.category === 'Commercial' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'
-                        }`}>
-                          {row.category}
-                        </span>
-                      </td>
-                      <td className="p-4 sm:p-5 text-slate-600 font-mono">{row.dimensions}</td>
-                      <td className="p-4 sm:p-5 text-slate-600">{row.sqYards}</td>
-                      <td className="p-4 sm:p-5 font-serif font-bold text-[#7b002c]">{row.priceRange}</td>
-                      <td className="p-4 sm:p-5">
-                        <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-xs">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          {row.possession}
-                        </span>
-                      </td>
-                      <td className="p-4 sm:p-5 text-right">
-                        <a
-                          href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20Block%20A%20${encodeURIComponent(row.size)}%20plot.`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-[#7b002c] hover:text-white rounded-lg text-xs font-bold transition-all"
-                        >
-                          <span>Inquire</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        {/* Documents Required & Red Flag Warning Signs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          
+          {/* Documents Required */}
+          <div className="p-5 rounded-2xl bg-slate-900 text-white space-y-3">
+            <h4 className="font-serif font-bold text-base text-amber-300 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Documents Required for Transfer</span>
+            </h4>
+            <ul className="space-y-1.5 text-xs text-slate-200">
+              <li>• Buyer CNIC copies (or NICOP for overseas buyers)</li>
+              <li>• Nominee CNIC copies & passport-size photographs</li>
+              <li>• Original seller allotment letter & transfer forms</li>
+              <li>• Verified NDC (No Demand Certificate) & payment receipt</li>
+            </ul>
           </div>
-        </ScrollReveal>
+
+          {/* Warning Signs */}
+          <div className="p-5 rounded-2xl bg-rose-950 text-white space-y-3 border border-rose-800">
+            <h4 className="font-serif font-bold text-base text-rose-300 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-rose-400" />
+              <span>Red Flag Warning Signs</span>
+            </h4>
+            <ul className="space-y-1.5 text-xs text-rose-100">
+              <li>• Seller CNIC does not match allotment letter name</li>
+              <li>• Plot has changed hands repeatedly in a short period</li>
+              <li>• Seller cannot produce valid NDC or possession letter</li>
+              <li>• Asking price is suspiciously below market with no site visit</li>
+              <li>• Offering unallotted file with no plot number</li>
+            </ul>
+          </div>
+
+        </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 7. DYNAMIC PLOT SERIES EXPLORER                          */}
+      {/* 11. READING BLOCK A LISTINGS (TERMINOLOGY GLOSSARY)        */}
+      {/* ========================================================= */}
+      <section id="terminology" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div className="space-y-2">
+          <h3 className="font-serif font-bold text-xl sm:text-2xl text-slate-900">
+            Reading Block A Listings: Industry Terminology Guide
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-600 font-sans">
+            Key real estate terms used in Block A plot advertisements:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { term: 'Series Number', def: 'Plot-number range within the block (e.g. 3690, 3800, 4210 series). Different series sit in different sectors.' },
+            { term: 'MDR (Main Double Road)', def: 'Wider, busier avenues priced above internal 40ft street plots.' },
+            { term: 'Sunface Orientation', def: 'Plot orientation receiving direct morning sunlight, carrying a buyer premium.' },
+            { term: 'Margalla Face', def: 'Frontage looking toward the Margalla Hills panorama.' },
+            { term: 'Solid Land', def: 'Natural, level ground requiring minimal filling before building.' },
+            { term: 'NDC Open / Dues Clear', def: 'No Demand Certificate is ready, confirming smooth instant transfer.' },
+          ].map((item, idx) => (
+            <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+              <strong className="font-serif font-bold text-slate-900 text-sm block text-[#7b002c]">{item.term}</strong>
+              <p className="text-slate-600 leading-relaxed">{item.def}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 12. BLOCK A VS EXECUTIVE BLOCK COMPARISON MATRIX           */}
+      {/* ========================================================= */}
+      <section id="compare-executive" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Scale className="w-3.5 h-3.5" />
+              <span>Sector Comparison</span>
+            </div>
+            <TextReveal
+              as="h2"
+              text="Block A or the Executive Block?"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={65}
+              direction="left"
+            />
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
+              Direct comparison between established Block A and the entrance Executive Block:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+          <table className="w-full text-left text-xs sm:text-sm font-sans">
+            <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+              <tr>
+                <th className="p-3.5 sm:p-4 font-bold w-1/4">Feature / Aspect</th>
+                <th className="p-3.5 sm:p-4 font-bold text-amber-300 w-3/8">Block A</th>
+                <th className="p-3.5 sm:p-4 font-bold text-emerald-300 w-3/8">Executive Block</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white font-medium">
+              {[
+                { aspect: 'Character', a: 'Largest established residential block with 500+ families', exec: 'Commercial and civic centre right at the entrance gate' },
+                { aspect: 'Possession', a: 'Granted (100% Ready to build)', exec: 'Granted (100% Ready to build)' },
+                { aspect: 'Price Level', a: 'Below Executive for the same plot size', exec: 'Highest price level in the society' },
+                { aspect: 'Resale Choice', a: 'Deepest inventory (~400 active listings)', exec: 'Compact inventory (~80 active listings)' },
+                { aspect: 'Commercial', a: 'Local sector markets & plaza plots', exec: 'Society main commercial plazas & high-rises' },
+                { aspect: 'Suits', a: 'Families building now; buyers wanting 2K / larger plots', exec: 'Businesses & buyers wanting direct GT Road frontage' },
+              ].map((row, idx) => (
+                <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 bg-slate-50/40">{row.aspect}</td>
+                  <td className="p-3.5 sm:p-4 text-slate-700">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0" />
+                      <span>{row.a}</span>
+                    </span>
+                  </td>
+                  <td className="p-3.5 sm:p-4 text-slate-700">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                      <span>{row.exec}</span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 13. DEVELOPMENT STATUS & ON-GROUND FACILITIES              */}
+      {/* ========================================================= */}
+      <section id="development-status" className="scroll-mt-28 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div className="space-y-2">
+          <TextReveal
+            as="h2"
+            text="Development Status & Facilities Checklist"
+            className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+            staggerDelay={65}
+            direction="left"
+          />
+          <p className="text-xs sm:text-sm text-slate-600 font-sans">
+            On-ground infrastructure status verified during recent site visits:
+          </p>
+        </div>
+
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+          <table className="w-full text-left text-xs sm:text-sm font-sans">
+            <thead className="bg-slate-900 text-white font-serif uppercase tracking-wider text-[11px]">
+              <tr>
+                <th className="p-3.5 sm:p-4 font-bold">Facility / Infrastructure Item</th>
+                <th className="p-3.5 sm:p-4 font-bold text-emerald-300">Reported On-Ground Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white font-medium">
+              {[
+                { item: 'Main boulevard and internal roads', status: 'Developed, carpeted and in active daily use' },
+                { item: 'Underground electricity, sewerage, water', status: 'Fully in place & operational across streets' },
+                { item: 'Houses & Villas', status: '500+ Built & occupied; active construction continuing' },
+                { item: 'Mosques and parks', status: 'Grand Jamia Mosque & 12-Kanal Family Park operational' },
+                { item: 'Educational Campuses', status: 'Roots Millennium International School active' },
+                { item: 'Healthcare & Commercials', status: 'Medical clinics & commercial retail markets live' },
+              ].map((row, idx) => (
+                <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                  <td className="p-3.5 sm:p-4 font-bold text-slate-900 bg-slate-50/40">{row.item}</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-800 font-bold flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{row.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-xs text-slate-700 leading-relaxed">
+          <strong>Arc Monument & Glow Gardens Proximity:</strong> Several Block A listings advertise proximity to the Arc Monument landmark and Glow Gardens. Always confirm exact physical distance on the master plan during your site visit.
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 14. DYNAMIC PLOT SERIES EXPLORER                          */}
       {/* ========================================================= */}
       <section id="series-explorer" className="scroll-mt-28">
         <DynamicPlotSeriesExplorer blockSlug="block-a" blockName="Block A" />
       </section>
 
       {/* ========================================================= */}
-      {/* 8. ON-GROUND FACILITIES & AMENITIES GALLERY               */}
+      {/* 15. ON-GROUND FACILITIES & AMENITIES GALLERY               */}
       {/* ========================================================= */}
       <section id="amenities" className="bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <ScrollReveal direction="up" delay={50}>
@@ -1236,121 +1586,7 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 9. SECTOR A VERIFIED BENCHMARKS & STATS HIGHLIGHT         */}
-      {/* ========================================================= */}
-      <section id="benchmarks" className="bg-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-slate-200 shadow-sm relative space-y-8">
-        <div className="space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-100 pb-6">
-            <div className="space-y-2 max-w-2xl">
-              <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
-                Key Development & Living Benchmarks
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                Official verified on-ground possession status, community occupancy, and regulatory approvals for Faisal Hills Block A.
-              </p>
-            </div>
-            <div className="shrink-0 flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>100% On-Ground Reality</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              {
-                label: 'Possession Status',
-                end: 100,
-                suffix: '%',
-                unitText: ' Ready',
-                sub: 'Immediate Home Construction Allowed',
-                icon: ShieldCheck,
-                iconStyle: 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              },
-              {
-                label: 'Resident Families',
-                end: 500,
-                suffix: '+',
-                unitText: ' Homes',
-                sub: 'Active Populated Family Community',
-                icon: Home,
-                iconStyle: 'bg-rose-50 border-rose-200 text-[#7b002c]'
-              },
-              {
-                label: 'RDA Legal NOC',
-                end: 100,
-                suffix: '%',
-                unitText: ' Sanctioned',
-                sub: 'Full Regulatory Clearance & Transfer',
-                icon: Award,
-                iconStyle: 'bg-blue-50 border-blue-200 text-blue-700'
-              },
-              {
-                label: 'Entrance Link',
-                end: 1,
-                suffix: '',
-                unitText: ' Min',
-                sub: 'Direct GT Road N-5 Main Gate Access',
-                icon: MapPin,
-                iconStyle: 'bg-amber-50 border-amber-200 text-amber-700'
-              }
-            ].map((stat, idx) => (
-              <ScrollReveal key={idx} direction="up" delay={idx * 60}>
-                <div className="bg-slate-50/80 hover:bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 p-5 sm:p-6 transition-all duration-300 group hover:-translate-y-1 shadow-2xs hover:shadow-md h-full flex flex-col justify-between space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      {stat.label}
-                    </span>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${stat.iconStyle} shadow-2xs`}>
-                      <stat.icon className="w-5 h-5" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="font-serif font-bold text-3xl sm:text-4xl text-slate-900 tracking-tight flex items-baseline gap-1">
-                      <CountUpNumber end={stat.end} suffix={stat.suffix} duration={1800} />
-                      <span className="text-sm font-sans font-semibold text-[#7b002c]">{stat.unitText}</span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 font-sans mt-1.5 leading-snug">{stat.sub}</p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 10. COMPARE OTHER SECTORS & EXPANDING PANORAMIC CARDS     */}
-      {/* ========================================================= */}
-      <section id="other-blocks" className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <TextReveal
-              as="h2"
-              text="Explore Other Faisal Hills Blocks & Landmarks"
-              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-              staggerDelay={65}
-              direction="left"
-            />
-            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-              Hover across the sector columns to view each block's location advantages, development progress, and direct links:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Panoramic Expanding Cards Showcase */}
-        <ScrollReveal direction="up" delay={100}>
-          <ExpandingProjectsShowcase
-            items={otherBlocks}
-            defaultActiveIndex={0}
-            containerHeightClass="h-[460px] sm:h-[500px] lg:h-[540px]"
-            roundedClass="rounded-2xl sm:rounded-3xl"
-          />
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 11. FREQUENTLY ASKED QUESTIONS (OPEN THEME STYLE)         */}
+      {/* 16. FREQUENTLY ASKED QUESTIONS (OPEN THEME STYLE)         */}
       {/* ========================================================= */}
       <section id="faqs" className="py-12 lg:py-16 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start relative">
@@ -1359,16 +1595,61 @@ export default function BlockAContent() {
           <div className="lg:col-span-4 space-y-3 lg:sticky lg:top-24 self-start">
             <span className="label-caps text-[#7b002c] font-bold block mb-1 text-xs uppercase tracking-widest">FAQ&apos;S</span>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
-              Frequently Asked Questions (FAQS)
+              Frequently Asked Questions
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed pt-1">
-              Detailed answers on possession status, NOC clearance, utilities, and plot transfer for Faisal Hills Block A.
+              Detailed answers on possession status, RDA NOC clearance, utilities, pricing, and plot transfer for Faisal Hills Block A.
             </p>
           </div>
 
           {/* Right Column: Clean Horizontal Separated Accordion */}
           <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
-            {blockAFaqs.map((faq, index) => {
+            {[
+              {
+                q: 'Where is Block A in Faisal Hills?',
+                a: 'Between Block B and the Executive Block, reached directly from the GT Road (N-5) entrance along the main boulevard.'
+              },
+              {
+                q: 'Is Block A sold out?',
+                a: 'Developer inventory is reported to be exhausted, so plots are bought on resale rather than fresh booking. The resale market remains large, with around 400 plots listed in September 2026.'
+              },
+              {
+                q: 'What plot sizes are available?',
+                a: '5, 8, 10 and 14 Marla, 1 Kanal and 2 Kanal residential plots, plus commercial plots from 9.6 Marla upward.'
+              },
+              {
+                q: 'What is the price of a 5 Marla plot in Block A?',
+                a: 'Published ranges start around PKR 55 lakh, and recent asking prices ran from 55 to 95 lakh, with most between 72 and 85 lakh. Position accounts for most of the spread.'
+              },
+              {
+                q: 'Are 2 Kanal plots available in Block A?',
+                a: 'Yes. Block A is one of only two blocks offering them, recently asking PKR 3.1 to 3.2 crore, which is the lowest rate per square foot in the block.'
+              },
+              {
+                q: 'Is it cash, instalments or resale?',
+                a: 'Resale purchases are settled in full at transfer. Confirm any remaining developer terms in writing before committing.'
+              },
+              {
+                q: 'Has possession been granted?',
+                a: 'Yes, and plots are commonly advertised as ready to build. Confirm possession for your specific plot number.'
+              },
+              {
+                q: 'Is Block A RDA approved?',
+                a: 'Block A falls within the Faisal Hills scheme approved by the Rawalpindi Development Authority (RDA).'
+              },
+              {
+                q: 'Why do listings show 6 Marla or 1.2 Kanal plots?',
+                a: 'Some are genuinely non-standard plots and some are standard plots measured with a different Marla size (225 sq ft vs 250 sq ft). Compare by dimensions and square feet.'
+              },
+              {
+                q: 'How does a transfer work and what does it cost?',
+                a: 'Ownership is verified at the society office, an NDC confirms no dues remain, the possession letter is handed over, and the transfer is recorded in your name.'
+              },
+              {
+                q: 'Are there apartments in Block A?',
+                a: 'Yes. ZN Tower 1 and Serene Hills are mixed-use buildings within the block, offering apartments and shops.'
+              },
+            ].map((faq, index) => {
               const isOpen = openFaq === index;
               return (
                 <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
@@ -1401,15 +1682,15 @@ export default function BlockAContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 11. LEAD INQUIRY & BOOKING DESK CTA                      */}
+      {/* 17. LEAD INQUIRY & BOOKING DESK CTA                       */}
       {/* ========================================================= */}
       <section id="contact" className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
         <div className="relative z-10 max-w-3xl space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-rose-200 bg-white/10 px-3 py-1 rounded-full border border-white/20">
-            Official Sales Facilitation
+            Official Sales Facilitation Desk
           </span>
           <h2 className="font-serif font-bold text-3xl sm:text-4xl text-white">
-            Schedule a Site Visit or Request Verified Block A File
+            Schedule a Site Visit or Request Verified Block A Resale File
           </h2>
           <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed font-sans">
             Our authorized representatives guide you through transparent on-ground site visits, plot verification, and immediate file transfer at Zedem International head office.
