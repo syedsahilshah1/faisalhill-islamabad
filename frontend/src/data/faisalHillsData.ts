@@ -4647,6 +4647,88 @@ export interface PrimeBlockCMSData {
     }>;
     disclaimerNote: string;
   };
+  developmentStatusSection?: {
+    heading: string;
+    intro: string;
+    lastUpdated: string;
+    tableRows: Array<{
+      item: string;
+      status: string;
+      asAt: string;
+    }>;
+    statBoxes: {
+      earthwork: string;
+      roads: string;
+      possession: string;
+    };
+    photoLinkNote: string;
+    photoLinkText: string;
+    photoLinkHref: string;
+    image?: string;
+  };
+  possessionAdviceSection?: {
+    heading: string;
+    paragraph1: string;
+    paragraph2: string;
+    blockALinkText: string;
+    blockALinkHref: string;
+    guideLinkText: string;
+    guideLinkHref: string;
+  };
+  comparisonSection?: {
+    heading: string;
+    subline?: string;
+    primeBlockColumnName: string;
+    blockAColumnName: string;
+    rows: Array<{
+      aspect: string;
+      primeBlock: string;
+      blockA: string;
+    }>;
+    compareLinkNote: string;
+    compareLinkText: string;
+    compareLinkHref: string;
+  };
+  bookingProcessSection?: {
+    badge: string;
+    heading: string;
+    intro: string;
+    steps: Array<{
+      step: string;
+      title: string;
+      desc: string;
+      tag?: string;
+    }>;
+    assistanceBoxHeading: string;
+    assistanceBoxText: string;
+    assistanceButtonText: string;
+    fileTransferNote: string;
+  };
+  exploreOtherBlocksSection?: {
+    heading: string;
+    subtitle: string;
+    compareHubText: string;
+    compareHubHref: string;
+  };
+  faqsSection?: {
+    heading: string;
+    faqs: Array<{
+      q: string;
+      a: string;
+    }>;
+  };
+  closingSiteVisitSection?: {
+    heading: string;
+    paragraph1: string;
+    paragraph2: string;
+    contactLinkText: string;
+    contactLinkHref: string;
+    formLabel: string;
+    formTitle: string;
+    formSubtitle: string;
+    formButtonText: string;
+    reviewedByNote: string;
+  };
 }
 
 export const initialPrimeBlockCMS: PrimeBlockCMSData = {
@@ -4824,6 +4906,151 @@ export const initialPrimeBlockCMS: PrimeBlockCMSData = {
       }
     ],
     disclaimerNote: 'We do not publish expected returns or appreciation figures for Prime Block, because no verifiable source supports them.'
+  },
+  developmentStatusSection: {
+    heading: 'Faisal Hills Prime Block Development Status',
+    intro: 'Work in Prime Block is progressing, with earthwork, levelling and boulevard construction under way. We update this section with new site photos after each visit.',
+    lastUpdated: 'March 2026',
+    tableRows: [
+      { item: 'Ground levelling and earthwork', status: 'In Progress (Active Earthwork)', asAt: 'March 2026' },
+      { item: '225 ft boulevard', status: 'Under Construction & Grading', asAt: 'March 2026' },
+      { item: 'Internal roads and streets', status: 'Road Cutting & Levelling', asAt: 'March 2026' },
+      { item: 'Water and sewerage', status: 'Underground Pipeline Trenching', asAt: 'March 2026' },
+      { item: 'Electricity', status: 'Underground Grid Conduits Planned', asAt: 'March 2026' },
+      { item: 'School and commercial plots', status: 'Demarcated on Master Plan', asAt: 'March 2026' }
+    ],
+    statBoxes: {
+      earthwork: '90%',
+      roads: '65%',
+      possession: 'December 2028 (4-Year Plan)'
+    },
+    photoLinkNote: 'Dated photographs of every block are on our',
+    photoLinkText: 'development updates (→ development page)',
+    photoLinkHref: '/gallery',
+    image: '/images/faisal-hills-aerial-panoramic.webp'
+  },
+  possessionAdviceSection: {
+    heading: 'Possession: What to Confirm Before You Pay',
+    paragraph1: 'Published sources disagree here. Some pages describe Prime Block plots as possession-ready for immediate construction, while the same pages describe earthworks still under way, and the society-level material treats the block as an early-stage development.',
+    paragraph2: 'We do not repeat a possession claim we cannot stand behind. Before paying, ask the society office to confirm in writing whether possession is available for your exact plot number, and visit the plot to see its level and access. If you need to build now, a possession block such as Block A is the better choice. Our plot verification guide lists the checks in order.',
+    blockALinkText: 'Block A (→ Block A page)',
+    blockALinkHref: '/blocks/block-a',
+    guideLinkText: 'plot verification guide (→ buying guide)',
+    guideLinkHref: '/blogs/faisal-hills-plot-verification-guide'
+  },
+  comparisonSection: {
+    heading: 'Prime Block or Block A?',
+    subline: 'Direct comparison between Prime Block and fully developed Block A:',
+    primeBlockColumnName: 'Prime Block',
+    blockAColumnName: 'Block A',
+    rows: [
+      { aspect: 'Payment', primeBlock: 'Down payment plus quarterly instalments', blockA: 'Full payment' },
+      { aspect: 'Development', primeBlock: 'In progress', blockA: 'Established, with residents' },
+      { aspect: 'Possession / build now', primeBlock: 'Confirm for the specific plot', blockA: 'Available; you can build' },
+      { aspect: 'Entry price', primeBlock: 'Lower, particularly for files', blockA: 'Higher, but the plot is developed' },
+      { aspect: 'Suits', primeBlock: 'Buyers spreading payments over time', blockA: 'Buyers who want to build immediately' }
+    ],
+    compareLinkNote: 'Every block is compared on our',
+    compareLinkText: 'Faisal Hills blocks (→ blocks page)',
+    compareLinkHref: '/faisal-hills-blocks'
+  },
+  bookingProcessSection: {
+    badge: '4-STEP BOOKING',
+    heading: 'How to Book a Plot in Prime Block',
+    intro: 'Follow these 4 essential points to complete direct booking and secure your verified company allotment file:',
+    steps: [
+      {
+        step: '01',
+        title: 'Identity',
+        desc: "Two copies of the applicant's CNIC or NICOP, one copy of the nominee's CNIC, and a passport copy for overseas buyers",
+        tag: 'Identity Documents'
+      },
+      {
+        step: '02',
+        title: 'Photographs',
+        desc: 'Two recent passport-size colour photographs, plain background, name written on the back',
+        tag: 'Recent Photos'
+      },
+      {
+        step: '03',
+        title: 'Payment',
+        desc: "Down payment and registration fee by pay order or bank draft in the developer's registered name, or bank transfer through official channels for overseas buyers",
+        tag: 'Official Bank Draft'
+      },
+      {
+        step: '04',
+        title: 'Allotment',
+        desc: 'Booking acknowledgement, allotment letter with your file or plot number, and the instalment schedule',
+        tag: 'Official Allotment'
+      }
+    ],
+    assistanceBoxHeading: 'Need help booking in Prime Block?',
+    assistanceBoxText: 'Our sales desk helps with pay orders, booking forms and document checks, in person or over WhatsApp.',
+    assistanceButtonText: 'Contact Sales Desk',
+    fileTransferNote: 'If you are buying an existing file rather than booking a new plot, treat it as a transfer: confirm the file and allotment details at the society office, check the transfer history, and pay the seller only once the transfer is complete.'
+  },
+  exploreOtherBlocksSection: {
+    heading: 'Explore Other Faisal Hills Blocks',
+    subtitle: 'Compare Prime Block with the rest of the society. Each block page shows possession status, plot sizes and prices.',
+    compareHubText: 'Compare all Faisal Hills blocks (→ blocks hub)',
+    compareHubHref: '/faisal-hills-blocks'
+  },
+  faqsSection: {
+    heading: 'Faisal Hills Prime Block: Frequently Asked Questions',
+    faqs: [
+      {
+        q: 'What is the payment plan for Faisal Hills Prime Block?',
+        a: 'Prime Block is sold on a down payment followed by quarterly instalments, with a discount for paying in full. Registration, possession and development charges may apply on top of the plot price. Ask our sales desk for the schedule issued for the current month before you book.'
+      },
+      {
+        q: 'Why do different websites show different Prime Block prices?',
+        a: 'Because the block has been quoted under several schedules since launch, and older pages stay online without dates. Plans quoted publicly range from an 18-month plan to 16 quarterly instalments over four years. Only the developer’s current schedule applies to a new booking.'
+      },
+      {
+        q: 'Is Faisal Hills Prime Block RDA approved?',
+        a: 'Prime Block is part of the Faisal Hills master plan, which is covered by a No Objection Certificate from the Rawalpindi Development Authority. Approval covers the scheme rather than an individual plot, so confirm your plot separately. See our RDA approval details (→ NOC page).'
+      },
+      {
+        q: 'What plot sizes are available in Prime Block?',
+        a: 'Residential plots of 5 Marla (25 × 50), 8 Marla (30 × 60), 10 Marla (35 × 70), 14 Marla (40 × 80) and 1 Kanal (50 × 90), with commercial plots along the boulevard. Availability changes, so ask for the current list.'
+      },
+      {
+        q: 'What are the current plot prices in Prime Block?',
+        a: 'Prices depend on size and position, and corner, park-facing and boulevard-facing plots cost more. We publish only the schedule the developer has confirmed, which is shown in the payment plan above.'
+      },
+      {
+        q: 'Where is Prime Block within Faisal Hills?',
+        a: 'At the front of the society, along the 225 ft main boulevard that runs from the main gate on GT Road (N-5) near Taxila, with Block A and the Executive Block adjoining it.'
+      },
+      {
+        q: 'When will possession be given in Prime Block?',
+        a: 'The block is under development and published sources disagree about possession. We give an expected date only once the developer confirms one. If you want to build now, Block A or the Executive Block are better suited.'
+      },
+      {
+        q: 'Can I build a house in Prime Block now?',
+        a: 'Not unless possession is confirmed for your specific plot in writing. Prime Block suits buyers who want a lower entry price and an instalment plan, and who can wait for development.'
+      },
+      {
+        q: 'Can overseas Pakistanis book a plot in Prime Block?',
+        a: 'Yes. Overseas buyers can book with a NICOP or passport and pay through official banking channels. We arrange video tours, send document copies and can coordinate with a family member in Pakistan.'
+      },
+      {
+        q: 'What is the difference between buying a file and a possession plot?',
+        a: 'A file is a booking whose remaining instalments you take over; a possession plot can be built on and trades at a premium. Confirm which one you are being offered before you pay.'
+      }
+    ]
+  },
+  closingSiteVisitSection: {
+    heading: 'Is Prime Block Right for You?',
+    paragraph1: 'Prime Block is a lower-priced way into an RDA-approved society on GT Road, with an instalment plan and a position beside Block A. It suits long-term buyers and overseas Pakistanis who are comfortable waiting for development. Families who want to build now will be better served by a block with possession.',
+    paragraph2: 'To check available sizes, corner and park-facing options and the current payment plan, contact our sales desk.',
+    contactLinkText: 'contact our sales desk (→ contact page)',
+    contactLinkHref: '/contact',
+    formLabel: 'SITE VISIT & VIDEO TOURS',
+    formTitle: 'Book a Prime Block Site Visit',
+    formSubtitle: 'Leave your details and we will send available plots, the current payment plan and a time for a site visit or live video tour on WhatsApp.',
+    formButtonText: 'Request Site Visit',
+    reviewedByNote: 'About this page: reviewed by Property Verification Team of Faisal Hills Authorized Sales Desk. Figures come from developer schedules and our own site visits. Prices and terms are set by the developer and change without notice. If you find anything out of date, tell us and we will correct it.'
   }
 };
 
@@ -4839,6 +5066,13 @@ export function mergePrimeBlockCMS(incoming: any): PrimeBlockCMSData {
   const incPay = incoming.paymentPlanSection || {};
   const incFac = incoming.facilitiesSection || {};
   const incWhy = incoming.whyChooseSection || {};
+  const incDev = incoming.developmentStatusSection || {};
+  const incPoss = incoming.possessionAdviceSection || {};
+  const incComp = incoming.comparisonSection || {};
+  const incBook = incoming.bookingProcessSection || {};
+  const incExp = incoming.exploreOtherBlocksSection || {};
+  const incFaq = incoming.faqsSection || {};
+  const incClose = incoming.closingSiteVisitSection || {};
 
   return {
     overview: {
@@ -4921,6 +5155,102 @@ export function mergePrimeBlockCMS(incoming: any): PrimeBlockCMSData {
         desc: cleanVerifyText(c.desc)
       })),
       disclaimerNote: cleanVerifyText(incWhy.disclaimerNote || initialPrimeBlockCMS.whyChooseSection?.disclaimerNote)
+    },
+    developmentStatusSection: {
+      ...initialPrimeBlockCMS.developmentStatusSection!,
+      ...incDev,
+      heading: cleanVerifyText(incDev.heading || initialPrimeBlockCMS.developmentStatusSection?.heading),
+      intro: cleanVerifyText(incDev.intro || initialPrimeBlockCMS.developmentStatusSection?.intro),
+      lastUpdated: cleanVerifyText(incDev.lastUpdated || initialPrimeBlockCMS.developmentStatusSection?.lastUpdated),
+      tableRows: (incDev.tableRows || initialPrimeBlockCMS.developmentStatusSection?.tableRows || []).map((r: any) => ({
+        item: cleanVerifyText(r.item),
+        status: cleanVerifyText(r.status),
+        asAt: cleanVerifyText(r.asAt)
+      })),
+      statBoxes: {
+        earthwork: cleanVerifyText(incDev.statBoxes?.earthwork || initialPrimeBlockCMS.developmentStatusSection?.statBoxes?.earthwork),
+        roads: cleanVerifyText(incDev.statBoxes?.roads || initialPrimeBlockCMS.developmentStatusSection?.statBoxes?.roads),
+        possession: cleanVerifyText(incDev.statBoxes?.possession || initialPrimeBlockCMS.developmentStatusSection?.statBoxes?.possession)
+      },
+      photoLinkNote: cleanVerifyText(incDev.photoLinkNote || initialPrimeBlockCMS.developmentStatusSection?.photoLinkNote),
+      photoLinkText: cleanVerifyText(incDev.photoLinkText || initialPrimeBlockCMS.developmentStatusSection?.photoLinkText),
+      photoLinkHref: incDev.photoLinkHref || initialPrimeBlockCMS.developmentStatusSection?.photoLinkHref,
+      image: incDev.image || initialPrimeBlockCMS.developmentStatusSection?.image
+    },
+    possessionAdviceSection: {
+      ...initialPrimeBlockCMS.possessionAdviceSection!,
+      ...incPoss,
+      heading: cleanVerifyText(incPoss.heading || initialPrimeBlockCMS.possessionAdviceSection?.heading),
+      paragraph1: cleanVerifyText(incPoss.paragraph1 || initialPrimeBlockCMS.possessionAdviceSection?.paragraph1),
+      paragraph2: cleanVerifyText(incPoss.paragraph2 || initialPrimeBlockCMS.possessionAdviceSection?.paragraph2),
+      blockALinkText: cleanVerifyText(incPoss.blockALinkText || initialPrimeBlockCMS.possessionAdviceSection?.blockALinkText),
+      blockALinkHref: incPoss.blockALinkHref || initialPrimeBlockCMS.possessionAdviceSection?.blockALinkHref,
+      guideLinkText: cleanVerifyText(incPoss.guideLinkText || initialPrimeBlockCMS.possessionAdviceSection?.guideLinkText),
+      guideLinkHref: incPoss.guideLinkHref || initialPrimeBlockCMS.possessionAdviceSection?.guideLinkHref
+    },
+    comparisonSection: {
+      ...initialPrimeBlockCMS.comparisonSection!,
+      ...incComp,
+      heading: cleanVerifyText(incComp.heading || initialPrimeBlockCMS.comparisonSection?.heading),
+      subline: cleanVerifyText(incComp.subline || initialPrimeBlockCMS.comparisonSection?.subline),
+      primeBlockColumnName: cleanVerifyText(incComp.primeBlockColumnName || initialPrimeBlockCMS.comparisonSection?.primeBlockColumnName),
+      blockAColumnName: cleanVerifyText(incComp.blockAColumnName || initialPrimeBlockCMS.comparisonSection?.blockAColumnName),
+      rows: (incComp.rows || initialPrimeBlockCMS.comparisonSection?.rows || []).map((r: any) => ({
+        aspect: cleanVerifyText(r.aspect),
+        primeBlock: cleanVerifyText(r.primeBlock),
+        blockA: cleanVerifyText(r.blockA)
+      })),
+      compareLinkNote: cleanVerifyText(incComp.compareLinkNote || initialPrimeBlockCMS.comparisonSection?.compareLinkNote),
+      compareLinkText: cleanVerifyText(incComp.compareLinkText || initialPrimeBlockCMS.comparisonSection?.compareLinkText),
+      compareLinkHref: incComp.compareLinkHref || initialPrimeBlockCMS.comparisonSection?.compareLinkHref
+    },
+    bookingProcessSection: {
+      ...initialPrimeBlockCMS.bookingProcessSection!,
+      ...incBook,
+      badge: cleanVerifyText(incBook.badge || initialPrimeBlockCMS.bookingProcessSection?.badge),
+      heading: cleanVerifyText(incBook.heading || initialPrimeBlockCMS.bookingProcessSection?.heading),
+      intro: cleanVerifyText(incBook.intro || initialPrimeBlockCMS.bookingProcessSection?.intro),
+      steps: (incBook.steps || initialPrimeBlockCMS.bookingProcessSection?.steps || []).map((s: any) => ({
+        step: cleanVerifyText(s.step),
+        title: cleanVerifyText(s.title),
+        desc: cleanVerifyText(s.desc),
+        tag: cleanVerifyText(s.tag)
+      })),
+      assistanceBoxHeading: cleanVerifyText(incBook.assistanceBoxHeading || initialPrimeBlockCMS.bookingProcessSection?.assistanceBoxHeading),
+      assistanceBoxText: cleanVerifyText(incBook.assistanceBoxText || initialPrimeBlockCMS.bookingProcessSection?.assistanceBoxText),
+      assistanceButtonText: cleanVerifyText(incBook.assistanceButtonText || initialPrimeBlockCMS.bookingProcessSection?.assistanceButtonText),
+      fileTransferNote: cleanVerifyText(incBook.fileTransferNote || initialPrimeBlockCMS.bookingProcessSection?.fileTransferNote)
+    },
+    exploreOtherBlocksSection: {
+      ...initialPrimeBlockCMS.exploreOtherBlocksSection!,
+      ...incExp,
+      heading: cleanVerifyText(incExp.heading || initialPrimeBlockCMS.exploreOtherBlocksSection?.heading),
+      subtitle: cleanVerifyText(incExp.subtitle || initialPrimeBlockCMS.exploreOtherBlocksSection?.subtitle),
+      compareHubText: cleanVerifyText(incExp.compareHubText || initialPrimeBlockCMS.exploreOtherBlocksSection?.compareHubText),
+      compareHubHref: incExp.compareHubHref || initialPrimeBlockCMS.exploreOtherBlocksSection?.compareHubHref
+    },
+    faqsSection: {
+      ...initialPrimeBlockCMS.faqsSection!,
+      ...incFaq,
+      heading: cleanVerifyText(incFaq.heading || initialPrimeBlockCMS.faqsSection?.heading),
+      faqs: (incFaq.faqs || initialPrimeBlockCMS.faqsSection?.faqs || []).map((f: any) => ({
+        q: cleanVerifyText(f.q),
+        a: cleanVerifyText(f.a)
+      }))
+    },
+    closingSiteVisitSection: {
+      ...initialPrimeBlockCMS.closingSiteVisitSection!,
+      ...incClose,
+      heading: cleanVerifyText(incClose.heading || initialPrimeBlockCMS.closingSiteVisitSection?.heading),
+      paragraph1: cleanVerifyText(incClose.paragraph1 || initialPrimeBlockCMS.closingSiteVisitSection?.paragraph1),
+      paragraph2: cleanVerifyText(incClose.paragraph2 || initialPrimeBlockCMS.closingSiteVisitSection?.paragraph2),
+      contactLinkText: cleanVerifyText(incClose.contactLinkText || initialPrimeBlockCMS.closingSiteVisitSection?.contactLinkText),
+      contactLinkHref: incClose.contactLinkHref || initialPrimeBlockCMS.closingSiteVisitSection?.contactLinkHref,
+      formLabel: cleanVerifyText(incClose.formLabel || initialPrimeBlockCMS.closingSiteVisitSection?.formLabel),
+      formTitle: cleanVerifyText(incClose.formTitle || initialPrimeBlockCMS.closingSiteVisitSection?.formTitle),
+      formSubtitle: cleanVerifyText(incClose.formSubtitle || initialPrimeBlockCMS.closingSiteVisitSection?.formSubtitle),
+      formButtonText: cleanVerifyText(incClose.formButtonText || initialPrimeBlockCMS.closingSiteVisitSection?.formButtonText),
+      reviewedByNote: cleanVerifyText(incClose.reviewedByNote || initialPrimeBlockCMS.closingSiteVisitSection?.reviewedByNote)
     }
   };
 }

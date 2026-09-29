@@ -709,35 +709,63 @@ export default function PrimeBlockContent() {
       {/* ========================================================= */}
       {/* 3. MASTER PLAN & LAYOUT BLUEPRINT                         */}
       {/* ========================================================= */}
+      {/* ========================================================= */}
+      {/* 3. MASTER PLAN & LAYOUT BLUEPRINT                         */}
+      {/* ========================================================= */}
       <section id="master-plan" className="scroll-mt-28 space-y-6 bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
         
-        {/* Mobile Header: Title First (Hidden on Desktop) */}
-        <div className="block lg:hidden space-y-2">
-          <TextReveal
-            as="h2"
-            text="Faisal Hills Prime Block Master Plan"
-            className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight"
-            staggerDelay={70}
-            direction="left"
-          />
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+          <div className="space-y-2">
+            <TextReveal
+              as="h2"
+              text="Faisal Hills Prime Block Master Plan"
+              className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+              staggerDelay={70}
+              direction="left"
+            />
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl leading-relaxed">
+              Engineered for self-contained luxury living with 225ft wide boulevards, underground utilities, and planned commercial hubs.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsMapModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#7b002c] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#9e1245] shadow-sm transition-all cursor-pointer"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Master Map PDF</span>
+            </button>
+            <a
+              href="https://wa.me/923331113177?text=Hi%2C%20I%20would%20like%20to%20request%20the%20official%20Prime%20Block%20Zoning%20Map."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 border border-slate-300 transition-all cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4 text-emerald-600" />
+              <span>Request Map</span>
+            </a>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
-          {/* Left Column (Desktop) / Second (Mobile): High-Resolution Map Container */}
-          <div className="lg:col-span-6 flex flex-col">
-            <ScrollReveal direction="left" delay={50}>
+          {/* Left Column: High-Resolution Map Container (Full Height matching Table) */}
+          <div className="lg:col-span-5 flex flex-col h-full">
+            <ScrollReveal direction="left" delay={50} className="w-full h-full flex flex-col flex-1">
               <div
                 onClick={() => setIsMapModalOpen(true)}
-                className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[460px] p-2"
+                className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-between h-full min-h-[440px] p-2 flex-1"
               >
-                <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl">
+                <div className="relative w-full h-full min-h-[420px] flex-1 flex items-center justify-center overflow-hidden rounded-2xl bg-slate-950">
                   <img
                     src="/images/faisal-hills-master-plan-map.webp"
                     alt="Faisal Hills Prime Block Master Plan Layout"
-                    className="w-full h-auto max-h-[420px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-black/25 pointer-events-none" />
 
                   {/* High Quality Badge */}
                   <div className="absolute top-4 left-4">
@@ -770,55 +798,72 @@ export default function PrimeBlockContent() {
             </ScrollReveal>
           </div>
 
-          {/* Right Column: Blueprint Narrative & Action */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-6 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
+          {/* Right Column: Master Plan Details Table Format */}
+          <div className="lg:col-span-7 space-y-4">
             <ScrollReveal direction="right" delay={80}>
-              {/* Desktop Only Content */}
-              <div className="hidden lg:block space-y-4">
-                <div className="space-y-2">
-                  <TextReveal
-                    as="h2"
-                    text="Faisal Hills Prime Block Master Plan"
-                    className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
-                    staggerDelay={70}
-                    direction="left"
-                  />
-                </div>
-
-                <p className="font-medium text-slate-900 text-sm sm:text-base leading-relaxed">
-                  The master plan for Prime Block is engineered to offer self-contained luxury living. Residential sectors are nestled alongside lush green parks, central Jamia mosques, and modern commercial markets connected by 225ft wide dual-carriageway boulevards.
-                </p>
-
-                <div className="space-y-4 text-sm text-slate-600 leading-relaxed font-sans">
-                  <p>
-                    Every residential street is planned with a minimum width of 40 to 60 feet, complete with underground drainage channels, dedicated tree-lined pedestrian footpaths, and fiber-optic ducts.
-                  </p>
-                  <p>
-                    Commercial zones in Prime Block are positioned strategically around central roundabouts, giving quick walkability for daily groceries without compromising the quiet residential ambience of inner avenues.
-                  </p>
-                </div>
+              {/* Desktop & Tablet Table (Matched to Sector Comparison Table Style) */}
+              <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+                <table className="w-full text-left text-xs sm:text-sm font-sans">
+                  <thead className="bg-slate-900 text-white font-serif">
+                    <tr>
+                      <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm w-1/3">Aspect / Feature</th>
+                      <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-amber-300 w-1/2">Prime Block Specifications</th>
+                      <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-emerald-300 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {[
+                      { aspect: 'Main Boulevard', spec: '225 ft dual carriageway entrance network', status: 'Carpeted' },
+                      { aspect: 'Internal Sector Streets', spec: '40 ft to 60 ft wide residential avenues', status: 'In Progress' },
+                      { aspect: 'Zoning Alignment', spec: 'Adjoining Block A and Executive Block', status: 'Approved' },
+                      { aspect: 'Underground Utilities', spec: 'Underground drainage, sewerage & fiber ducts', status: 'Laying Pipes' },
+                      { aspect: 'Commercial Hubs', spec: 'Central roundabouts with walking commercial markets', status: 'Allocated' },
+                      { aspect: 'Green Spaces & Mosques', spec: 'Sector Jamia Mosques & tree-lined green parks', status: 'Planned' },
+                      { aspect: 'Blueprint Approval', spec: 'Official RDA verified society layout blueprint', status: 'Verified' },
+                    ].map((row, idx) => (
+                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                        <td className="p-3.5 sm:p-4 font-bold text-slate-900 bg-slate-50/40">
+                          {row.aspect}
+                        </td>
+                        <td className="p-3.5 sm:p-4 text-slate-700 font-medium">
+                          <span className="inline-flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0" />
+                            <span>{row.spec}</span>
+                          </span>
+                        </td>
+                        <td className="p-3.5 sm:p-4 text-slate-700 font-medium text-center">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 text-[#7b002c] border border-rose-100 font-bold text-xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] animate-pulse" />
+                            <span>{row.status}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2 lg:pt-4 lg:border-t lg:border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsMapModalOpen(true)}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#7b002c] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#9e1245] shadow-md transition-all hover:scale-105 cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download Master Map PDF</span>
-                </button>
-
-                <a
-                  href="https://wa.me/923331113177?text=Hi%2C%20I%20would%20like%20to%20request%20the%20official%20Prime%20Block%20Zoning%20Map."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 border border-slate-300 transition-all cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4 text-emerald-600" />
-                  <span>Request on WhatsApp</span>
-                </a>
+              {/* Mobile Cards / Compact Table (Responsive View) */}
+              <div className="grid grid-cols-1 gap-2.5 sm:hidden">
+                {[
+                  { feature: 'Main Boulevard', spec: '225 ft dual carriageway entrance network', status: 'Carpeted' },
+                  { feature: 'Internal Sector Streets', spec: '40 ft to 60 ft wide residential avenues', status: 'In Progress' },
+                  { feature: 'Zoning Alignment', spec: 'Adjoining Block A & Executive Block', status: 'Approved' },
+                  { feature: 'Underground Utilities', spec: 'Underground drainage, sewerage & fiber ducts', status: 'Laying Pipes' },
+                  { feature: 'Commercial Hubs', spec: 'Central roundabouts with walking markets', status: 'Allocated' },
+                  { feature: 'Green Spaces & Mosques', spec: 'Sector Jamia Mosques & green parks', status: 'Planned' },
+                  { feature: 'Blueprint Approval', spec: 'Official RDA verified layout blueprint', status: 'Verified' },
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1 text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                      <span className="font-bold text-slate-900">{item.feature}</span>
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-white border border-slate-200 text-[#7b002c]">
+                        {item.status}
+                      </span>
+                    </div>
+                    <p className="text-slate-600 text-[11px] pt-1">{item.spec}</p>
+                  </div>
+                ))}
               </div>
             </ScrollReveal>
           </div>
@@ -1513,50 +1558,107 @@ export default function PrimeBlockContent() {
         </section>
 
         {/* On-Ground Development Status */}
-        <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <section id="development-status" className="scroll-mt-28 bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
 
-            {/* Left Column: Narrative Content & Status Counters */}
+            {/* Left Column: Narrative Content, Table & Status Counters */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-5 text-slate-700 text-sm sm:text-base leading-relaxed font-sans">
               <ScrollReveal direction="left" delay={50}>
                 <div className="space-y-4">
                   <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold uppercase tracking-wider">
+                      <Activity className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Live Site Update</span>
+                    </div>
                     <TextReveal
                       as="h2"
-                      text="Prime Block Development Status"
+                      text={cms.developmentStatusSection?.heading || 'Faisal Hills Prime Block Development Status'}
                       className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                       staggerDelay={65}
                       direction="left"
                     />
                   </div>
 
-                  <p className="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
-                    Development in Prime Block is progressing with high momentum under Zedem International's heavy machinery fleet. Earthwork, levelling of elevated ridges, and laying of 225ft boulevard foundations are under active execution.
+                  <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    {cms.developmentStatusSection?.intro || 'Work in Prime Block is progressing, with earthwork, levelling and boulevard construction under way. We update this section with new site photos after each visit.'}
+                    {cms.developmentStatusSection?.lastUpdated && (
+                      <span className="font-semibold text-slate-900 block sm:inline sm:ml-1">
+                        Last updated: <span className="text-[#7b002c] font-bold">{cms.developmentStatusSection.lastUpdated}</span>.
+                      </span>
+                    )}
                   </p>
 
-                  <div className="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed font-sans">
-                    <p>
-                      Underground sewerage channels, utility ducting, and water storage reservoirs are being laid in tandem with road cutting to ensure smooth possession delivery within the stipulated 4-year timeline.
-                    </p>
-                    <p>
-                      Because Prime Block is situated directly along the main boulevard network, infrastructure machinery has uninterrupted direct access, ensuring speedy development pace compared to inner terrain sectors.
-                    </p>
+                  {/* Development Status Data Table */}
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs mt-2">
+                    <table className="w-full text-left text-xs sm:text-sm font-sans">
+                      <thead className="bg-slate-900 text-white font-serif">
+                        <tr>
+                          <th className="p-3 sm:p-3.5 font-bold uppercase tracking-wider text-[11px] sm:text-xs">Item</th>
+                          <th className="p-3 sm:p-3.5 font-bold uppercase tracking-wider text-[11px] sm:text-xs">Status</th>
+                          <th className="p-3 sm:p-3.5 font-bold uppercase tracking-wider text-[11px] sm:text-xs">As at</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 bg-white">
+                        {(cms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection?.tableRows || []).map((row, idx) => (
+                          <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/40 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/40 transition-colors'}>
+                            <td className="p-3 sm:p-3.5 font-semibold text-slate-900">
+                              {row.item}
+                            </td>
+                            <td className="p-3 sm:p-3.5">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 text-[#7b002c] border border-rose-100 font-bold text-xs">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] animate-pulse" />
+                                <span>{row.status}</span>
+                              </span>
+                            </td>
+                            <td className="p-3 sm:p-3.5 text-slate-600 font-medium whitespace-nowrap text-xs sm:text-sm">
+                              {row.asAt}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </div>
 
-                {/* Quick Status Metrics (Optimized responsive typography & layout) */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-slate-100">
-                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">90%+</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Earthwork</span>
+                  {/* Stat boxes: Earthwork % · Roads % · Expected possession */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    <div className="p-3.5 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                      <span className="text-xl sm:text-2xl font-serif font-bold text-[#7b002c] block">
+                        {cms.developmentStatusSection?.statBoxes?.earthwork || '90%'}
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">
+                        Earthwork
+                      </span>
+                    </div>
+                    <div className="p-3.5 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                      <span className="text-xl sm:text-2xl font-serif font-bold text-[#7b002c] block">
+                        {cms.developmentStatusSection?.statBoxes?.roads || '65%'}
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">
+                        Roads & Boulevards
+                      </span>
+                    </div>
+                    <div className="p-3.5 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
+                      <span className="text-sm sm:text-base font-serif font-bold text-emerald-700 block line-clamp-1">
+                        {cms.developmentStatusSection?.statBoxes?.possession || 'Dec 2028'}
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">
+                        Expected Possession
+                      </span>
+                    </div>
                   </div>
-                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">100%</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Underground</span>
-                  </div>
-                  <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-emerald-700 block">48 Mo.</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Possession</span>
+
+                  {/* Dated Photographs Notice & Link */}
+                  <div className="pt-2">  
+                    <p className="text-xs sm:text-sm text-slate-600 font-sans">
+                      {cms.developmentStatusSection?.photoLinkNote || 'Dated photographs of every block are on our'}{' '}
+                      <Link
+                        href={cms.developmentStatusSection?.photoLinkHref || '/gallery'}
+                        className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1 group"
+                      >
+                        <span>{cms.developmentStatusSection?.photoLinkText || 'development updates (→ development page)'}</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      </Link>.
+                    </p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -1565,9 +1667,9 @@ export default function PrimeBlockContent() {
             {/* Right Column: Real On-Ground Development Photo */}
             <div className="lg:col-span-5 flex flex-col">
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
-                <div className="relative w-full h-full min-h-[320px] sm:min-h-[380px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
+                <div className="relative w-full h-full min-h-[340px] sm:min-h-[420px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                   <img
-                    src="/images/faisal-hills-aerial-panoramic.webp"
+                    src={cms.developmentStatusSection?.image || '/images/faisal-hills-aerial-panoramic.webp'}
                     alt="Faisal Hills Prime Block On-Ground Development Status & Aerial View"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />
@@ -1582,13 +1684,13 @@ export default function PrimeBlockContent() {
 
                   <div className="absolute bottom-5 left-5 right-5 text-white space-y-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
-                      Verified Aerial Drone Survey
+                      Verified On-Ground Progress
                     </span>
                     <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
                       Prime Sector On-Ground Progress
                     </h4>
                     <p className="text-xs text-slate-300">
-                      Wide carpeted boulevards, complete utilities, and active heavy earthwork machinery.
+                      Heavy earthwork machinery active on site, 225ft main boulevard levelling, and drainage conduits.
                     </p>
                   </div>
                 </div>
@@ -1598,133 +1700,215 @@ export default function PrimeBlockContent() {
           </div>
         </section>
 
-        {/* Step-by-Step Booking & Transfer Process (Point-by-Point Animated Roadmap) */}
-        <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-          <ScrollReveal direction="up" delay={50}>
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>4-Step Booking Roadmap</span>
+        {/* Possession Advice: What to Confirm Before You Pay */}
+        <section id="possession-advice" className="scroll-mt-28 bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-amber-200/80 bg-gradient-to-br from-white to-amber-50/30 shadow-sm space-y-4">
+          <ScrollReveal direction="left" delay={50}>
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300 text-amber-900 text-xs font-bold uppercase tracking-wider">
+                <Info className="w-3.5 h-3.5 text-amber-700" />
+                <span>Possession Due Diligence</span>
               </div>
               <TextReveal
                 as="h2"
-                text="Faisal Hills Prime Block Booking Process"
+                text={cms.possessionAdviceSection?.heading || 'Possession: What to Confirm Before You Pay'}
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
+                <p>
+                  {cms.possessionAdviceSection?.paragraph1 || 'Published sources disagree here. Some pages describe Prime Block plots as possession-ready for immediate construction, while the same pages describe earthworks still under way, and the society-level material treats the block as an early-stage development.'}
+                </p>
+                <p>
+                  {cms.possessionAdviceSection?.paragraph2 || 'We do not repeat a possession claim we cannot stand behind. Before paying, ask the society office to confirm in writing whether possession is available for your exact plot number, and visit the plot to see its level and access. If you need to build now, a possession block such as'}{' '}
+                  <Link href={cms.possessionAdviceSection?.blockALinkHref || '/blocks/block-a'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
+                    <span>{cms.possessionAdviceSection?.blockALinkText || 'Block A (→ Block A page)'}</span>
+                  </Link>{' '}
+                  is the better choice. Our{' '}
+                  <Link href={cms.possessionAdviceSection?.guideLinkHref || '/blogs/faisal-hills-plot-verification-guide'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
+                    <span>{cms.possessionAdviceSection?.guideLinkText || 'plot verification guide (→ buying guide)'}</span>
+                  </Link>{' '}
+                  lists the checks in order.
+                </p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </section>
+
+        {/* Prime Block vs Block A Comparison Matrix */}
+        <section id="compare-block-a" className="scroll-mt-28 bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Scale className="w-3.5 h-3.5" />
+                <span>Sector Comparison</span>
+              </div>
+              <TextReveal
+                as="h2"
+                text={cms.comparisonSection?.heading || 'Prime Block or Block A?'}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
-                Follow these 4 essential points to complete direct booking and secure your verified company allotment file:
+                {cms.comparisonSection?.subline || 'Direct comparison between Prime Block and fully developed Block A:'}
               </p>
             </div>
           </ScrollReveal>
 
-          {/* Points Timeline / Roadmap Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
-            {[
-              {
-                point: '01',
-                tag: 'Step 1: Identity',
-                title: 'CNIC / NICOP Copies',
-                points: [
-                  'Two photocopies of applicant CNIC / NICOP',
-                  'One photocopy of Next-of-Kin (Nominee) CNIC',
-                  'Passport copies for Overseas Pakistanis'
-                ],
-                badge: 'Attested Copies'
-              },
-              {
-                point: '02',
-                tag: 'Step 2: Photos',
-                title: 'Passport Size Photos',
-                points: [
-                  'Two recent passport-size color photographs',
-                  'Blue or white plain background',
-                  'Applicant name written on back'
-                ],
-                badge: 'Recent Photographs'
-              },
-              {
-                point: '03',
-                tag: 'Step 3: Payment',
-                title: '20% Down Payment',
-                points: [
-                  'Pay Order in favour of "Zedem International"',
-                  'Direct online wire transfer for NRPs',
-                  '10% Special Discount on full cash upfront'
-                ],
-                badge: 'Official Bank Draft'
-              },
-              {
-                point: '04',
-                tag: 'Step 4: Allotment',
-                title: 'File Allotment & Book',
-                points: [
-                  'Official company booking acknowledgment letter',
-                  'Allotment certificate with unique file serial #',
-                  'Official 4-year installment payment booklet'
-                ],
-                badge: 'Guaranteed File Handover'
-              }
-            ].map((item, idx) => (
-              <ScrollReveal key={idx} direction="up" delay={idx * 70}>
-                <div className="bg-slate-50 hover:bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/50 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between h-full space-y-4 relative overflow-hidden">
-                  
-                  {/* Subtle Top Accent Line */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#7b002c]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="w-9 h-9 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-serif font-bold text-sm shadow-sm group-hover:scale-110 transition-transform">
-                        {item.point}
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/70">
-                        {item.tag}
+          {/* Comparison Table */}
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+            <table className="w-full text-left text-xs sm:text-sm font-sans">
+              <thead className="bg-slate-900 text-white font-serif">
+                <tr>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm w-1/4">Aspect / Feature</th>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-amber-300 w-3/8">
+                    {cms.comparisonSection?.primeBlockColumnName || 'Prime Block'}
+                  </th>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-emerald-300 w-3/8">
+                    {cms.comparisonSection?.blockAColumnName || 'Block A'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {(cms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection?.rows || []).map((row, idx) => (
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-rose-50/30 transition-colors' : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'}>
+                    <td className="p-3.5 sm:p-4 font-bold text-slate-900 bg-slate-50/40">
+                      {row.aspect}
+                    </td>
+                    <td className="p-3.5 sm:p-4 text-slate-700 font-medium">
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0" />
+                        <span>{row.primeBlock}</span>
                       </span>
-                    </div>
-
-                    <h3 className="font-serif font-bold text-base text-slate-900 group-hover:text-[#7b002c] transition-colors pt-1">
-                      {item.title}
-                    </h3>
-
-                    {/* Bullet Points */}
-                    <ul className="space-y-1.5 pt-1 text-xs text-slate-600 font-sans">
-                      {item.points.map((pt, pIdx) => (
-                        <li key={pIdx} className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0 mt-1.5" />
-                          <span className="leading-relaxed">{pt}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Requirement Badge Footer */}
-                  <div className="pt-3 border-t border-slate-200/70 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>{item.badge}</span>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                    </td>
+                    <td className="p-3.5 sm:p-4 text-slate-700 font-medium">
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                        <span>{row.blockA}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {/* Transfer Desk Banner */}
+          <div className="pt-1">
+            <p className="text-xs sm:text-sm text-slate-600 font-sans">
+              {cms.comparisonSection?.compareLinkNote || 'Every block is compared on our'}{' '}
+              <Link
+                href={cms.comparisonSection?.compareLinkHref || '/faisal-hills-blocks'}
+                className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1 group"
+              >
+                <span>{cms.comparisonSection?.compareLinkText || 'Faisal Hills blocks (→ blocks page)'}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* Step-by-Step Booking & Transfer Process */}
+        <section id="booking-process" className="scroll-mt-28 bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <ScrollReveal direction="up" delay={50}>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{cms.bookingProcessSection?.badge || '4-STEP BOOKING'}</span>
+              </div>
+              <TextReveal
+                as="h2"
+                text={cms.bookingProcessSection?.heading || 'How to Book a Plot in Prime Block'}
+                className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
+                staggerDelay={65}
+                direction="left"
+              />
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
+                {cms.bookingProcessSection?.intro || 'Follow these 4 essential points to complete direct booking and secure your verified company allotment file:'}
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Booking Steps Table */}
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+            <table className="w-full text-left text-xs sm:text-sm font-sans">
+              <thead className="bg-slate-900 text-white font-serif">
+                <tr>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm w-20 sm:w-28 text-slate-200">
+                    Step
+                  </th>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-amber-300 w-1/4 sm:w-1/3">
+                    Title
+                  </th>
+                  <th className="p-3.5 sm:p-4 font-bold uppercase tracking-wider text-xs sm:text-sm text-emerald-300">
+                    What You Provide
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {(cms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection?.steps || []).map((item, idx) => (
+                  <tr
+                    key={idx}
+                    className={
+                      idx % 2 === 0
+                        ? 'bg-white hover:bg-rose-50/30 transition-colors'
+                        : 'bg-slate-50/60 hover:bg-rose-50/30 transition-colors'
+                    }
+                  >
+                    <td className="p-3.5 sm:p-4 font-bold text-[#7b002c] font-mono text-sm sm:text-base bg-slate-50/40">
+                      {String(item.step).padStart(2, '0')}
+                    </td>
+                    <td className="p-3.5 sm:p-4 font-bold text-slate-900">
+                      <div className="space-y-0.5">
+                        <span className="block font-serif text-sm sm:text-base">{item.title}</span>
+                        {item.tag && (
+                          <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#7b002c] bg-rose-50 px-2 py-0.5 rounded border border-rose-200/60">
+                            {item.tag}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-3.5 sm:p-4 text-slate-700 font-medium">
+                      <span className="inline-flex items-start gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#7b002c] shrink-0 mt-1.5" />
+                        <span className="leading-relaxed">{item.desc}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Assistance Box */}
           <div className="p-5 bg-gradient-to-r from-slate-900 via-[#4a081a] to-slate-950 rounded-2xl text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md border border-white/10">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-white">Need Assistance with Prime Block Booking?</h4>
-              <p className="text-xs text-rose-100/80 font-sans">Our authorized sales facilitators assist with official Pay Orders, booking forms, and immediate file verification.</p>
+              <h4 className="font-serif font-bold text-base sm:text-lg text-white">
+                {cms.bookingProcessSection?.assistanceBoxHeading || 'Need help booking in Prime Block?'}
+              </h4>
+              <p className="text-xs text-rose-100/80 font-sans">
+                {cms.bookingProcessSection?.assistanceBoxText || 'Our sales desk helps with pay orders, booking forms and document checks, in person or over WhatsApp.'}
+              </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <a
                 href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20official%20assistance%20with%20booking%20a%20plot%20in%20Faisal%20Hills%20Prime%20Block."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105"
+                className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Contact Desk</span>
+                <span>{cms.bookingProcessSection?.assistanceButtonText || 'Contact Sales Desk'}</span>
               </a>
             </div>
+          </div>
+
+          {/* Existing File Transfer Note */}
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 font-sans leading-relaxed">
+            <p>
+              <strong className="text-slate-900 font-serif">File Transfer Advisory: </strong>
+              {cms.bookingProcessSection?.fileTransferNote || 'If you are buying an existing file rather than booking a new plot, treat it as a transfer: confirm the file and allotment details at the society office, check the transfer history, and pay the seller only once the transfer is complete.'}
+            </p>
           </div>
         </section>
 
@@ -1733,18 +1917,18 @@ export default function PrimeBlockContent() {
       {/* ========================================================= */}
       {/* 9. COMPARE OTHER FAISAL HILLS BLOCKS (EXCLUSIVE OF PRIME) */}
       {/* ========================================================= */}
-      <section className="bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+      <section id="explore-blocks" className="scroll-mt-28 bg-white p-6 sm:p-8 lg:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <ScrollReveal direction="up" delay={50}>
           <div className="space-y-2">
             <TextReveal
               as="h2"
-              text="Explore All Faisal Hills Blocks & Landmarks"
+              text={cms.exploreOtherBlocksSection?.heading || 'Explore Other Faisal Hills Blocks'}
               className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
               staggerDelay={65}
               direction="left"
             />
             <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-              Hover across the sector columns to view each block's location advantages, development progress, and direct links to full block details:
+              {cms.exploreOtherBlocksSection?.subtitle || 'Compare Prime Block with the rest of the society. Each block page shows possession status, plot sizes and prices.'}
             </p>
           </div>
         </ScrollReveal>
@@ -1758,25 +1942,35 @@ export default function PrimeBlockContent() {
             roundedClass="rounded-2xl sm:rounded-3xl"
           />
         </ScrollReveal>
+
+        <div className="pt-2 text-center sm:text-left">
+          <Link
+            href={cms.exploreOtherBlocksSection?.compareHubHref || '/faisal-hills-blocks'}
+            className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1.5 text-sm group"
+          >
+            <span>{cms.exploreOtherBlocksSection?.compareHubText || 'Compare all Faisal Hills blocks (→ blocks hub)'}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
       </section>
 
       {/* ========================================================= */}
       {/* 10. FREQUENTLY ASKED QUESTIONS (FAQS) & LEAD FORM         */}
       {/* ========================================================= */}
-      <section className="py-12 lg:py-16 border-t border-slate-200">
+      <section id="faqs" className="scroll-mt-28 py-12 lg:py-16 border-t border-slate-200">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start relative">
 
           {/* Left Column: Sticky FAQ'S Title */}
           <div className="lg:col-span-4 space-y-3 lg:sticky lg:top-24 self-start">
             <span className="label-caps text-[#7b002c] font-bold block mb-1 text-xs uppercase tracking-widest">FAQ&apos;S</span>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
-              Frequently Asked Questions (FAQS)
+              {cms.faqsSection?.heading || 'Faisal Hills Prime Block: Frequently Asked Questions'}
             </h2>
           </div>
 
           {/* Right Column: Clean Horizontal Separated Accordion */}
           <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
-            {primeFaqs.map((faq, index) => {
+            {(cms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection?.faqs || primeFaqs).map((faq, index) => {
               const isOpen = openFaq === index;
               return (
                 <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
@@ -1812,30 +2006,35 @@ export default function PrimeBlockContent() {
       <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <ScrollReveal direction="up" delay={50}>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Final Thoughts on Faisal Hills Prime Block
+            {cms.closingSiteVisitSection?.heading || 'Is Prime Block Right for You?'}
           </h2>
           <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans pt-2">
             <p>
-              Faisal Hills Prime Block represents the quintessential balance between high-elevation natural living and official transparent affordability. With guaranteed 48-month easy installment terms, zero speculative markups, RDA legal sanctioning, and 225ft boulevard connectivity, it offers unmatched peace of mind for genuine home-builders and long-term capital accumulators.
+              {cms.closingSiteVisitSection?.paragraph1 || 'Prime Block is a lower-priced way into an RDA-approved society on GT Road, with an instalment plan and a position beside Block A. It suits long-term buyers and overseas Pakistanis who are comfortable waiting for development. Families who want to build now will be better served by a block with possession.'}
             </p>
             <p>
-              To check currently available plot sizes, verified corner/park-facing categories, and official booking documentation, <Link href="/contact" className="text-[#7b002c] font-bold hover:underline">contact our dedicated sales desk</Link> today.
+              {cms.closingSiteVisitSection?.paragraph2 || 'To check available sizes, corner and park-facing options and the current payment plan,'}{' '}
+              <Link href={cms.closingSiteVisitSection?.contactLinkHref || '/contact'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
+                <span>{cms.closingSiteVisitSection?.contactLinkText || 'contact our sales desk (→ contact page)'}</span>
+              </Link>.
             </p>
           </div>
         </ScrollReveal>
       </section>
 
       {/* Direct Priority Lead Capture Inquiry Form */}
-      <section className="bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
+      <section id="site-visit" className="scroll-mt-28 bg-gradient-to-br from-[#7b002c] via-[#5c0021] to-[#3a0014] text-white p-8 sm:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-2xl mx-auto text-center space-y-2 relative z-10">
-          <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block">Priority Assistance</span>
+          <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block">
+            {cms.closingSiteVisitSection?.formLabel || 'SITE VISIT & VIDEO TOURS'}
+          </span>
           <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white">
-            Schedule an On-Site Prime Block Tour
+            {cms.closingSiteVisitSection?.formTitle || 'Book a Prime Block Site Visit'}
           </h3>
           <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
-            Leave your contact details to receive verified plot listings, current installment schedules, and official allotment files directly on WhatsApp.
+            {cms.closingSiteVisitSection?.formSubtitle || 'Leave your details and we will send available plots, the current payment plan and a time for a site visit or live video tour on WhatsApp.'}
           </p>
         </div>
 
@@ -1865,7 +2064,7 @@ export default function PrimeBlockContent() {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">WhatsApp / Phone *</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">WhatsApp Number *</label>
                 <input
                   type="tel"
                   required
@@ -1879,38 +2078,38 @@ export default function PrimeBlockContent() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Interested Plot Category</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Plot Size</label>
                 <select
                   value={leadPlot}
                   onChange={(e) => setLeadPlot(e.target.value)}
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white focus:outline-none focus:border-white transition-all cursor-pointer"
                 >
-                  <option value="5 Marla (25x50)" className="bg-slate-900 text-white">5 Marla (25×50) — PKR 32.5 Lac</option>
-                  <option value="8 Marla (30x60)" className="bg-slate-900 text-white">8 Marla (30×60) — PKR 48.0 Lac</option>
-                  <option value="10 Marla (35x70)" className="bg-slate-900 text-white">10 Marla (35×70) — PKR 58.5 Lac</option>
-                  <option value="14 Marla (40x80)" className="bg-slate-900 text-white">14 Marla (40×80) — PKR 76.5 Lac</option>
-                  <option value="1 Kanal (50x90)" className="bg-slate-900 text-white">1 Kanal (50×90) — PKR 99.0 Lac</option>
+                  <option value="5 Marla (25x50)" className="bg-slate-900 text-white">5 Marla (25×50)</option>
+                  <option value="8 Marla (30x60)" className="bg-slate-900 text-white">8 Marla (30×60)</option>
+                  <option value="10 Marla (35x70)" className="bg-slate-900 text-white">10 Marla (35×70)</option>
+                  <option value="14 Marla (40x80)" className="bg-slate-900 text-white">14 Marla (40×80)</option>
+                  <option value="1 Kanal (50x90)" className="bg-slate-900 text-white">1 Kanal (50×90)</option>
+                  <option value="Commercial Plot" className="bg-slate-900 text-white">Commercial Plot</option>
                 </select>
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Investor Type</label>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">I am</label>
                 <select
                   className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white focus:outline-none focus:border-white transition-all cursor-pointer"
                 >
-                  <option value="End User (Home Construction)" className="bg-slate-900 text-white">End User (Home Construction)</option>
-                  <option value="Overseas Pakistani (NRP)" className="bg-slate-900 text-white">Overseas Pakistani (NRP)</option>
-                  <option value="Short Term Investor" className="bg-slate-900 text-white">Short Term Investor</option>
-                  <option value="Long Term Wealth Accumulation" className="bg-slate-900 text-white">Long Term Wealth Accumulation</option>
+                  <option value="buying to build a home" className="bg-slate-900 text-white">Buying to build a home</option>
+                  <option value="overseas Pakistani" className="bg-slate-900 text-white">Overseas Pakistani (NRP)</option>
+                  <option value="investor" className="bg-slate-900 text-white">Investor</option>
                 </select>
               </div>
             </div>
 
             <div className="space-y-1 text-left">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Special Requirements (Optional)</label>
+              <label className="text-[11px] font-bold uppercase tracking-wider text-rose-100">Anything else? (optional)</label>
               <textarea
                 rows={2}
-                placeholder="e.g. Inquiring about corner plot or park-facing allotment..."
+                placeholder="e.g. Schedule weekend site tour or request live video tour on WhatsApp..."
                 value={leadNote}
                 onChange={(e) => setLeadNote(e.target.value)}
                 className="w-full px-4 py-3 bg-black/40 border border-white/25 rounded-xl text-xs text-white placeholder:text-rose-200/50 focus:outline-none focus:border-white transition-all resize-none"
@@ -1922,11 +2121,18 @@ export default function PrimeBlockContent() {
               className="w-full py-4 bg-white hover:bg-rose-50 text-[#7b002c] font-serif font-bold text-sm tracking-wider uppercase rounded-xl shadow-xl transition-all duration-300 hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
               <Send className="w-4 h-4" />
-              <span>Submit Priority Inquiry</span>
+              <span>{cms.closingSiteVisitSection?.formButtonText || 'Request Site Visit'}</span>
             </button>
           </form>
         )}
       </section>
+
+      {/* Editorial Audit & Disclosure Note */}
+      <div className="p-4 sm:p-5 bg-slate-100/90 rounded-2xl border border-slate-200 text-xs text-slate-600 font-sans leading-relaxed">
+        <p>
+          {cms.closingSiteVisitSection?.reviewedByNote || 'About this page: reviewed by Property Verification Team of Faisal Hills Authorized Sales Desk. Figures come from developer schedules and our own site visits. Prices and terms are set by the developer and change without notice. If you find anything out of date, tell us and we will correct it.'}
+        </p>
+      </div>
 
       {/* Fullscreen Zoom & Download Payment Plan Modal */}
       <PaymentPlanModal
