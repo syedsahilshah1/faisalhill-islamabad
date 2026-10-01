@@ -1549,35 +1549,76 @@ export default function BlockCContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 10. DIRECT LEAD CONSULTATION & BOOKING FORM               */}
+      {/* 10. OTHER BLOCKS / SECTORS OF FAISAL HILLS                */}
       {/* ========================================================= */}
-      <section id="contact-desk" className="space-y-6">
+      <section id="sectors" className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Explore Expanding Sectors in Faisal Hills
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+              Discover connected sectors across the master development, from Executive and Prime blocks to Hills Walk:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={otherBlocks}
+            defaultActiveIndex={2}
+            containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
+            roundedClass="rounded-2xl sm:rounded-3xl"
+          />
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 11. FAQS ACCORDION SECTION                                */}
+      {/* ========================================================= */}
+      <section id="faqs" className="scroll-mt-28 space-y-6">
+        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            Faisal Hills Block C Buying & Allotment FAQs
+          </h2>
+          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
+            Clear answers regarding Block C possession, RDA NOC approvals, plot transfer process, and investment upside.
+          </p>
+        </div>
+
+        <FaqAccordion faqs={blockCFaqs} blockName="Block C" />
+      </section>
+
+      {/* ========================================================= */}
+      {/* 12. DIRECT LEAD CONSULTATION & BOOKING FORM               */}
+      {/* ========================================================= */}
+      <section id="contact-desk" className="space-y-6 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-6 space-y-4">
-            <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
+            <h3 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight">
               Schedule a Site Visit or Request Block C File Verification
             </h3>
             <p className="text-slate-600 text-xs sm:text-sm font-sans leading-relaxed">
               Connect directly with our senior Faisal Hills advisory desk. Receive on-ground plot video walkthroughs, instant biometric allotment file checks, and updated resale inventory.
             </p>
-            <div className="space-y-2.5 pt-2 text-xs text-slate-700">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="space-y-2.5 pt-2 text-xs sm:text-sm text-slate-700">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
                 <span>Zero service charge on official file verification</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
                 <span>Custom video tours available for overseas Pakistanis</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
                 <span>Dedicated Zedem International transfer facilitation</span>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-xs">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-sm">
               {formSubmitted ? (
                 <div className="p-8 text-center space-y-3 bg-emerald-50 rounded-2xl border border-emerald-200">
                   <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto">
@@ -1660,54 +1701,13 @@ export default function BlockCContent() {
                     className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>{isSubmitting ? 'Submitting...' : 'Submit Official Block C Inquiry'}</span>
+                    <span>{isSubmitting ? 'Submitting...' : 'SUBMIT OFFICIAL BLOCK C INQUIRY'}</span>
                   </button>
                 </form>
               )}
             </div>
           </div>
         </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 11. OTHER BLOCKS / SECTORS OF FAISAL HILLS                */}
-      {/* ========================================================= */}
-      <section id="sectors" className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Explore Expanding Sectors in Faisal Hills
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
-              Discover connected sectors across the master development, from Executive and Prime blocks to Hills Walk:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal direction="up" delay={100}>
-          <ExpandingProjectsShowcase
-            items={otherBlocks}
-            defaultActiveIndex={2}
-            containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
-            roundedClass="rounded-2xl sm:rounded-3xl"
-          />
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 12. FAQS ACCORDION SECTION                                */}
-      {/* ========================================================= */}
-      <section id="faqs" className="scroll-mt-28 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Faisal Hills Block C Buying & Allotment FAQs
-          </h2>
-          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
-            Clear answers regarding Block C possession, RDA NOC approvals, plot transfer process, and investment upside.
-          </p>
-        </div>
-
-        <FaqAccordion faqs={blockCFaqs} blockName="Block C" />
       </section>
 
       {/* Map Download Modal */}

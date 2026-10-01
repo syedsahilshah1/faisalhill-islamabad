@@ -8,46 +8,39 @@ import {
   MapPin,
   Car,
   ChevronDown,
-  ChevronLeft,
   ChevronRight,
   Building2,
   Trees,
-  Landmark,
   Phone,
   Sparkles,
   Download,
   ArrowRight,
   TrendingUp,
-  Tag,
   DollarSign,
   Maximize2,
   Droplets,
-  Layers,
   HelpCircle,
-  Clock,
   MessageSquare,
   Home,
-  ShoppingBag,
   Zap,
   Activity,
   Check,
   Award,
   Send,
   BadgeCheck,
-  Calendar,
   Building,
-  Percent,
-  Filter,
-  Shield
+  Shield,
+  Star
 } from 'lucide-react';
 import LeadModal from '@/components/ui/LeadModal';
 import {
-  blocksData,
-  plotInventoryData,
   PlotItem,
   fetchPlots,
   submitLead,
-  formatPlotPrice
+  BlockDCMSData,
+  initialBlockDCMS,
+  fetchBlockDCMS,
+  mergeBlockDCMS
 } from '@/data/faisalHillsData';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -57,391 +50,28 @@ import FaqAccordion from '@/components/ui/FaqAccordion';
 import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 
-// Price schedule benchmark rows for Block D
-interface BlockDPriceRow {
-  size: string;
-  dimensions: string;
-  sqYards: string;
-  sqFeet: string;
-  category: 'Residential' | 'Commercial';
-  priceRange: string;
-  possession: string;
-  highlight: string;
-}
-
-const blockDPriceSchedule: BlockDPriceRow[] = [
-  {
-    size: '5 Marla',
-    dimensions: '25 × 50',
-    sqYards: '139 Sq. Yds',
-    sqFeet: '1,125 Sq. Ft',
-    category: 'Residential',
-    priceRange: 'PKR 40 Lacs – 48 Lacs',
-    possession: 'Development 85%',
-    highlight: 'Lowest entry price point in Faisal Hills with exceptional 3-year holding upside.'
-  },
-  {
-    size: '8 Marla',
-    dimensions: '30 × 60',
-    sqYards: '200 Sq. Yds',
-    sqFeet: '1,800 Sq. Ft',
-    category: 'Residential',
-    priceRange: 'PKR 62 Lacs – 75 Lacs',
-    possession: 'Development 85%',
-    highlight: 'Standard family-size cut situated along serene 50ft tree-lined sector avenues.'
-  },
-  {
-    size: '10 Marla',
-    dimensions: '35 × 70',
-    sqYards: '272 Sq. Yds',
-    sqFeet: '2,250 Sq. Ft',
-    category: 'Residential',
-    priceRange: 'PKR 90 Lacs – 1.10 Cr',
-    possession: 'Development 85%',
-    highlight: 'Scenic double-unit home cuts facing natural valley breezes and Margalla ridge.'
-  },
-  {
-    size: '14 Marla',
-    dimensions: '40 × 80',
-    sqYards: '356 Sq. Yds',
-    sqFeet: '3,150 Sq. Ft',
-    category: 'Residential',
-    priceRange: 'PKR 1.25 Cr – 1.45 Cr',
-    possession: 'Development 85%',
-    highlight: 'Executive estate cuts close to the proposed central healthcare & civic zone.'
-  },
-  {
-    size: '1 Kanal',
-    dimensions: '50 × 90',
-    sqYards: '500 Sq. Yds',
-    sqFeet: '4,500 Sq. Ft',
-    category: 'Residential',
-    priceRange: 'PKR 1.65 Cr – 2.10 Cr',
-    possession: 'Development 85%',
-    highlight: 'Flagship mansion plots facing scenic green belts, lush parkland, and wide boulevards.'
-  },
-  {
-    size: '4 Marla Commercial',
-    dimensions: '30 × 30',
-    sqYards: '100 Sq. Yds',
-    sqFeet: '900 Sq. Ft',
-    category: 'Commercial',
-    priceRange: 'PKR 1.80 Cr – 2.60 Cr',
-    possession: 'Commercial Approved',
-    highlight: 'High ROI retail promenade plots approved for Ground + 4 commercial arcades.'
+const getReasonIcon = (name: string) => {
+  switch (name) {
+    case 'Car': return Car;
+    case 'DollarSign': return DollarSign;
+    case 'Droplets': return Droplets;
+    case 'Building2': return Building2;
+    case 'ShieldCheck': return ShieldCheck;
+    case 'TrendingUp': return TrendingUp;
+    case 'Trees': return Trees;
+    case 'Award': return Award;
+    case 'MapPin': return MapPin;
+    case 'Zap': return Zap;
+    case 'Home': return Home;
+    case 'Shield': return Shield;
+    default: return TrendingUp;
   }
-];
-
-// Fallback seed plots for Block D with authentic local photography
-const defaultBlockDPlots: PlotItem[] = [
-  {
-    id: 'plot-d-01',
-    plotNumber: 'D-108',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Residential',
-    size: '5 Marla',
-    dimensions: '25 × 50',
-    price: 4450000,
-    priceFormatted: 'PKR 44.5 Lacs',
-    priceHistoryTrend: '+16.5% annual capital ROI',
-    status: 'Available',
-    facing: '40ft Wide Street',
-    mapCoords: { x: 78, y: 55 },
-    features: ['Solid Ground Land', 'Near Central Park', 'Fast Developing Sector'],
-    description: 'Affordable 5 Marla residential plot in Faisal Hills Block D, offering excellent value near community green spaces.',
-    image: '/images/faisal-hills-executive-boulevard.webp'
-  },
-  {
-    id: 'plot-d-02',
-    plotNumber: 'D-230',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Residential',
-    size: '8 Marla',
-    dimensions: '30 × 60',
-    price: 6850000,
-    priceFormatted: 'PKR 68.5 Lacs',
-    priceHistoryTrend: '+18.0% annual capital ROI',
-    status: 'Available',
-    facing: 'Boulevard Facing',
-    mapCoords: { x: 80, y: 58 },
-    features: ['50ft Sector Boulevard', 'Near Sector Jamia Mosque', 'Underground Electricity'],
-    description: 'Family-size 8 Marla plot along the 50ft wide avenue in Block D with completed utilities and open mountain air.',
-    image: '/images/faisal-hills-monument-entrance.webp'
-  },
-  {
-    id: 'plot-d-03',
-    plotNumber: 'D-365',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Residential',
-    size: '10 Marla',
-    dimensions: '35 × 70',
-    price: 9800000,
-    priceFormatted: 'PKR 98 Lacs',
-    priceHistoryTrend: '+21.2% annual capital ROI',
-    status: 'Available',
-    facing: 'Margalla Mountain View',
-    mapCoords: { x: 82, y: 62 },
-    features: ['Corner Plot', 'Scenic Mountain Backdrop', 'Direct Allotment File'],
-    description: 'Scenic 10 Marla corner plot ideal for double-unit luxury construction, with open views of Margalla range.',
-    image: '/images/faisal-hills-executive-sector.webp'
-  },
-  {
-    id: 'plot-d-04',
-    plotNumber: 'D-480',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Residential',
-    size: '14 Marla',
-    dimensions: '40 × 80',
-    price: 13800000,
-    priceFormatted: 'PKR 1.38 Crore',
-    priceHistoryTrend: '+19.8% annual capital ROI',
-    status: 'Available',
-    facing: '60ft Main Avenue',
-    mapCoords: { x: 84, y: 65 },
-    features: ['Executive Estate Cut', 'Near Healthcare Zone', 'Immediate Transfer'],
-    description: 'Spacious 14 Marla executive plot cut on a 60ft avenue, minutes from the proposed medical and education complex.',
-    image: '/images/faisal-hills-aerial-panoramic.webp'
-  },
-  {
-    id: 'plot-d-05',
-    plotNumber: 'D-590',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Residential',
-    size: '1 Kanal',
-    dimensions: '50 × 90',
-    price: 18500000,
-    priceFormatted: 'PKR 1.85 Crore',
-    priceHistoryTrend: '+24.5% annual capital ROI',
-    status: 'Available',
-    facing: 'Park Facing',
-    mapCoords: { x: 86, y: 68 },
-    features: ['Direct Park Facing', 'Mansion Zoning', 'Zero Litigation Risk'],
-    description: 'Premium 1 Kanal mansion plot directly overlooking central green reservations in Faisal Hills Block D.',
-    image: '/images/faisal-hills-drone-view.webp'
-  },
-  {
-    id: 'plot-d-06',
-    plotNumber: 'D-COMM-12',
-    blockSlug: 'block-d',
-    blockName: 'Block D',
-    category: 'Commercial',
-    size: '4 Marla',
-    dimensions: '30 × 30',
-    price: 19500000,
-    priceFormatted: 'PKR 1.95 Crore',
-    priceHistoryTrend: '+28.0% commercial appreciation',
-    status: 'Available',
-    facing: 'Main Commercial Strip',
-    mapCoords: { x: 88, y: 70 },
-    features: ['Sector Commercial Strip', 'Ground + 4 Storey Approval', 'High ROI Catchment'],
-    description: 'Prime 4 Marla commercial plot in Sector D commercial zone, approved for multi-storey retail, grocery, and clinic development.',
-    image: '/images/faisal-hills-arc-view.webp'
-  }
-];
-
-// Block D Amenities List with Alternating Structure & Distinct Photos
-const blockDAmenities = [
-  {
-    id: 'nature-parks',
-    title: 'Lush Sector Parks & Scenic Margalla Trails',
-    category: 'nature',
-    description: 'Block D is surrounded by open green belts, botanical family parks, and walking tracks designed to offer fresh mountain air and serene living for residents.',
-    image: '/images/faisal-hills-glow-park.webp',
-    tag: 'Eco-Living Feature',
-    features: ['Family Botanical Parks', 'Jogging & Walking Trails', 'Lush Green Belts', 'Eco-Conscious Zoning']
-  },
-  {
-    id: 'community-center',
-    title: 'Sector D Multi-Purpose Community Center',
-    category: 'lifestyle',
-    description: 'Dedicated modern social hub featuring banquet facilities, indoor recreation halls, senior citizen lounges, and executive meeting rooms for neighborhood residents.',
-    image: '/images/faisal-hills-arc-monument-2.webp',
-    tag: 'Community Anchor',
-    features: ['Banquet & Event Halls', 'Indoor Games Arena', 'Senior Citizen Lounge', 'Resident Meeting Suites']
-  },
-  {
-    id: 'jamia-mosque-d',
-    title: 'Grand Sector D Jamia Mosque',
-    category: 'infrastructure',
-    description: 'Modern Islamic architectural landmark designed for 2,500 worshippers, complete with air-conditioned prayer halls, expansive marble courtyards, and Quranic academy.',
-    image: '/images/faisal-hills-jamia-mosque.webp',
-    tag: 'Delivered Landmark',
-    features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
-  },
-  {
-    id: 'medical-complex',
-    title: 'Proposed Medical City & Healthcare Complex',
-    category: 'utilities',
-    description: 'Zoned high-capacity healthcare district designed to house multi-specialty hospitals, 24/7 trauma emergency care, diagnostic laboratories, and pharmacy hubs.',
-    image: '/images/faisal-hills-medical-complex.webp',
-    tag: 'Healthcare Hub',
-    features: ['24/7 Emergency Trauma Care', 'Specialist Clinics', 'Diagnostic Pathology Labs', 'Pharmacies & Medical Supplies']
-  },
-  {
-    id: 'underground-utilities-d',
-    title: '100% Underground Electrification & Wide Grid',
-    category: 'utilities',
-    description: 'Subterranean power distribution ensuring completely unobstructed skyline vistas, modern street lighting poles, and storm water conduits.',
-    image: '/images/faisal-hills-executive-sector.webp',
-    tag: 'Smart Infrastructure',
-    features: ['Subterranean Power Cabling', 'High-Capacity Transformers', 'LED Street Lamps', 'Zero Overhead Wiring']
-  },
-  {
-    id: 'gated-security-d',
-    title: '24/7 Gated Security & Perimeter Surveillance',
-    category: 'security',
-    description: 'Guarded sector checkposts, smart boom barriers, high-resolution night-vision CCTV coverage, and dedicated mobile patrolling units.',
-    image: '/images/faisal-hills-arc-gate.webp',
-    tag: '24/7 Secure',
-    features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
-  }
-];
-
-// Block D Development Milestones with Unique Sector Photos
-const blockDDevelopmentMilestones = [
-  {
-    title: 'Roads & Sector Boulevards',
-    progress: 90,
-    status: 'Paved & Functional',
-    desc: 'Main 50ft and 60ft avenues asphalted with drainage gutters, curbs, and street lamp foundations.',
-    image: '/images/faisal-hills-drone-view.webp'
-  },
-  {
-    title: 'Underground Electrification',
-    progress: 85,
-    status: 'Cables Laid in Trenches',
-    desc: 'Subterranean conduit pipes and underground cable trenches completed across all sectors.',
-    image: '/images/faisal-hills-aerial-panoramic.webp'
-  },
-  {
-    title: 'Water Wells & Storage Tanks',
-    progress: 95,
-    status: 'Tube Wells Operational',
-    desc: 'High-yield deep-well tube wells and overhead water reservoirs delivering clean mountain water.',
-    image: '/images/faisal-hills-overview.webp'
-  },
-  {
-    title: 'Sui Gas Pipeline Network',
-    progress: 80,
-    status: 'Mainlines Laid',
-    desc: 'Underground gas pipelines installed along primary avenues awaiting final pressure testing.',
-    image: '/images/faisal-hills-site-header.webp'
-  },
-  {
-    title: 'Sewerage & Storm Drainage',
-    progress: 90,
-    status: 'RCC Pipes Laid',
-    desc: 'Heavy RCC sewerage conduits connected to main society trunk lines for rain runoff safety.',
-    image: '/images/faisal-hills-arc-monument.webp'
-  },
-  {
-    title: 'Sector Parks & Green Reservations',
-    progress: 85,
-    status: 'Turf & Trees Planted',
-    desc: 'Family walking trails, children play areas, and perimeter tree plantations active.',
-    image: '/images/faisal-hills-glow-park.webp'
-  }
-];
-
-// Block D Travel Times
-const blockDTravelTimes = [
-  { destination: 'M-1 Brahma Jhang Bahtar Interchange', distance: '3.2 km', time: '5 Mins', note: 'Direct access to M-1 Motorway' },
-  { destination: 'Grand GT Road (N-5 Highway)', distance: '3.8 km', time: '7 Mins', note: 'Via 225ft Grand Boulevard' },
-  { destination: 'Block C & Hills Walk Promenade', distance: '1.2 km', time: '2 Mins', note: 'Direct internal avenue connection' },
-  { destination: 'Block B Central Sports Complex', distance: '2.0 km', time: '4 Mins', note: 'Quick neighborhood access' },
-  { destination: 'Taxila Museum & Cantt Commercials', distance: '6.5 km', time: '9 Mins', note: 'Short urban drive' },
-  { destination: 'Islamabad Toll Plaza & Zero Point', distance: '26.0 km', time: '24 Mins', note: 'Signal-free drive via M-1' }
-];
-
-// Block D FAQs
-const blockDFaqs = [
-  {
-    question: 'Where exactly is Faisal Hills Block D located?',
-    answer: 'Block D is situated on the tranquil western flank of Faisal Hills, adjacent to Block C and within minutes of the M-1 Motorway Brahma Jhang Bahtar Interchange. It enjoys serene elevation with natural mountain springs and scenic Margalla ridge views.'
-  },
-  {
-    question: 'Is Faisal Hills Block D approved by RDA?',
-    answer: 'Yes, Faisal Hills Block D is 100% legally approved by the Rawalpindi Development Authority (RDA) under the comprehensive society master plan NOC. All plots are free of legal dispute with transparent biometric transfers at the Zedem International head office.'
-  },
-  {
-    question: 'What residential and commercial plot sizes are available in Block D?',
-    answer: 'Block D offers 5 Marla (25×50), 8 Marla (30×60), 10 Marla (35×70), 14 Marla (40×80), and 1 Kanal (50×90) residential cuts. Commercial plots of 4 Marla (30×30) with Ground + 4 storey construction approvals are also available.'
-  },
-  {
-    question: 'What is the current development status of Block D?',
-    answer: 'Development in Block D is approximately 85% to 90% completed. Earthwork, levelling, 50ft & 60ft asphalt road carpeting, underground utility conduits, deep tube wells, and sewerage piping networks are operational.'
-  },
-  {
-    question: 'What is the price range of 5 Marla and 10 Marla plots in Block D?',
-    answer: 'As of current market rates, a 5 Marla residential plot ranges from PKR 40 Lacs to 48 Lacs, while a 10 Marla plot ranges between PKR 90 Lacs and 1.10 Crore depending on location, category, and boulevard facing.'
-  },
-  {
-    question: 'Why is Block D considered the best value investment in Faisal Hills?',
-    answer: 'Block D provides the most economical entry prices across the society combined with proximity to the upcoming M-1 Brahma Interchange link and future Medical City. It delivers high holding ROI for investors and peaceful suburban lifestyle for end-users.'
-  },
-  {
-    question: 'Can overseas Pakistanis buy and transfer plots in Block D remotely?',
-    answer: 'Yes. Overseas Pakistanis can purchase plots using their NICOP/passport. File verification, installment ledger checks, and legal biometric allotment transfers can be facilitated seamlessly through our dedicated overseas advisory desk.'
-  }
-];
-
-const blockDWhyInvestReasons = [
-  {
-    icon: Car,
-    title: 'Brahma Bahtar M-1 Interchange',
-    desc: 'Block D enjoys fast 5-minute access to the Brahma Jhang Bahtar Interchange on the M-1 Motorway, connecting seamlessly to Islamabad Zero Point and CPEC.',
-    bg: 'bg-rose-50',
-    text: 'text-[#7b002c]',
-    border: 'border-rose-100'
-  },
-  {
-    icon: DollarSign,
-    title: 'Lowest Entry Price & High ROI',
-    desc: 'Block D offers the most competitive entry rates in Faisal Hills, ensuring the highest percentage capital appreciation as final possession finishes.',
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    border: 'border-amber-100'
-  },
-  {
-    icon: Droplets,
-    title: 'Scenic Parkland & Clean Air',
-    desc: 'Lush green parks, open tree-lined avenues, and cooler Margalla hillside elevation make Block D a pristine, pollution-free residential sanctuary.',
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    border: 'border-emerald-100'
-  },
-  {
-    icon: Building2,
-    title: 'Future Medical City Complex',
-    desc: 'The designated Healthcare and Medical Complex zone in Sector D guarantees high long-term rental demand from medical professionals and executives.',
-    bg: 'bg-purple-50',
-    text: 'text-purple-700',
-    border: 'border-purple-100'
-  },
-  {
-    icon: ShieldCheck,
-    title: '100% RDA Approved & Clear NOC',
-    desc: 'Full Rawalpindi Development Authority planning permission with zero litigation risk and transparent biometric deed transfers at the Zedem head office.',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-100'
-  },
-  {
-    icon: TrendingUp,
-    title: 'Rapid Development Momentum',
-    desc: 'With 85%+ groundwork complete and asphalt carpet roads underway, Block D is on a fast track toward full on-ground possession handover.',
-    bg: 'bg-rose-50',
-    text: 'text-[#7b002c]',
-    border: 'border-rose-100'
-  }
-];
+};
 
 export default function BlockDContent() {
+  // Live CMS State
+  const [cms, setCms] = useState<BlockDCMSData>(initialBlockDCMS);
+
   // Plot Filters & Interactive States
   const [selectedSizeFilter, setSelectedSizeFilter] = useState<string>('All');
   const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
@@ -466,6 +96,26 @@ export default function BlockDContent() {
 
   // Live plots sync
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+
+  // Fetch Block D CMS on mount + listen for updates
+  useEffect(() => {
+    fetchBlockDCMS().then((data) => {
+      if (data) setCms(mergeBlockDCMS(data));
+    });
+
+    const handleUpdate = () => {
+      fetchBlockDCMS().then((data) => {
+        if (data) setCms(mergeBlockDCMS(data));
+      });
+    };
+
+    window.addEventListener('faisal_block_d_cms_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('faisal_block_d_cms_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     fetchPlots()
@@ -497,47 +147,53 @@ export default function BlockDContent() {
     return blockDPlots.filter((p) => p.size.toLowerCase().includes(selectedSizeFilter.toLowerCase()));
   }, [blockDPlots, selectedSizeFilter]);
 
-  // Filtered Price Schedule
+  // Data lists with deep fallbacks to initialBlockDCMS
+  const priceScheduleList = useMemo(() => {
+    return cms.priceScheduleSection?.tableRows?.length > 0 
+      ? cms.priceScheduleSection.tableRows 
+      : initialBlockDCMS.priceScheduleSection.tableRows;
+  }, [cms.priceScheduleSection?.tableRows]);
+
   const filteredPriceSchedule = useMemo(() => {
-    const blockPlots = allPlots.filter((p) => p.blockSlug === 'block-d');
-    let schedule = blockDPriceSchedule;
-    if (blockPlots.length > 0) {
-      schedule = blockPlots.map((plot) => {
-        let priceText = 'Contact for Price';
-        if (plot.price && plot.price > 0) {
-          priceText = formatPlotPrice(plot.price, plot.priceFormatted);
-        }
-        return {
-          size: plot.size,
-          dimensions: plot.dimensions || 'Dimension not provided',
-          sqYards: plot.size.includes('5 Marla') ? '139 Sq. Yds' :
-                   plot.size.includes('8 Marla') ? '200 Sq. Yds' :
-                   plot.size.includes('10 Marla') ? '272 Sq. Yds' :
-                   plot.size.includes('14 Marla') ? '355 Sq. Yds' :
-                   plot.size.includes('1 Kanal') ? '500 Sq. Yds' : 'Standard Area',
-          sqFeet: plot.size.includes('5 Marla') ? '1,125 Sq. Ft' :
-                  plot.size.includes('8 Marla') ? '1,800 Sq. Ft' :
-                  plot.size.includes('10 Marla') ? '2,250 Sq. Ft' :
-                  plot.size.includes('14 Marla') ? '3,150 Sq. Ft' :
-                  plot.size.includes('1 Kanal') ? '4,500 Sq. Ft' :
-                  plot.size.includes('4 Marla') ? '900 Sq. Ft' : 'Standard Area',
-          category: (plot.propertyType || plot.category || 'Residential') as 'Residential' | 'Commercial',
-          priceRange: priceText,
-          possession: 'Fast-Track Earthwork in Progress',
-          highlight: plot.status || 'Affordable High Appreciation Sector'
-        };
-      });
-    }
+    if (selectedPriceCategory === 'All') return priceScheduleList;
+    return priceScheduleList.filter((p) => p.category === selectedPriceCategory);
+  }, [priceScheduleList, selectedPriceCategory]);
 
-    if (selectedPriceCategory === 'All') return schedule;
-    return schedule.filter((p) => p.category === selectedPriceCategory);
-  }, [allPlots, selectedPriceCategory]);
+  const travelTimesList = useMemo(() => {
+    return cms.location?.travelTimes?.length > 0 
+      ? cms.location.travelTimes 
+      : initialBlockDCMS.location.travelTimes;
+  }, [cms.location?.travelTimes]);
 
-  // Filtered Amenities
+  const amenitiesList = useMemo(() => {
+    return cms.amenitiesSection?.amenitiesList?.length > 0 
+      ? cms.amenitiesSection.amenitiesList 
+      : initialBlockDCMS.amenitiesSection.amenitiesList;
+  }, [cms.amenitiesSection?.amenitiesList]);
+
   const filteredAmenities = useMemo(() => {
-    if (selectedAmenityFilter === 'all') return blockDAmenities;
-    return blockDAmenities.filter((a) => a.category === selectedAmenityFilter);
-  }, [selectedAmenityFilter]);
+    if (selectedAmenityFilter === 'all') return amenitiesList;
+    return amenitiesList.filter((a) => a.category === selectedAmenityFilter);
+  }, [amenitiesList, selectedAmenityFilter]);
+
+  const milestonesList = useMemo(() => {
+    return cms.developmentMilestonesSection?.milestonesList?.length > 0 
+      ? cms.developmentMilestonesSection.milestonesList 
+      : initialBlockDCMS.developmentMilestonesSection.milestonesList;
+  }, [cms.developmentMilestonesSection?.milestonesList]);
+
+  const whyInvestList = useMemo(() => {
+    return cms.whyInvestSection?.reasons?.length > 0 
+      ? cms.whyInvestSection.reasons 
+      : initialBlockDCMS.whyInvestSection.reasons;
+  }, [cms.whyInvestSection?.reasons]);
+
+  const faqsList = useMemo(() => {
+    const rawFaqs = cms.faqsSection?.faqs?.length > 0 
+      ? cms.faqsSection.faqs 
+      : initialBlockDCMS.faqsSection.faqs;
+    return rawFaqs.map(f => ({ question: f.q, answer: f.a }));
+  }, [cms.faqsSection?.faqs]);
 
   const otherBlocks = useMemo(() => {
     return defaultFaisalHillsBlocks.filter((b) => b.id !== 'block-d' && b.href !== '/blocks/block-d');
@@ -564,12 +220,31 @@ export default function BlockDContent() {
   };
 
   return (
-    <div className="space-y-12 sm:space-y-16 lg:space-y-20">
+    <div className="space-y-12 sm:space-y-16 lg:space-y-20 font-sans text-slate-800">
 
       {/* ========================================================= */}
-      {/* 1. FAISAL HILLS BLOCK D OVERVIEW                          */}
+      {/* 1. FAISAL HILLS BLOCK D OVERVIEW & KEY FACTS              */}
       {/* ========================================================= */}
-      <section id="overview" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm">
+      <section id="overview" className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+        
+        {/* Verification Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{cms.verificationHeader?.badgeText || 'Official Verified Block Guide'}</span>
+          </div>
+          <div className="text-xs text-slate-500 font-medium flex flex-wrap items-center gap-2 sm:gap-3">
+            <span>Reviewed by <strong>{cms.verificationHeader?.reviewerName || 'Senior Property Verification Desk'}</strong></span>
+            <span className="hidden sm:inline">•</span>
+            <span>Prices verified: <strong>{cms.verificationHeader?.pricesVerifiedDate || 'September 2026'}</strong></span>
+            <span className="hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1 text-emerald-700 font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{cms.overview?.quickFacts?.legalStatus || '100% RDA Approved'}</span>
+            </span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Narrative with See More toggle */}
           <div className="lg:col-span-7 space-y-5">
@@ -577,7 +252,7 @@ export default function BlockDContent() {
               <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Hills Block D Overview"
+                  text={cms.overview?.h1 || 'Faisal Hills Block D Overview'}
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
@@ -585,16 +260,16 @@ export default function BlockDContent() {
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    Faisal Hills Block D represents the peaceful, scenic suburban sector in the master community. Positioned on the elevated western wing adjacent to Block C, Block D combines refreshing Margalla breezes, lush green landscapes, economical entry-level plot pricing, and direct connectivity to the upcoming Brahma Jhang Bahtar M-1 Motorway link.
+                    {cms.overview?.leadParagraph1 || 'Faisal Hills Block D represents the peaceful, scenic suburban sector in the master community. Positioned on the elevated western wing adjacent to Block C, Block D combines refreshing Margalla breezes, lush green landscapes, economical entry-level plot pricing, and direct connectivity to the upcoming Brahma Jhang Bahtar M-1 Motorway link.'}
                   </p>
 
                   {isSeeMoreOpen && (
                     <div className="space-y-3 pt-1 animate-fadeIn">
+                      {cms.overview?.leadParagraph2 && (
+                        <p>{cms.overview.leadParagraph2}</p>
+                      )}
                       <p>
-                        Spanning over 2,100 residential and commercial plots, Sector D is engineered around a modern 50ft and 60ft grid road system. With 85%+ on-ground development completed, underground utility conduit infrastructure in place, and active deep tube wells, Block D is the premier choice for family homebuilders seeking serene living and astute investors eyeing substantial capital gains.
-                      </p>
-                      <p>
-                        The sector is designated to host the future Faisal Hills Medical City healthcare complex, grand community mosques, sector sports facilities, and landscaped nature parks. Whether purchasing a compact 5 Marla starter plot, an 8 or 10 Marla family cut, or a 1 Kanal executive estate, Block D delivers unbeatable value per square foot in the Islamabad-Rawalpindi region.
+                        Spanning over 2,100 residential and commercial cuts, Sector D features wide 50ft & 60ft avenues, underground utilities, deep tube wells, and designated future healthcare and commercial centers.
                       </p>
                     </div>
                   )}
@@ -616,7 +291,7 @@ export default function BlockDContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[320px] sm:min-h-[360px] flex flex-col justify-between group">
                 <img
-                  src="/images/faisal-hills-drone-view.webp"
+                  src={cms.masterPlan?.mapImage || '/images/faisal-hills-drone-view.webp'}
                   alt="Faisal Hills Block D Panoramic View"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -638,6 +313,53 @@ export default function BlockDContent() {
             </ScrollReveal>
           </div>
         </div>
+
+        {/* Quick Key Facts Snapshot Strip */}
+        <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 sm:p-6 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#7b002c]" />
+            <span>Block D Sector Quick Facts</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Location</span>
+              <span className="text-xs font-bold text-slate-900 line-clamp-1" title={cms.overview?.quickFacts?.location}>
+                {cms.overview?.quickFacts?.location || 'Western Flank, Near M-1'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Residential Cuts</span>
+              <span className="text-xs font-bold text-slate-900">
+                {cms.overview?.quickFacts?.residentialSizes || '5, 8, 10, 14 Marla & 1 Kanal'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Commercial Cuts</span>
+              <span className="text-xs font-bold text-slate-900">
+                {cms.overview?.quickFacts?.commercialCuts || '4 Marla (G+4)'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Possession Status</span>
+              <span className="text-xs font-bold text-[#7b002c]">
+                {cms.overview?.quickFacts?.possession || '85% Development'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Connectivity</span>
+              <span className="text-xs font-bold text-slate-900">
+                {cms.overview?.quickFacts?.connectivity || 'M-1 Brahma & GT Road'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Legal Status</span>
+              <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <span>{cms.overview?.quickFacts?.legalStatus || '100% RDA Approved'}</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ========================================================= */}
@@ -651,10 +373,10 @@ export default function BlockDContent() {
               <span>Direct Road Access</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Block D Location & Live Coordinates
+              {cms.location?.heading || 'Block D Location & Live Coordinates'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
-              Enjoy rapid dual commuting to Islamabad and Taxila via the Brahma Jhang Bahtar M-1 Interchange and 225ft Grand Boulevard.
+              {cms.location?.leadParagraph || 'Enjoy rapid dual commuting to Islamabad and Taxila via the Brahma Jhang Bahtar M-1 Interchange and 225ft Grand Boulevard.'}
             </p>
           </div>
         </ScrollReveal>
@@ -663,7 +385,7 @@ export default function BlockDContent() {
           <div className="relative w-full h-[320px] sm:h-[400px] lg:h-[460px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
             <iframe
               title="Faisal Hills Block D Google Map Location"
-              src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              src={cms.location?.googleMapIframeUrl || 'https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed'}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -690,14 +412,14 @@ export default function BlockDContent() {
               direction="left"
             />
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl">
-              Verified travel times and road connectivity distances from Block D to key interchanges, commercial hubs, and twin city landmarks:
+              {cms.location?.driveTimesNote || 'Verified travel times and road connectivity distances from Block D to key interchanges, commercial hubs, and twin city landmarks:'}
             </p>
           </div>
         </ScrollReveal>
 
         {/* Mobile View: Compact Options Accordion List */}
         <div className="block sm:hidden space-y-2">
-          {blockDTravelTimes.map((dest, idx) => {
+          {travelTimesList.map((dest, idx) => {
             const isSelected = activeLandmarkIndex === idx;
             return (
               <div
@@ -746,7 +468,7 @@ export default function BlockDContent() {
 
         {/* Desktop & Tablet View: Grid Cards */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
-          {blockDTravelTimes.map((dest, idx) => (
+          {travelTimesList.map((dest, idx) => (
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-[#7b002c]/40 hover:bg-white hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between gap-2">
@@ -773,11 +495,15 @@ export default function BlockDContent() {
       <section id="master-plan" className="scroll-mt-28 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
           <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Zoning & Blueprint</span>
+            </div>
             <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-              Faisal Hills Block D Master Blueprint & Cuts
+              {cms.masterPlan?.heading || 'Faisal Hills Block D Master Blueprint & Cuts'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-              High-resolution zoning blueprint highlighting street grid numbers, central parks, green eco corridors, and commercial strips.
+              {cms.masterPlan?.description || 'High-resolution zoning blueprint highlighting street grid numbers, central parks, green eco corridors, and commercial strips.'}
             </p>
           </div>
 
@@ -796,8 +522,8 @@ export default function BlockDContent() {
         {/* Blueprint Preview Card (Full Width) */}
         <div className="w-full rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 relative group">
           <img
-            src="/images/faisal-hills-master-plan-map-opt.webp"
-            alt="Faisal Hills Block D Master Layout Plan"
+            src={cms.masterPlan?.mapImage || '/images/faisal-hills-master-plan-map-opt.webp'}
+            alt={cms.masterPlan?.heading || 'Faisal Hills Block D Master Layout Plan'}
             className="w-full h-auto object-cover max-h-[500px]"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
@@ -826,7 +552,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 4. QUANTITATIVE FIGURES & DEVELOPMENT MILESTONES          */}
+      {/* 5. QUANTITATIVE FIGURES & DEVELOPMENT MILESTONES          */}
       {/* ========================================================= */}
       <section id="development-status" className="scroll-mt-28 space-y-8">
         {/* Counting Numbers / Benchmark Metrics */}
@@ -838,10 +564,10 @@ export default function BlockDContent() {
                 <span>Block D Key Metrics</span>
               </div>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-                Sector D Development & Investment Benchmarks
+                {cms.developmentMilestonesSection?.heading || 'Sector D Development & Investment Benchmarks'}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                Key verifiable metrics defining the growth, legal clarity, and infrastructure scale in Faisal Hills Block D:
+                {cms.developmentMilestonesSection?.subline || 'Key verifiable metrics defining the growth, legal clarity, and infrastructure scale in Faisal Hills Block D:'}
               </p>
             </div>
           </ScrollReveal>
@@ -903,7 +629,7 @@ export default function BlockDContent() {
                   <span>Real On-Ground Progress</span>
                 </div>
                 <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-                  Block D Development Milestones & Delivery Status
+                  {cms.developmentMilestonesSection?.heading || 'Block D Development Milestones & Delivery Status'}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 font-sans">
                   Track completion status across roads, underground utilities, water wells, and community infrastructure:
@@ -917,7 +643,7 @@ export default function BlockDContent() {
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blockDDevelopmentMilestones.map((item, idx) => (
+            {milestonesList.map((item, idx) => (
               <ScrollReveal key={idx} direction="up" delay={idx * 60}>
                 <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/40 transition-all duration-300 overflow-hidden flex flex-col justify-between group h-full">
                   <div>
@@ -983,7 +709,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 5. ON-GROUND AMENITIES (ALTERNATING ZIG-ZAG ROWS)         */}
+      {/* 6. ON-GROUND AMENITIES (ALTERNATING ZIG-ZAG ROWS)         */}
       {/* ========================================================= */}
       <section id="amenities" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
@@ -995,13 +721,13 @@ export default function BlockDContent() {
               </div>
               <TextReveal
                 as="h2"
-                text="On-Ground Amenities & Community Landmarks in Sector D"
+                text={cms.amenitiesSection?.heading || 'On-Ground Amenities & Community Landmarks in Sector D'}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-                Experience nature-centric master planning: lush green family parks, community recreation center, sector Jamia Mosque, and healthcare reservations.
+                {cms.amenitiesSection?.subline || 'Experience nature-centric master planning: lush green family parks, community recreation center, sector Jamia Mosque, and healthcare reservations.'}
               </p>
             </div>
 
@@ -1033,7 +759,7 @@ export default function BlockDContent() {
             const isImageRight = idx % 2 === 0;
 
             return (
-              <ScrollReveal key={amenity.id} direction="up" delay={idx * 50}>
+              <ScrollReveal key={amenity.id || idx} direction="up" delay={idx * 50}>
                 <div
                   className="p-4 sm:p-7 lg:p-10 rounded-3xl bg-white border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center overflow-hidden w-full"
                 >
@@ -1057,7 +783,7 @@ export default function BlockDContent() {
                     </p>
 
                     {/* Features Badges */}
-                    {amenity.features && (
+                    {amenity.features && amenity.features.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                         {amenity.features.map((feat, fIdx) => (
                           <div
@@ -1108,7 +834,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 6. VERIFIED PLOTS LISTED FOR SALE (BLOCK D)               */}
+      {/* 7. VERIFIED PLOTS LISTED FOR SALE (BLOCK D)               */}
       {/* ========================================================= */}
       <section id="plots-for-sale" className="scroll-mt-28 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
@@ -1251,7 +977,7 @@ export default function BlockDContent() {
                       <span>Contact</span>
                     </button>
                     <a
-                      href={`https://wa.me/923331113177?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20D%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
+                      href={`https://wa.me/${cms.closingSiteVisitSection?.whatsappNumber?.replace(/[^0-9]/g, '') || '923331113177'}?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20D%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
@@ -1284,7 +1010,7 @@ export default function BlockDContent() {
           </div>
 
           <a
-            href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20D."
+            href={`https://wa.me/${cms.closingSiteVisitSection?.whatsappNumber?.replace(/[^0-9]/g, '') || '923331113177'}?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20D.`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md shrink-0 flex items-center gap-2"
@@ -1296,7 +1022,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 7. DYNAMIC PLOT SERIES EXPLORER                           */}
+      {/* 8. DYNAMIC PLOT SERIES EXPLORER                           */}
       {/* ========================================================= */}
       <section id="plot-series" className="scroll-mt-28">
         <ScrollReveal direction="up" delay={50}>
@@ -1305,7 +1031,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 8. CURRENT PRICE SCHEDULE & VALUATION TABLE               */}
+      {/* 9. CURRENT PRICE SCHEDULE & VALUATION TABLE               */}
       {/* ========================================================= */}
       <section id="pricing" className="scroll-mt-28 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
@@ -1315,10 +1041,10 @@ export default function BlockDContent() {
               <span>Current Market Valuations</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Block D Plot Pricing Schedule & Square Foot Matrix
+              {cms.priceScheduleSection?.heading || 'Block D Plot Pricing Schedule & Square Foot Matrix'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              Transparent market rates for resale files and developing plots in Faisal Hills Block D:
+              {cms.priceScheduleSection?.subline || 'Transparent market rates for resale files and developing plots in Faisal Hills Block D:'}
             </p>
           </div>
 
@@ -1442,7 +1168,7 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 9. WHY INVEST IN FAISAL HILLS BLOCK D                     */}
+      {/* 10. WHY INVEST IN FAISAL HILLS BLOCK D                    */}
       {/* ========================================================= */}
       <section id="why-invest" className="scroll-mt-28 space-y-6">
         <ScrollReveal direction="up" delay={50}>
@@ -1452,19 +1178,19 @@ export default function BlockDContent() {
               <span>Investment Thesis & ROI Drivers</span>
             </div>
             <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-              Why Invest in Faisal Hills Block D?
+              {cms.whyInvestSection?.heading || 'Why Invest in Faisal Hills Block D?'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
-              Discover the 6 key growth catalysts making Block D one of the highest future yield sectors in Taxila and Rawalpindi:
+              {cms.whyInvestSection?.subline || 'Discover the 6 key growth catalysts making Block D one of the highest future yield sectors in Taxila and Rawalpindi:'}
             </p>
           </div>
         </ScrollReveal>
 
         {/* Mobile View: Sleek, Compact Interactive Accordion List */}
         <div className="block sm:hidden space-y-2.5">
-          {blockDWhyInvestReasons.map((item, idx) => {
+          {whyInvestList.map((item, idx) => {
             const isSelected = activeWhyInvestOption === idx;
-            const Icon = item.icon;
+            const Icon = getReasonIcon(item.iconName || '');
             return (
               <div
                 key={idx}
@@ -1481,7 +1207,7 @@ export default function BlockDContent() {
                       className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 border ${
                         isSelected
                           ? 'bg-[#7b002c] text-white border-[#7b002c]'
-                          : `${item.bg} ${item.text} ${item.border}`
+                          : `${item.bg || 'bg-rose-50'} ${item.text || 'text-[#7b002c]'} ${item.border || 'border-rose-100'}`
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -1513,15 +1239,15 @@ export default function BlockDContent() {
 
         {/* Desktop/Tablet View: Clean 6-Card Grid */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blockDWhyInvestReasons.map((item, idx) => {
-            const Icon = item.icon;
+          {whyInvestList.map((item, idx) => {
+            const Icon = getReasonIcon(item.iconName || '');
             return (
               <div
                 key={idx}
                 className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3"
               >
                 <div
-                  className={`w-10 h-10 rounded-xl ${item.bg} ${item.text} flex items-center justify-center border ${item.border}`}
+                  className={`w-10 h-10 rounded-xl ${item.bg || 'bg-rose-50'} ${item.text || 'text-[#7b002c]'} flex items-center justify-center border ${item.border || 'border-rose-100'}`}
                 >
                   <Icon className="w-5 h-5" />
                 </div>
@@ -1538,39 +1264,86 @@ export default function BlockDContent() {
       </section>
 
       {/* ========================================================= */}
-      {/* 10. DIRECT LEAD CONSULTATION & BOOKING FORM               */}
+      {/* 11. OTHER BLOCKS / SECTORS OF FAISAL HILLS                */}
       {/* ========================================================= */}
-      <section id="contact-desk" className="space-y-6">
+      <section id="sectors" className="space-y-6">
+        <ScrollReveal direction="up" delay={50}>
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+              <Building className="w-3.5 h-3.5" />
+              <span>Master Community Portfolio</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              Explore Expanding Sectors in Faisal Hills
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
+              Discover connected sectors across the master development, from Executive and Prime blocks to Hills Walk:
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={100}>
+          <ExpandingProjectsShowcase
+            items={otherBlocks}
+            defaultActiveIndex={3}
+            containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
+            roundedClass="rounded-2xl sm:rounded-3xl"
+          />
+        </ScrollReveal>
+      </section>
+
+      {/* ========================================================= */}
+      {/* 12. FAQS ACCORDION SECTION                                */}
+      {/* ========================================================= */}
+      <section id="faqs" className="scroll-mt-28 space-y-6">
+        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>{cms.faqsSection?.heading || 'Frequently Asked Questions'}</span>
+          </div>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+            {cms.faqsSection?.heading || 'Faisal Hills Block D Buying & Allotment FAQs'}
+          </h2>
+          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
+            {cms.faqsSection?.subline || 'Clear answers regarding Block D development status, RDA NOC approvals, plot transfer process, and investment upside.'}
+          </p>
+        </div>
+
+        <FaqAccordion faqs={faqsList} blockName="Block D" />
+      </section>
+
+      {/* ========================================================= */}
+      {/* 13. DIRECT LEAD CONSULTATION & BOOKING FORM               */}
+      {/* ========================================================= */}
+      <section id="contact-desk" className="space-y-6 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-6 space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
               <Phone className="w-3.5 h-3.5" />
               <span>Official Sales Consultation</span>
             </div>
-            <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-              Schedule a Site Visit or Request Block D File Verification
+            <h3 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight">
+              {cms.closingSiteVisitSection?.heading || 'Schedule a Site Visit or Request Block D File Verification'}
             </h3>
             <p className="text-slate-600 text-xs sm:text-sm font-sans leading-relaxed">
-              Connect directly with our senior Faisal Hills advisory desk. Receive on-ground plot video walkthroughs, instant biometric allotment file checks, and updated resale inventory.
+              {cms.closingSiteVisitSection?.intro || 'Connect directly with our senior Faisal Hills advisory desk. Receive on-ground plot video walkthroughs, instant biometric allotment file checks, and updated resale inventory.'}
             </p>
-            <div className="space-y-2.5 pt-2 text-xs text-slate-700">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Zero service charge on official file verification</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Custom video tours available for overseas Pakistanis</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Dedicated Zedem International transfer facilitation</span>
-              </div>
+            <div className="space-y-2.5 pt-2 text-xs sm:text-sm text-slate-700">
+              {(cms.closingSiteVisitSection?.featureBullets || [
+                'Zero service charge on official file verification',
+                'Custom video tours available for overseas Pakistanis',
+                'Dedicated Zedem International transfer facilitation'
+              ]).map((feat, idx) => (
+                <div key={idx} className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#7b002c] shrink-0" />
+                  <span>{feat}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-xs">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-sm">
               {formSubmitted ? (
                 <div className="p-8 text-center space-y-3 bg-emerald-50 rounded-2xl border border-emerald-200">
                   <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto">
@@ -1653,62 +1426,13 @@ export default function BlockDContent() {
                     className="w-full py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>{isSubmitting ? 'Submitting...' : 'Submit Official Block D Inquiry'}</span>
+                    <span>{isSubmitting ? 'Submitting...' : (cms.closingSiteVisitSection?.formButtonText || 'SUBMIT OFFICIAL BLOCK D INQUIRY')}</span>
                   </button>
                 </form>
               )}
             </div>
           </div>
         </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 11. OTHER BLOCKS / SECTORS OF FAISAL HILLS                */}
-      {/* ========================================================= */}
-      <section id="sectors" className="space-y-6">
-        <ScrollReveal direction="up" delay={50}>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-              <Building className="w-3.5 h-3.5" />
-              <span>Master Community Portfolio</span>
-            </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Explore Expanding Sectors in Faisal Hills
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-3xl">
-              Discover connected sectors across the master development, from Executive and Prime blocks to Hills Walk:
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal direction="up" delay={100}>
-          <ExpandingProjectsShowcase
-            items={otherBlocks}
-            defaultActiveIndex={3}
-            containerHeightClass="h-[440px] sm:h-[480px] lg:h-[520px]"
-            roundedClass="rounded-2xl sm:rounded-3xl"
-          />
-        </ScrollReveal>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 12. FAQS ACCORDION SECTION                                */}
-      {/* ========================================================= */}
-      <section id="faqs" className="scroll-mt-28 space-y-6">
-        <div className="space-y-2 border-b border-slate-200 pb-5 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Frequently Asked Questions</span>
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-            Faisal Hills Block D Buying & Allotment FAQs
-          </h2>
-          <p className="text-slate-600 text-xs sm:text-sm font-sans max-w-2xl">
-            Clear answers regarding Block D development status, RDA NOC approvals, plot transfer process, and investment upside.
-          </p>
-        </div>
-
-        <FaqAccordion faqs={blockDFaqs} blockName="Block D" />
       </section>
 
       {/* Map Download Modal */}

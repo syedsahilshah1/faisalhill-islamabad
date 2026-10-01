@@ -12,6 +12,16 @@ import {
   fetchPrimeBlockCMS,
   savePrimeBlockCMS,
   mergePrimeBlockCMS,
+  BlockBCMSData,
+  initialBlockBCMS,
+  fetchBlockBCMS,
+  saveBlockBCMS,
+  mergeBlockBCMS,
+  BlockDCMSData,
+  initialBlockDCMS,
+  fetchBlockDCMS,
+  saveBlockDCMS,
+  mergeBlockDCMS,
   cleanVerifyText,
   BlockInfo,
   blocksData,
@@ -21,6 +31,8 @@ import {
   GalleryItem,
   fetchGallery
 } from '@/data/faisalHillsData';
+import BlockBCmsEditor from '@/components/admin/BlockBCmsEditor';
+import BlockDCmsEditor from '@/components/admin/BlockDCmsEditor';
 import {
   Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
   Image as ImageIcon, Sparkles, Building2, MapPin, Layers, PhoneCall, MessageCircle, HelpCircle,
@@ -186,6 +198,8 @@ interface BlocksPageCmsTabProps {
 export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [cms, setCms] = useState<BlocksPageCMSData>(initialBlocksPageCMS);
   const [primeCms, setPrimeCms] = useState<PrimeBlockCMSData>(initialPrimeBlockCMS);
+  const [blockBCms, setBlockBCms] = useState<BlockBCMSData>(initialBlockBCMS);
+  const [blockDCms, setBlockDCms] = useState<BlockDCMSData>(initialBlockDCMS);
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -210,6 +224,14 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
 
     fetchPrimeBlockCMS().then((pData) => {
       if (pData) setPrimeCms(mergePrimeBlockCMS(pData));
+    });
+
+    fetchBlockBCMS().then((bData) => {
+      if (bData) setBlockBCms(mergeBlockBCMS(bData));
+    });
+
+    fetchBlockDCMS().then((dData) => {
+      if (dData) setBlockDCms(mergeBlockDCMS(dData));
     });
 
     fetchBlocks().then((data) => {
@@ -253,14 +275,26 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
         const pLocal = localStorage.getItem('faisal_prime_block_cms');
         if (pLocal) setPrimeCms(mergePrimeBlockCMS(JSON.parse(pLocal)));
       } catch {}
+      try {
+        const bLocal = localStorage.getItem('faisal_block_b_cms');
+        if (bLocal) setBlockBCms(mergeBlockBCMS(JSON.parse(bLocal)));
+      } catch {}
+      try {
+        const dLocal = localStorage.getItem('faisal_block_d_cms');
+        if (dLocal) setBlockDCms(mergeBlockDCMS(JSON.parse(dLocal)));
+      } catch {}
     };
 
     window.addEventListener('faisal_blocks_cms_updated', handleStorage);
     window.addEventListener('faisal_prime_block_cms_updated', handleStorage);
+    window.addEventListener('faisal_block_b_cms_updated', handleStorage);
+    window.addEventListener('faisal_block_d_cms_updated', handleStorage);
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('faisal_blocks_cms_updated', handleStorage);
       window.removeEventListener('faisal_prime_block_cms_updated', handleStorage);
+      window.removeEventListener('faisal_block_b_cms_updated', handleStorage);
+      window.removeEventListener('faisal_block_d_cms_updated', handleStorage);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
@@ -373,6 +407,8 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') || undefined : undefined);
     const okBlocks = await saveBlocksPageCMS(cms, activeToken);
     const okPrime = await savePrimeBlockCMS(primeCms, activeToken);
+    const okBlockB = await saveBlockBCMS(blockBCms, activeToken);
+    const okBlockD = await saveBlockDCMS(blockDCms, activeToken);
     if (editingBlock) {
       safeSaveBlocksLocally(editingBlock);
       if (activeToken) {
@@ -383,9 +419,9 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       }
     }
     setIsSaving(false);
-    if (okBlocks || okPrime) {
+    if (okBlocks || okPrime || okBlockB || okBlockD) {
       setSaveSuccess(true);
-      setStatusMsg('Blocks and Prime Block content successfully saved and published live!');
+      setStatusMsg('Blocks, Block B, Block D, and Prime Block content successfully saved and published live!');
       setTimeout(() => setSaveSuccess(false), 4000);
     } else {
       setStatusMsg('Saved locally in browser. Note: API sync pending backend authentication.');
@@ -395,17 +431,124 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   };
 
   const handleResetToAuditedDefaults = () => {
-    if (window.confirm('Are you sure you want to reset all Blocks and Prime Block sections to official audited defaults?')) {
+    if (window.confirm('Are you sure you want to reset all Blocks, Block B, Block D, and Prime Block sections to official audited defaults?')) {
       setCms(initialBlocksPageCMS);
       setPrimeCms(initialPrimeBlockCMS);
+      setBlockBCms(initialBlockBCMS);
+      setBlockDCms(initialBlockDCMS);
       setStatusMsg('Reset to audited defaults. Click "Save Live Changes" to publish.');
     }
   };
 
-  const sectionTabs = [
+  const [mainScope, setMainScope] = useState<'individual-blocks' | 'main-page-sections'>('individual-blocks');
+
+  const societyBlocksList = [
+    {
+      id: 'block-d',
+      name: 'Block D',
+      tagline: 'Margalla Scenic & Economical Living',
+      type: 'detailed-cms',
+      cmsKey: 'blockD',
+      badge: '⭐ Full 10-Section CMS',
+      badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
+      icon: Sparkles,
+      slug: 'block-d',
+      path: '/blocks/block-d'
+    },
+    {
+      id: 'block-b',
+      name: 'Block B',
+      tagline: 'Sports & Elevated Living Capital',
+      type: 'detailed-cms',
+      cmsKey: 'blockB',
+      badge: '⭐ Full 10-Section CMS',
+      badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
+      icon: Sparkles,
+      slug: 'block-b',
+      path: '/blocks/block-b'
+    },
+    {
+      id: 'prime-block',
+      name: 'Prime Block',
+      tagline: 'Flagship Luxury Enclave',
+      type: 'prime-cms',
+      cmsKey: 'primeBlock',
+      badge: '⭐ Dedicated CMS',
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+      icon: Star,
+      slug: 'prime-block',
+      path: '/blocks/prime-block'
+    },
+    {
+      id: 'executive-block',
+      name: 'Executive Block',
+      tagline: 'Main Entrance & 225ft Boulevard',
+      type: 'individual-block',
+      slug: 'executive-block',
+      badge: '🏛️ Sector Detail Page',
+      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
+      icon: Building2,
+      path: '/blocks/executive-block'
+    },
+    {
+      id: 'block-a',
+      name: 'Block A',
+      tagline: 'High Density & Developed Hub',
+      type: 'individual-block',
+      slug: 'block-a',
+      badge: '🏛️ Sector Detail Page',
+      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
+      icon: Building2,
+      path: '/blocks/block-a'
+    },
+    {
+      id: 'block-b1-extension',
+      name: 'Block B1 Extension',
+      tagline: 'Fast Developing Modern Sector',
+      type: 'individual-block',
+      slug: 'block-b1-extension',
+      badge: '🏛️ Sector Detail Page',
+      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
+      icon: Building2,
+      path: '/blocks/block-b1-extension'
+    },
+    {
+      id: 'block-c',
+      name: 'Block C',
+      tagline: 'M-1 Interchange Gateway & Hills Walk',
+      type: 'individual-block',
+      slug: 'block-c',
+      badge: '🏛️ Sector Detail Page',
+      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
+      icon: Building2,
+      path: '/blocks/block-c'
+    },
+    {
+      id: 'hills-walk',
+      name: 'Hills Walk Commercial',
+      tagline: 'Dining & Retail Promenade',
+      type: 'individual-block',
+      slug: 'hills-walk',
+      badge: '🛍️ Commercial Hub',
+      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+      icon: Building2,
+      path: '/blocks/hills-walk'
+    },
+    {
+      id: 'faisal-jewels',
+      name: 'Faisal Jewel',
+      tagline: '27-Storey Skyscraper Landmark',
+      type: 'individual-block',
+      slug: 'faisal-jewel-islamabad',
+      badge: '🏙️ Luxury Highrise',
+      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
+      icon: Building2,
+      path: '/blocks/faisal-jewel-islamabad'
+    }
+  ];
+
+  const overviewTabs = [
     { id: 'hero', label: '🌟 Hero & Counters', icon: Sparkles },
-    { id: 'individualBlocks', label: '🏛️ Sector Detail Pages (/blocks/[slug])', icon: Building2 },
-    { id: 'primeBlock', label: '⭐ Prime Block CMS', icon: Star },
     { id: 'glance', label: '📊 At a Glance Table', icon: Layers },
     { id: 'stages', label: '📜 Growth Stages', icon: FileText },
     { id: 'map', label: '🗺️ Map & Road Placement', icon: MapPin },
@@ -419,23 +562,45 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     { id: 'cta', label: '📞 Compare Desk & CTA', icon: PhoneCall },
   ];
 
+  const isCurrentBlock = (b: typeof societyBlocksList[0]) => {
+    if (b.type === 'detailed-cms') return activeSection === b.cmsKey;
+    if (b.type === 'prime-cms') return activeSection === 'primeBlock';
+    if (b.type === 'individual-block') {
+      return activeSection === 'individualBlocks' && (selectedBlockSlug === b.slug || (b.slug === 'faisal-jewel-islamabad' && selectedBlockSlug === 'faisal-jewels'));
+    }
+    return false;
+  };
+
+  const handleSelectSocietyBlock = (b: typeof societyBlocksList[0]) => {
+    setMainScope('individual-blocks');
+    if (b.type === 'detailed-cms' && b.cmsKey) {
+      setActiveSection(b.cmsKey);
+    } else if (b.type === 'prime-cms') {
+      setActiveSection('primeBlock');
+    } else {
+      setActiveSection('individualBlocks');
+      handleSelectBlockToEdit(b.slug);
+    }
+  };
+
+  const activeBlockObject = societyBlocksList.find(b => isCurrentBlock(b));
+
   return (
     <div className="space-y-6">
-    
       
       {/* Top Controls Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900">
-              Faisal Hills Blocks Page CMS Editor
+              Faisal Hills Blocks & Sectors CMS
             </h2>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
               100% Dynamic Control
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Instant full management of all titles, comparative matrices, plot sizing tables, pricing ranges, and FAQs for <code className="bg-slate-100 px-1 py-0.5 rounded text-[#7b002c]">/faisal-hills-blocks</code>.
+            Choose any individual sector below to edit its complete dedicated page, or edit the society-wide comparison overview.
           </p>
         </div>
 
@@ -449,12 +614,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
           </button>
           
           <a
-            href="/faisal-hills-blocks/"
+            href={activeBlockObject ? activeBlockObject.path : '/faisal-hills-blocks/'}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#7b002c] hover:bg-rose-50 border border-rose-200 rounded-xl transition cursor-pointer"
           >
-            <span>Live Preview</span>
+            <span>Preview {activeBlockObject ? activeBlockObject.name : 'Overview Page'}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
 
@@ -480,27 +645,153 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
         </div>
       )}
 
-      {/* Horizontal Category Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 bg-slate-200/70 p-2 rounded-2xl border border-slate-300">
-        {sectionTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeSection === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSection(tab.id)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-[#7b002c] text-white shadow-md'
-                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-slate-900'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
+      {/* Mode Scope Switcher */}
+      <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setMainScope('individual-blocks');
+              if (!['blockD', 'blockB', 'primeBlock', 'individualBlocks'].includes(activeSection)) {
+                setActiveSection('blockD');
+              }
+            }}
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              mainScope === 'individual-blocks'
+                ? 'bg-[#7b002c] text-white shadow-sm'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            <span>1. Individual Sector Pages (/blocks/[slug])</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+              mainScope === 'individual-blocks' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              9 Blocks
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMainScope('main-page-sections');
+              if (['blockD', 'blockB', 'primeBlock', 'individualBlocks'].includes(activeSection)) {
+                setActiveSection('hero');
+              }
+            }}
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              mainScope === 'main-page-sections'
+                ? 'bg-[#7b002c] text-white shadow-sm'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
+          >
+            <Globe className="w-4 h-4" />
+            <span>2. Society Comparison Overview Page (/faisal-hills-blocks)</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+              mainScope === 'main-page-sections' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              12 Sections
+            </span>
+          </button>
+        </div>
+
+        {activeBlockObject && mainScope === 'individual-blocks' && (
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-rose-50 border border-rose-200 rounded-xl text-xs">
+            <span className="text-slate-500 font-medium">Currently Editing:</span>
+            <strong className="text-[#7b002c] font-bold">{activeBlockObject.name}</strong>
+          </div>
+        )}
       </div>
+
+      {/* SEPARATE BLOCK BUTTONS BAR: Rendered when in Individual Blocks Mode */}
+      {mainScope === 'individual-blocks' && (
+        <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#7b002c] animate-pulse" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                Click Any Block Button Below to Open Its Full Section Editor:
+              </h3>
+            </div>
+            <span className="text-[11px] text-slate-500 hidden sm:inline font-medium">
+              Clicking a block immediately opens its complete live management form.
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2.5">
+            {societyBlocksList.map((block) => {
+              const active = isCurrentBlock(block);
+              const Icon = block.icon;
+              return (
+                <button
+                  key={block.id}
+                  type="button"
+                  onClick={() => handleSelectSocietyBlock(block)}
+                  className={`p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-2 relative overflow-hidden group ${
+                    active
+                      ? 'bg-gradient-to-r from-[#7b002c] to-[#9e1245] text-white border-[#7b002c] shadow-md ring-2 ring-[#7b002c]/30 scale-[1.01]'
+                      : 'bg-white hover:bg-slate-100/90 text-slate-800 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                        active ? 'bg-white/20 text-white' : 'bg-rose-50 text-[#7b002c]'
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="font-bold text-sm truncate">
+                        {block.name}
+                      </span>
+                    </div>
+
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+                      active ? 'bg-white/20 text-white border-white/30' : block.badgeColor
+                    }`}>
+                      {block.badge}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100/40">
+                    <span className={`truncate ${active ? 'text-rose-100' : 'text-slate-500'}`}>
+                      {block.tagline}
+                    </span>
+                    {active && (
+                      <span className="text-[10px] font-bold bg-white text-[#7b002c] px-2 py-0.5 rounded-md shrink-0 shadow-2xs">
+                        Active Editor ✓
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* OVERVIEW PAGE SUB-TABS: Rendered when in Society Comparison Overview Mode */}
+      {mainScope === 'main-page-sections' && (
+        <div className="flex flex-wrap items-center gap-2 bg-slate-200/70 p-2 rounded-2xl border border-slate-300">
+          {overviewTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSection === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSection(tab.id)}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#7b002c] text-white shadow-md'
+                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* SECTION 1: HERO & METRICS BAR                            */}
@@ -723,6 +1014,38 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
 
           </div>
         </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK B DETAILED CMS (ALL SECTIONS)              */}
+      {/* ========================================================= */}
+      {activeSection === 'blockB' && (
+        <BlockBCmsEditor
+          blockBCms={blockBCms}
+          setBlockBCms={setBlockBCms}
+          token={token}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK D DETAILED CMS (ALL SECTIONS)              */}
+      {/* ========================================================= */}
+      {activeSection === 'blockD' && (
+        <BlockDCmsEditor
+          blockDCms={blockDCms}
+          setBlockDCms={setBlockDCms}
+          token={token}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
       )}
 
       {/* ========================================================= */}

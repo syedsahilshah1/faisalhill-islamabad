@@ -645,7 +645,7 @@ export default function BlockAContent() {
                 />
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    Block A sits between Block B and the Executive Block, off the society's main boulevard. Because it borders the Executive Block, the school, mosque and commercial area near the main GT Road entrance are just a short drive away.
+                    Block A  sits between Block B and the Executive Block, off the society's main boulevard. Because it borders the Executive Block, the school, mosque and commercial area near the main GT Road entrance are just a short drive away.
                   </p>
                   <p>
                     Faisal Hills is marketed as an Islamabad address. The society itself lies in Rawalpindi District near Taxila, under the regulatory jurisdiction of the Rawalpindi Development Authority (RDA).
