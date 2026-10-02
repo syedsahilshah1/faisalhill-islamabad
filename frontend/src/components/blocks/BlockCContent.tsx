@@ -44,8 +44,11 @@ import {
   PlotItem,
   fetchPlots,
   submitLead,
-  formatPlotPrice
+  formatPlotPrice,
+  BlockInfo,
+  fetchBlock
 } from '@/data/faisalHillsData';
+import FormattedText from '@/components/ui/FormattedText';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
@@ -490,6 +493,7 @@ export default function BlockCContent() {
   const [selectedAmenityFilter, setSelectedAmenityFilter] = useState('all');
   const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
 
   // Lead Form State
   const [formData, setFormData] = useState({
@@ -503,6 +507,10 @@ export default function BlockCContent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
+    fetchBlock('block-c').then((b) => {
+      if (b) setBlockInfo(b);
+    });
+
     fetchPlots()
       .then((data) => {
         if (data && data.length > 0) setAllPlots(data);
@@ -510,6 +518,9 @@ export default function BlockCContent() {
       .catch(console.error);
 
     const handleSync = () => {
+      fetchBlock('block-c').then((b) => {
+        if (b) setBlockInfo(b);
+      });
       fetchPlots()
         .then((data) => {
           if (data && data.length > 0) setAllPlots(data);
@@ -517,7 +528,11 @@ export default function BlockCContent() {
         .catch(console.error);
     };
     window.addEventListener('faisal_plots_updated', handleSync);
-    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+    window.addEventListener('faisal_blocks_updated', handleSync);
+    return () => {
+      window.removeEventListener('faisal_plots_updated', handleSync);
+      window.removeEventListener('faisal_blocks_updated', handleSync);
+    };
   }, []);
 
   // Filter Block C Plots
@@ -593,17 +608,23 @@ export default function BlockCContent() {
                 />
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
-                  <p>
-                    Faisal Hills Block C is one of the most strategically positioned residential and commercial sectors in the master-planned society. Nestled between Block B and New City Phase 2, Block C is renowned for its rapid connectivity to the dedicated M-1 Motorway link, uninterrupted Margalla mountain breezes, and direct walking frontage to the upscale Hills Walk retail boulevard.
-                  </p>
+                  {blockInfo?.description ? (
+                    <div>
+                      <FormattedText text={blockInfo.description} />
+                    </div>
+                  ) : (
+                    <p>
+                      <FormattedText text="Faisal Hills Block C is one of the most strategically positioned residential and commercial sectors in the master-planned society. Nestled between [Block B](/blocks/block-b) and New City Phase 2, Block C is renowned for its rapid connectivity to the dedicated M-1 Motorway link, uninterrupted Margalla mountain breezes, and direct walking frontage to the upscale [Hills Walk](/blocks/hills-walk) retail boulevard." />
+                    </p>
+                  )}
 
                   {isOverviewExpanded && (
                     <div className="space-y-3 pt-1 animate-fadeIn">
                       <p>
-                        Spanning over 2,600 residential and commercial plots, Sector C features fully functional on-ground infrastructure. This includes operational high-capacity reverse-osmosis (RO) drinking water filtration stations, 100% underground electrification, modern storm water drainage systems, and a paved 40ft to 150ft boulevard network.
+                        <FormattedText text="Spanning over 2,600 residential and commercial plots, Sector C features fully functional on-ground infrastructure. This includes operational high-capacity reverse-osmosis (RO) drinking water filtration stations, 100% underground electrification, modern storm water drainage systems, and a paved 40ft to 150ft boulevard network." />
                       </p>
                       <p>
-                        With 95%+ development completion and possession ready status, Block C offers immediate home construction opportunities, high tenant rental demand driven by Hills Walk, and solid long-term capital appreciation for astute real estate investors.
+                        <FormattedText text="With 95%+ development completion and possession ready status, Block C offers immediate home construction opportunities, high tenant rental demand driven by [Hills Walk](/blocks/hills-walk), and solid long-term capital appreciation for astute real estate investors." />
                       </p>
                     </div>
                   )}
@@ -624,9 +645,10 @@ export default function BlockCContent() {
           <div className="lg:col-span-5 w-full">
             <ScrollReveal direction="up" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[320px] sm:min-h-[360px] flex flex-col justify-between group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/hills-walk-commercial-aerial.webp"
-                  alt="Faisal Hills Block C Panoramic View"
+                  src={blockInfo?.heroImage || '/images/hills-walk-commercial-aerial.webp'}
+                  alt={blockInfo?.heroImageAlt || 'Faisal Hills Block C Panoramic View'}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-black/20" />

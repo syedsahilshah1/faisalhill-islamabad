@@ -57,6 +57,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import FormattedText from '@/components/ui/FormattedText';
 
 interface PrimePriceRow {
   size: string;
@@ -572,11 +573,11 @@ export default function PrimeBlockContent() {
                   />
                   <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                     <p>
-                      {cms.overview.visibleParagraph || "Prime Block sits at the front of Faisal Hills, planned along the 225 ft main boulevard that runs from the society's GT Road entrance. Its western side adjoins Block A and the Executive Block, so the society's established commercial area, school and mosque are already next door."}
+                      <FormattedText text={cms.overview.visibleParagraph || "Prime Block sits at the front of Faisal Hills, planned along the 225 ft main boulevard that runs from the society's GT Road entrance. Its western side adjoins Block A and the Executive Block, so the society's established commercial area, school and mosque are already next door."} />
                     </p>
 
                     <p>
-                      {cms.overview.expandedParagraph1 || "The block is planned with carpeted roads, underground utilities, parks, a mosque and its own commercial areas. Because development is still in progress, it suits buyers who want to enter Faisal Hills on an instalment plan and build later, rather than families who need to start construction now."}
+                      <FormattedText text={cms.overview.expandedParagraph1 || "The block is planned with carpeted roads, underground utilities, parks, a mosque and its own commercial areas. Because development is still in progress, it suits buyers who want to enter Faisal Hills on an instalment plan and build later, rather than families who need to start construction now."} />
                       {' '}For ready possession, see{' '}
                       <Link href={cms.overview.blockALinkHref || '/blocks/block-a'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
                         <span>{cms.overview.blockALinkText || 'Block A'}</span>
@@ -589,7 +590,7 @@ export default function PrimeBlockContent() {
                       </Link>.
                     </p>
                     <p>
-                      {cms.overview.expandedParagraph2 || "Although it is marketed as Faisal Hills Prime Block Islamabad, the society lies in Rawalpindi District near Taxila, with Islamabad reached via the GT Road and Margalla Avenue."}
+                      <FormattedText text={cms.overview.expandedParagraph2 || "Although it is marketed as Faisal Hills Prime Block Islamabad, the society lies in Rawalpindi District near Taxila, with Islamabad reached via the GT Road and Margalla Avenue."} />
                     </p>
                   </div>
                 </div>
@@ -600,14 +601,14 @@ export default function PrimeBlockContent() {
               <ScrollReveal direction="right" delay={80} className="w-full flex-1">
                 <div className="relative min-h-[300px] lg:min-h-[360px] w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-lg group">
                   <img
-                    src="/images/faisal-hills-drone-view.webp"
-                    alt="Faisal Hills Prime Block On-Ground Development"
+                    src={cms.overview?.image || "/images/faisal-hills-drone-view.webp"}
+                    alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Prime Block On-Ground Development"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex flex-col justify-end p-6 text-white">
-                    <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Fast-Track Development</span>
-                    <h3 className="font-serif font-bold text-xl text-white">Prime Block On-Ground Execution</h3>
-                    <p className="text-xs text-slate-200 mt-1">Carpeted boulevards, dedicated green spaces, and high-elevation residential sectors.</p>
+                    <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">{cms.overview?.imageTag || "Fast-Track Development"}</span>
+                    <h3 className="font-serif font-bold text-xl text-white">{cms.overview?.imageTitle || "Prime Block On-Ground Execution"}</h3>
+                    <p className="text-xs text-slate-200 mt-1">{cms.overview?.imageSubtitle || "Carpeted boulevards, dedicated green spaces, and high-elevation residential sectors."}</p>
                   </div>
                 </div>
               </ScrollReveal>

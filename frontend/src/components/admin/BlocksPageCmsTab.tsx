@@ -22,6 +22,11 @@ import {
   fetchBlockDCMS,
   saveBlockDCMS,
   mergeBlockDCMS,
+  BlockACMSData,
+  initialBlockACMS,
+  fetchBlockACMS,
+  saveBlockACMS,
+  mergeBlockACMS,
   cleanVerifyText,
   BlockInfo,
   blocksData,
@@ -31,8 +36,11 @@ import {
   GalleryItem,
   fetchGallery
 } from '@/data/faisalHillsData';
+import BlockACmsEditor from '@/components/admin/BlockACmsEditor';
 import BlockBCmsEditor from '@/components/admin/BlockBCmsEditor';
 import BlockDCmsEditor from '@/components/admin/BlockDCmsEditor';
+import PrimeBlockCmsEditor from '@/components/admin/PrimeBlockCmsEditor';
+import CmsRichTextarea from '@/components/admin/CmsRichTextarea';
 import {
   Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
   Image as ImageIcon, Sparkles, Building2, MapPin, Layers, PhoneCall, MessageCircle, HelpCircle,
@@ -198,6 +206,7 @@ interface BlocksPageCmsTabProps {
 export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [cms, setCms] = useState<BlocksPageCMSData>(initialBlocksPageCMS);
   const [primeCms, setPrimeCms] = useState<PrimeBlockCMSData>(initialPrimeBlockCMS);
+  const [blockACms, setBlockACms] = useState<BlockACMSData>(initialBlockACMS);
   const [blockBCms, setBlockBCms] = useState<BlockBCMSData>(initialBlockBCMS);
   const [blockDCms, setBlockDCms] = useState<BlockDCMSData>(initialBlockDCMS);
   const [activeSection, setActiveSection] = useState<string>('hero');
@@ -220,6 +229,10 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   useEffect(() => {
     fetchBlocksPageCMS().then((data) => {
       if (data) setCms(mergeBlocksCMS(data));
+    });
+
+    fetchBlockACMS().then((aData) => {
+      if (aData) setBlockACms(mergeBlockACMS(aData));
     });
 
     fetchPrimeBlockCMS().then((pData) => {
@@ -272,6 +285,10 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
         if (local) setCms(mergeBlocksCMS(JSON.parse(local)));
       } catch {}
       try {
+        const aLocal = localStorage.getItem('faisal_block_a_cms');
+        if (aLocal) setBlockACms(mergeBlockACMS(JSON.parse(aLocal)));
+      } catch {}
+      try {
         const pLocal = localStorage.getItem('faisal_prime_block_cms');
         if (pLocal) setPrimeCms(mergePrimeBlockCMS(JSON.parse(pLocal)));
       } catch {}
@@ -286,12 +303,14 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     };
 
     window.addEventListener('faisal_blocks_cms_updated', handleStorage);
+    window.addEventListener('faisal_block_a_cms_updated', handleStorage);
     window.addEventListener('faisal_prime_block_cms_updated', handleStorage);
     window.addEventListener('faisal_block_b_cms_updated', handleStorage);
     window.addEventListener('faisal_block_d_cms_updated', handleStorage);
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('faisal_blocks_cms_updated', handleStorage);
+      window.removeEventListener('faisal_block_a_cms_updated', handleStorage);
       window.removeEventListener('faisal_prime_block_cms_updated', handleStorage);
       window.removeEventListener('faisal_block_b_cms_updated', handleStorage);
       window.removeEventListener('faisal_block_d_cms_updated', handleStorage);
@@ -406,6 +425,7 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     setStatusMsg('');
     const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') || undefined : undefined);
     const okBlocks = await saveBlocksPageCMS(cms, activeToken);
+    const okBlockA = await saveBlockACMS(blockACms, activeToken);
     const okPrime = await savePrimeBlockCMS(primeCms, activeToken);
     const okBlockB = await saveBlockBCMS(blockBCms, activeToken);
     const okBlockD = await saveBlockDCMS(blockDCms, activeToken);
@@ -419,9 +439,9 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       }
     }
     setIsSaving(false);
-    if (okBlocks || okPrime || okBlockB || okBlockD) {
+    if (okBlocks || okBlockA || okPrime || okBlockB || okBlockD) {
       setSaveSuccess(true);
-      setStatusMsg('Blocks, Block B, Block D, and Prime Block content successfully saved and published live!');
+      setStatusMsg('Blocks, Block A, Block B, Block D, and Prime Block content successfully saved and published live!');
       setTimeout(() => setSaveSuccess(false), 4000);
     } else {
       setStatusMsg('Saved locally in browser. Note: API sync pending backend authentication.');
@@ -431,8 +451,9 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   };
 
   const handleResetToAuditedDefaults = () => {
-    if (window.confirm('Are you sure you want to reset all Blocks, Block B, Block D, and Prime Block sections to official audited defaults?')) {
+    if (window.confirm('Are you sure you want to reset all Blocks, Block A, Block B, Block D, and Prime Block sections to official audited defaults?')) {
       setCms(initialBlocksPageCMS);
+      setBlockACms(initialBlockACMS);
       setPrimeCms(initialPrimeBlockCMS);
       setBlockBCms(initialBlockBCMS);
       setBlockDCms(initialBlockDCMS);
@@ -443,6 +464,18 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [mainScope, setMainScope] = useState<'individual-blocks' | 'main-page-sections'>('individual-blocks');
 
   const societyBlocksList = [
+    {
+      id: 'block-a',
+      name: 'Block A',
+      tagline: 'Largest Established & Populated Sector',
+      type: 'detailed-cms',
+      cmsKey: 'blockA',
+      badge: '⭐ Full 16-Section CMS',
+      badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
+      icon: Sparkles,
+      slug: 'block-a',
+      path: '/blocks/block-a'
+    },
     {
       id: 'block-d',
       name: 'Block D',
@@ -471,10 +504,10 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       id: 'prime-block',
       name: 'Prime Block',
       tagline: 'Flagship Luxury Enclave',
-      type: 'prime-cms',
+      type: 'detailed-cms',
       cmsKey: 'primeBlock',
-      badge: '⭐ Dedicated CMS',
-      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+      badge: '⭐ Full 12-Section CMS',
+      badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
       icon: Star,
       slug: 'prime-block',
       path: '/blocks/prime-block'
@@ -489,17 +522,6 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
       icon: Building2,
       path: '/blocks/executive-block'
-    },
-    {
-      id: 'block-a',
-      name: 'Block A',
-      tagline: 'High Density & Developed Hub',
-      type: 'individual-block',
-      slug: 'block-a',
-      badge: '🏛️ Sector Detail Page',
-      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
-      icon: Building2,
-      path: '/blocks/block-a'
     },
     {
       id: 'block-b1-extension',
@@ -1100,146 +1122,234 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
             ))}
           </div>
 
-          {/* Commercial Hub Hero Banner Card */}
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-rose-200/80 shadow-sm space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shadow-sm">
-                  <Building2 className="w-5 h-5" />
+          {/* Prime Block Dedicated CMS Banner Notice */}
+          {selectedBlockSlug === 'prime-block' && (
+            <div className="bg-gradient-to-r from-amber-50 to-amber-100/60 border-2 border-amber-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 shadow-md">
+                  <Star className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-serif font-bold text-lg text-slate-900">
-                    Commercial Hub Hero Background Banner
-                  </h4>
-                  <span className="text-xs text-slate-500 font-medium">
-                    Live Route: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/faisal-hills-commercial</code>
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-serif font-bold text-base text-slate-900">
+                      Prime Block Features a Dedicated 12-Section CMS
+                    </h4>
+                    <span className="px-2 py-0.5 bg-amber-200 text-amber-900 text-[10px] font-bold rounded-full uppercase">
+                      Recommended
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-700 mt-0.5">
+                    Manage all 12 sections: 4-year installment plan tables, plot sizes & dimensions, 8 facility cards, development status checklist, and FAQs.
+                  </p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <a
-                  href="/faisal-hills-commercial"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
-                >
-                  <span>View Commercial Page</span>
-                  <Globe className="w-3.5 h-3.5" />
-                </a>
-
-                <button
-                  type="button"
-                  onClick={handleSaveCommercialHero}
-                  disabled={isSavingCommercialHero}
-                  className="px-5 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
-                >
-                  {isSavingCommercialHero ? (
-                    <>
-                      <Loader2 className="w-4 h-4 text-white animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 text-white" />
-                      <span>Save Commercial Banner</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSection('primeBlock')}
+                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Open Dedicated Prime Block CMS →</span>
+              </button>
             </div>
+          )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              <div className="lg:col-span-7 space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
-                    <span>Upload or Select Commercial Banner</span>
-                  </label>
+          {/* Block B Dedicated CMS Banner Notice */}
+          {selectedBlockSlug === 'block-b' && (
+            <div className="bg-gradient-to-r from-rose-50 to-rose-100/60 border-2 border-rose-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shrink-0 shadow-md">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-base text-slate-900">
+                    Block B Features a Dedicated 13-Section CMS
+                  </h4>
+                  <p className="text-xs text-slate-700 mt-0.5">
+                    Manage all 13 sections: sports arena, 2-kanal plot checks, price per sqft comparisons, and amenities.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSection('blockB')}
+                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-rose-200" />
+                <span>Open Dedicated Block B CMS →</span>
+              </button>
+            </div>
+          )}
 
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setGalleryPickerTarget('commercialHero')}
-                      className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
-                    >
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>Choose from Photo Gallery</span>
-                    </button>
+          {/* Block D Dedicated CMS Banner Notice */}
+          {selectedBlockSlug === 'block-d' && (
+            <div className="bg-gradient-to-r from-rose-50 to-rose-100/60 border-2 border-rose-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shrink-0 shadow-md">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-base text-slate-900">
+                    Block D Features a Dedicated 10-Section CMS
+                  </h4>
+                  <p className="text-xs text-slate-700 mt-0.5">
+                    Manage all 10 sections: price schedule matrix, travel time benchmarks, 6 investment reasons, and amenities.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSection('blockD')}
+                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
+              >
+                <Sparkles className="w-4 h-4 text-rose-200" />
+                <span>Open Dedicated Block D CMS →</span>
+              </button>
+            </div>
+          )}
 
-                    <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
-                      <ImageIcon className="w-3.5 h-3.5" />
-                      <span>Upload from Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
-                              if (dataUrl) {
-                                setCommercialHeroImage(dataUrl);
-                              }
-                            });
-                          }
-                        }}
-                      />
-                    </label>
+          {/* Commercial Hub Hero Banner Card (Active for Hills Walk / Commercial) */}
+          {selectedBlockSlug === 'hills-walk' && (
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-purple-200/80 shadow-sm space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-purple-700 text-white flex items-center justify-center font-bold shadow-sm">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-bold text-lg text-slate-900">
+                      Commercial Hub Hero Background Banner
+                    </h4>
+                    <span className="text-xs text-slate-500 font-medium">
+                      Live Route: <code className="text-purple-700 bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/faisal-hills-commercial</code>
+                    </span>
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-slate-600">Background Image URL:</span>
-                  <input
-                    type="text"
-                    value={commercialHeroImage}
-                    onChange={(e) => setCommercialHeroImage(e.target.value)}
-                    placeholder="e.g. /images/commercial/flagship-store.webp or https://..."
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c] focus:bg-white"
-                  />
-                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href="/faisal-hills-commercial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
+                  >
+                    <span>View Commercial Page</span>
+                    <Globe className="w-3.5 h-3.5" />
+                  </a>
 
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
-                  {[
-                    { label: 'Flagship Store', url: '/images/commercial/flagship-store.webp' },
-                    { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.webp' },
-                    { label: 'Food Court Hub', url: '/images/commercial/food-court.webp' },
-                    { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
-                    { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
-                  ].map((preset, pIdx) => (
-                    <button
-                      key={pIdx}
-                      type="button"
-                      onClick={() => setCommercialHeroImage(preset.url)}
-                      className="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-[#7b002c] border border-slate-200 font-medium transition cursor-pointer"
-                    >
-                      + {preset.label}
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={handleSaveCommercialHero}
+                    disabled={isSavingCommercialHero}
+                    className="px-5 py-2 bg-purple-700 hover:bg-purple-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
+                  >
+                    {isSavingCommercialHero ? (
+                      <>
+                        <Loader2 className="w-4 h-4 text-white animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 text-white" />
+                        <span>Save Commercial Banner</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
-              <div className="lg:col-span-5">
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-slate-600 block">Live Banner Preview:</span>
-                  <div className="h-44 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
-                    <img
-                      src={commercialHeroImage}
-                      alt="Commercial Hero Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-7 space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-purple-700" />
+                      <span>Upload or Select Commercial Banner</span>
+                    </label>
+
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setGalleryPickerTarget('commercialHero')}
+                        className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>Choose from Photo Gallery</span>
+                      </button>
+
+                      <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Upload from Device</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              compressImageFile(file, 1920, 0.85).then((dataUrl) => {
+                                if (dataUrl) {
+                                  setCommercialHeroImage(dataUrl);
+                                }
+                              });
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-slate-600">Background Image URL:</span>
+                    <input
+                      type="text"
+                      value={commercialHeroImage}
+                      onChange={(e) => setCommercialHeroImage(e.target.value)}
+                      placeholder="e.g. /images/commercial/flagship-store.webp or https://..."
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-purple-700 focus:bg-white"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/50 flex flex-col justify-end p-4 text-white">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-300">Commercial Hub</span>
-                      <strong className="font-serif text-sm line-clamp-1">Faisal Hills Commercial Plots for Sale</strong>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
+                    {[
+                      { label: 'Flagship Store', url: '/images/commercial/flagship-store.webp' },
+                      { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.webp' },
+                      { label: 'Food Court Hub', url: '/images/commercial/food-court.webp' },
+                      { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
+                      { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
+                    ].map((preset, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setCommercialHeroImage(preset.url)}
+                        className="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-purple-50 hover:text-purple-700 border border-slate-200 font-medium transition cursor-pointer"
+                      >
+                        + {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5">
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-semibold text-slate-600 block">Live Banner Preview:</span>
+                    <div className="h-44 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
+                      <img
+                        src={commercialHeroImage}
+                        alt="Commercial Hero Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/50 flex flex-col justify-end p-4 text-white">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300">Commercial Hub</span>
+                        <strong className="font-serif text-sm line-clamp-1">Faisal Hills Commercial Plots for Sale</strong>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Active Block Edit Form */}
           {editingBlock && (
@@ -1350,6 +1460,17 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                     className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
 
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700">Hero Image Alt Tag (SEO)</label>
+                    <input
+                      type="text"
+                      value={editingBlock.heroImageAlt || ''}
+                      onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, heroImageAlt: e.target.value }) : null)}
+                      placeholder={`Faisal Hills ${editingBlock.name} Aerial View & Landscape`}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
                     <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
                     {[
@@ -1441,6 +1562,17 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                     placeholder="Or paste map image URL..."
                     className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700">Master Plan Image Alt Tag (SEO)</label>
+                    <input
+                      type="text"
+                      value={editingBlock.masterPlanImageAlt || ''}
+                      onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImageAlt: e.target.value }) : null)}
+                      placeholder={`Faisal Hills ${editingBlock.name} Master Plan Blueprint Map`}
+                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
 
                   {editingBlock.masterPlanImage && (
                     <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
@@ -1575,14 +1707,13 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                 </div>
 
                 {/* 12. Detailed Description */}
-                <div className="md:col-span-2 space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Block Overview &amp; Comprehensive Description</label>
-                  <textarea
+                <div className="md:col-span-2">
+                  <CmsRichTextarea
+                    label="Block Overview & Comprehensive Description"
                     rows={4}
                     value={editingBlock.description || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, description: e.target.value }) : null)}
+                    onChange={(val) => setEditingBlock(prev => prev ? ({ ...prev, description: val }) : null)}
                     placeholder="Enter comprehensive overview, possession updates, lifestyle facilities, and investment potential..."
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
                   />
                 </div>
 
@@ -1860,17 +1991,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               ))}
             </div>
 
-            <div className="pt-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Table Footnote / Explanatory Note
-              </label>
-              <textarea
-                rows={3}
-                value={cms.atAGlance.footnote}
-                onChange={(e) => setCms({ ...cms, atAGlance: { ...cms.atAGlance, footnote: e.target.value } })}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Table Footnote / Explanatory Note"
+              rows={3}
+              value={cms.atAGlance.footnote}
+              onChange={(val) => setCms({ ...cms, atAGlance: { ...cms.atAGlance, footnote: val } })}
+            />
           </div>
         </div>
       )}
@@ -1898,17 +2024,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Intro Paragraph
-              </label>
-              <textarea
-                rows={2}
-                value={cms.growthStages.paragraph}
-                onChange={(e) => setCms({ ...cms, growthStages: { ...cms.growthStages, paragraph: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Intro Paragraph"
+              rows={2}
+              value={cms.growthStages.paragraph}
+              onChange={(val) => setCms({ ...cms, growthStages: { ...cms.growthStages, paragraph: val } })}
+            />
 
             <div className="space-y-3 pt-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
@@ -1962,17 +2083,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               ))}
             </div>
 
-            <div className="pt-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Important Distinction Callout (Phase 2 & Sector Note)
-              </label>
-              <textarea
-                rows={2}
-                value={cms.growthStages.distinctionNote}
-                onChange={(e) => setCms({ ...cms, growthStages: { ...cms.growthStages, distinctionNote: e.target.value } })}
-                className="w-full px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950 font-medium"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Important Distinction Callout (Phase 2 & Sector Note)"
+              rows={2}
+              value={cms.growthStages.distinctionNote}
+              onChange={(val) => setCms({ ...cms, growthStages: { ...cms.growthStages, distinctionNote: val } })}
+            />
           </div>
         </div>
       )}
@@ -2000,17 +2116,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Map Section Description
-              </label>
-              <textarea
-                rows={3}
-                value={cms.blockMap.paragraph}
-                onChange={(e) => setCms({ ...cms, blockMap: { ...cms.blockMap, paragraph: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Map Section Description"
+              rows={3}
+              value={cms.blockMap.paragraph}
+              onChange={(val) => setCms({ ...cms, blockMap: { ...cms.blockMap, paragraph: val } })}
+            />
 
             <div className="space-y-3 pt-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
@@ -2064,17 +2175,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               ))}
             </div>
 
-            <div className="pt-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Reading Plot Numbers Paragraph
-              </label>
-              <textarea
-                rows={2}
-                value={cms.blockMap.readingPlotNumbersText}
-                onChange={(e) => setCms({ ...cms, blockMap: { ...cms.blockMap, readingPlotNumbersText: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Reading Plot Numbers Paragraph"
+              rows={2}
+              value={cms.blockMap.readingPlotNumbersText}
+              onChange={(val) => setCms({ ...cms, blockMap: { ...cms.blockMap, readingPlotNumbersText: val } })}
+            />
           </div>
         </div>
       )}
@@ -2151,21 +2257,16 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                   }}
                 />
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Full Sector Copy (Collapsible on page)
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={blk.detailedCopy}
-                    onChange={(e) => {
-                      const updated = [...cms.blocksOneByOne];
-                      updated[idx].detailedCopy = e.target.value;
-                      setCms({ ...cms, blocksOneByOne: updated });
-                    }}
-                    className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 leading-relaxed"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Full Sector Copy (Collapsible on page)"
+                  rows={4}
+                  value={blk.detailedCopy}
+                  onChange={(val) => {
+                    const updated = [...cms.blocksOneByOne];
+                    updated[idx].detailedCopy = val;
+                    setCms({ ...cms, blocksOneByOne: updated });
+                  }}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
@@ -2343,20 +2444,15 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               ))}
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Kanal Calculation Note
-              </label>
-              <textarea
-                rows={2}
-                value={cms.marlaConversions.callout}
-                onChange={(e) => setCms({
-                  ...cms,
-                  marlaConversions: { ...cms.marlaConversions, callout: e.target.value }
-                })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Kanal Calculation Note"
+              rows={2}
+              value={cms.marlaConversions.callout}
+              onChange={(val) => setCms({
+                ...cms,
+                marlaConversions: { ...cms.marlaConversions, callout: val }
+              })}
+            />
           </div>
         </div>
       )}
@@ -2434,17 +2530,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               ))}
             </div>
 
-            <div className="pt-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Pricing Footnote
-              </label>
-              <textarea
-                rows={2}
-                value={cms.plotPrices.footnote}
-                onChange={(e) => setCms({ ...cms, plotPrices: { ...cms.plotPrices, footnote: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Pricing Footnote"
+              rows={2}
+              value={cms.plotPrices.footnote}
+              onChange={(val) => setCms({ ...cms, plotPrices: { ...cms.plotPrices, footnote: val } })}
+            />
           </div>
         </div>
       )}
@@ -2542,21 +2633,18 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                 />
               </div>
 
-              <div>
-                <label className="block text-[10px] text-slate-500 uppercase font-semibold mb-1">Paragraph</label>
-                <textarea
-                  rows={3}
-                  value={cms.developmentStatus.infrastructure.paragraph}
-                  onChange={(e) => setCms({
-                    ...cms,
-                    developmentStatus: {
-                      ...cms.developmentStatus,
-                      infrastructure: { ...cms.developmentStatus.infrastructure, paragraph: e.target.value }
-                    }
-                  })}
-                  className="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs"
-                />
-              </div>
+              <CmsRichTextarea
+                label="Shared Infrastructure Paragraph"
+                rows={3}
+                value={cms.developmentStatus.infrastructure.paragraph}
+                onChange={(val) => setCms({
+                  ...cms,
+                  developmentStatus: {
+                    ...cms.developmentStatus,
+                    infrastructure: { ...cms.developmentStatus.infrastructure, paragraph: val }
+                  }
+                })}
+              />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                 {cms.developmentStatus.infrastructure.cards.map((c, idx) => (
@@ -2577,12 +2665,13 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                       }}
                       className="w-full px-2 py-1 bg-white border rounded text-xs font-bold text-amber-700"
                     />
-                    <textarea
+                    <CmsRichTextarea
+                      label="Card Description"
                       rows={2}
                       value={c.desc}
-                      onChange={(e) => {
+                      onChange={(val) => {
                         const updated = [...cms.developmentStatus.infrastructure.cards];
-                        updated[idx].desc = e.target.value;
+                        updated[idx].desc = val;
                         setCms({
                           ...cms,
                           developmentStatus: {
@@ -2591,7 +2680,6 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                           }
                         });
                       }}
-                      className="w-full px-2 py-1 bg-white border rounded text-[11px] text-slate-600"
                     />
                   </div>
                 ))}
@@ -2674,31 +2762,26 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                       }}
                       className="w-full px-2.5 py-1 bg-white border rounded text-xs font-bold text-[#7b002c]"
                     />
-                    <textarea
+                    <CmsRichTextarea
+                      label="Definition"
                       rows={3}
                       value={t.definition}
-                      onChange={(e) => {
+                      onChange={(val) => {
                         const updated = [...cms.glossary.terms];
-                        updated[idx].definition = e.target.value;
+                        updated[idx].definition = val;
                         setCms({ ...cms, glossary: { ...cms.glossary, terms: updated } });
                       }}
-                      className="w-full px-2.5 py-1 bg-white border rounded text-[11px] text-slate-700"
                     />
                   </div>
                 ))}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Corner / Boulevard Premium Note
-                </label>
-                <textarea
-                  rows={2}
-                  value={cms.glossary.premiumNote}
-                  onChange={(e) => setCms({ ...cms, glossary: { ...cms.glossary, premiumNote: e.target.value } })}
-                  className="w-full px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950"
-                />
-              </div>
+              <CmsRichTextarea
+                label="Corner / Boulevard Premium Note"
+                rows={2}
+                value={cms.glossary.premiumNote}
+                onChange={(val) => setCms({ ...cms, glossary: { ...cms.glossary, premiumNote: val } })}
+              />
             </div>
           </div>
         </div>
@@ -2746,19 +2829,16 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                       className="w-full px-3 py-1.5 bg-white border rounded text-xs font-bold"
                     />
                   </div>
-                  <div>
-                    <label className="text-[10px] text-slate-500 uppercase font-semibold">Description</label>
-                    <textarea
-                      rows={3}
-                      value={st.desc}
-                      onChange={(e) => {
-                        const updated = [...cms.dueDiligence.steps];
-                        updated[idx].desc = e.target.value;
-                        setCms({ ...cms, dueDiligence: { ...cms.dueDiligence, steps: updated } });
-                      }}
-                      className="w-full px-3 py-1.5 bg-white border rounded text-[11px] text-slate-600"
-                    />
-                  </div>
+                  <CmsRichTextarea
+                    label="Step Description"
+                    rows={3}
+                    value={st.desc}
+                    onChange={(val) => {
+                      const updated = [...cms.dueDiligence.steps];
+                      updated[idx].desc = val;
+                      setCms({ ...cms, dueDiligence: { ...cms.dueDiligence, steps: updated } });
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -2825,15 +2905,15 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                   placeholder="Question text..."
                 />
 
-                <textarea
+                <CmsRichTextarea
+                  label="Answer"
                   rows={2}
                   value={faq.answer}
-                  onChange={(e) => {
+                  onChange={(val) => {
                     const updated = [...cms.faqs.items];
-                    updated[idx].answer = e.target.value;
+                    updated[idx].answer = val;
                     setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
                   }}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-700"
                   placeholder="Answer text..."
                 />
               </div>
@@ -2865,17 +2945,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                CTA Paragraph
-              </label>
-              <textarea
-                rows={3}
-                value={cms.cta.paragraph}
-                onChange={(e) => setCms({ ...cms, cta: { ...cms.cta, paragraph: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border rounded-xl text-xs"
-              />
-            </div>
+            <CmsRichTextarea
+              label="CTA Paragraph"
+              rows={3}
+              value={cms.cta.paragraph}
+              onChange={(val) => setCms({ ...cms, cta: { ...cms.cta, paragraph: val } })}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -2914,2343 +2989,78 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                About this Page / Reviewer Footnote
-              </label>
-              <textarea
-                rows={2}
-                value={cms.cta.aboutPageNote}
-                onChange={(e) => setCms({ ...cms, cta: { ...cms.cta, aboutPageNote: e.target.value } })}
-                className="w-full px-4 py-2 bg-slate-50 border rounded-xl text-xs text-slate-600"
-              />
-            </div>
+            <CmsRichTextarea
+              label="About this Page / Reviewer Footnote"
+              rows={2}
+              value={cms.cta.aboutPageNote}
+              onChange={(val) => setCms({ ...cms, cta: { ...cms.cta, aboutPageNote: val } })}
+            />
           </div>
         </div>
       )}
 
       {/* ========================================================= */}
-      {/* SECTION: PRIME BLOCK OVERVIEW CMS                         */}
+      {/* SECTION: BLOCK A DETAILED CMS (ALL 16 SECTIONS)           */}
+      {/* ========================================================= */}
+      {activeSection === 'blockA' && (
+        <BlockACmsEditor
+          blockACms={blockACms}
+          setBlockACms={setBlockACms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK B DETAILED CMS (ALL 10 SECTIONS)           */}
+      {/* ========================================================= */}
+      {activeSection === 'blockB' && (
+        <BlockBCmsEditor
+          blockBCms={blockBCms}
+          setBlockBCms={setBlockBCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK D DETAILED CMS (ALL 10 SECTIONS)           */}
+      {/* ========================================================= */}
+      {activeSection === 'blockD' && (
+        <BlockDCmsEditor
+          blockDCms={blockDCms}
+          setBlockDCms={setBlockDCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: PRIME BLOCK DETAILED CMS (ALL 12 SECTIONS)       */}
       {/* ========================================================= */}
       {activeSection === 'primeBlock' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase tracking-wider">
-                  Specific Block CMS
-                </span>
-                <h3 className="text-lg font-bold text-slate-900 font-serif">
-                  Faisal Hills Prime Block Overview Editor
-                </h3>
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                Manage the main overview section, paragraph content, and internal linking on <code className="bg-slate-100 px-1 py-0.5 rounded text-[#7b002c]">/blocks/prime-block</code>.
-              </p>
-            </div>
-            <a
-              href="/blocks/prime-block"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#7b002c] hover:bg-rose-50 border border-rose-200 rounded-xl transition cursor-pointer self-start sm:self-auto"
-            >
-              <span>View Prime Block Page</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Editor Form Columns */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Section Heading */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Overview Section Heading
-                </label>
-                <input
-                  type="text"
-                  value={primeCms.overview.heading}
-                  onChange={(e) =>
-                    setPrimeCms({
-                      ...primeCms,
-                      overview: { ...primeCms.overview, heading: e.target.value }
-                    })
-                  }
-                  placeholder="Faisal Hills Prime Block Overview"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                />
-              </div>
-
-              {/* Overview Paragraph 1 */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Overview Paragraph 1 <span className="text-emerald-600 font-normal">(Location & Boulevard Context)</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={primeCms.overview.visibleParagraph}
-                  onChange={(e) =>
-                    setPrimeCms({
-                      ...primeCms,
-                      overview: { ...primeCms.overview, visibleParagraph: e.target.value }
-                    })
-                  }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Default: Mentions Prime Block front location on the 225 ft boulevard, adjoining Block A & Executive Block.
-                </p>
-              </div>
-
-              {/* Overview Paragraph 2 */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Overview Paragraph 2 <span className="text-[#7b002c] font-normal">(Installment vs Construction & Links)</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={primeCms.overview.expandedParagraph1}
-                  onChange={(e) =>
-                    setPrimeCms({
-                      ...primeCms,
-                      overview: { ...primeCms.overview, expandedParagraph1: e.target.value }
-                    })
-                  }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Mentions carpeted roads, underground utilities, parks, mosque, commercial areas, installment plans vs ready possession.
-                </p>
-              </div>
-
-              {/* Overview Paragraph 3 */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Overview Paragraph 3 <span className="text-[#7b002c] font-normal">(Location / District Clarification)</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={primeCms.overview.expandedParagraph2}
-                  onChange={(e) =>
-                    setPrimeCms({
-                      ...primeCms,
-                      overview: { ...primeCms.overview, expandedParagraph2: e.target.value }
-                    })
-                  }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Clarifies Rawalpindi District / Taxila location vs marketed Islamabad address, via GT Road & Margalla Avenue.
-                </p>
-              </div>
-
-              {/* Cross-Link Configs */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                  <Link2 className="w-3.5 h-3.5 text-[#7b002c]" />
-                  <span>Interactive Inter-Page Block Links</span>
-                </h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Block A Link Text</label>
-                    <input
-                      type="text"
-                      value={primeCms.overview.blockALinkText}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          overview: { ...primeCms.overview, blockALinkText: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Block A URL Target</label>
-                    <input
-                      type="text"
-                      value={primeCms.overview.blockALinkHref}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          overview: { ...primeCms.overview, blockALinkHref: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Executive Block Link Text</label>
-                    <input
-                      type="text"
-                      value={primeCms.overview.executiveBlockLinkText}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          overview: { ...primeCms.overview, executiveBlockLinkText: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Executive Block URL Target</label>
-                    <input
-                      type="text"
-                      value={primeCms.overview.executiveBlockLinkHref}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          overview: { ...primeCms.overview, executiveBlockLinkHref: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Location Section Heading */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Location & Accessibility Section
-                  </h4>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Location Section Heading
-                  </label>
-                  <input
-                    type="text"
-                    value={primeCms.location.heading}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, heading: e.target.value }
-                      })
-                    }
-                    placeholder="Faisal Hills Prime Block Location"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                  />
-                </div>
-              </div>
-
-              {/* Location Main Paragraph */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Location Main Paragraph <span className="text-emerald-600 font-normal">(Visible Text)</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={primeCms.location.mainParagraph}
-                  onChange={(e) =>
-                    setPrimeCms({
-                      ...primeCms,
-                      location: { ...primeCms.location, mainParagraph: e.target.value }
-                    })
-                  }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                />
-              </div>
-
-              {/* Location Bullet Points */}
-              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Location Key Points <span className="text-[#7b002c] font-normal">(Bullet List)</span>
-                </label>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 1 (Adjoining Areas)</label>
-                  <input
-                    type="text"
-                    value={primeCms.location.bullet1}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, bullet1: e.target.value }
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 2 (Taxila Connectivity)</label>
-                  <input
-                    type="text"
-                    value={primeCms.location.bullet2}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, bullet2: e.target.value }
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 3 (Islamabad Side)</label>
-                  <input
-                    type="text"
-                    value={primeCms.location.bullet3}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, bullet3: e.target.value }
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Bullet Point 4 (Highway & Airport Links)</label>
-                  <input
-                    type="text"
-                    value={primeCms.location.bullet4}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, bullet4: e.target.value }
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Drive Times Note</label>
-                  <textarea
-                    rows={2}
-                    value={primeCms.location.driveTimesNote}
-                    onChange={(e) =>
-                      setPrimeCms({
-                        ...primeCms,
-                        location: { ...primeCms.location, driveTimesNote: e.target.value }
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Location Page Link Text</label>
-                    <input
-                      type="text"
-                      value={primeCms.location.locationPageLinkText}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          location: { ...primeCms.location, locationPageLinkText: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Location Page URL</label>
-                    <input
-                      type="text"
-                      value={primeCms.location.locationPageLinkHref}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          location: { ...primeCms.location, locationPageLinkHref: e.target.value }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Plan Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <DollarSign className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Payment Plan Section Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Payment Plan Section Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.paymentPlanSection?.heading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          paymentPlanSection: {
-                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
-                            heading: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Faisal Hills Prime Block Payment Plan"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Payment Plan Intro Paragraph
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.paymentPlanSection?.intro || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          paymentPlanSection: {
-                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
-                            intro: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Why Different Prices Paragraph 1
-                    </label>
-                    <textarea
-                      rows={4}
-                      value={primeCms.paymentPlanSection?.whyDifferentParagraph1 || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          paymentPlanSection: {
-                            ...(primeCms.paymentPlanSection || initialPrimeBlockCMS.paymentPlanSection!),
-                            whyDifferentParagraph1: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Facilities & Amenities Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Trees className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Facilities & Amenities Section Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Section Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.facilitiesSection?.heading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          facilitiesSection: {
-                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
-                            heading: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Facilities and Amenities in Prime Block"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Intro Paragraph
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.facilitiesSection?.intro || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          facilitiesSection: {
-                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
-                            intro: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Construction & Planning Footer Note
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={primeCms.facilitiesSection?.footerNote || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          facilitiesSection: {
-                            ...(primeCms.facilitiesSection || initialPrimeBlockCMS.facilitiesSection!),
-                            footerNote: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Why Buyers Choose Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Why Buyers Choose & Considerations Section Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Badge Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.whyChooseSection?.badge || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            whyChooseSection: {
-                              ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
-                              badge: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="WHY PRIME BLOCK"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Main Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.whyChooseSection?.heading || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            whyChooseSection: {
-                              ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
-                              heading: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Why Buyers Choose Prime Block, and What to Weigh"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Advantages Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.whyChooseSection?.advantagesHeading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          whyChooseSection: {
-                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
-                            advantagesHeading: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Considerations Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.whyChooseSection?.considerationsHeading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          whyChooseSection: {
-                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
-                            considerationsHeading: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Verifiable Information Policy Disclaimer
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={primeCms.whyChooseSection?.disclaimerNote || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          whyChooseSection: {
-                            ...(primeCms.whyChooseSection || initialPrimeBlockCMS.whyChooseSection!),
-                            disclaimerNote: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* Prime Block Development Status Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Activity className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Development Status Section Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.developmentStatusSection?.heading || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            developmentStatusSection: {
-                              ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                              heading: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Faisal Hills Prime Block Development Status"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                      />
-                    </div>
-                    <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Last Updated Date
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.developmentStatusSection?.lastUpdated || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            developmentStatusSection: {
-                              ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                              lastUpdated: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="March 2026"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Intro Paragraph
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.developmentStatusSection?.intro || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          developmentStatusSection: {
-                            ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                            intro: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Work in Prime Block is progressing, with earthwork, levelling and boulevard construction under way. We update this section with new site photos after each visit."
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  {/* 3 Stat Boxes */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                      3 Stat Metric Boxes
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Earthwork Metric</label>
-                        <input
-                          type="text"
-                          value={primeCms.developmentStatusSection?.statBoxes?.earthwork || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              developmentStatusSection: {
-                                ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                statBoxes: {
-                                  ...(primeCms.developmentStatusSection?.statBoxes || initialPrimeBlockCMS.developmentStatusSection!.statBoxes),
-                                  earthwork: e.target.value
-                                }
-                              }
-                            })
-                          }
-                          placeholder="90%"
-                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Roads Metric</label>
-                        <input
-                          type="text"
-                          value={primeCms.developmentStatusSection?.statBoxes?.roads || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              developmentStatusSection: {
-                                ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                statBoxes: {
-                                  ...(primeCms.developmentStatusSection?.statBoxes || initialPrimeBlockCMS.developmentStatusSection!.statBoxes),
-                                  roads: e.target.value
-                                }
-                              }
-                            })
-                          }
-                          placeholder="65%"
-                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Expected Possession</label>
-                        <input
-                          type="text"
-                          value={primeCms.developmentStatusSection?.statBoxes?.possession || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              developmentStatusSection: {
-                                ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                statBoxes: {
-                                  ...(primeCms.developmentStatusSection?.statBoxes || initialPrimeBlockCMS.developmentStatusSection!.statBoxes),
-                                  possession: e.target.value
-                                }
-                              }
-                            })
-                          }
-                          placeholder="December 2028 (4-Year Plan)"
-                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Development Table Rows Manager */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                        Development Status Table Rows (Item · Status · As at)
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const currentRows = primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows;
-                          setPrimeCms({
-                            ...primeCms,
-                            developmentStatusSection: {
-                              ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                              tableRows: [
-                                ...currentRows,
-                                { item: 'New Infrastructure Work', status: 'In Progress', asAt: 'March 2026' }
-                              ]
-                            }
-                          });
-                        }}
-                        className="px-2.5 py-1 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-lg transition cursor-pointer"
-                      >
-                        + Add Row
-                      </button>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      {(primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows).map((row, rIdx) => (
-                        <div key={rIdx} className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
-                          <div className="sm:col-span-5">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">Item</label>
-                            <input
-                              type="text"
-                              value={row.item}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows)];
-                                updated[rIdx].item = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  developmentStatusSection: {
-                                    ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                    tableRows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                            />
-                          </div>
-                          <div className="sm:col-span-4">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">Status</label>
-                            <input
-                              type="text"
-                              value={row.status}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows)];
-                                updated[rIdx].status = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  developmentStatusSection: {
-                                    ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                    tableRows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                            />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">As at</label>
-                            <input
-                              type="text"
-                              value={row.asAt}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows)];
-                                updated[rIdx].asAt = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  developmentStatusSection: {
-                                    ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                    tableRows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-                            />
-                          </div>
-                          <div className="sm:col-span-1 flex justify-end pt-3 sm:pt-0">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updated = (primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection!.tableRows).filter((_, i) => i !== rIdx);
-                                setPrimeCms({
-                                  ...primeCms,
-                                  developmentStatusSection: {
-                                    ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                                    tableRows: updated
-                                  }
-                                });
-                              }}
-                              className="w-7 h-7 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-bold transition flex items-center justify-center cursor-pointer"
-                              title="Delete row"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Photo Link Callout and Image */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Photo Link Note
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.developmentStatusSection?.photoLinkNote || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            developmentStatusSection: {
-                              ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                              photoLinkNote: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Dated photographs of every block are on our"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Photo Link Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.developmentStatusSection?.photoLinkText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            developmentStatusSection: {
-                              ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                              photoLinkText: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="development updates (→ development page)"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Development Section Image URL
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.developmentStatusSection?.image || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          developmentStatusSection: {
-                            ...(primeCms.developmentStatusSection || initialPrimeBlockCMS.developmentStatusSection!),
-                            image: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="/images/faisal-hills-aerial-panoramic.webp"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Possession Advice Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <ShieldCheck className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Possession Advice Section Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Section Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.possessionAdviceSection?.heading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          possessionAdviceSection: {
-                            ...(primeCms.possessionAdviceSection || initialPrimeBlockCMS.possessionAdviceSection!),
-                            heading: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Possession: What to Confirm Before You Pay"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Paragraph 1 (Context & Verification Stance)
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.possessionAdviceSection?.paragraph1 || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          possessionAdviceSection: {
-                            ...(primeCms.possessionAdviceSection || initialPrimeBlockCMS.possessionAdviceSection!),
-                            paragraph1: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Paragraph 2 (Buyer Recommendation & Checklist Guidance)
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.possessionAdviceSection?.paragraph2 || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          possessionAdviceSection: {
-                            ...(primeCms.possessionAdviceSection || initialPrimeBlockCMS.possessionAdviceSection!),
-                            paragraph2: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Block A Link Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.possessionAdviceSection?.blockALinkText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            possessionAdviceSection: {
-                              ...(primeCms.possessionAdviceSection || initialPrimeBlockCMS.possessionAdviceSection!),
-                              blockALinkText: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Block A (→ Block A page)"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Buying Guide Link Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.possessionAdviceSection?.guideLinkText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            possessionAdviceSection: {
-                              ...(primeCms.possessionAdviceSection || initialPrimeBlockCMS.possessionAdviceSection!),
-                              guideLinkText: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="plot verification guide (→ buying guide)"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Prime Block vs Block A Comparison Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Layers className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Section 14: Prime Block vs Block A Comparison Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.comparisonSection?.heading || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            comparisonSection: {
-                              ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                              heading: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Prime Block or Block A?"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900"
-                      />
-                    </div>
-                    <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Subline / Section Tag
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.comparisonSection?.subline || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            comparisonSection: {
-                              ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                              subline: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Section 14 — Direct Comparison"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Comparison Rows Manager */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                        Comparison Rows ({primeCms.comparisonSection?.rows?.length || 5})
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const currentRows = primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows;
-                          setPrimeCms({
-                            ...primeCms,
-                            comparisonSection: {
-                              ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                              rows: [
-                                ...currentRows,
-                                { aspect: 'Feature', primeBlock: 'Specification', blockA: 'Specification' }
-                              ]
-                            }
-                          });
-                        }}
-                        className="px-2.5 py-1 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-lg transition cursor-pointer"
-                      >
-                        + Add Comparison Row
-                      </button>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      {(primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows).map((row, rIdx) => (
-                        <div key={rIdx} className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
-                          <div className="sm:col-span-3">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">Aspect</label>
-                            <input
-                              type="text"
-                              value={row.aspect}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows)];
-                                updated[rIdx].aspect = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  comparisonSection: {
-                                    ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                                    rows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold"
-                            />
-                          </div>
-                          <div className="sm:col-span-4">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">Prime Block</label>
-                            <input
-                              type="text"
-                              value={row.primeBlock}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows)];
-                                updated[rIdx].primeBlock = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  comparisonSection: {
-                                    ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                                    rows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-[#7b002c]"
-                            />
-                          </div>
-                          <div className="sm:col-span-4">
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">Block A</label>
-                            <input
-                              type="text"
-                              value={row.blockA}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows)];
-                                updated[rIdx].blockA = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  comparisonSection: {
-                                    ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                                    rows: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-700"
-                            />
-                          </div>
-                          <div className="sm:col-span-1 flex justify-end pt-3 sm:pt-0">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updated = (primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows).filter((_, i) => i !== rIdx);
-                                setPrimeCms({
-                                  ...primeCms,
-                                  comparisonSection: {
-                                    ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                                    rows: updated
-                                  }
-                                });
-                              }}
-                              className="w-7 h-7 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-bold transition flex items-center justify-center cursor-pointer"
-                              title="Delete row"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Compare Link Note
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.comparisonSection?.compareLinkNote || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            comparisonSection: {
-                              ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                              compareLinkNote: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Every block is compared on our"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Compare Link Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.comparisonSection?.compareLinkText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            comparisonSection: {
-                              ...(primeCms.comparisonSection || initialPrimeBlockCMS.comparisonSection!),
-                              compareLinkText: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Faisal Hills blocks (→ blocks page)"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 15: Booking Process Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <ListChecks className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Section 15: 4-Step Booking Process Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Badge Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.bookingProcessSection?.badge || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            bookingProcessSection: {
-                              ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                              badge: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="4-STEP BOOKING"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.bookingProcessSection?.heading || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            bookingProcessSection: {
-                              ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                              heading: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="How to Book a Plot in Prime Block"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900"
-                      />
-                    </div>
-                  </div>
-
-                  {/* 4 Steps Manager */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                      Booking Steps (Step Number · Title · What you provide)
-                    </label>
-
-                    <div className="space-y-3">
-                      {(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps).map((st, sIdx) => (
-                        <div key={sIdx} className="p-3.5 bg-white border border-slate-200 rounded-xl space-y-2">
-                          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
-                            <div className="sm:col-span-2">
-                              <label className="text-[10px] text-slate-400 uppercase font-semibold">Step #</label>
-                              <input
-                                type="text"
-                                value={st.step}
-                                onChange={(e) => {
-                                  const updated = [...(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps)];
-                                  updated[sIdx].step = e.target.value;
-                                  setPrimeCms({
-                                    ...primeCms,
-                                    bookingProcessSection: {
-                                      ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                      steps: updated
-                                    }
-                                  });
-                                }}
-                                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-[#7b002c]"
-                              />
-                            </div>
-                            <div className="sm:col-span-5">
-                              <label className="text-[10px] text-slate-400 uppercase font-semibold">Title</label>
-                              <input
-                                type="text"
-                                value={st.title}
-                                onChange={(e) => {
-                                  const updated = [...(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps)];
-                                  updated[sIdx].title = e.target.value;
-                                  setPrimeCms({
-                                    ...primeCms,
-                                    bookingProcessSection: {
-                                      ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                      steps: updated
-                                    }
-                                  });
-                                }}
-                                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900"
-                              />
-                            </div>
-                            <div className="sm:col-span-5">
-                              <label className="text-[10px] text-slate-400 uppercase font-semibold">Tag / Subtext</label>
-                              <input
-                                type="text"
-                                value={st.tag || ''}
-                                onChange={(e) => {
-                                  const updated = [...(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps)];
-                                  updated[sIdx].tag = e.target.value;
-                                  setPrimeCms({
-                                    ...primeCms,
-                                    bookingProcessSection: {
-                                      ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                      steps: updated
-                                    }
-                                  });
-                                }}
-                                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-600"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="text-[10px] text-slate-400 uppercase font-semibold">What you provide</label>
-                            <textarea
-                              rows={2}
-                              value={st.desc}
-                              onChange={(e) => {
-                                const updated = [...(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps)];
-                                updated[sIdx].desc = e.target.value;
-                                setPrimeCms({
-                                  ...primeCms,
-                                  bookingProcessSection: {
-                                    ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                    steps: updated
-                                  }
-                                });
-                              }}
-                              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Assistance Box Settings */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                      Assistance Box (Contact Sales Desk)
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Box Heading</label>
-                        <input
-                          type="text"
-                          value={primeCms.bookingProcessSection?.assistanceBoxHeading || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              bookingProcessSection: {
-                                ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                assistanceBoxHeading: e.target.value
-                              }
-                            })
-                          }
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Button Label</label>
-                        <input
-                          type="text"
-                          value={primeCms.bookingProcessSection?.assistanceButtonText || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              bookingProcessSection: {
-                                ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                                assistanceButtonText: e.target.value
-                              }
-                            })
-                          }
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-[#7b002c]"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase font-semibold">Assistance Description Text</label>
-                      <textarea
-                        rows={2}
-                        value={primeCms.bookingProcessSection?.assistanceBoxText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            bookingProcessSection: {
-                              ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                              assistanceBoxText: e.target.value
-                            }
-                          })
-                        }
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      File Transfer Advisory Callout
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.bookingProcessSection?.fileTransferNote || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          bookingProcessSection: {
-                            ...(primeCms.bookingProcessSection || initialPrimeBlockCMS.bookingProcessSection!),
-                            fileTransferNote: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 16: Explore Other Blocks Section Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <Compass className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Section 16: Explore Other Blocks Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Section Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.exploreOtherBlocksSection?.heading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          exploreOtherBlocksSection: {
-                            ...(primeCms.exploreOtherBlocksSection || initialPrimeBlockCMS.exploreOtherBlocksSection!),
-                            heading: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Explore Other Faisal Hills Blocks"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Subtitle / Intro
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={primeCms.exploreOtherBlocksSection?.subtitle || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          exploreOtherBlocksSection: {
-                            ...(primeCms.exploreOtherBlocksSection || initialPrimeBlockCMS.exploreOtherBlocksSection!),
-                            subtitle: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Blocks Hub Link Text
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.exploreOtherBlocksSection?.compareHubText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            exploreOtherBlocksSection: {
-                              ...(primeCms.exploreOtherBlocksSection || initialPrimeBlockCMS.exploreOtherBlocksSection!),
-                              compareHubText: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Compare all Faisal Hills blocks (→ blocks hub)"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Blocks Hub Target URL
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.exploreOtherBlocksSection?.compareHubHref || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            exploreOtherBlocksSection: {
-                              ...(primeCms.exploreOtherBlocksSection || initialPrimeBlockCMS.exploreOtherBlocksSection!),
-                              compareHubHref: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="/faisal-hills-blocks"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 17: FAQs Manager Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <HelpCircle className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Section 17: Prime Block FAQs Editor (10 FAQs)
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                        FAQs Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={primeCms.faqsSection?.heading || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            faqsSection: {
-                              ...(primeCms.faqsSection || initialPrimeBlockCMS.faqsSection!),
-                              heading: e.target.value
-                            }
-                          })
-                        }
-                        placeholder="Faisal Hills Prime Block: Frequently Asked Questions"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 mt-1"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const currentFaqs = primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs;
-                        setPrimeCms({
-                          ...primeCms,
-                          faqsSection: {
-                            ...(primeCms.faqsSection || initialPrimeBlockCMS.faqsSection!),
-                            faqs: [
-                              ...currentFaqs,
-                              { q: 'New Question?', a: 'Detailed answer verified for Prime Block.' }
-                            ]
-                          }
-                        });
-                      }}
-                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition cursor-pointer shrink-0 ml-3"
-                    >
-                      + Add FAQ
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs).map((faq, fIdx) => (
-                      <div key={fIdx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                            FAQ #{fIdx + 1}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updated = (primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs).filter((_, i) => i !== fIdx);
-                              setPrimeCms({
-                                ...primeCms,
-                                faqsSection: {
-                                  ...(primeCms.faqsSection || initialPrimeBlockCMS.faqsSection!),
-                                  faqs: updated
-                                }
-                              });
-                            }}
-                            className="text-xs text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
-                          >
-                            ✕ Remove
-                          </button>
-                        </div>
-                        <div>
-                          <label className="text-[10px] text-slate-400 uppercase font-semibold">Question</label>
-                          <input
-                            type="text"
-                            value={faq.q}
-                            onChange={(e) => {
-                              const updated = [...(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs)];
-                              updated[fIdx].q = e.target.value;
-                              setPrimeCms({
-                                ...primeCms,
-                                faqsSection: {
-                                  ...(primeCms.faqsSection || initialPrimeBlockCMS.faqsSection!),
-                                  faqs: updated
-                                }
-                              });
-                            }}
-                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] text-slate-400 uppercase font-semibold">Answer</label>
-                          <textarea
-                            rows={3}
-                            value={faq.a}
-                            onChange={(e) => {
-                              const updated = [...(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs)];
-                              updated[fIdx].a = e.target.value;
-                              setPrimeCms({
-                                ...primeCms,
-                                faqsSection: {
-                                  ...(primeCms.faqsSection || initialPrimeBlockCMS.faqsSection!),
-                                  faqs: updated
-                                }
-                              });
-                            }}
-                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 font-normal"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 18: Closing, Site Visit Form & Editorial Disclosure Note Editor */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <PhoneCall className="w-4 h-4 text-[#7b002c]" />
-                  <h4 className="text-sm font-bold text-slate-900 font-serif">
-                    Section 18: Closing & Site Visit Booking Editor
-                  </h4>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Closing Heading
-                    </label>
-                    <input
-                      type="text"
-                      value={primeCms.closingSiteVisitSection?.heading || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          closingSiteVisitSection: {
-                            ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                            heading: e.target.value
-                          }
-                        })
-                      }
-                      placeholder="Is Prime Block Right for You?"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#7b002c] focus:bg-white transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Closing Paragraph 1
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.closingSiteVisitSection?.paragraph1 || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          closingSiteVisitSection: {
-                            ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                            paragraph1: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Closing Paragraph 2 (Contact Sales Desk Action)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={primeCms.closingSiteVisitSection?.paragraph2 || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          closingSiteVisitSection: {
-                            ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                            paragraph2: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-
-                  {/* Site Visit Form Header Settings */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                      Lead Form Settings (Site Visit & Video Tours)
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Form Badge Label</label>
-                        <input
-                          type="text"
-                          value={primeCms.closingSiteVisitSection?.formLabel || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              closingSiteVisitSection: {
-                                ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                                formLabel: e.target.value
-                              }
-                            })
-                          }
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 uppercase font-semibold">Form Main Title (H3)</label>
-                        <input
-                          type="text"
-                          value={primeCms.closingSiteVisitSection?.formTitle || ''}
-                          onChange={(e) =>
-                            setPrimeCms({
-                              ...primeCms,
-                              closingSiteVisitSection: {
-                                ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                                formTitle: e.target.value
-                              }
-                            })
-                          }
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-[#7b002c]"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase font-semibold">Form Subtitle / Promise</label>
-                      <textarea
-                        rows={2}
-                        value={primeCms.closingSiteVisitSection?.formSubtitle || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            closingSiteVisitSection: {
-                              ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                              formSubtitle: e.target.value
-                            }
-                          })
-                        }
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase font-semibold">Submit Button Text</label>
-                      <input
-                        type="text"
-                        value={primeCms.closingSiteVisitSection?.formButtonText || ''}
-                        onChange={(e) =>
-                          setPrimeCms({
-                            ...primeCms,
-                            closingSiteVisitSection: {
-                              ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                              formButtonText: e.target.value
-                            }
-                          })
-                        }
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-900"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Editorial / Reviewer Disclosure Note */}
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                      Editorial Review & Disclosure Note (About this page)
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={primeCms.closingSiteVisitSection?.reviewedByNote || ''}
-                      onChange={(e) =>
-                        setPrimeCms({
-                          ...primeCms,
-                          closingSiteVisitSection: {
-                            ...(primeCms.closingSiteVisitSection || initialPrimeBlockCMS.closingSiteVisitSection!),
-                            reviewedByNote: e.target.value
-                          }
-                        })
-                      }
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c] focus:bg-white transition leading-relaxed font-sans"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Live Interactive Preview Box */}
-            <div className="lg:col-span-5">
-              <div className="sticky top-24 bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 text-white shadow-xl space-y-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Live Preview</span>
-                  </div>
-                  <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">
-                    Real-time Render
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold">
-                    <Sparkles className="w-3 h-3 text-amber-400" />
-                    <span>Overview Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.overview.heading || 'Faisal Hills Prime Block Overview'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.overview.visibleParagraph}
-                  </p>
-
-                  <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2.5">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-400">
-                      <span>Expanded Content Preview:</span>
-                    </div>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      {primeCms.overview.expandedParagraph1}{' '}
-                      <span className="text-amber-400 underline font-semibold">
-                        (→ {primeCms.overview.blockALinkText} page)
-                      </span>{' '}
-                      or the{' '}
-                      <span className="text-amber-400 underline font-semibold">
-                        (→ {primeCms.overview.executiveBlockLinkText} page)
-                      </span>.
-                    </p>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      {primeCms.overview.expandedParagraph2}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Location Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] font-semibold">
-                    <MapPin className="w-3 h-3 text-rose-400" />
-                    <span>Location Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.location.heading || 'Faisal Hills Prime Block Location'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.location.mainParagraph}
-                  </p>
-
-                  <div className="p-3.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2 text-xs text-slate-300">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-400">
-                      <span>Key Location Highlights:</span>
-                    </div>
-                    <ul className="list-disc pl-4 space-y-1 text-slate-300">
-                      <li>{primeCms.location.bullet1}</li>
-                      <li>{primeCms.location.bullet2}</li>
-                      <li>{primeCms.location.bullet3}</li>
-                      <li>{primeCms.location.bullet4}</li>
-                    </ul>
-                    <p className="text-slate-400 pt-1">
-                      {primeCms.location.driveTimesNote}{' '}
-                      <span className="text-rose-400 underline font-semibold">
-                        {primeCms.location.locationPageLinkText} (→ location page)
-                      </span>.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Development Status Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold">
-                    <Activity className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Development Status Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.developmentStatusSection?.heading || 'Faisal Hills Prime Block Development Status'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.developmentStatusSection?.intro || initialPrimeBlockCMS.developmentStatusSection?.intro}
-                    {primeCms.developmentStatusSection?.lastUpdated && (
-                      <span className="text-amber-400 font-semibold block sm:inline sm:ml-1">
-                        Last updated: {primeCms.developmentStatusSection.lastUpdated}.
-                      </span>
-                    )}
-                  </p>
-
-                  {/* Quick Preview Table */}
-                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
-                    <table className="w-full text-left text-slate-300">
-                      <thead className="bg-slate-800 text-slate-200">
-                        <tr>
-                          <th className="p-2">Item</th>
-                          <th className="p-2">Status</th>
-                          <th className="p-2">As at</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800">
-                        {(primeCms.developmentStatusSection?.tableRows || initialPrimeBlockCMS.developmentStatusSection?.tableRows || []).map((r, i) => (
-                          <tr key={i} className="hover:bg-slate-800/40">
-                            <td className="p-2 font-semibold text-white">{r.item}</td>
-                            <td className="p-2 text-amber-300">{r.status}</td>
-                            <td className="p-2 text-slate-400">{r.asAt}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* 3 Metric Badges */}
-                  <div className="grid grid-cols-3 gap-1.5 text-center text-[10px]">
-                    <div className="p-2 bg-slate-800/90 rounded-lg border border-slate-700">
-                      <span className="font-bold text-amber-400 block text-xs">
-                        {primeCms.developmentStatusSection?.statBoxes?.earthwork || '90%'}
-                      </span>
-                      <span className="text-slate-400">Earthwork</span>
-                    </div>
-                    <div className="p-2 bg-slate-800/90 rounded-lg border border-slate-700">
-                      <span className="font-bold text-amber-400 block text-xs">
-                        {primeCms.developmentStatusSection?.statBoxes?.roads || '65%'}
-                      </span>
-                      <span className="text-slate-400">Roads</span>
-                    </div>
-                    <div className="p-2 bg-slate-800/90 rounded-lg border border-slate-700">
-                      <span className="font-bold text-emerald-400 block text-xs truncate">
-                        {primeCms.developmentStatusSection?.statBoxes?.possession || 'Dec 2028'}
-                      </span>
-                      <span className="text-slate-400">Possession</span>
-                    </div>
-                  </div>
-
-                  <p className="text-[10px] text-slate-400 pt-1">
-                    {primeCms.developmentStatusSection?.photoLinkNote || 'Dated photographs of every block are on our'}{' '}
-                    <span className="text-amber-400 underline font-semibold">
-                      {primeCms.developmentStatusSection?.photoLinkText || 'development updates (→ development page)'}
-                    </span>.
-                  </p>
-                </div>
-
-                {/* Facilities & Amenities Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[11px] font-semibold">
-                    <Trees className="w-3 h-3 text-cyan-400" />
-                    <span>Facilities & Amenities (8 Cards)</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.facilitiesSection?.heading || 'Facilities and Amenities in Prime Block'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.facilitiesSection?.intro || initialPrimeBlockCMS.facilitiesSection?.intro}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-2 text-[10px]">
-                    {(primeCms.facilitiesSection?.cards || initialPrimeBlockCMS.facilitiesSection?.cards || []).map((card, i) => (
-                      <div key={i} className="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
-                        <span className="font-bold text-amber-400 block truncate">{card.label}</span>
-                        <span className="text-slate-300 line-clamp-2">{card.title}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <p className="text-[10px] text-amber-300 italic pt-1">
-                    {primeCms.facilitiesSection?.footerNote || initialPrimeBlockCMS.facilitiesSection?.footerNote}
-                  </p>
-                </div>
-
-                {/* Plot Sizes Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold">
-                    <Layers className="w-3 h-3 text-indigo-400" />
-                    <span>Plot Sizes Table Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.plotSizesSection?.heading || 'Plot Sizes in Prime Block'}
-                  </h4>
-
-                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
-                    <table className="w-full text-left text-slate-300">
-                      <thead className="bg-slate-800 text-slate-200">
-                        <tr>
-                          <th className="p-2">Dims</th>
-                          <th className="p-2">Sq Ft</th>
-                          <th className="p-2">Sq Yds</th>
-                          <th className="p-2">Listed As</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800">
-                        {(primeCms.plotSizesSection?.rows || initialPrimeBlockCMS.plotSizesSection?.rows || []).map((r, i) => (
-                          <tr key={i} className="hover:bg-slate-800/40">
-                            <td className="p-2 font-bold text-white">{cleanVerifyText(r.dimensions)}</td>
-                            <td className="p-2">{r.areaSqFt}</td>
-                            <td className="p-2">{r.areaSqYds}</td>
-                            <td className="p-2 text-rose-300">{cleanVerifyText(r.commonlyListed)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Payment Plan Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
-                    <DollarSign className="w-3 h-3 text-emerald-400" />
-                    <span>Payment Plan Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.paymentPlanSection?.heading || 'Faisal Hills Prime Block Payment Plan'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.paymentPlanSection?.intro || initialPrimeBlockCMS.paymentPlanSection?.intro}
-                  </p>
-
-                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
-                    <table className="w-full text-left text-slate-300">
-                      <thead className="bg-slate-800 text-slate-200">
-                        <tr>
-                          <th className="p-2">Size</th>
-                          <th className="p-2">Total</th>
-                          <th className="p-2">Down</th>
-                          <th className="p-2">Quarterly</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800">
-                        {(primeCms.paymentPlanSection?.tableRows || initialPrimeBlockCMS.paymentPlanSection?.tableRows || []).map((r, i) => (
-                          <tr key={i} className="hover:bg-slate-800/40">
-                            <td className="p-2 font-bold text-white">{cleanVerifyText(r.size)}</td>
-                            <td className="p-2 text-[#e25c80]">{cleanVerifyText(r.totalPrice)}</td>
-                            <td className="p-2">{cleanVerifyText(r.downPayment)}</td>
-                            <td className="p-2 text-emerald-400">{cleanVerifyText(r.quarterlyInstallment)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Why Buyers Choose & Considerations Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] font-semibold">
-                    <Sparkles className="w-3 h-3 text-[#e25c80]" />
-                    <span>Why Choose & Considerations Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.whyChooseSection?.heading || 'Why Buyers Choose Prime Block, and What to Weigh'}
-                  </h4>
-
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 space-y-1.5">
-                      <span className="text-[11px] font-bold text-emerald-400 block">
-                        {primeCms.whyChooseSection?.advantagesHeading || 'Why Buyers Choose Prime Block'} (5 Advantages)
-                      </span>
-                      <ul className="text-[10px] text-slate-300 space-y-1 list-disc pl-3.5">
-                        {(primeCms.whyChooseSection?.advantages || initialPrimeBlockCMS.whyChooseSection?.advantages || []).map((adv, idx) => (
-                          <li key={idx}><span className="font-semibold text-emerald-300">{adv.title}:</span> {adv.desc}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/60 space-y-1.5">
-                      <span className="text-[11px] font-bold text-amber-400 block">
-                        {primeCms.whyChooseSection?.considerationsHeading || 'If you are buying as an investment, weigh these first:'}
-                      </span>
-                      <ul className="text-[10px] text-slate-300 space-y-1 list-disc pl-3.5">
-                        {(primeCms.whyChooseSection?.considerations || initialPrimeBlockCMS.whyChooseSection?.considerations || []).map((con, idx) => (
-                          <li key={idx}><span className="font-semibold text-amber-300">{con.title}:</span> {con.desc}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <p className="text-[10px] text-slate-400 italic">
-                      Policy: {primeCms.whyChooseSection?.disclaimerNote || initialPrimeBlockCMS.whyChooseSection?.disclaimerNote}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Possession Advice Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold">
-                    <ShieldCheck className="w-3 h-3 text-amber-400" />
-                    <span>Possession Advice Preview</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.possessionAdviceSection?.heading || 'Possession: What to Confirm Before You Pay'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.possessionAdviceSection?.paragraph1 || initialPrimeBlockCMS.possessionAdviceSection?.paragraph1}
-                  </p>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.possessionAdviceSection?.paragraph2 || initialPrimeBlockCMS.possessionAdviceSection?.paragraph2}
-                  </p>
-                </div>
-
-                {/* Comparison Matrix Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[11px] font-semibold">
-                    <Layers className="w-3 h-3 text-sky-400" />
-                    <span>Prime Block vs Block A Comparison</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.comparisonSection?.heading || 'Prime Block or Block A?'}
-                  </h4>
-
-                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
-                    <table className="w-full text-left text-slate-300">
-                      <thead className="bg-slate-800 text-slate-200">
-                        <tr>
-                          <th className="p-2">Aspect</th>
-                          <th className="p-2 text-[#e25c80]">Prime Block</th>
-                          <th className="p-2">Block A</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800">
-                        {(primeCms.comparisonSection?.rows || initialPrimeBlockCMS.comparisonSection!.rows || []).map((r, i) => (
-                          <tr key={i} className="hover:bg-slate-800/40">
-                            <td className="p-2 font-semibold text-white">{r.aspect}</td>
-                            <td className="p-2 text-rose-300">{r.primeBlock}</td>
-                            <td className="p-2 text-slate-400">{r.blockA}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* 4-Step Booking Process Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
-                    <ListChecks className="w-3 h-3 text-emerald-400" />
-                    <span>Booking Process (4 Steps Table)</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.bookingProcessSection?.heading || 'How to Book a Plot in Prime Block'}
-                  </h4>
-
-                  <div className="rounded-xl border border-slate-700 overflow-hidden text-[11px]">
-                    <table className="w-full text-left text-slate-300">
-                      <thead className="bg-slate-800 text-slate-200">
-                        <tr>
-                          <th className="p-2 w-12">Step</th>
-                          <th className="p-2 text-amber-300 w-1/4">Title</th>
-                          <th className="p-2 text-emerald-300">What you provide</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800">
-                        {(primeCms.bookingProcessSection?.steps || initialPrimeBlockCMS.bookingProcessSection!.steps || []).map((s, i) => (
-                          <tr key={i} className="hover:bg-slate-800/40">
-                            <td className="p-2 font-bold text-[#e25c80] font-mono">{String(s.step).padStart(2, '0')}</td>
-                            <td className="p-2 font-semibold text-white">{s.title}</td>
-                            <td className="p-2 text-slate-300 text-[10px]">{s.desc}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* FAQs Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[11px] font-semibold">
-                    <HelpCircle className="w-3 h-3 text-violet-400" />
-                    <span>FAQs Preview ({(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs).length} items)</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.faqsSection?.heading || 'Faisal Hills Prime Block: Frequently Asked Questions'}
-                  </h4>
-
-                  <div className="space-y-2 text-[11px]">
-                    {(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs || []).slice(0, 4).map((f, i) => (
-                      <div key={i} className="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
-                        <span className="font-bold text-amber-300 block">{f.q}</span>
-                        <p className="text-slate-300 text-[10px] line-clamp-2 mt-0.5">{f.a}</p>
-                      </div>
-                    ))}
-                    {(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs || []).length > 4 && (
-                      <div className="text-[10px] text-slate-400 italic text-center">
-                        + {(primeCms.faqsSection?.faqs || initialPrimeBlockCMS.faqsSection!.faqs || []).length - 4} more FAQs active
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Closing & Site Visit Lead Form Live Preview */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300 text-[11px] font-semibold">
-                    <PhoneCall className="w-3 h-3 text-pink-400" />
-                    <span>Closing &amp; Site Visit Form</span>
-                  </span>
-
-                  <h4 className="text-base font-bold text-white font-serif">
-                    {primeCms.closingSiteVisitSection?.heading || 'Is Prime Block Right for You?'}
-                  </h4>
-
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {primeCms.closingSiteVisitSection?.paragraph1 || initialPrimeBlockCMS.closingSiteVisitSection?.paragraph1}
-                  </p>
-
-                  <div className="p-3 bg-slate-800/90 rounded-xl border border-slate-700 space-y-2">
-                    <div className="text-[11px] font-bold text-[#e25c80]">
-                      {primeCms.closingSiteVisitSection?.formTitle || 'Book a Prime Block Site Visit'}
-                    </div>
-                    <p className="text-[10px] text-slate-400">
-                      {primeCms.closingSiteVisitSection?.formSubtitle || 'Leave your details and we will send available plots.'}
-                    </p>
-                    <div className="text-[9px] text-slate-500 italic">
-                      [Full Name] · [WhatsApp Number] · [Plot Size] · [I am ...]
-                    </div>
-                  </div>
-
-                  <p className="text-[9px] text-slate-400 italic">
-                    {primeCms.closingSiteVisitSection?.reviewedByNote || initialPrimeBlockCMS.closingSiteVisitSection?.reviewedByNote}
-                  </p>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="w-full py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    <span>{isSaving ? 'Saving Changes...' : 'Save & Publish Prime CMS'}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PrimeBlockCmsEditor
+          primeCms={primeCms}
+          setPrimeCms={setPrimeCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
       )}
 
       {/* Floating Bottom Save Bar */}

@@ -11,6 +11,8 @@ import {
   BlockDTravelTimeItem,
   BlockDWhyInvestItem
 } from '@/data/faisalHillsData';
+import CmsRichTextarea from './CmsRichTextarea';
+import CmsRichInput from './CmsRichInput';
 import {
   Save,
   RotateCcw,
@@ -38,8 +40,170 @@ import {
   Check,
   Car,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Upload,
+  X,
+  Link2,
+  Camera
 } from 'lucide-react';
+
+const compressImageFile = (
+  file: File,
+  maxWidth = 1920,
+  quality = 0.85
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (file.size > 10 * 1024 * 1024) {
+      reject(new Error('File exceeds 10MB limit'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(e.target?.result as string);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const dataUrl = canvas.toDataURL(mimeType, quality);
+        resolve(dataUrl);
+      };
+      img.onerror = () => resolve(e.target?.result as string);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+interface ImageUploadFieldProps {
+  label: string;
+  value: string;
+  onChange: (url: string) => void;
+  helper?: string;
+  placeholder?: string;
+}
+
+const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
+  label,
+  value,
+  onChange,
+  helper = 'PNG, JPG, WebP up to 10MB (auto compressed)',
+  placeholder = '/images/faisal-hills-drone-view.webp or https://...'
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const dataUrl = await compressImageFile(file, 1920, 0.85);
+      if (dataUrl) {
+        onChange(dataUrl);
+      }
+    } catch (err) {
+      console.error('Failed to process image:', err);
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+          {label}
+        </label>
+        <button
+          type="button"
+          onClick={() => setShowUrlInput(!showUrlInput)}
+          className="text-[11px] text-[#7b002c] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+        >
+          <Link2 className="w-3 h-3" />
+          <span>{showUrlInput ? 'Hide URL Input' : 'Paste Image URL'}</span>
+        </button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="relative w-28 h-20 bg-slate-900 rounded-xl border border-slate-200 shadow-inner shrink-0 group">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={value}
+              alt="Preview"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform rounded-xl"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-[10px] gap-1">
+              <Camera className="w-4 h-4" />
+              <span>No image</span>
+            </div>
+          )}
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange('')}
+              className="absolute top-1 right-1 p-1 bg-black/70 hover:bg-red-600 text-white rounded-md transition-colors"
+              title="Remove image"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex-1 space-y-2 w-full">
+          <div className="flex items-center gap-2">
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFile}
+              className="hidden"
+              id={`img-upload-blockd-${label.replace(/\s+/g, '-').toLowerCase()}`}
+            />
+            <label
+              htmlFor={`img-upload-blockd-${label.replace(/\s+/g, '-').toLowerCase()}`}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer transition-all shadow-sm active:scale-95"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>{uploading ? 'Processing Image...' : 'Upload from Device'}</span>
+            </label>
+            <span className="text-[11px] text-slate-500">{helper}</span>
+          </div>
+
+          {showUrlInput && (
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
+              className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] transition font-mono"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface BlockDCmsEditorProps {
   blockDCms: BlockDCMSData;
@@ -395,30 +559,55 @@ export default function BlockDCmsEditor({
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Lead Paragraph 1</label>
-              <textarea
-                rows={3}
-                value={blockDCms.overview?.leadParagraph1 || ''}
-                onChange={(e) => setBlockDCms({
-                  ...blockDCms,
-                  overview: { ...blockDCms.overview, leadParagraph1: e.target.value }
-                })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Lead Paragraph 1"
+              rows={3}
+              value={blockDCms.overview?.leadParagraph1 || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                overview: { ...blockDCms.overview, leadParagraph1: val }
+              })}
+            />
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Lead Paragraph 2</label>
-              <textarea
-                rows={3}
-                value={blockDCms.overview?.leadParagraph2 || ''}
-                onChange={(e) => setBlockDCms({
+            <CmsRichTextarea
+              label="Lead Paragraph 2"
+              rows={3}
+              value={blockDCms.overview?.leadParagraph2 || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                overview: { ...blockDCms.overview, leadParagraph2: val }
+              })}
+            />
+
+            {/* Overview Visual Card & Alt Tag */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+              <h5 className="font-serif font-bold text-sm text-slate-900">
+                Overview Featured Image & Alt Text
+              </h5>
+
+              <ImageUploadField
+                label="Block D Overview Visual"
+                value={blockDCms.overview?.image || '/images/faisal-hills-drone-view.webp'}
+                onChange={(url) => setBlockDCms({
                   ...blockDCms,
-                  overview: { ...blockDCms.overview, leadParagraph2: e.target.value }
+                  overview: { ...blockDCms.overview, image: url }
                 })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed"
+                helper="Shown on the right side of the overview section on /blocks/block-d"
               />
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700">Image Alt Tag (SEO & Accessibility)</label>
+                <input
+                  type="text"
+                  value={blockDCms.overview?.imageAlt || ''}
+                  onChange={(e) => setBlockDCms({
+                    ...blockDCms,
+                    overview: { ...blockDCms.overview, imageAlt: e.target.value }
+                  })}
+                  placeholder="Faisal Hills Block D Aerial Elevation and Margalla Foothills"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-100">
@@ -486,18 +675,15 @@ export default function BlockDCmsEditor({
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Lead Narrative</label>
-              <textarea
-                rows={3}
-                value={blockDCms.location?.leadParagraph || ''}
-                onChange={(e) => setBlockDCms({
-                  ...blockDCms,
-                  location: { ...blockDCms.location, leadParagraph: e.target.value }
-                })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Lead Narrative"
+              rows={3}
+              value={blockDCms.location?.leadParagraph || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                location: { ...blockDCms.location, leadParagraph: val }
+              })}
+            />
 
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-700">Google Maps Embed URL</label>
@@ -668,31 +854,25 @@ export default function BlockDCmsEditor({
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Description</label>
-              <textarea
-                rows={3}
-                value={blockDCms.masterPlan?.description || ''}
-                onChange={(e) => setBlockDCms({
-                  ...blockDCms,
-                  masterPlan: { ...blockDCms.masterPlan, description: e.target.value }
-                })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Description"
+              rows={3}
+              value={blockDCms.masterPlan?.description || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                masterPlan: { ...blockDCms.masterPlan, description: val }
+              })}
+            />
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Boulevard & Road Dimensions Specs Note</label>
-              <textarea
-                rows={2}
-                value={blockDCms.masterPlan?.boulevardSpecsNote || ''}
-                onChange={(e) => setBlockDCms({
-                  ...blockDCms,
-                  masterPlan: { ...blockDCms.masterPlan, boulevardSpecsNote: e.target.value }
-                })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Boulevard & Road Dimensions Specs Note"
+              rows={2}
+              value={blockDCms.masterPlan?.boulevardSpecsNote || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                masterPlan: { ...blockDCms.masterPlan, boulevardSpecsNote: val }
+              })}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="space-y-1">
@@ -828,27 +1008,24 @@ export default function BlockDCmsEditor({
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Description</label>
-                  <textarea
-                    rows={3}
-                    value={reason.desc}
-                    onChange={(e) => {
-                      const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
-                      const updated = [...(currentWhy.reasons || [])];
-                      updated[idx] = { ...updated[idx], desc: e.target.value };
-                      setBlockDCms({
-                        ...blockDCms,
-                        whyInvestSection: {
-                          heading: currentWhy.heading || 'Why Invest in Block D',
-                          subline: currentWhy.subline || '',
-                          reasons: updated
-                        }
-                      });
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Description"
+                  rows={3}
+                  value={reason.desc}
+                  onChange={(val) => {
+                    const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
+                    const updated = [...(currentWhy.reasons || [])];
+                    updated[idx] = { ...updated[idx], desc: val };
+                    setBlockDCms({
+                      ...blockDCms,
+                      whyInvestSection: {
+                        heading: currentWhy.heading || 'Why Invest in Block D',
+                        subline: currentWhy.subline || '',
+                        reasons: updated
+                      }
+                    });
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -1226,27 +1403,24 @@ export default function BlockDCmsEditor({
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Description</label>
-                  <textarea
-                    rows={2}
-                    value={amen.description}
-                    onChange={(e) => {
-                      const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
-                      const updated = [...(currentAmen.amenitiesList || [])];
-                      updated[idx] = { ...updated[idx], description: e.target.value };
-                      setBlockDCms({
-                        ...blockDCms,
-                        amenitiesSection: {
-                          heading: currentAmen.heading || 'Amenities in Block D',
-                          subline: currentAmen.subline || '',
-                          amenitiesList: updated
-                        }
-                      });
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Description"
+                  rows={2}
+                  value={amen.description}
+                  onChange={(val) => {
+                    const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                    const updated = [...(currentAmen.amenitiesList || [])];
+                    updated[idx] = { ...updated[idx], description: val };
+                    setBlockDCms({
+                      ...blockDCms,
+                      amenitiesSection: {
+                        heading: currentAmen.heading || 'Amenities in Block D',
+                        subline: currentAmen.subline || '',
+                        amenitiesList: updated
+                      }
+                    });
+                  }}
+                />
 
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase">Features (Comma Separated)</label>
@@ -1408,27 +1582,24 @@ export default function BlockDCmsEditor({
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Description</label>
-                  <textarea
-                    rows={2}
-                    value={ms.desc}
-                    onChange={(e) => {
-                      const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
-                      const updated = [...(currentMs.milestonesList || [])];
-                      updated[idx] = { ...updated[idx], desc: e.target.value };
-                      setBlockDCms({
-                        ...blockDCms,
-                        developmentMilestonesSection: {
-                          heading: currentMs.heading || 'Development Milestones in Block D',
-                          subline: currentMs.subline || '',
-                          milestonesList: updated
-                        }
-                      });
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Description"
+                  rows={2}
+                  value={ms.desc}
+                  onChange={(val) => {
+                    const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                    const updated = [...(currentMs.milestonesList || [])];
+                    updated[idx] = { ...updated[idx], desc: val };
+                    setBlockDCms({
+                      ...blockDCms,
+                      developmentMilestonesSection: {
+                        heading: currentMs.heading || 'Development Milestones in Block D',
+                        subline: currentMs.subline || '',
+                        milestonesList: updated
+                      }
+                    });
+                  }}
+                />
 
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase">Site Image URL</label>
@@ -1528,22 +1699,19 @@ export default function BlockDCmsEditor({
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Answer</label>
-                  <textarea
-                    rows={3}
-                    value={faq.a}
-                    onChange={(e) => {
-                      const updated = [...blockDCms.faqsSection.faqs];
-                      updated[idx].a = e.target.value;
-                      setBlockDCms({
-                        ...blockDCms,
-                        faqsSection: { ...blockDCms.faqsSection, faqs: updated }
-                      });
-                    }}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs leading-relaxed"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Answer"
+                  rows={3}
+                  value={faq.a}
+                  onChange={(val) => {
+                    const updated = [...blockDCms.faqsSection.faqs];
+                    updated[idx].a = val;
+                    setBlockDCms({
+                      ...blockDCms,
+                      faqsSection: { ...blockDCms.faqsSection, faqs: updated }
+                    });
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -1573,18 +1741,15 @@ export default function BlockDCmsEditor({
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700">Intro Copy</label>
-              <textarea
-                rows={3}
-                value={blockDCms.closingSiteVisitSection?.intro || ''}
-                onChange={(e) => setBlockDCms({
-                  ...blockDCms,
-                  closingSiteVisitSection: { ...blockDCms.closingSiteVisitSection, intro: e.target.value }
-                })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs leading-relaxed"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Intro Copy"
+              rows={3}
+              value={blockDCms.closingSiteVisitSection?.intro || ''}
+              onChange={(val) => setBlockDCms({
+                ...blockDCms,
+                closingSiteVisitSection: { ...blockDCms.closingSiteVisitSection, intro: val }
+              })}
+            />
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700">Feature Bullets (1 per line)</label>

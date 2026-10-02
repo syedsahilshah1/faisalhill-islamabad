@@ -6,6 +6,8 @@ import {
   initialPaymentPlanCMS,
   savePaymentPlanCMS
 } from '@/data/faisalHillsData';
+import CmsRichTextarea from './CmsRichTextarea';
+import CmsRichInput from './CmsRichInput';
 import {
   Save,
   RotateCcw,
@@ -280,34 +282,28 @@ export default function PaymentPlanCmsEditor({
               className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:border-[#7b002c] outline-none font-serif font-bold"
             />
           </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Lead Paragraph</label>
-            <textarea
-              rows={3}
-              value={paymentPlanCms.overview.leadParagraph}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  overview: { ...paymentPlanCms.overview, leadParagraph: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:border-[#7b002c] outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Terms Variation Note</label>
-            <textarea
-              rows={2}
-              value={paymentPlanCms.overview.termsNote}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  overview: { ...paymentPlanCms.overview, termsNote: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:border-[#7b002c] outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="Lead Paragraph"
+            rows={3}
+            value={paymentPlanCms.overview.leadParagraph}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                overview: { ...paymentPlanCms.overview, leadParagraph: val }
+              })
+            }
+          />
+          <CmsRichTextarea
+            label="Terms Variation Note"
+            rows={2}
+            value={paymentPlanCms.overview.termsNote}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                overview: { ...paymentPlanCms.overview, termsNote: val }
+              })
+            }
+          />
 
           <h4 className="font-serif font-bold text-sm text-slate-900 pt-2 border-t border-slate-100">
             Quick Facts Matrix
@@ -474,19 +470,18 @@ export default function PaymentPlanCmsEditor({
                   }}
                   className="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg font-bold"
                 />
-                <textarea
+                <CmsRichTextarea
+                  label="Step description"
                   rows={2}
                   value={st.description}
-                  placeholder="Step description"
-                  onChange={(e) => {
+                  onChange={(val) => {
                     const updated = [...paymentPlanCms.howItWorks.steps];
-                    updated[idx].description = e.target.value;
+                    updated[idx].description = val;
                     setPaymentPlanCms({
                       ...paymentPlanCms,
                       howItWorks: { ...paymentPlanCms.howItWorks, steps: updated }
                     });
                   }}
-                  className="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg"
                 />
               </div>
             ))}
@@ -508,34 +503,28 @@ export default function PaymentPlanCmsEditor({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">What Down Payment Covers</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howItWorks.downPaymentCoversDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howItWorks: { ...paymentPlanCms.howItWorks, downPaymentCoversDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">What You Receive After Booking</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howItWorks.afterBookingDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howItWorks: { ...paymentPlanCms.howItWorks, afterBookingDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
+            <CmsRichTextarea
+              label="What Down Payment Covers"
+              rows={4}
+              value={paymentPlanCms.howItWorks.downPaymentCoversDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howItWorks: { ...paymentPlanCms.howItWorks, downPaymentCoversDesc: val }
+                })
+              }
+            />
+            <CmsRichTextarea
+              label="What You Receive After Booking"
+              rows={4}
+              value={paymentPlanCms.howItWorks.afterBookingDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howItWorks: { ...paymentPlanCms.howItWorks, afterBookingDesc: val }
+                })
+              }
+            />
           </div>
         </div>
       )}
@@ -677,70 +666,61 @@ export default function PaymentPlanCmsEditor({
             ))}
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Reconciliation Note</label>
-            <textarea
-              rows={2}
-              value={paymentPlanCms.primeBlockSchedule.reconciliationNote}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, reconciliationNote: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="Reconciliation Note"
+            rows={2}
+            value={paymentPlanCms.primeBlockSchedule.reconciliationNote}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, reconciliationNote: val }
+              })
+            }
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Marla Convention (225 vs 250 sqft)</label>
-              <textarea
-                rows={3}
-                value={paymentPlanCms.primeBlockSchedule.marlaConventionNote}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, marlaConventionNote: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">14 Marla Status Note</label>
-              <textarea
-                rows={3}
-                value={paymentPlanCms.primeBlockSchedule.marla14Note}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, marla14Note: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Marla Convention (225 vs 250 sqft)"
+              rows={3}
+              value={paymentPlanCms.primeBlockSchedule.marlaConventionNote}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, marlaConventionNote: val }
+                })
+              }
+            />
+            <CmsRichTextarea
+              label="14 Marla Status Note"
+              rows={3}
+              value={paymentPlanCms.primeBlockSchedule.marla14Note}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  primeBlockSchedule: { ...paymentPlanCms.primeBlockSchedule, marla14Note: val }
+                })
+              }
+            />
           </div>
 
           <div className="p-4 bg-rose-50 rounded-xl border border-rose-200 space-y-2">
             <h4 className="font-serif font-bold text-xs text-[#7b002c]">Worked Example (5 Marla)</h4>
-            <textarea
+            <CmsRichTextarea
+              label="Example Calculation Walkthrough"
               rows={2}
               value={paymentPlanCms.primeBlockSchedule.cost5MarlaExample.description}
-              onChange={(e) =>
+              onChange={(val) =>
                 setPaymentPlanCms({
                   ...paymentPlanCms,
                   primeBlockSchedule: {
                     ...paymentPlanCms.primeBlockSchedule,
                     cost5MarlaExample: {
                       ...paymentPlanCms.primeBlockSchedule.cost5MarlaExample,
-                      description: e.target.value
+                      description: val
                     }
                   }
                 })
               }
-              className="w-full p-2 text-xs bg-white border border-rose-200 rounded-lg"
             />
             <input
               type="text"
@@ -882,20 +862,17 @@ export default function PaymentPlanCmsEditor({
             ))}
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Footer Note (Price vs Payment Plan)</label>
-            <textarea
-              rows={2}
-              value={paymentPlanCms.paymentPlansByBlock.footerNote}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  paymentPlansByBlock: { ...paymentPlanCms.paymentPlansByBlock, footerNote: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="Footer Note (Price vs Payment Plan)"
+            rows={2}
+            value={paymentPlanCms.paymentPlansByBlock.footerNote}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                paymentPlansByBlock: { ...paymentPlanCms.paymentPlansByBlock, footerNote: val }
+              })
+            }
+          />
         </div>
       )}
 
@@ -1001,20 +978,17 @@ export default function PaymentPlanCmsEditor({
             ))}
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">What To Do Advice</label>
-            <textarea
-              rows={3}
-              value={paymentPlanCms.whyDifferentPlansOnline.adviceText}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  whyDifferentPlansOnline: { ...paymentPlanCms.whyDifferentPlansOnline, adviceText: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="What To Do Advice"
+            rows={3}
+            value={paymentPlanCms.whyDifferentPlansOnline.adviceText}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                whyDifferentPlansOnline: { ...paymentPlanCms.whyDifferentPlansOnline, adviceText: val }
+              })
+            }
+          />
         </div>
       )}
 
@@ -1077,18 +1051,18 @@ export default function PaymentPlanCmsEditor({
                     </button>
                   )}
                 </div>
-                <textarea
+                <CmsRichTextarea
+                  label="Fee Description"
                   rows={2}
                   value={it.description}
-                  onChange={(e) => {
+                  onChange={(val) => {
                     const updated = [...paymentPlanCms.additionalCosts.items];
-                    updated[idx].description = e.target.value;
+                    updated[idx].description = val;
                     setPaymentPlanCms({
                       ...paymentPlanCms,
                       additionalCosts: { ...paymentPlanCms.additionalCosts, items: updated }
                     });
                   }}
-                  className="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg"
                 />
               </div>
             ))}
@@ -1126,62 +1100,50 @@ export default function PaymentPlanCmsEditor({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Overseas Buyers Section</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howToPay.overseasBuyersDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howToPay: { ...paymentPlanCms.howToPay, overseasBuyersDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Resale Purchases Section</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howToPay.resalePurchasesDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howToPay: { ...paymentPlanCms.howToPay, resalePurchasesDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">If You Miss an Instalment Section</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howToPay.missedInstalmentDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howToPay: { ...paymentPlanCms.howToPay, missedInstalmentDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Commercial Plot Terms Section</label>
-              <textarea
-                rows={4}
-                value={paymentPlanCms.howToPay.commercialPlotDesc}
-                onChange={(e) =>
-                  setPaymentPlanCms({
-                    ...paymentPlanCms,
-                    howToPay: { ...paymentPlanCms.howToPay, commercialPlotDesc: e.target.value }
-                  })
-                }
-                className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-              />
-            </div>
+            <CmsRichTextarea
+              label="Overseas Buyers Section"
+              rows={4}
+              value={paymentPlanCms.howToPay.overseasBuyersDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howToPay: { ...paymentPlanCms.howToPay, overseasBuyersDesc: val }
+                })
+              }
+            />
+            <CmsRichTextarea
+              label="Resale Purchases Section"
+              rows={4}
+              value={paymentPlanCms.howToPay.resalePurchasesDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howToPay: { ...paymentPlanCms.howToPay, resalePurchasesDesc: val }
+                })
+              }
+            />
+            <CmsRichTextarea
+              label="If You Miss an Instalment Section"
+              rows={4}
+              value={paymentPlanCms.howToPay.missedInstalmentDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howToPay: { ...paymentPlanCms.howToPay, missedInstalmentDesc: val }
+                })
+              }
+            />
+            <CmsRichTextarea
+              label="Commercial Plot Terms Section"
+              rows={4}
+              value={paymentPlanCms.howToPay.commercialPlotDesc}
+              onChange={(val) =>
+                setPaymentPlanCms({
+                  ...paymentPlanCms,
+                  howToPay: { ...paymentPlanCms.howToPay, commercialPlotDesc: val }
+                })
+              }
+            />
           </div>
         </div>
       )}
@@ -1247,19 +1209,18 @@ export default function PaymentPlanCmsEditor({
                     </button>
                   )}
                 </div>
-                <textarea
+                <CmsRichTextarea
+                  label="Answer"
                   rows={3}
                   value={faq.a}
-                  placeholder="Answer"
-                  onChange={(e) => {
+                  onChange={(val) => {
                     const updated = [...paymentPlanCms.faqsSection.faqs];
-                    updated[idx].a = e.target.value;
+                    updated[idx].a = val;
                     setPaymentPlanCms({
                       ...paymentPlanCms,
                       faqsSection: { ...paymentPlanCms.faqsSection, faqs: updated }
                     });
                   }}
-                  className="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg"
                 />
               </div>
             ))}
@@ -1332,35 +1293,29 @@ export default function PaymentPlanCmsEditor({
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">CTA Subtitle</label>
-            <textarea
-              rows={2}
-              value={paymentPlanCms.ctaAndAbout.ctaSubline}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  ctaAndAbout: { ...paymentPlanCms.ctaAndAbout, ctaSubline: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="CTA Subtitle"
+            rows={2}
+            value={paymentPlanCms.ctaAndAbout.ctaSubline}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                ctaAndAbout: { ...paymentPlanCms.ctaAndAbout, ctaSubline: val }
+              })
+            }
+          />
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">About This Page Disclosure Text</label>
-            <textarea
-              rows={3}
-              value={paymentPlanCms.ctaAndAbout.aboutText}
-              onChange={(e) =>
-                setPaymentPlanCms({
-                  ...paymentPlanCms,
-                  ctaAndAbout: { ...paymentPlanCms.ctaAndAbout, aboutText: e.target.value }
-                })
-              }
-              className="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl outline-none"
-            />
-          </div>
+          <CmsRichTextarea
+            label="About This Page Disclosure Text"
+            rows={3}
+            value={paymentPlanCms.ctaAndAbout.aboutText}
+            onChange={(val) =>
+              setPaymentPlanCms({
+                ...paymentPlanCms,
+                ctaAndAbout: { ...paymentPlanCms.ctaAndAbout, aboutText: val }
+              })
+            }
+          />
         </div>
       )}
     </div>

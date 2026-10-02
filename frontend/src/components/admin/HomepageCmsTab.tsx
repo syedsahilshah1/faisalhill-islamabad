@@ -22,6 +22,7 @@ import {
   PlotMarketRateItem,
   FaqItem
 } from '@/data/faisalHillsData';
+import CmsRichTextarea from './CmsRichTextarea';
 
 function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
   return new Promise((resolve) => {
@@ -412,15 +413,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Hero Subtitle / Description</label>
-                  <textarea
-                    rows={3}
-                    value={cms.hero.subtitle}
-                    onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, subtitle: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Hero Subtitle / Description"
+                  rows={3}
+                  value={cms.hero.subtitle}
+                  onChange={(val) => setCms({ ...cms, hero: { ...cms.hero, subtitle: val } })}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -581,25 +579,19 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Visible Paragraph</label>
-                  <textarea
-                    rows={3}
-                    value={cms.chairman.visibleParagraph}
-                    onChange={(e) => setCms({ ...cms, chairman: { ...cms.chairman, visibleParagraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Visible Paragraph"
+                  rows={3}
+                  value={cms.chairman.visibleParagraph}
+                  onChange={(val) => setCms({ ...cms, chairman: { ...cms.chairman, visibleParagraph: val } })}
+                />
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Expanded Read More Text</label>
-                  <textarea
-                    rows={3}
-                    value={cms.chairman.expandedParagraph}
-                    onChange={(e) => setCms({ ...cms, chairman: { ...cms.chairman, expandedParagraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Expanded Read More Text"
+                  rows={3}
+                  value={cms.chairman.expandedParagraph}
+                  onChange={(val) => setCms({ ...cms, chairman: { ...cms.chairman, expandedParagraph: val } })}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -876,15 +868,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Overview Paragraph</label>
-                  <textarea
-                    rows={4}
-                    value={cms.overview.paragraph}
-                    onChange={(e) => setCms({ ...cms, overview: { ...cms.overview, paragraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Overview Paragraph"
+                  rows={4}
+                  value={cms.overview.paragraph}
+                  onChange={(val) => setCms({ ...cms, overview: { ...cms.overview, paragraph: val } })}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -958,15 +947,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Location Paragraph</label>
-                  <textarea
-                    rows={3}
-                    value={cms.location.p1}
-                    onChange={(e) => setCms({ ...cms, location: { ...cms.location, p1: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Location Paragraph"
+                  rows={3}
+                  value={cms.location.p1}
+                  onChange={(val) => setCms({ ...cms, location: { ...cms.location, p1: val } })}
+                />
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Google Map Embed URL</label>
@@ -1204,16 +1190,13 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Description Paragraph</label>
-                  <textarea
-                    rows={3}
-                    value={cms.landmarks.paragraph || ''}
-                    onChange={(e) => setCms({ ...cms, landmarks: { ...cms.landmarks, paragraph: e.target.value } })}
-                    placeholder="Brief description explaining travel connectivity and surrounding landmarks..."
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Section Description Paragraph"
+                  rows={3}
+                  value={cms.landmarks.paragraph || ''}
+                  onChange={(val) => setCms({ ...cms, landmarks: { ...cms.landmarks, paragraph: val } })}
+                  placeholder="Brief description explaining travel connectivity and surrounding landmarks..."
+                />
               </div>
 
               {/* Landmark Cards Grid */}
@@ -1332,26 +1315,20 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Main Description Paragraph (SEO Keyword-Rich)</label>
-                  <textarea
-                    rows={4}
-                    value={cms.masterPlan.paragraph}
-                    onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, paragraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Main Description Paragraph (SEO Keyword-Rich)"
+                  rows={4}
+                  value={cms.masterPlan.paragraph}
+                  onChange={(val) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, paragraph: val } })}
+                />
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Secondary Note / Exploration Sub-line (Optional)</label>
-                  <textarea
-                    rows={2}
-                    value={cms.masterPlan.subParagraph || ''}
-                    placeholder="Brief instruction on interactive zoom or vector blueprint..."
-                    onChange={(e) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, subParagraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Secondary Note / Exploration Sub-line (Optional)"
+                  rows={2}
+                  value={cms.masterPlan.subParagraph || ''}
+                  placeholder="Brief instruction on interactive zoom or vector blueprint..."
+                  onChange={(val) => setCms({ ...cms, masterPlan: { ...cms.masterPlan, subParagraph: val } })}
+                />
 
                 {/* Key Spec Highlight Badges (4 Cards) */}
                 <div className="pt-4 border-t border-slate-200 space-y-3">
@@ -1518,15 +1495,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Showcase Intro Paragraph</label>
-                  <textarea
-                    rows={2}
-                    value={cms.blocksSection.paragraph}
-                    onChange={(e) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, paragraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Showcase Intro Paragraph"
+                  rows={2}
+                  value={cms.blocksSection.paragraph}
+                  onChange={(val) => setCms({ ...cms, blocksSection: { ...cms.blocksSection, paragraph: val } })}
+                />
 
                 {/* Plot Supply Table CMS Settings */}
                 <div className="pt-4 border-t border-slate-100 space-y-4">
@@ -1761,15 +1735,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">CTA Banner Subtext</label>
-                  <textarea
-                    rows={2}
-                    value={cms.plotsForSale.ctaText}
-                    onChange={(e) => setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ctaText: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="CTA Banner Subtext"
+                  rows={2}
+                  value={cms.plotsForSale.ctaText}
+                  onChange={(val) => setCms({ ...cms, plotsForSale: { ...cms.plotsForSale, ctaText: val } })}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -2003,12 +1974,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       placeholder="Subtitle"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
-                    <textarea
+                    <CmsRichTextarea
+                      label="Description"
                       rows={2}
                       value={cms.flagships.card1.desc}
-                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, card1: { ...cms.flagships.card1, desc: e.target.value } } })}
+                      onChange={(val) => setCms({ ...cms, flagships: { ...cms.flagships, card1: { ...cms.flagships.card1, desc: val } } })}
                       placeholder="Description"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
                     <ImageUploader
                       label="Faisal Jewel Render / Photo"
@@ -2035,12 +2006,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                       placeholder="Subtitle"
                       className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
-                    <textarea
+                    <CmsRichTextarea
+                      label="Description"
                       rows={2}
                       value={cms.flagships.card2.desc}
-                      onChange={(e) => setCms({ ...cms, flagships: { ...cms.flagships, card2: { ...cms.flagships.card2, desc: e.target.value } } })}
+                      onChange={(val) => setCms({ ...cms, flagships: { ...cms.flagships, card2: { ...cms.flagships.card2, desc: val } } })}
                       placeholder="Description"
-                      className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                     />
                     <ImageUploader
                       label="Hills Walk Render / Photo"
@@ -2085,15 +2056,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph</label>
-                  <textarea
-                    rows={3}
-                    value={cms.paymentPlan.paragraph}
-                    onChange={(e) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, paragraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Paragraph"
+                  rows={3}
+                  value={cms.paymentPlan.paragraph}
+                  onChange={(val) => setCms({ ...cms, paymentPlan: { ...cms.paymentPlan, paragraph: val } })}
+                />
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Download Button Text</label>
@@ -2253,20 +2221,17 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                           />
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="block text-[10px] font-bold uppercase text-slate-500">Step Description</label>
-                          <textarea
-                            rows={2}
-                            value={step.desc}
-                            onChange={(e) => {
-                              const updated = [...(cms.bookingSteps?.steps || [])];
-                              updated[idx].desc = e.target.value;
-                              setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
-                            }}
-                            placeholder="Detailed explanation of this step..."
-                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
-                          />
-                        </div>
+                        <CmsRichTextarea
+                          label="Step Description"
+                          rows={2}
+                          value={step.desc}
+                          onChange={(val) => {
+                            const updated = [...(cms.bookingSteps?.steps || [])];
+                            updated[idx].desc = val;
+                            setCms({ ...cms, bookingSteps: { ...cms.bookingSteps, steps: updated } });
+                          }}
+                          placeholder="Detailed explanation of this step..."
+                        />
                       </div>
                     ))}
                   </div>
@@ -2363,16 +2328,16 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         placeholder="Title"
                         className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
                       />
-                      <textarea
+                      <CmsRichTextarea
+                        label="Description"
                         rows={3}
                         value={card.description}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...cms.whyInvest.benefits];
-                          updated[idx].description = e.target.value;
+                          updated[idx].description = val;
                           setCms({ ...cms, whyInvest: { ...cms.whyInvest, benefits: updated } });
                         }}
                         placeholder="Description"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                       />
                     </div>
                   ))}
@@ -2455,23 +2420,20 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Section Paragraph / Intro</label>
-                  <textarea
-                    rows={2}
-                    value={cms.amenities?.paragraph || ''}
-                    onChange={(e) => setCms({
-                      ...cms,
-                      amenities: {
-                        ...cms.amenities,
-                        cards: cms.amenities?.cards || [],
-                        paragraph: e.target.value
-                      }
-                    })}
-                    placeholder="Introductory paragraph for facilities section..."
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Section Paragraph / Intro"
+                  rows={2}
+                  value={cms.amenities?.paragraph || ''}
+                  onChange={(val) => setCms({
+                    ...cms,
+                    amenities: {
+                      ...cms.amenities,
+                      cards: cms.amenities?.cards || [],
+                      paragraph: val
+                    }
+                  })}
+                  placeholder="Introductory paragraph for facilities section..."
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   {(cms.amenities?.cards || []).map((card, idx) => (
@@ -2583,20 +2545,17 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Description / Details</label>
-                        <textarea
-                          rows={2}
-                          value={card.desc || ''}
-                          onChange={(e) => {
-                            const updated = [...(cms.amenities?.cards || [])];
-                            updated[idx] = { ...updated[idx], desc: e.target.value };
-                            setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
-                          }}
-                          placeholder="Short description of this facility..."
-                          className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#7b002c]"
-                        />
-                      </div>
+                      <CmsRichTextarea
+                        label="Description / Details"
+                        rows={2}
+                        value={card.desc || ''}
+                        onChange={(val) => {
+                          const updated = [...(cms.amenities?.cards || [])];
+                          updated[idx] = { ...updated[idx], desc: val };
+                          setCms({ ...cms, amenities: { ...cms.amenities, cards: updated } });
+                        }}
+                        placeholder="Short description of this facility..."
+                      />
 
                       <ImageUploader
                         label="Facility Photo / Render"
@@ -2712,16 +2671,16 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         placeholder="Tag / Role (e.g. Overseas Pakistani Investor)"
                         className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                       />
-                      <textarea
+                      <CmsRichTextarea
+                        label="Review Text"
                         rows={3}
                         value={test.review || ''}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...cms.testimonials.items];
-                          updated[idx].review = e.target.value;
+                          updated[idx].review = val;
                           setCms({ ...cms, testimonials: { ...cms.testimonials, items: updated } });
                         }}
                         placeholder="Review Text"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                       />
                     </div>
                   ))}
@@ -2807,16 +2766,16 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         placeholder="Badge (e.g. Arc Gate Frontage)"
                         className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold"
                       />
-                      <textarea
+                      <CmsRichTextarea
+                        label="Caption"
                         rows={2}
                         value={card.caption}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...cms.infrastructure.cards];
-                          updated[idx].caption = e.target.value;
+                          updated[idx].caption = val;
                           setCms({ ...cms, infrastructure: { ...cms.infrastructure, cards: updated } });
                         }}
                         placeholder="Caption"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
                       />
                       <ImageUploader
                         label="Infrastructure Photo"
@@ -3012,20 +2971,17 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                         />
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600">Answer</label>
-                        <textarea
-                          rows={3}
-                          value={faq.a}
-                          onChange={(e) => {
-                            const updated = [...(cms.faqs?.items || [])];
-                            updated[idx] = { ...updated[idx], a: e.target.value };
-                            setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
-                          }}
-                          placeholder="Enter answer details..."
-                          className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs leading-relaxed text-slate-800 focus:outline-none focus:border-[#7b002c]"
-                        />
-                      </div>
+                      <CmsRichTextarea
+                        label="Answer"
+                        rows={3}
+                        value={faq.a}
+                        onChange={(val) => {
+                          const updated = [...(cms.faqs?.items || [])];
+                          updated[idx] = { ...updated[idx], a: val };
+                          setCms({ ...cms, faqs: { ...cms.faqs, items: updated } });
+                        }}
+                        placeholder="Enter answer details..."
+                      />
                     </div>
                   ))}
 
@@ -3058,15 +3014,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Paragraph</label>
-                  <textarea
-                    rows={3}
-                    value={cms.finalCta.paragraph}
-                    onChange={(e) => setCms({ ...cms, finalCta: { ...cms.finalCta, paragraph: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Paragraph"
+                  rows={3}
+                  value={cms.finalCta.paragraph}
+                  onChange={(val) => setCms({ ...cms, finalCta: { ...cms.finalCta, paragraph: val } })}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
@@ -3120,15 +3073,12 @@ export default function HomepageCmsTab({ token }: HomepageCmsTabProps) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Legal Disclaimer</label>
-                  <textarea
-                    rows={4}
-                    value={cms.footer.disclaimer}
-                    onChange={(e) => setCms({ ...cms, footer: { ...cms.footer, disclaimer: e.target.value } })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
+                <CmsRichTextarea
+                  label="Legal Disclaimer"
+                  rows={4}
+                  value={cms.footer.disclaimer}
+                  onChange={(val) => setCms({ ...cms, footer: { ...cms.footer, disclaimer: val } })}
+                />
               </div>
             </div>
           )}

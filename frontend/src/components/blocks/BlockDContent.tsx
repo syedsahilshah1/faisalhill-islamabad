@@ -51,8 +51,9 @@ import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
 import FaqAccordion from '@/components/ui/FaqAccordion';
-import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import FormattedText from '@/components/ui/FormattedText';
+import { DynamicPlotSeriesExplorer } from '../plots/DynamicPlotSeriesExplorer';
 
 export default function BlockDContent() {
   // Live CMS State
@@ -192,14 +193,10 @@ export default function BlockDContent() {
 
             <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
               <p>
-                Block D adjoins Block C and sits deeper inside{' '}
-                <Link href="/" className="text-[#7b002c] font-semibold underline underline-offset-4 hover:text-[#9e1245] transition-colors">
-                  Faisal Hills
-                </Link>
-                , away from the GT Road frontage. Possession has been granted here, main roads and underground utilities are reported complete, and plot owners are already building.
+                <FormattedText text={cms.overview?.leadParagraph1 || 'Block D adjoins Block C and sits deeper inside Faisal Hills, away from the GT Road frontage. Possession has been granted here, main roads and underground utilities are reported complete, and plot owners are already building.'} />
               </p>
               <p>
-                {cms.overview?.leadParagraph2 || 'It is also the block where published information is least reliable. Five different payment plans have been advertised for Block D by different websites, and at least two of them cannot both be current. This page sets out what is supported by evidence and what still needs confirming.'}
+                <FormattedText text={cms.overview?.leadParagraph2 || 'It is also the block where published information is least reliable. Five different payment plans have been advertised for Block D by different websites, and at least two of them cannot both be current. This page sets out what is supported by evidence and what still needs confirming.'} />
               </p>
             </div>
           </div>
@@ -207,20 +204,20 @@ export default function BlockDContent() {
           <div className="lg:col-span-5 w-full">
             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-slate-950 min-h-[260px] sm:min-h-[300px] flex flex-col justify-between group">
               <img
-                src="/images/faisal-hills-overview.webp"
-                alt="Faisal Hills Block D Aerial Overview"
+                src={cms.overview?.image || "/images/faisal-hills-overview.webp"}
+                alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Block D Aerial Overview"}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/20" />
               <div className="relative z-10 p-5 text-white space-y-1 mt-auto">
                 <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider block">
-                  On-Ground Development View
+                  {cms.overview?.imageTag || "On-Ground Development View"}
                 </span>
                 <h3 className="font-serif font-bold text-lg text-white">
-                  Faisal Hills Block D Overview
+                  {cms.overview?.imageTitle || "Faisal Hills Block D Overview"}
                 </h3>
                 <p className="text-xs text-slate-300 font-sans">
-                  Developed residential sector with paved avenues and construction underway.
+                  {cms.overview?.imageSubtitle || "Developed residential sector with paved avenues and construction underway."}
                 </p>
               </div>
             </div>

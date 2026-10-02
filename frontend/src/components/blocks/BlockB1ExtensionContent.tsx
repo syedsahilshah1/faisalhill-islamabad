@@ -4,8 +4,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   PlotItem,
-  fetchPlots
+  fetchPlots,
+  BlockInfo,
+  fetchBlock
 } from '@/data/faisalHillsData';
+import FormattedText from '@/components/ui/FormattedText';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -261,11 +264,16 @@ export default function BlockB1ExtensionContent() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [b1Plots, setB1Plots] = useState<PlotItem[]>([]);
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [selectedPlotSizeFilter, setSelectedPlotSizeFilter] = useState<'all' | '5 Marla' | '8 Marla' | '10 Marla'>('all');
   const [formData, setFormData] = useState({ name: '', phone: '', size: '5 Marla', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
+    fetchBlock('block-b1-extension').then((b) => {
+      if (b) setBlockInfo(b);
+    });
+
     fetchPlots()
       .then((data) => {
         const filtered = data.filter(
@@ -281,6 +289,9 @@ export default function BlockB1ExtensionContent() {
       .catch(console.error);
 
     const handleSync = () => {
+      fetchBlock('block-b1-extension').then((b) => {
+        if (b) setBlockInfo(b);
+      });
       fetchPlots()
         .then((data) => {
           const filtered = data.filter(
@@ -296,7 +307,11 @@ export default function BlockB1ExtensionContent() {
         .catch(console.error);
     };
     window.addEventListener('faisal_plots_updated', handleSync);
-    return () => window.removeEventListener('faisal_plots_updated', handleSync);
+    window.addEventListener('faisal_blocks_updated', handleSync);
+    return () => {
+      window.removeEventListener('faisal_plots_updated', handleSync);
+      window.removeEventListener('faisal_blocks_updated', handleSync);
+    };
   }, []);
 
   const displayedB1Plots = useMemo(() => {
@@ -388,17 +403,23 @@ export default function BlockB1ExtensionContent() {
                 />
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
-                  <p>
-                    <strong>Faisal Hills Block B-1 Extension</strong> is the prime value-driven residential sector developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group & Zedem International</Link>. Positioned as an internal pocket sector between Block B, Block A, Block D, and Prime Block, B-1 Extension delivers the society’s most affordable entry rates while sharing the exact same 100% RDA approved status, master planning, and premium construction standards.
-                  </p>
+                  {blockInfo?.description ? (
+                    <div>
+                      <FormattedText text={blockInfo.description} />
+                    </div>
+                  ) : (
+                    <p>
+                      <FormattedText text="**Faisal Hills Block B-1 Extension** is the prime value-driven residential sector developed by [Faisal Town Group & Zedem International](/about-us). Positioned as an internal pocket sector between [Block B](/blocks/block-b), [Block A](/blocks/block-a), [Block D](/blocks/block-d), and [Prime Block](/blocks/prime-block), B-1 Extension delivers the society’s most affordable entry rates while sharing the exact same 100% RDA approved status, master planning, and premium construction standards." />
+                    </p>
+                  )}
 
                   {isOverviewExpanded && (
                     <div className="space-y-3 pt-1 animate-fadeIn">
                       <p>
-                        Designed specifically for families seeking modern suburban comfort and savvy investors looking for rapid capital appreciation multiples, B1 Extension offers 5 Marla, 8 Marla, and 10 Marla residential plots, alongside select commercial avenue cuts.
+                        <FormattedText text="Designed specifically for families seeking modern suburban comfort and savvy investors looking for rapid capital appreciation multiples, B1 Extension offers 5 Marla, 8 Marla, and 10 Marla residential plots, alongside select commercial avenue cuts." />
                       </p>
                       <p>
-                        With dedicated underground electrification, Jamia mosques, family parks, and wide 40ft to 150ft paved boulevards, B-1 Extension connects smoothly to the central sports complex and the Main GT Road (N-5) without highway traffic noise.
+                        <FormattedText text="With dedicated underground electrification, Jamia mosques, family parks, and wide 40ft to 150ft paved boulevards, B-1 Extension connects smoothly to the central sports complex and the Main GT Road (N-5) without highway traffic noise." />
                       </p>
                     </div>
                   )}
@@ -420,9 +441,10 @@ export default function BlockB1ExtensionContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/images/faisal-hills-drone-view.webp"
-                    alt="Faisal Hills Block B1 Extension Sector Overview"
+                    src={blockInfo?.heroImage || '/images/faisal-hills-drone-view.webp'}
+                    alt={blockInfo?.heroImageAlt || 'Faisal Hills Block B1 Extension Sector Overview'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 </div>

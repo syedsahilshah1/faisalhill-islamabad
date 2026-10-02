@@ -66,6 +66,7 @@ import CountUpNumber from '@/components/ui/CountUpNumber';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import FormattedText from '@/components/ui/FormattedText';
 
 export default function BlockBContent() {
   // Live CMS State
@@ -205,10 +206,10 @@ export default function BlockBContent() {
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                   <p>
-                    {cms.overview?.leadParagraph1 || 'Block B is the largest residential block in Faisal Hills, lying between Block A and Block C and reached along the society\'s main boulevard. Main roads are built, possession has been granted in its developed sectors, and owners are building.'}
+                    <FormattedText text={cms.overview?.leadParagraph1 || 'Block B is the largest residential block in Faisal Hills, lying between Block A and Block C and reached along the society\'s main boulevard. Main roads are built, possession has been granted in its developed sectors, and owners are building.'} />
                   </p>
                   <p>
-                    {cms.overview?.leadParagraph2 || 'It offers the same plot sizes as Block A up to 1 Kanal, at noticeably lower rates, and it carries the deepest resale inventory in the society. On a major property portal in September 2026, more plots were listed for sale here than in any other block, including Block A.'}
+                    <FormattedText text={cms.overview?.leadParagraph2 || 'It offers the same plot sizes as Block A up to 1 Kanal, at noticeably lower rates, and it carries the deepest resale inventory in the society. On a major property portal in September 2026, more plots were listed for sale here than in any other block, including Block A.'} />
                   </p>
                 </div>
               </div>
@@ -221,24 +222,24 @@ export default function BlockBContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   <img
-                    src="/images/faisal-hills-sports-arena.webp"
-                    alt="Faisal Hills Block B Boulevard and Sports Infrastructure"
+                    src={cms.overview?.image || "/images/faisal-hills-sports-arena.webp"}
+                    alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Block B Boulevard and Sports Infrastructure"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                   <div className="absolute top-3 left-3">
                     <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-[#7b002c] text-white shadow-sm border border-white/20">
-                      Central Boulevard Sector
+                      {cms.overview?.imageTag || "Central Boulevard Sector"}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-5 bg-slate-900 text-white space-y-1">
                   <h3 className="font-serif font-bold text-lg sm:text-xl text-white">
-                    Sector B Living & Amenities
+                    {cms.overview?.imageTitle || "Sector B Living & Amenities"}
                   </h3>
                   <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                    225ft Grand Boulevard access, multi-sports complex, 10+ parks & panoramic Margalla views.
+                    {cms.overview?.imageSubtitle || "225ft Grand Boulevard access, multi-sports complex, 10+ parks & panoramic Margalla views."}
                   </p>
                 </div>
               </div>

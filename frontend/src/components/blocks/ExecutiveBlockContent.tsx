@@ -2,7 +2,16 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { plotInventoryData, PlotItem, fetchPlots, formatPlotPrice } from '@/data/faisalHillsData';
+import {
+  plotInventoryData,
+  PlotItem,
+  fetchPlots,
+  formatPlotPrice,
+  BlockInfo,
+  blocksData,
+  fetchBlock
+} from '@/data/faisalHillsData';
+import FormattedText from '@/components/ui/FormattedText';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -266,6 +275,7 @@ export default function ExecutiveBlockContent() {
 
   // Dynamic live plot inventory sync
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(() => blocksData.find(b => b.slug === 'executive-block') || null);
 
   useEffect(() => {
     fetchPlots().then(data => setAllPlots(data)).catch(console.error);
@@ -275,6 +285,25 @@ export default function ExecutiveBlockContent() {
     };
     window.addEventListener('faisal_plots_updated', handleSync);
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
+  }, []);
+
+  useEffect(() => {
+    fetchBlock('executive-block').then(b => {
+      if (b) setBlockInfo(b);
+    });
+
+    const handleBlockSync = () => {
+      fetchBlock('executive-block').then(b => {
+        if (b) setBlockInfo(b);
+      });
+    };
+
+    window.addEventListener('faisal_blocks_updated', handleBlockSync);
+    window.addEventListener('storage', handleBlockSync);
+    return () => {
+      window.removeEventListener('faisal_blocks_updated', handleBlockSync);
+      window.removeEventListener('storage', handleBlockSync);
+    };
   }, []);
 
   // Amenities Horizontal Auto-Scroll
@@ -383,16 +412,13 @@ export default function ExecutiveBlockContent() {
                 />
                 <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
                   <p>
-                    <strong>Faisal Hills Executive Block</strong> is the prestigious flagship sector developed by <Link href="/about-us" className="text-[#7b002c] font-bold hover:underline">Faisal Town Group & Zedem International</Link>. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project.
+                    <FormattedText text={blockInfo?.description || "Faisal Hills Executive Block is the prestigious flagship sector developed by Faisal Town Group & Zedem International. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project."} />
                   </p>
 
                   {isOverviewExpanded && (
                     <div className="space-y-3 animate-fadeIn">
                       <p>
-                        Home to the iconic 27-storey <Link href="/blocks/faisal-jewel-islamabad" className="text-[#7b002c] font-bold hover:underline">Faisal Jewel Tower</Link>, Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities.
-                      </p>
-                      <p>
-                        Featuring 225ft wide carpeted boulevards, complete underground electrification, Jamia mosques, and lush green parks, Executive Block is possession-ready with hundreds of family villas under active construction.
+                        <FormattedText text={blockInfo?.locationDetails || "Home to the iconic 27-storey [Faisal Jewel Tower](/blocks/faisal-jewel-islamabad), Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities."} />
                       </p>
                     </div>
                   )}
@@ -414,8 +440,8 @@ export default function ExecutiveBlockContent() {
             <ScrollReveal direction="right" delay={100} className="w-full h-full flex flex-col flex-1">
               <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                 <img
-                  src="/images/faisal-hills-arc-gate.webp"
-                  alt="Faisal Hills Executive Block Monument Entrance Arc Gate"
+                  src={blockInfo?.heroImage || "/images/faisal-hills-arc-gate.webp"}
+                  alt={blockInfo?.heroImageAlt || "Faisal Hills Executive Block Monument Entrance Arc Gate"}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
