@@ -117,7 +117,12 @@ export default function Navbar() {
   const isKnownBlockPage = Boolean(
     pathname?.startsWith('/blocks/') && blocksData.some((b) => `/blocks/${b.slug}` === pathname)
   );
-  const isDarkHeroPage = pathname === '/' || isKnownBlockPage;
+  const isDarkHeroPage =
+    pathname === '/' ||
+    pathname === '/faisal-hills-payment-plan' ||
+    pathname === '/faisal-hills-blocks' ||
+    pathname?.startsWith('/blocks') ||
+    isKnownBlockPage;
   const isSolidNav = isScrolled || !isDarkHeroPage;
 
   // Hide main website navbar on Admin / Dashboard / Auth Recovery routes

@@ -15,6 +15,7 @@ import AdminManagementTab from '@/components/admin/AdminManagementTab';
 import SecuritySettingsTab from '@/components/admin/SecuritySettingsTab';
 import HomepageCmsTab from '@/components/admin/HomepageCmsTab';
 import BlocksPageCmsTab from '@/components/admin/BlocksPageCmsTab';
+import PaymentPlanCmsEditor from '@/components/admin/PaymentPlanCmsEditor';
 import {
   formatPKR,
   formatPriceRange,
@@ -90,7 +91,10 @@ import {
   defaultContactInfo,
   fetchSettingByKey,
   formatLeadDateTime,
-  mapLeadToCamel
+  mapLeadToCamel,
+  PaymentPlanCMSData,
+  initialPaymentPlanCMS,
+  fetchPaymentPlanCMS
 } from '@/data/faisalHillsData';
 
 function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
@@ -136,7 +140,8 @@ export default function AdminLoginPage() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'blocks_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
+  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'blocks_cms' | 'payment_plan_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
+  const [paymentPlanCms, setPaymentPlanCms] = useState<PaymentPlanCMSData>(initialPaymentPlanCMS);
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
@@ -417,6 +422,7 @@ export default function AdminLoginPage() {
       if (data.home_hero_form_title) setHomeHeroFormTitle(data.home_hero_form_title);
       if (data.home_hero_form_subtitle) setHomeHeroFormSubtitle(data.home_hero_form_subtitle);
     }).catch(console.error);
+    fetchPaymentPlanCMS().then(data => { if (data) setPaymentPlanCms(data); }).catch(console.error);
 
     // Check localStorage cache first for immediate responsiveness
     if (typeof window !== 'undefined') {
@@ -1993,6 +1999,7 @@ export default function AdminLoginPage() {
   const allAvailableTabs = [
     { id: 'homepage_cms' as const, label: '🏠 Homepage CMS Editor', icon: Home, badge: 'All 24 Sections', requiredPerm: 'manage_homepage_cms' },
     { id: 'blocks_cms' as const, label: '🧱 Blocks Page & Sectors CMS', icon: Layers, badge: 'All Sections & Media', requiredPerm: 'manage_homepage_cms' },
+    { id: 'payment_plan_cms' as const, label: '💳 Payment Plan CMS', icon: DollarSign, badge: '2026 Schedule', requiredPerm: 'manage_homepage_cms' },
     { id: 'series' as const, label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync', requiredPerm: 'manage_plots' },
     { id: 'plots' as const, label: `Plots Inventory (${plots.length})`, icon: Layers, requiredPerm: 'manage_plots' },
     { id: 'leads' as const, label: `Inquiries Log (${leadsList.length})`, icon: Users, requiredPerm: 'manage_leads' },
@@ -2183,6 +2190,20 @@ export default function AdminLoginPage() {
       {/* TAB: BLOCKS PAGE CMS EDITOR */}
       {activeTab === 'blocks_cms' && (
         <BlocksPageCmsTab token={token} />
+      )}
+
+      {/* TAB: PAYMENT PLAN CMS EDITOR */}
+      {activeTab === 'payment_plan_cms' && (
+        <PaymentPlanCmsEditor
+          paymentPlanCms={paymentPlanCms}
+          setPaymentPlanCms={setPaymentPlanCms}
+          token={token}
+          onSaveSuccess={(msg) => {
+            setSaveNotification(true);
+            setNotificationMsg(msg);
+            setTimeout(() => setSaveNotification(false), 4000);
+          }}
+        />
       )}
 
       {/* TAB: PLOT SERIES & PRICE ENGINE */}

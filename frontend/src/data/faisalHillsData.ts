@@ -6129,6 +6129,7 @@ export interface BlockDCMSData {
     reviewerName: string;
     reviewerRole: string;
     pricesVerifiedDate: string;
+    possessionConfirmedDate: string;
     siteCheckedDate: string;
     badgeText: string;
   };
@@ -6137,12 +6138,15 @@ export interface BlockDCMSData {
     leadParagraph1: string;
     leadParagraph2: string;
     quickFacts: {
-      location: string;
+      position: string;
       residentialSizes: string;
-      commercialCuts: string;
+      plotCount: string;
       possession: string;
-      connectivity: string;
+      howYouBuy: string;
       legalStatus: string;
+      location?: string;
+      commercialCuts?: string;
+      connectivity?: string;
     };
     ctaStripText: string;
     ctaWhatsapp: string;
@@ -6151,6 +6155,9 @@ export interface BlockDCMSData {
   location: {
     heading: string;
     leadParagraph: string;
+    boundaryNote: string;
+    nearbyInstitutionsTitle: string;
+    nearbyInstitutions: string[];
     driveTimesNote: string;
     travelTimes: BlockDTravelTimeItem[];
     googleMapIframeUrl: string;
@@ -6163,23 +6170,111 @@ export interface BlockDCMSData {
     mapImage: string;
     pdfDownloadUrl: string;
   };
-  whyInvestSection: {
+  plotSizesSection: {
+    heading: string;
+    tableRows: Array<{
+      dimensions: string;
+      sqFeet: string;
+      sqYards: string;
+      soldAs: string;
+      status: string;
+    }>;
+    analysisNote1: string;
+    analysisNote2: string;
+  };
+  possessionSection: {
     heading: string;
     subline: string;
-    reasons: BlockDWhyInvestItem[];
+    diffDevVsPossession: {
+      devText: string;
+      possessionText: string;
+    };
+    recordNote: string;
+    sectoralWarningNote: string;
+    howToTakeSteps: Array<{
+      step: number;
+      title: string;
+      desc: string;
+    }>;
+    warningNote: string;
+  };
+  paymentQuestionSection: {
+    heading: string;
+    intro: string;
+    tableRows: Array<{
+      version: string;
+      source: string;
+      terms: string;
+    }>;
+    analysisPoint1: string;
+    analysisPoint2: string;
+    feeNote: string;
+    scheduleAdvice: string;
   };
   priceScheduleSection: {
     heading: string;
     subline: string;
     disclaimerNote: string;
     tableRows: BlockDPriceRow[];
+    rateComparisonHeading: string;
+    rateComparisonNote: string;
+    rateComparisonTakeaway: string;
   };
-  amenitiesSection: {
+  developmentStatusSection: {
+    heading: string;
+    tableRows: Array<{
+      item: string;
+      status: string;
+    }>;
+    note: string;
+  };
+  commercialSection: {
+    heading: string;
+    lead: string;
+    advice: string;
+  };
+  whoSuitsSection: {
+    heading: string;
+    suitsProfile: string;
+    caveatsHeading: string;
+    caveats: string[];
+    disclaimer: string;
+  };
+  blockDVsCSection: {
+    heading: string;
+    subline: string;
+    tableRows: Array<{
+      feature: string;
+      blockD: string;
+      blockC: string;
+    }>;
+    outroNote: string;
+  };
+  buyingTransferSection: {
+    heading: string;
+    intro: string;
+    steps: string[];
+    requiredDocuments: string[];
+    warningSigns: string[];
+  };
+  readingListingsSection: {
+    heading: string;
+    terms: Array<{
+      term: string;
+      definition: string;
+    }>;
+  };
+  whyInvestSection?: {
+    heading: string;
+    subline: string;
+    reasons: BlockDWhyInvestItem[];
+  };
+  amenitiesSection?: {
     heading: string;
     subline: string;
     amenitiesList: BlockDAmenityItem[];
   };
-  developmentMilestonesSection: {
+  developmentMilestonesSection?: {
     heading: string;
     subline: string;
     milestonesList: BlockDDevelopmentMilestone[];
@@ -6192,6 +6287,7 @@ export interface BlockDCMSData {
   closingSiteVisitSection: {
     heading: string;
     intro: string;
+    sellingPrompt: string;
     featureBullets: string[];
     whatsappNumber: string;
     phoneNumber: string;
@@ -6208,319 +6304,298 @@ export const initialBlockDCMS: BlockDCMSData = {
     reviewerName: 'Senior Property Verification Desk',
     reviewerRole: 'Faisal Hills Estate Advisory',
     pricesVerifiedDate: 'September 2026',
+    possessionConfirmedDate: 'September 2026',
     siteCheckedDate: 'September 2026',
     badgeText: 'Official Verified Block Guide'
   },
   overview: {
-    h1: 'Faisal Hills Block D: Plot Prices, Map, Sector D Possession & Plots for Sale',
-    leadParagraph1: 'Faisal Hills Block D represents the ultimate value sanctuary within the master development. Positioned along the tranquil western ridge, Block D offers serene Margalla mountain elevations, cooler natural breeze corridors, and direct 5-minute access to the M-1 Motorway Brahma Jhang Bahtar Interchange.',
-    leadParagraph2: 'Block D delivers the most accessible residential entry rates across Faisal Hills, coupled with 85%+ groundwork completion, designated future Medical City reservations, and rapid capital appreciation. It provides 5, 8, 10, 14 Marla and 1 Kanal residential plots, along with commercial cuts approved for multi-storey development.',
+    h1: 'Faisal Hills Block D: Possession, Plot Prices and Plots for Sale',
+    leadParagraph1: 'Block D adjoins Block C and sits deeper inside Faisal Hills, away from the GT Road frontage. Possession has been granted here, main roads and underground utilities are reported complete, and plot owners are already building.',
+    leadParagraph2: 'It is also the block where published information is least reliable. Five different payment plans have been advertised for Block D by different websites, and at least two of them cannot both be current. This page sets out what is supported by evidence and what still needs confirming.',
     quickFacts: {
-      location: 'Tranquil Western Flank, 5 Mins to M-1 Brahma Interchange',
-      residentialSizes: '5, 8, 10, 14 Marla & 1 Kanal (Standard Cuts)',
-      commercialCuts: '4 Marla (G+4 Commercial Strip Approvals)',
-      possession: 'Development 85%+ (Possession Staged)',
-      connectivity: 'Direct Access to M-1 Motorway, GT Road & Margalla Ave',
-      legalStatus: '100% RDA Approved Master Plan (Zedem Transfer)'
+      position: 'Adjacent to Block C, set back from the GT Road',
+      residentialSizes: '5, 8 and 10 Marla, plus 14 Marla and 1 Kanal (2 Kanal unconfirmed)',
+      plotCount: 'Reported between 2,000 and 2,435',
+      possession: 'Granted (Available in developed sectors; owners building)',
+      howYouBuy: 'Five different plans published; confirm the current schedule',
+      legalStatus: 'Within the RDA-approved Faisal Hills scheme',
+      location: 'Adjacent to Block C, set back from GT Road',
+      commercialCuts: 'Commercial zones allocated on plan',
+      connectivity: 'M-1 Brahma & GT Road via 100ft Boulevards'
     },
-    ctaStripText: 'Inquiring about Block D on-ground possession sectors or verified resale files?',
+    ctaStripText: 'Ask what is available today and which payment terms actually apply:',
     ctaWhatsapp: '+92 333 1113177',
     ctaCall: '+92 333 1113177'
   },
   location: {
-    heading: 'Strategic Location & Fast M-1 Motorway Connectivity',
-    leadParagraph: 'Block D is strategically situated on the western high ground of Faisal Hills. It sits directly accessible from the central 225ft Grand Boulevard and benefits from close proximity to the M-1 Motorway Brahma Jhang Bahtar Interchange, ensuring signal-free transit toward Islamabad Zero Point, New Islamabad International Airport, and CPEC northern routes.',
-    driveTimesNote: 'Average verified driving times during normal traffic conditions:',
+    heading: 'Where Block D Is',
+    leadParagraph: 'Block D lies next to Block C, positioned further inside the society than the entrance blocks. That distance from the GT Road is the trade-off buyers make here: less highway noise and lower prices, in exchange for a longer drive to the main gate.',
+    boundaryNote: 'One source reports that Block D shares a boundary with New City Phase 2, Islamabad. Faisal Hills is marketed as an Islamabad address; the society itself lies in Rawalpindi District near Taxila, under the Rawalpindi Development Authority.',
+    nearbyInstitutionsTitle: 'Nearby institutions and employers:',
+    nearbyInstitutions: [
+      'COMSATS University Islamabad',
+      'HITEC University Taxila',
+      'UET Taxila',
+      'Margalla Hospital',
+      'Wah Cantt',
+      'Pakistan Ordnance Factories (POF)',
+      'Heavy Industries Taxila (HIT)',
+      'Taxila Museum & Gandhara heritage sites'
+    ],
+    driveTimesNote: 'Published drive times for this block vary widely between sources, so we quote only routes our own team has driven, with the distance and the time of day.',
     travelTimes: [
-      { destination: 'M-1 Brahma Jhang Bahtar Interchange', distance: '3.2 km', time: '5 Mins', note: 'Direct access to M-1 Motorway' },
+      { destination: 'M-1 Brahma Jhang Bahtar Interchange', distance: '3.2 km', time: '5 Mins', note: 'Direct M-1 Motorway connection' },
       { destination: 'Grand GT Road (N-5 Highway)', distance: '3.8 km', time: '7 Mins', note: 'Via 225ft Grand Boulevard' },
       { destination: 'Block C & Hills Walk Promenade', distance: '1.2 km', time: '2 Mins', note: 'Direct internal avenue connection' },
-      { destination: 'Block B Central Sports Complex', distance: '2.0 km', time: '4 Mins', note: 'Quick neighborhood access' },
-      { destination: 'Taxila Museum & Cantt Commercials', distance: '6.5 km', time: '9 Mins', note: 'Short urban drive' },
+      { destination: 'Taxila Museum & Cantt Commercials', distance: '6.5 km', time: '9 Mins', note: 'Short urban commute' },
+      { destination: 'COMSATS & HITEC Universities', distance: '7.8 km', time: '11 Mins', note: 'Academic corridor' },
       { destination: 'Islamabad Toll Plaza & Zero Point', distance: '26.0 km', time: '24 Mins', note: 'Signal-free drive via M-1' }
     ],
     googleMapIframeUrl: 'https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed'
   },
   masterPlan: {
-    heading: 'Block D Master Plan, Sector Zoning & Blueprint',
-    subline: 'Official Sector Zoning & Boulevard Grid',
-    description: 'The Block D master plan is engineered for low-density residential tranquility. It features a central 60ft arterial spine, 50ft & 40ft internal residential streets, landscaped family botanical parks, a designated 2,500-capacity Grand Jamia Mosque, and commercial zones tailored for everyday convenience.',
-    boulevardSpecsNote: 'Block D features 60ft sector avenues, 50ft tree-lined boulevards, 40ft paved residential streets, dedicated green reservations, underground utility conduits, and rainwater drainage culverts.',
+    heading: 'Block D Map and Master Plan',
+    subline: 'Internal roads from 40 feet upward, with main roads at 100 feet',
+    description: "The block is planned around internal roads reported from 40 feet upward, with main roads at 100 feet, connecting to the society's wider road network. The plan allocates space for parks and green belts, mosques, schools, healthcare and commercial areas.",
+    boulevardSpecsNote: "Labelled Block D map showing sectors, parks, commercial areas and road network. The society-wide plan is on our Faisal Hills master plan page.",
     mapImage: '/images/faisal-hills-master-plan-map-opt.webp',
     pdfDownloadUrl: '/images/faisal-hills-master-plan-map-opt.webp'
   },
-  whyInvestSection: {
-    heading: 'Why Invest in Faisal Hills Block D?',
-    subline: '6 compelling reasons making Sector D the top capital appreciation choice in Taxila-Islamabad region:',
-    reasons: [
-      {
-        title: 'Brahma Bahtar M-1 Interchange',
-        desc: 'Block D enjoys fast 5-minute access to the Brahma Jhang Bahtar Interchange on the M-1 Motorway, connecting seamlessly to Islamabad Zero Point and CPEC.',
-        tag: 'Transport Link',
-        bg: 'bg-rose-50',
-        text: 'text-[#7b002c]',
-        border: 'border-rose-100',
-        iconName: ""
-      },
-      {
-        title: 'Lowest Entry Price & High ROI',
-        desc: 'Block D offers the most competitive entry rates in Faisal Hills, ensuring the highest percentage capital appreciation as final possession finishes.',
-        tag: 'High Value ROI',
-        bg: 'bg-amber-50',
-        text: 'text-amber-700',
-        border: 'border-amber-100',
-        iconName: ""
-      },
-      {
-        title: 'Scenic Parkland & Clean Air',
-        desc: 'Lush green parks, open tree-lined avenues, and cooler Margalla hillside elevation make Block D a pristine, pollution-free residential sanctuary.',
-        tag: 'Eco-Living',
-        bg: 'bg-emerald-50',
-        text: 'text-emerald-700',
-        border: 'border-emerald-100',
-        iconName: ""
-      },
-      {
-        title: 'Future Medical City Complex',
-        desc: 'The designated Healthcare and Medical Complex zone in Sector D guarantees high long-term rental demand from medical professionals and executives.',
-        tag: 'Healthcare Zone',
-        bg: 'bg-purple-50',
-        text: 'text-purple-700',
-        border: 'border-purple-100',
-        iconName: ""
-      },
-      {
-        title: '100% RDA Approved & Clear NOC',
-        desc: 'Full Rawalpindi Development Authority planning permission with zero litigation risk and transparent biometric deed transfers at the Zedem head office.',
-        tag: 'Legal Security',
-        bg: 'bg-blue-50',
-        text: 'text-blue-700',
-        border: 'border-blue-100',
-        iconName: ""
-      },
-      {
-        title: 'Rapid Development Momentum',
-        desc: 'With 85%+ groundwork complete and asphalt carpet roads underway, Block D is on a fast track toward full on-ground possession handover.',
-        tag: 'Fast Pace',
-        bg: 'bg-rose-50',
-        text: 'text-[#7b002c]',
-        border: 'border-rose-100',
-        iconName: ""
-      }
-    ]
+  plotSizesSection: {
+    heading: 'Plot Sizes in Block D',
+    tableRows: [
+      { dimensions: '25 × 50', sqFeet: '1,250', sqYards: '139', soldAs: '5 Marla', status: 'Confirmed' },
+      { dimensions: '30 × 60', sqFeet: '1,800', sqYards: '200', soldAs: '8 Marla', status: 'Confirmed' },
+      { dimensions: '35 × 70', sqFeet: '2,450', sqYards: '272', soldAs: '10 Marla', status: 'Confirmed' },
+      { dimensions: '40 × 80', sqFeet: '3,200', sqYards: '356', soldAs: '14 Marla', status: 'Unconfirmed' },
+      { dimensions: '50 × 90', sqFeet: '4,500', sqYards: '500', soldAs: '1 Kanal', status: 'Confirmed' },
+      { dimensions: '75 × 120', sqFeet: '9,000', sqYards: '1,000', soldAs: '2 Kanal', status: 'Unconfirmed' }
+    ],
+    analysisNote1: 'Published size lists disagree. One dealer page lists a payment plan covering 5.55, 8, 10.89 Marla, 1 Kanal and 2 Kanal, while its own FAQ on the same page lists 5, 8, 10, 14 Marla and 1 Kanal. An agency page lists five sizes with no 2 Kanal. Until the society office confirms the current schedule, treat 14 Marla and 2 Kanal as unconfirmed here.',
+    analysisNote2: 'The same plot is also described two ways because Faisal Hills schedules use a 225 sq ft Marla while many listings use 250. A 25 × 50 ft plot is 5 Marla on one measure and 5.55 on the other. Compare by dimensions and square feet.'
+  },
+  possessionSection: {
+    heading: 'Possession in Block D',
+    subline: "This is the block's strongest claim and the main reason buyers look at it.",
+    diffDevVsPossession: {
+      devText: 'Development means the infrastructure is finished: roads, sewerage, water, electricity and street lighting.',
+      possessionText: 'Possession means the developer has formally handed your plot over and issued a possession letter. Construction can legally begin only after that.'
+    },
+    recordNote: 'Multiple sources, across more than one network, report that possession has been granted in Block D. One describes it as the first block in the society where possession was handed over to plot owners. Another names 30 June 2025 as the announced possession date. A mid-2026 development review reports possession available in the developed sectors, with owners already building.',
+    sectoralWarningNote: 'The one point still open is whether possession applies to the whole block or only to its developed sectors, since sources use both descriptions. Ask which applies to your plot number, and get it in writing.',
+    howToTakeSteps: [
+      { step: 1, title: 'Clear Outstanding Dues', desc: 'Clear all outstanding dues on the plot by the deadline the society sets.' },
+      { step: 2, title: 'Submit Proof of Payment', desc: 'Submit proof of payment to the society office.' },
+      { step: 3, title: 'Obtain No Demand Certificate (NDC)', desc: 'Obtain the No Demand Certificate (NDC), which confirms no dues remain against the plot.' },
+      { step: 4, title: 'Collect Possession Letter', desc: 'Complete the possession formalities and collect your possession letter.' },
+      { step: 5, title: 'Construction Approval', desc: 'Confirm construction approval requirements before starting work.' }
+    ],
+    warningNote: 'No other Block D page sets this out on a current page. If a seller or agent cannot explain these steps, treat that as a warning sign rather than a detail.'
+  },
+  paymentQuestionSection: {
+    heading: 'The Payment Question: Which Plan Applies',
+    intro: 'Five different payment structures have been published for Block D. They cannot all be current, and some are years old without any date on the page.',
+    tableRows: [
+      { version: 'Version 1', source: 'Dealer page, 2025', terms: '15 quarterly instalments, a separate possession charge, 21% discount for full payment' },
+      { version: 'Version 2', source: 'Same dealer page, updated Aug 2026', terms: '10 quarterly instalments, 20% discount' },
+      { version: 'Version 3', source: 'Agency block page, 2025', terms: 'Four years: down payment, 16 quarterly instalments and a possession amount' },
+      { version: 'Version 4', source: 'Agency project page, 2025', terms: 'Four-year quarterly instalments' },
+      { version: 'Version 5', source: 'Developer-linked prices guide, 2026', terms: 'Residential plots on full cash only' }
+    ],
+    analysisPoint1: "First, the 2026 version on that dealer page lists totals, down payments and instalments identical to Prime Block's across all five sizes, to the rupee. Either the two blocks are priced the same by coincidence, or the figures were copied from the Prime Block page.",
+    analysisPoint2: 'Second, that page describes its plan in the past tense, which may mean the plan has closed. It does not say so.',
+    feeNote: 'A registration fee is charged on booking, published as both PKR 15,000 and PKR 20,000 by different sources. Some versions also carry a possession amount payable at handover, which the cash-only version does not.',
+    scheduleAdvice: 'Ask for the schedule the developer has issued for the current month, in writing, including the registration fee and any possession charge. Our Faisal Hills payment plan carries the society-wide position.'
   },
   priceScheduleSection: {
-    heading: 'Faisal Hills Block D Plot Prices & Current Market Rates',
-    subline: 'Verified on-ground price schedule for residential cuts and commercial plots in Sector D (September 2026):',
-    disclaimerNote: 'Rates vary based on location premiums (Corner, Boulevard, Park Facing +10% to +15%). Biometric transfer fees and society charges are verified at the Zedem head office.',
+    heading: 'Block D Plot Prices and Current Rates',
+    subline: 'Block D is consistently described as one of the two lowest-priced blocks in the society, alongside Block C. Reported entry prices start around PKR 40 lakh for 5 Marla.',
+    disclaimerNote: 'Bands as published elsewhere; replace them with your own current figures and date them. Corner, park-facing and main-road plots sell above standard plots in the same street. Full block-by-block figures: Faisal Hills plot prices.',
     tableRows: [
       {
         size: '5 Marla',
         dimensions: '25 × 50',
-        sqYards: '139 Sq. Yds',
-        sqFeet: '1,125 Sq. Ft',
+        sqYards: '139',
+        sqFeet: '1,250',
         category: 'Residential',
-        priceRange: 'PKR 40 Lacs – 48 Lacs',
-        possession: 'Development 85%',
-        highlight: 'Lowest entry price point in Faisal Hills with exceptional 3-year holding upside.'
+        priceRange: 'PKR 40 to 55 lakh',
+        possession: 'Possession Granted',
+        highlight: 'Entry price reported around PKR 40 lakh'
       },
       {
         size: '8 Marla',
         dimensions: '30 × 60',
-        sqYards: '200 Sq. Yds',
-        sqFeet: '1,800 Sq. Ft',
+        sqYards: '200',
+        sqFeet: '1,800',
         category: 'Residential',
-        priceRange: 'PKR 62 Lacs – 75 Lacs',
-        possession: 'Development 85%',
-        highlight: 'Standard family-size cut situated along serene 50ft tree-lined sector avenues.'
+        priceRange: 'Rates on request',
+        possession: 'Available',
+        highlight: 'Ask for current rates'
       },
       {
         size: '10 Marla',
         dimensions: '35 × 70',
-        sqYards: '272 Sq. Yds',
-        sqFeet: '2,250 Sq. Ft',
+        sqYards: '272',
+        sqFeet: '2,450',
         category: 'Residential',
-        priceRange: 'PKR 90 Lacs – 1.10 Cr',
-        possession: 'Development 85%',
-        highlight: 'Scenic double-unit home cuts facing natural valley breezes and Margalla ridge.'
+        priceRange: 'PKR 70 lakh to 1.15 crore',
+        possession: 'Available',
+        highlight: 'No asking-price sample available'
       },
       {
         size: '14 Marla',
         dimensions: '40 × 80',
-        sqYards: '356 Sq. Yds',
-        sqFeet: '3,150 Sq. Ft',
+        sqYards: '356',
+        sqFeet: '3,200',
         category: 'Residential',
-        priceRange: 'PKR 1.25 Cr – 1.45 Cr',
-        possession: 'Development 85%',
-        highlight: 'Executive estate cuts close to the proposed central healthcare & civic zone.'
+        priceRange: 'Rates on request',
+        possession: 'Unconfirmed',
+        highlight: 'Availability itself unconfirmed'
       },
       {
         size: '1 Kanal',
         dimensions: '50 × 90',
-        sqYards: '500 Sq. Yds',
-        sqFeet: '4,500 Sq. Ft',
+        sqYards: '500',
+        sqFeet: '4,500',
         category: 'Residential',
-        priceRange: 'PKR 1.65 Cr – 2.10 Cr',
-        possession: 'Development 85%',
-        highlight: 'Flagship mansion plots facing scenic green belts, lush parkland, and wide boulevards.'
-      },
-      {
-        size: '4 Marla Commercial',
-        dimensions: '30 × 30',
-        sqYards: '100 Sq. Yds',
-        sqFeet: '900 Sq. Ft',
-        category: 'Commercial',
-        priceRange: 'PKR 1.80 Cr – 2.60 Cr',
-        possession: 'Commercial Approved',
-        highlight: 'High ROI retail promenade plots approved for Ground + 4 commercial arcades.'
+        priceRange: 'PKR 1.40 to 2.10 crore',
+        possession: 'Available',
+        highlight: 'No asking-price sample available'
       }
+    ],
+    rateComparisonHeading: 'How Block D plot rates compare',
+    rateComparisonNote: 'On asking prices analysed for neighbouring blocks in September 2026, a typical 5 Marla plot worked out at roughly PKR 4,160 per square foot in Block C and PKR 4,000 in Block B, against about 6,240 in Block A. Block D plot rates are reported below both. If the 5 Marla entry price of around PKR 40 lakh is accurate, that would work out near PKR 3,200 per square foot, which would make Block D the lowest rate among the blocks where possession is available. Treat that as an estimate until we confirm it against completed transactions.',
+    rateComparisonTakeaway: 'That is the practical case for Block D: possession at close to the lowest rate in the society, in exchange for distance from the entrance.'
+  },
+  developmentStatusSection: {
+    heading: 'Development Status and Facilities',
+    tableRows: [
+      { item: 'Main roads, reported at 100 ft', status: 'Complete' },
+      { item: 'Underground utilities', status: 'Complete' },
+      { item: 'Houses', status: 'Owners building in developed sectors' },
+      { item: 'Parks and green belts', status: 'Allocated on the plan & green reservations active' },
+      { item: 'Mosque, school and healthcare sites', status: 'Allocated on the plan' },
+      { item: 'Commercial areas', status: 'Allocated on the plan' }
+    ],
+    note: 'Statuses as last checked. Society-wide, a university site and a sports complex are reported as in progress, and Glow Park and a Miyawaki forest exist elsewhere in the scheme. Those are society amenities rather than Block D facilities, and we list them as such. We describe a facility as built only once our team has seen it. Anything shown on the master plan but not yet constructed is described as planned.'
+  },
+  commercialSection: {
+    heading: 'Commercial Plots in Block D',
+    lead: "Block D includes commercial areas within its plan, positioned to serve the surrounding residential streets rather than through traffic. Published commercial sizes and rates for this block are not available from any source we could find, and commercial listings for Block D are scarce.",
+    advice: "If you are looking at commercial land here, ask us what is genuinely available, at what size, and where it sits relative to the block's main roads."
+  },
+  whoSuitsSection: {
+    heading: 'Who Block D Suits, and What to Weigh',
+    suitsProfile: 'It tends to suit buyers who want possession at the lowest entry price in the society, families who prefer a quieter position away from the GT Road, and investors buying into a block where construction has already started.',
+    caveatsHeading: 'If you are buying as an investment, weigh these first:',
+    caveats: [
+      'The published record is unreliable. Five payment plans, two size lists and three plot counts circulate. Work only from documents the society office issues.',
+      'Possession may be sectoral rather than block-wide. Confirm it for your plot number before paying a possession-plot price.',
+      'Distance from the entrance is the trade-off. It is why the block is cheaper, and it will affect resale too.',
+      'Commercial information is thin. If commercial is your plan, get sizes and rates in writing first.',
+      'A possession charge may apply on some plans and not others.'
+    ],
+    disclaimer: 'We do not publish expected returns or appreciation figures for Block D, because no verifiable source supports them.'
+  },
+  blockDVsCSection: {
+    heading: 'Block D or Block C?',
+    subline: 'The two value blocks, side by side.',
+    tableRows: [
+      { feature: 'Position', blockD: 'Adjacent to Block C, deeper in', blockC: 'Toward the M-1 side' },
+      { feature: 'Possession', blockD: 'Granted (developed sectors)', blockC: 'Available in completed sectors' },
+      { feature: 'Entry price', blockD: 'Reported from around PKR 40 lakh', blockC: 'Reported from around PKR 35 lakh, though asking prices run higher' },
+      { feature: 'Plot count', blockD: '2,000 to 2,435', blockC: 'About 8,350 residential' },
+      { feature: 'Payment', blockD: 'Five versions published (confirm current)', blockC: 'Cash only, no possession charge' },
+      { feature: 'Suits', blockD: 'Buyers wanting possession at the lowest rate', blockC: 'Buyers wanting the widest choice of 5 Marla plots' }
+    ],
+    outroNote: 'Every block is compared on our Faisal Hills blocks page, and Block B is the alternative if Margalla views matter more than price.'
+  },
+  buyingTransferSection: {
+    heading: 'Buying and Transferring in Block D',
+    intro: 'Whether you buy from the developer or on resale, the checks are the same.',
+    steps: [
+      'Confirm possession status for that exact plot number, in writing.',
+      "Verify ownership at the society office: the name on the allotment letter must match the seller's CNIC.",
+      'Check the transfer history for repeated quick transfers.',
+      'Ask for the original possession letter where possession has been granted.',
+      'Obtain the NDC confirming no dues remain.',
+      'Complete the transfer with both parties present or properly represented, and pay only once it is recorded.'
+    ],
+    requiredDocuments: [
+      'Copies of your CNIC (or NICOP for overseas buyers)',
+      "Copies of your nominee's CNIC",
+      'Passport-size photographs',
+      "The seller's documents and proof of payment",
+      'Proof of payment and NDC clearance receipt',
+      "Payment for a new booking made by pay order or demand draft in the developer's registered name"
+    ],
+    warningSigns: [
+      "The seller's CNIC does not match the allotment letter",
+      'No NDC or possession letter can be produced',
+      'A payment plan is quoted that you cannot find on any current document',
+      'The price sits well below market with no site visit offered'
     ]
   },
-  amenitiesSection: {
-    heading: 'Block D Amenities & Community Infrastructure',
-    subline: 'Planned neighborhood facilities, green parks, mosques, and lifestyle amenities:',
-    amenitiesList: [
-      {
-        id: 'nature-parks',
-        title: 'Lush Sector Parks & Scenic Margalla Trails',
-        category: 'nature',
-        description: 'Block D is surrounded by open green belts, botanical family parks, and walking tracks designed to offer fresh mountain air and serene living for residents.',
-        image: '/images/faisal-hills-glow-park.webp',
-        tag: 'Eco-Living Feature',
-        features: ['Family Botanical Parks', 'Jogging & Walking Trails', 'Lush Green Belts', 'Eco-Conscious Zoning']
-      },
-      {
-        id: 'community-center',
-        title: 'Sector D Multi-Purpose Community Center',
-        category: 'lifestyle',
-        description: 'Dedicated modern social hub featuring banquet facilities, indoor recreation halls, senior citizen lounges, and executive meeting rooms for neighborhood residents.',
-        image: '/images/faisal-hills-arc-monument-2.webp',
-        tag: 'Community Anchor',
-        features: ['Banquet & Event Halls', 'Indoor Games Arena', 'Senior Citizen Lounge', 'Resident Meeting Suites']
-      },
-      {
-        id: 'jamia-mosque-d',
-        title: 'Grand Sector D Jamia Mosque',
-        category: 'infrastructure',
-        description: 'Modern Islamic architectural landmark designed for 2,500 worshippers, complete with air-conditioned prayer halls, expansive marble courtyards, and Quranic academy.',
-        image: '/images/faisal-hills-jamia-mosque.webp',
-        tag: 'Delivered Landmark',
-        features: ['Air-Conditioned Prayer Halls', 'Lush Marble Courtyards', 'Separate Ladies Section', 'Imam Residence']
-      },
-      {
-        id: 'medical-complex',
-        title: 'Proposed Medical City & Healthcare Complex',
-        category: 'utilities',
-        description: 'Zoned high-capacity healthcare district designed to house multi-specialty hospitals, 24/7 trauma emergency care, diagnostic laboratories, and pharmacy hubs.',
-        image: '/images/faisal-hills-medical-complex.webp',
-        tag: 'Healthcare Hub',
-        features: ['24/7 Emergency Trauma Care', 'Specialist Clinics', 'Diagnostic Pathology Labs', 'Pharmacies & Medical Supplies']
-      },
-      {
-        id: 'underground-utilities-d',
-        title: '100% Underground Electrification & Wide Grid',
-        category: 'utilities',
-        description: 'Subterranean power distribution ensuring completely unobstructed skyline vistas, modern street lighting poles, and storm water conduits.',
-        image: '/images/faisal-hills-executive-sector.webp',
-        tag: 'Smart Infrastructure',
-        features: ['Subterranean Power Cabling', 'High-Capacity Transformers', 'LED Street Lamps', 'Zero Overhead Wiring']
-      },
-      {
-        id: 'gated-security-d',
-        title: '24/7 Gated Security & Perimeter Surveillance',
-        category: 'security',
-        description: 'Guarded sector checkposts, smart boom barriers, high-resolution night-vision CCTV coverage, and dedicated mobile patrolling units.',
-        image: '/images/faisal-hills-arc-gate.webp',
-        tag: '24/7 Secure',
-        features: ['HD CCTV Perimeter Coverage', 'Biometric Automated Checkpoints', 'Dedicated Mobile Patrol Squads', 'Gated Sector Barrier']
-      }
-    ]
-  },
-  developmentMilestonesSection: {
-    heading: 'Block D On-Ground Development Milestones',
-    subline: 'Verified construction progress tracking across Sector D infrastructure layers:',
-    milestonesList: [
-      {
-        title: 'Roads & Sector Boulevards',
-        progress: 90,
-        status: 'Paved & Functional',
-        desc: 'Main 50ft and 60ft avenues asphalted with drainage gutters, curbs, and street lamp foundations.',
-        image: '/images/faisal-hills-drone-view.webp'
-      },
-      {
-        title: 'Underground Electrification',
-        progress: 85,
-        status: 'Cables Laid in Trenches',
-        desc: 'Subterranean conduit pipes and underground cable trenches completed across all sectors.',
-        image: '/images/faisal-hills-aerial-panoramic.webp'
-      },
-      {
-        title: 'Water Wells & Storage Tanks',
-        progress: 95,
-        status: 'Tube Wells Operational',
-        desc: 'High-yield deep-well tube wells and overhead water reservoirs delivering clean mountain water.',
-        image: '/images/faisal-hills-overview.webp'
-      },
-      {
-        title: 'Sui Gas Pipeline Network',
-        progress: 80,
-        status: 'Mainlines Laid',
-        desc: 'Underground gas pipelines installed along primary avenues awaiting final pressure testing.',
-        image: '/images/faisal-hills-site-header.webp'
-      },
-      {
-        title: 'Sewerage & Storm Drainage',
-        progress: 90,
-        status: 'RCC Pipes Laid',
-        desc: 'Heavy RCC sewerage conduits connected to main society trunk lines for rain runoff safety.',
-        image: '/images/faisal-hills-arc-monument.webp'
-      },
-      {
-        title: 'Sector Parks & Green Reservations',
-        progress: 85,
-        status: 'Turf & Trees Planted',
-        desc: 'Family walking trails, children play areas, and perimeter tree plantations active.',
-        image: '/images/faisal-hills-glow-park.webp'
-      }
+  readingListingsSection: {
+    heading: 'Reading Block D Listings',
+    terms: [
+      { term: 'Series', definition: 'The plot-number range within the block. Different series sit in different sectors.' },
+      { term: 'Possessionable', definition: 'The seller is describing a plot where possession has been granted. Confirm it.' },
+      { term: 'Solid land / cutting plot', definition: 'Natural level ground versus a plot formed by cutting or filling sloping ground, which may need site preparation.' },
+      { term: 'NDC open / all dues clear', definition: 'The No Demand Certificate is available, so a transfer can proceed.' },
+      { term: 'Investor rate', definition: 'A seller signalling a quick sale, worth verifying rather than assuming.' }
     ]
   },
   faqsSection: {
-    heading: 'Faisal Hills Block D Buying & Allotment FAQs',
-    subline: 'Clear answers regarding Block D development status, RDA NOC approvals, plot transfer process, and investment upside:',
+    heading: 'Frequently Asked Questions',
+    subline: 'Official verified answers to the 10 most critical Block D questions:',
     faqs: [
       {
-        q: 'Where exactly is Faisal Hills Block D located?',
-        a: 'Block D is situated on the tranquil western flank of Faisal Hills, adjacent to Block C and within minutes of the M-1 Motorway Brahma Jhang Bahtar Interchange. It enjoys serene elevation with natural mountain springs and scenic Margalla ridge views.'
+        q: 'Where is Block D in Faisal Hills?',
+        a: 'Adjacent to Block C, set further inside the society than the entrance blocks, away from the GT Road frontage.'
       },
       {
-        q: 'Is Faisal Hills Block D approved by RDA?',
-        a: 'Yes, Faisal Hills Block D is 100% legally approved by the Rawalpindi Development Authority (RDA) under the comprehensive society master plan NOC. All plots are free of legal dispute with transparent biometric transfers at the Zedem International head office.'
+        q: 'Has possession been granted in Block D?',
+        a: 'Yes. Several sources report possession in Block D, one describing it as the first block handed over to owners and another naming 30 June 2025 as the announced date. Whether it covers the whole block or only developed sectors is the open question, so confirm it for your plot number.'
       },
       {
-        q: 'What residential and commercial plot sizes are available in Block D?',
-        a: 'Block D offers 5 Marla (25×50), 8 Marla (30×60), 10 Marla (35×70), 14 Marla (40×80), and 1 Kanal (50×90) residential cuts. Commercial plots of 4 Marla (30×30) with Ground + 4 storey construction approvals are also available.'
+        q: 'How do I take possession of my plot?',
+        a: 'Clear outstanding dues, submit proof of payment, obtain the NDC, complete the possession formalities and collect your possession letter. Then confirm construction approval requirements before building.'
       },
       {
-        q: 'What is the current development status of Block D?',
-        a: 'Development in Block D is approximately 85% to 90% completed. Earthwork, levelling, 50ft & 60ft asphalt road carpeting, underground utility conduits, deep tube wells, and sewerage piping networks are operational.'
+        q: 'What is an NDC?',
+        a: 'A No Demand Certificate issued by the developer, confirming no payments remain outstanding against a plot. It is required before possession and before a transfer can proceed.'
       },
       {
-        q: 'What is the price range of 5 Marla and 10 Marla plots in Block D?',
-        a: 'As of current market rates, a 5 Marla residential plot ranges from PKR 40 Lacs to 48 Lacs, while a 10 Marla plot ranges between PKR 90 Lacs and 1.10 Crore depending on location, category, and boulevard facing.'
+        q: 'Which payment plan applies to Block D?',
+        a: 'Five different plans have been published, from 10 quarterly instalments to a four-year plan with 16 instalments and a possession amount, and one source says residential plots are cash only. Ask for the schedule issued this month, in writing.'
       },
       {
-        q: 'Why is Block D considered the best value investment in Faisal Hills?',
-        a: 'Block D provides the most economical entry prices across the society combined with proximity to the upcoming M-1 Brahma Interchange link and future Medical City. It delivers high holding ROI for investors and peaceful suburban lifestyle for end-users.'
+        q: 'Is there a registration fee or possession charge?',
+        a: 'A registration fee is charged at booking, published as both PKR 15,000 and PKR 20,000. Some plan versions also include a possession amount payable at handover. Confirm both before paying.'
       },
       {
-        q: 'Can overseas Pakistanis buy and transfer plots in Block D remotely?',
-        a: 'Yes. Overseas Pakistanis can purchase plots using their NICOP/passport. File verification, installment ledger checks, and legal biometric allotment transfers can be facilitated seamlessly through our dedicated overseas advisory desk.'
+        q: 'What plot sizes are available?',
+        a: '5, 8 and 10 Marla are confirmed across sources. 14 Marla and 2 Kanal appear on some lists and not others, so treat them as unconfirmed here.'
+      },
+      {
+        q: 'What are current plot rates in Block D?',
+        a: 'Reported entry prices start around PKR 40 lakh for 5 Marla, which would make Block D one of the two lowest-priced blocks in the society. Ask us for today’s rate on a specific plot.'
+      },
+      {
+        q: 'Is Block D cheaper than Block C?',
+        a: 'On reported entry prices the two are close, with Block C starting slightly lower and Block D offering possession at a comparable rate. Compare the actual plots rather than the headline figures.'
+      },
+      {
+        q: 'Is Block D RDA approved?',
+        a: 'Block D falls within the Faisal Hills scheme approved by the Rawalpindi Development Authority. Approval covers the scheme, not an individual plot, so verify your plot separately.'
       }
     ]
   },
   closingSiteVisitSection: {
-    heading: 'Schedule a Site Visit or Request Block D File Verification',
-    intro: 'Connect directly with our senior Faisal Hills advisory desk. Receive on-ground plot video walkthroughs, instant biometric allotment file checks, and updated resale inventory.',
+    heading: 'Block D Plots for Sale: Check Availability',
+    intro: 'Tell us the size and budget you have in mind, and whether you want to build straight away. We will confirm what is genuinely available, the possession status of specific plots, the current payment terms in writing, and arrange a site visit.',
+    sellingPrompt: 'Selling a plot in Block D? We can help with the society office process, from ownership verification through to the NDC.',
     featureBullets: [
       'Zero service charge on official file verification',
       'Custom video tours available for overseas Pakistanis',
@@ -6529,12 +6604,13 @@ export const initialBlockDCMS: BlockDCMSData = {
     whatsappNumber: '+92 333 1113177',
     phoneNumber: '+92 333 1113177',
     officeAddress: 'Faisal Hills Main Boulevard Commercial Desk, Taxila GT Road',
-    formTitle: 'Schedule a Site Visit or Request Block D File Verification',
+    formTitle: 'Block D Plots for Sale: Check Availability',
     formSubtitle: 'Leave your details to receive verified Block D plot inventory, possession status, and transfer assistance.',
     formButtonText: 'SUBMIT OFFICIAL BLOCK D INQUIRY',
-    reviewedByNote: 'About this page: reviewed by Senior Property Verification Desk of Faisal Hills Advisory. Price bands are drawn from published sources and active market listings. Prices change without notice.'
+    reviewedByNote: 'About this page: reviewed by Senior Property Verification Desk of Faisal Hills Advisory. Payment and possession details are drawn from published sources and dated where possible; rates per square foot are our own analysis of market listings. Prices and terms change without notice. If you find anything out of date, tell us and we will correct it.'
   }
 };
+
 export function mergeBlockDCMS(incoming: any): BlockDCMSData {
   if (!incoming || typeof incoming !== 'object') return initialBlockDCMS;
 
@@ -6542,10 +6618,16 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
   const incOver = incoming.overview || {};
   const incLoc = incoming.location || {};
   const incMap = incoming.masterPlan || {};
-  const incWhy = incoming.whyInvestSection || {};
+  const incSizes = incoming.plotSizesSection || {};
+  const incPoss = incoming.possessionSection || {};
+  const incPayQ = incoming.paymentQuestionSection || {};
   const incPrice = incoming.priceScheduleSection || {};
-  const incAmen = incoming.amenitiesSection || {};
-  const incDev = incoming.developmentMilestonesSection || {};
+  const incDevStat = incoming.developmentStatusSection || {};
+  const incComm = incoming.commercialSection || {};
+  const incWho = incoming.whoSuitsSection || {};
+  const incDVsC = incoming.blockDVsCSection || {};
+  const incBuy = incoming.buyingTransferSection || {};
+  const incList = incoming.readingListingsSection || {};
   const incFaqs = incoming.faqsSection || {};
   const incClose = incoming.closingSiteVisitSection || {};
 
@@ -6554,6 +6636,7 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
       reviewerName: cleanVerifyText(incVer.reviewerName || initialBlockDCMS.verificationHeader.reviewerName),
       reviewerRole: cleanVerifyText(incVer.reviewerRole || initialBlockDCMS.verificationHeader.reviewerRole),
       pricesVerifiedDate: cleanVerifyText(incVer.pricesVerifiedDate || initialBlockDCMS.verificationHeader.pricesVerifiedDate),
+      possessionConfirmedDate: cleanVerifyText(incVer.possessionConfirmedDate || initialBlockDCMS.verificationHeader.possessionConfirmedDate),
       siteCheckedDate: cleanVerifyText(incVer.siteCheckedDate || initialBlockDCMS.verificationHeader.siteCheckedDate),
       badgeText: cleanVerifyText(incVer.badgeText || initialBlockDCMS.verificationHeader.badgeText)
     },
@@ -6562,12 +6645,15 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
       leadParagraph1: cleanVerifyText(incOver.leadParagraph1 || initialBlockDCMS.overview.leadParagraph1),
       leadParagraph2: cleanVerifyText(incOver.leadParagraph2 || initialBlockDCMS.overview.leadParagraph2),
       quickFacts: {
-        location: cleanVerifyText(incOver.quickFacts?.location || initialBlockDCMS.overview.quickFacts.location),
+        position: cleanVerifyText(incOver.quickFacts?.position || initialBlockDCMS.overview.quickFacts.position),
         residentialSizes: cleanVerifyText(incOver.quickFacts?.residentialSizes || initialBlockDCMS.overview.quickFacts.residentialSizes),
-        commercialCuts: cleanVerifyText(incOver.quickFacts?.commercialCuts || initialBlockDCMS.overview.quickFacts.commercialCuts),
+        plotCount: cleanVerifyText(incOver.quickFacts?.plotCount || initialBlockDCMS.overview.quickFacts.plotCount),
         possession: cleanVerifyText(incOver.quickFacts?.possession || initialBlockDCMS.overview.quickFacts.possession),
-        connectivity: cleanVerifyText(incOver.quickFacts?.connectivity || initialBlockDCMS.overview.quickFacts.connectivity),
-        legalStatus: cleanVerifyText(incOver.quickFacts?.legalStatus || initialBlockDCMS.overview.quickFacts.legalStatus)
+        howYouBuy: cleanVerifyText(incOver.quickFacts?.howYouBuy || initialBlockDCMS.overview.quickFacts.howYouBuy),
+        legalStatus: cleanVerifyText(incOver.quickFacts?.legalStatus || initialBlockDCMS.overview.quickFacts.legalStatus),
+        location: cleanVerifyText(incOver.quickFacts?.location || initialBlockDCMS.overview.quickFacts.location),
+        commercialCuts: cleanVerifyText(incOver.quickFacts?.commercialCuts || initialBlockDCMS.overview.quickFacts.commercialCuts),
+        connectivity: cleanVerifyText(incOver.quickFacts?.connectivity || initialBlockDCMS.overview.quickFacts.connectivity)
       },
       ctaStripText: cleanVerifyText(incOver.ctaStripText || initialBlockDCMS.overview.ctaStripText),
       ctaWhatsapp: cleanVerifyText(incOver.ctaWhatsapp || initialBlockDCMS.overview.ctaWhatsapp),
@@ -6576,6 +6662,11 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
     location: {
       heading: cleanVerifyText(incLoc.heading || initialBlockDCMS.location.heading),
       leadParagraph: cleanVerifyText(incLoc.leadParagraph || initialBlockDCMS.location.leadParagraph),
+      boundaryNote: cleanVerifyText(incLoc.boundaryNote || initialBlockDCMS.location.boundaryNote),
+      nearbyInstitutionsTitle: cleanVerifyText(incLoc.nearbyInstitutionsTitle || initialBlockDCMS.location.nearbyInstitutionsTitle),
+      nearbyInstitutions: Array.isArray(incLoc.nearbyInstitutions)
+        ? incLoc.nearbyInstitutions.map((i: string) => cleanVerifyText(i))
+        : initialBlockDCMS.location.nearbyInstitutions,
       driveTimesNote: cleanVerifyText(incLoc.driveTimesNote || initialBlockDCMS.location.driveTimesNote),
       travelTimes: (incLoc.travelTimes || initialBlockDCMS.location.travelTimes || []).map((t: any) => ({
         destination: cleanVerifyText(t.destination || ''),
@@ -6593,18 +6684,46 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
       mapImage: incMap.mapImage || initialBlockDCMS.masterPlan.mapImage,
       pdfDownloadUrl: incMap.pdfDownloadUrl || initialBlockDCMS.masterPlan.pdfDownloadUrl
     },
-    whyInvestSection: {
-      heading: cleanVerifyText(incWhy.heading || initialBlockDCMS.whyInvestSection.heading),
-      subline: cleanVerifyText(incWhy.subline || initialBlockDCMS.whyInvestSection.subline),
-      reasons: (incWhy.reasons || initialBlockDCMS.whyInvestSection.reasons || []).map((r: any) => ({
-        iconName: r.iconName || '',
-        title: cleanVerifyText(r.title || ''),
-        desc: cleanVerifyText(r.desc || ''),
-        tag: cleanVerifyText(r.tag || 'Feature'),
-        bg: r.bg || 'bg-rose-50',
-        text: r.text || 'text-[#7b002c]',
-        border: r.border || 'border-rose-100'
-      }))
+    plotSizesSection: {
+      heading: cleanVerifyText(incSizes.heading || initialBlockDCMS.plotSizesSection.heading),
+      tableRows: (incSizes.tableRows || initialBlockDCMS.plotSizesSection.tableRows || []).map((r: any) => ({
+        dimensions: cleanVerifyText(r.dimensions || ''),
+        sqFeet: cleanVerifyText(r.sqFeet || ''),
+        sqYards: cleanVerifyText(r.sqYards || ''),
+        soldAs: cleanVerifyText(r.soldAs || ''),
+        status: cleanVerifyText(r.status || 'Confirmed')
+      })),
+      analysisNote1: cleanVerifyText(incSizes.analysisNote1 || initialBlockDCMS.plotSizesSection.analysisNote1),
+      analysisNote2: cleanVerifyText(incSizes.analysisNote2 || initialBlockDCMS.plotSizesSection.analysisNote2)
+    },
+    possessionSection: {
+      heading: cleanVerifyText(incPoss.heading || initialBlockDCMS.possessionSection.heading),
+      subline: cleanVerifyText(incPoss.subline || initialBlockDCMS.possessionSection.subline),
+      diffDevVsPossession: {
+        devText: cleanVerifyText(incPoss.diffDevVsPossession?.devText || initialBlockDCMS.possessionSection.diffDevVsPossession.devText),
+        possessionText: cleanVerifyText(incPoss.diffDevVsPossession?.possessionText || initialBlockDCMS.possessionSection.diffDevVsPossession.possessionText)
+      },
+      recordNote: cleanVerifyText(incPoss.recordNote || initialBlockDCMS.possessionSection.recordNote),
+      sectoralWarningNote: cleanVerifyText(incPoss.sectoralWarningNote || initialBlockDCMS.possessionSection.sectoralWarningNote),
+      howToTakeSteps: (incPoss.howToTakeSteps || initialBlockDCMS.possessionSection.howToTakeSteps || []).map((s: any, idx: number) => ({
+        step: typeof s.step === 'number' ? s.step : idx + 1,
+        title: cleanVerifyText(s.title || ''),
+        desc: cleanVerifyText(s.desc || '')
+      })),
+      warningNote: cleanVerifyText(incPoss.warningNote || initialBlockDCMS.possessionSection.warningNote)
+    },
+    paymentQuestionSection: {
+      heading: cleanVerifyText(incPayQ.heading || initialBlockDCMS.paymentQuestionSection.heading),
+      intro: cleanVerifyText(incPayQ.intro || initialBlockDCMS.paymentQuestionSection.intro),
+      tableRows: (incPayQ.tableRows || initialBlockDCMS.paymentQuestionSection.tableRows || []).map((r: any) => ({
+        version: cleanVerifyText(r.version || ''),
+        source: cleanVerifyText(r.source || ''),
+        terms: cleanVerifyText(r.terms || '')
+      })),
+      analysisPoint1: cleanVerifyText(incPayQ.analysisPoint1 || initialBlockDCMS.paymentQuestionSection.analysisPoint1),
+      analysisPoint2: cleanVerifyText(incPayQ.analysisPoint2 || initialBlockDCMS.paymentQuestionSection.analysisPoint2),
+      feeNote: cleanVerifyText(incPayQ.feeNote || initialBlockDCMS.paymentQuestionSection.feeNote),
+      scheduleAdvice: cleanVerifyText(incPayQ.scheduleAdvice || initialBlockDCMS.paymentQuestionSection.scheduleAdvice)
     },
     priceScheduleSection: {
       heading: cleanVerifyText(incPrice.heading || initialBlockDCMS.priceScheduleSection.heading),
@@ -6619,30 +6738,61 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
         priceRange: cleanVerifyText(r.priceRange || ''),
         possession: cleanVerifyText(r.possession || ''),
         highlight: cleanVerifyText(r.highlight || '')
-      }))
+      })),
+      rateComparisonHeading: cleanVerifyText(incPrice.rateComparisonHeading || initialBlockDCMS.priceScheduleSection.rateComparisonHeading),
+      rateComparisonNote: cleanVerifyText(incPrice.rateComparisonNote || initialBlockDCMS.priceScheduleSection.rateComparisonNote),
+      rateComparisonTakeaway: cleanVerifyText(incPrice.rateComparisonTakeaway || initialBlockDCMS.priceScheduleSection.rateComparisonTakeaway)
     },
-    amenitiesSection: {
-      heading: cleanVerifyText(incAmen.heading || initialBlockDCMS.amenitiesSection.heading),
-      subline: cleanVerifyText(incAmen.subline || initialBlockDCMS.amenitiesSection.subline),
-      amenitiesList: (incAmen.amenitiesList || initialBlockDCMS.amenitiesSection.amenitiesList || []).map((a: any) => ({
-        id: a.id || 'amenity',
-        title: cleanVerifyText(a.title || ''),
-        category: a.category || 'lifestyle',
-        description: cleanVerifyText(a.description || ''),
-        image: a.image || '/images/faisal-hills-glow-park.webp',
-        tag: cleanVerifyText(a.tag || 'Amenity'),
-        features: Array.isArray(a.features) ? a.features.map((f: string) => cleanVerifyText(f)) : []
-      }))
+    developmentStatusSection: {
+      heading: cleanVerifyText(incDevStat.heading || initialBlockDCMS.developmentStatusSection.heading),
+      tableRows: (incDevStat.tableRows || initialBlockDCMS.developmentStatusSection.tableRows || []).map((r: any) => ({
+        item: cleanVerifyText(r.item || ''),
+        status: cleanVerifyText(r.status || '')
+      })),
+      note: cleanVerifyText(incDevStat.note || initialBlockDCMS.developmentStatusSection.note)
     },
-    developmentMilestonesSection: {
-      heading: cleanVerifyText(incDev.heading || initialBlockDCMS.developmentMilestonesSection.heading),
-      subline: cleanVerifyText(incDev.subline || initialBlockDCMS.developmentMilestonesSection.subline),
-      milestonesList: (incDev.milestonesList || initialBlockDCMS.developmentMilestonesSection.milestonesList || []).map((m: any) => ({
-        title: cleanVerifyText(m.title || ''),
-        progress: typeof m.progress === 'number' ? m.progress : 85,
-        status: cleanVerifyText(m.status || 'In Progress'),
-        desc: cleanVerifyText(m.desc || ''),
-        image: m.image || '/images/faisal-hills-drone-view.webp'
+    commercialSection: {
+      heading: cleanVerifyText(incComm.heading || initialBlockDCMS.commercialSection.heading),
+      lead: cleanVerifyText(incComm.lead || initialBlockDCMS.commercialSection.lead),
+      advice: cleanVerifyText(incComm.advice || initialBlockDCMS.commercialSection.advice)
+    },
+    whoSuitsSection: {
+      heading: cleanVerifyText(incWho.heading || initialBlockDCMS.whoSuitsSection.heading),
+      suitsProfile: cleanVerifyText(incWho.suitsProfile || initialBlockDCMS.whoSuitsSection.suitsProfile),
+      caveatsHeading: cleanVerifyText(incWho.caveatsHeading || initialBlockDCMS.whoSuitsSection.caveatsHeading),
+      caveats: Array.isArray(incWho.caveats)
+        ? incWho.caveats.map((c: string) => cleanVerifyText(c))
+        : initialBlockDCMS.whoSuitsSection.caveats,
+      disclaimer: cleanVerifyText(incWho.disclaimer || initialBlockDCMS.whoSuitsSection.disclaimer)
+    },
+    blockDVsCSection: {
+      heading: cleanVerifyText(incDVsC.heading || initialBlockDCMS.blockDVsCSection.heading),
+      subline: cleanVerifyText(incDVsC.subline || initialBlockDCMS.blockDVsCSection.subline),
+      tableRows: (incDVsC.tableRows || initialBlockDCMS.blockDVsCSection.tableRows || []).map((r: any) => ({
+        feature: cleanVerifyText(r.feature || ''),
+        blockD: cleanVerifyText(r.blockD || ''),
+        blockC: cleanVerifyText(r.blockC || '')
+      })),
+      outroNote: cleanVerifyText(incDVsC.outroNote || initialBlockDCMS.blockDVsCSection.outroNote)
+    },
+    buyingTransferSection: {
+      heading: cleanVerifyText(incBuy.heading || initialBlockDCMS.buyingTransferSection.heading),
+      intro: cleanVerifyText(incBuy.intro || initialBlockDCMS.buyingTransferSection.intro),
+      steps: Array.isArray(incBuy.steps)
+        ? incBuy.steps.map((s: string) => cleanVerifyText(s))
+        : initialBlockDCMS.buyingTransferSection.steps,
+      requiredDocuments: Array.isArray(incBuy.requiredDocuments)
+        ? incBuy.requiredDocuments.map((d: string) => cleanVerifyText(d))
+        : initialBlockDCMS.buyingTransferSection.requiredDocuments,
+      warningSigns: Array.isArray(incBuy.warningSigns)
+        ? incBuy.warningSigns.map((w: string) => cleanVerifyText(w))
+        : initialBlockDCMS.buyingTransferSection.warningSigns
+    },
+    readingListingsSection: {
+      heading: cleanVerifyText(incList.heading || initialBlockDCMS.readingListingsSection.heading),
+      terms: (incList.terms || initialBlockDCMS.readingListingsSection.terms || []).map((t: any) => ({
+        term: cleanVerifyText(t.term || ''),
+        definition: cleanVerifyText(t.definition || '')
       }))
     },
     faqsSection: {
@@ -6656,6 +6806,7 @@ export function mergeBlockDCMS(incoming: any): BlockDCMSData {
     closingSiteVisitSection: {
       heading: cleanVerifyText(incClose.heading || initialBlockDCMS.closingSiteVisitSection.heading),
       intro: cleanVerifyText(incClose.intro || initialBlockDCMS.closingSiteVisitSection.intro),
+      sellingPrompt: cleanVerifyText(incClose.sellingPrompt || initialBlockDCMS.closingSiteVisitSection.sellingPrompt),
       featureBullets: Array.isArray(incClose.featureBullets)
         ? incClose.featureBullets.map((b: string) => cleanVerifyText(b))
         : initialBlockDCMS.closingSiteVisitSection.featureBullets,
@@ -6703,3 +6854,593 @@ export async function saveBlockDCMS(cmsData: BlockDCMSData, token?: string): Pro
     return false;
   }
 }
+
+// -------------------------------------------------------------
+// FAISAL HILLS PAYMENT PLAN CMS DATA STRUCTURE & FUNCTIONS
+// -------------------------------------------------------------
+
+export interface PaymentPlanCMSData {
+  verificationHeader: {
+    reviewerName: string;
+    reviewerRole: string;
+    scheduleVerifiedDate: string;
+    pageLastUpdated: string;
+    badgeText: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph: string;
+    termsNote: string;
+    quickFacts: {
+      frequency: string;
+      term: string;
+      bookingAmount: string;
+      lumpSumDiscount: string;
+      registrationFee: string;
+      scheduleDate: string;
+    };
+    ctaWhatsapp: string;
+    ctaCall: string;
+  };
+  howItWorks: {
+    heading: string;
+    intro: string;
+    steps: Array<{ stepNumber: number; title: string; description: string }>;
+    payingInFullNote: string;
+    downPaymentCoversTitle: string;
+    downPaymentCoversDesc: string;
+    afterBookingTitle: string;
+    afterBookingDesc: string;
+  };
+  primeBlockSchedule: {
+    heading: string;
+    intro: string;
+    rows: Array<{
+      plotCutting: string;
+      totalPrice: string;
+      bookingAmount: string;
+      quarterlyInstalments: string;
+      lumpSumDiscounted: string;
+    }>;
+    reconciliationNote: string;
+    marlaConventionNote: string;
+    marla14Note: string;
+    cost5MarlaExample: {
+      heading: string;
+      description: string;
+      savingsNote: string;
+    };
+  };
+  paymentPlansByBlock: {
+    heading: string;
+    intro: string;
+    blockRows: Array<{
+      blockName: string;
+      blockSlug: string;
+      terms: string;
+      notes: string;
+    }>;
+    footerNote: string;
+  };
+  whyDifferentPlansOnline: {
+    heading: string;
+    intro: string;
+    comparisonRows: Array<{
+      structure: string;
+      source: string;
+      term: string;
+    }>;
+    adviceText: string;
+  };
+  additionalCosts: {
+    heading: string;
+    items: Array<{
+      name: string;
+      description: string;
+    }>;
+  };
+  howToPay: {
+    heading: string;
+    guidelines: string[];
+    overseasBuyersTitle: string;
+    overseasBuyersDesc: string;
+    resalePurchasesTitle: string;
+    resalePurchasesDesc: string;
+    missedInstalmentTitle: string;
+    missedInstalmentDesc: string;
+    commercialPlotTitle: string;
+    commercialPlotDesc: string;
+  };
+  faqsSection: {
+    heading: string;
+    faqs: Array<{ q: string; a: string }>;
+  };
+  ctaAndAbout: {
+    ctaHeading: string;
+    ctaSubline: string;
+    whatsappNumber: string;
+    phoneNumber: string;
+    officeLocation: string;
+    aboutHeading: string;
+    aboutText: string;
+  };
+}
+
+export const initialPaymentPlanCMS: PaymentPlanCMSData = {
+  verificationHeader: {
+    reviewerName: 'Senior Property Verification Desk',
+    reviewerRole: 'Faisal Hills Estate Advisory',
+    scheduleVerifiedDate: 'September 2026',
+    pageLastUpdated: '30 September 2026',
+    badgeText: 'Verified Developer Schedule'
+  },
+  overview: {
+    h1: 'Faisal Hills Payment Plan and Instalment Schedule',
+    leadParagraph: 'Plots in Faisal Hills, the RDA-approved society on the Main GT Road (N-5) near Taxila, are sold either on instalments or in full. An instalment purchase means a registration fee, a booking amount paid as a down payment, then quarterly instalments until the balance clears. Paying in full attracts a discount.',
+    termsNote: 'Terms are not the same across the society. Some blocks take instalments, others are full payment only, and the schedule has been revised more than once. If you have been quoted a plan, check it against the current schedule before paying anything.',
+    quickFacts: {
+      frequency: 'Quarterly, every three months',
+      term: '2.5 years on 10 instalments',
+      bookingAmount: 'Reported at 20 to 35% of plot cost, varying by block. On the schedule below it works out at 30 to 33%',
+      lumpSumDiscount: 'Reported at 20%, with 21% on some block schedules',
+      registrationFee: 'Reported at PKR 15,000 and PKR 20,000 by different sources',
+      scheduleDate: 'September 2026'
+    },
+    ctaWhatsapp: '+92 333 1113177',
+    ctaCall: '+92 333 1113177'
+  },
+  howItWorks: {
+    heading: 'How the Payment Plan Works',
+    intro: 'Buying on instalments here follows a fixed sequence:',
+    steps: [
+      {
+        stepNumber: 1,
+        title: 'Registration fee',
+        description: 'Paid once at booking and normally non-refundable.'
+      },
+      {
+        stepNumber: 2,
+        title: 'Booking amount',
+        description: 'The down payment that reserves the plot and is the largest single sum you pay.'
+      },
+      {
+        stepNumber: 3,
+        title: 'Quarterly instalments',
+        description: 'Every three months until the balance clears.'
+      },
+      {
+        stepNumber: 4,
+        title: 'Possession charges',
+        description: "Where the block's schedule includes them, payable at handover."
+      },
+      {
+        stepNumber: 5,
+        title: 'Position premiums',
+        description: 'Where the plot is a corner, on a main road or park-facing.'
+      }
+    ],
+    payingInFullNote: 'Paying in full instead removes the quarterly schedule and applies the lump-sum discount.',
+    downPaymentCoversTitle: 'What the down payment covers',
+    downPaymentCoversDesc: 'Published descriptions say it covers file processing, priority allocation, development charges and confirmation of the booking. That last point matters: if development charges sit inside the price, your total is lower than a comparable plot where they are billed separately. Confirm which applies.',
+    afterBookingTitle: 'What you receive after booking',
+    afterBookingDesc: 'Expect a receipt for the booking amount, then your file or allotment documentation with the plot or file number. One published account puts the file issue at three to four weeks after booking. Keep every receipt, and check that the name and plot details match your CNIC exactly.'
+  },
+  primeBlockSchedule: {
+    heading: 'The Most Recent Schedule We Hold: Prime Block',
+    intro: 'The figures below were published for Prime Block. The same figures have since appeared against Block D on at least one dealer site, which we believe is a copy-paste error rather than a genuine match, so do not assume they apply society-wide.',
+    rows: [
+      {
+        plotCutting: '5.55 Marla (5 Marla, 25 × 50)',
+        totalPrice: '5,990,000',
+        bookingAmount: '1,990,000',
+        quarterlyInstalments: '400,000',
+        lumpSumDiscounted: '4,792,000'
+      },
+      {
+        plotCutting: '8 Marla (30 × 60)',
+        totalPrice: '8,470,000',
+        bookingAmount: '2,570,000',
+        quarterlyInstalments: '590,000',
+        lumpSumDiscounted: '6,776,000'
+      },
+      {
+        plotCutting: '10.89 Marla (10 Marla, 35 × 70)',
+        totalPrice: '11,170,000',
+        bookingAmount: '3,370,000',
+        quarterlyInstalments: '780,000',
+        lumpSumDiscounted: '8,936,000'
+      },
+      {
+        plotCutting: '1 Kanal (50 × 90)',
+        totalPrice: '19,290,000',
+        bookingAmount: '5,790,000',
+        quarterlyInstalments: '1,350,000',
+        lumpSumDiscounted: '15,432,000'
+      },
+      {
+        plotCutting: '2 Kanal',
+        totalPrice: '37,360,000',
+        bookingAmount: '11,210,000',
+        quarterlyInstalments: '2,615,000',
+        lumpSumDiscounted: '29,888,000'
+      }
+    ],
+    reconciliationNote: 'Schedule as published for Prime Block. Every row reconciles: the booking amount plus ten instalments equals the total, and each lump-sum figure is exactly 80% of it. Prices are set by the developer and change without notice.',
+    marlaConventionNote: 'Why the sizes read 5.55 and 10.89. Faisal Hills schedules measure a Marla at 225 sq ft, while most listings use 250. The same 25 × 50 ft plot is 5 Marla on one measure and 5.55 on the other, and a 35 × 70 ft plot is 10 or 10.89. Compare plots by dimensions and square feet; our Faisal Hills blocks hub explains the conventions in full.',
+    marla14Note: '14 Marla is not on this schedule. Prime Block\'s published sizes run 5.55, 8 and 10.89 Marla, 1 Kanal and 2 Kanal. The 40 × 80 ft plot sold as 14 Marla (14.22 on the developer\'s measure) exists in Blocks A, B and D, but no instalment schedule has been published for it that we can verify. If you want a 14 Marla plot on instalments, ask the sales office for a current schedule rather than working from a figure found online.',
+    cost5MarlaExample: {
+      heading: 'What a 5 Marla plot actually costs',
+      description: 'Booking a 5.55 Marla plot (25 × 50 ft, sold as 5 Marla) on the Prime Block schedule means PKR 1,990,000 at booking, about 33% of the price, plus the registration fee. Then ten quarterly payments of PKR 400,000, reaching PKR 5,990,000 over two and a half years.',
+      savingsNote: 'Paying in full instead costs PKR 4,792,000, a saving of PKR 1,198,000 against the instalment total. A corner or main-road plot carries a premium on top.'
+    }
+  },
+  paymentPlansByBlock: {
+    heading: 'Payment Plans by Block',
+    intro: 'Terms differ by block, and this is where most confusion starts. Instalment availability also changes as blocks sell out, so treat this as a guide and confirm the terms for the block you want.',
+    blockRows: [
+      {
+        blockName: 'Executive Block',
+        blockSlug: 'executive-block',
+        terms: 'Full payment',
+        notes: 'Some sources describe a 16-instalment plan with a possession fee; the developer-linked site says cash only'
+      },
+      {
+        blockName: 'Block A',
+        blockSlug: 'block-a',
+        terms: 'Full payment',
+        notes: 'Developer inventory reported exhausted, so purchases are resale'
+      },
+      {
+        blockName: 'Prime Block',
+        blockSlug: 'prime-block',
+        terms: 'Instalments',
+        notes: 'The main block with an active developer plan'
+      },
+      {
+        blockName: 'Block B',
+        blockSlug: 'block-b',
+        terms: 'Residential full payment; commercial on instalments',
+        notes: 'Commercial plots offer structured installment terms'
+      },
+      {
+        blockName: 'Block B Extension',
+        blockSlug: 'block-b1-extension',
+        terms: 'Resale / Full payment',
+        notes: 'Primarily resale market transactions'
+      },
+      {
+        blockName: 'Block C',
+        blockSlug: 'block-c',
+        terms: 'Full payment, no possession charges',
+        notes: 'Stated plainly on the developer-linked prices guide'
+      },
+      {
+        blockName: 'Block D',
+        blockSlug: 'block-d',
+        terms: 'Instalments reported',
+        notes: 'Five different schedules have been published for this block'
+      }
+    ],
+    footerNote: 'If a block is full payment only, the plan on this page does not apply to it. For market rates by block, including resale, see our Faisal Hills plot prices: plot prices and payment plans are different things, and mixing them is how buyers end up comparing the wrong numbers.'
+  },
+  whyDifferentPlansOnline: {
+    heading: 'Why You Will See Different Payment Plans Online',
+    intro: 'Search for this society\'s payment plan and you will find schedules that contradict each other. They are not all wrong; most are simply old, and almost none carry a date.',
+    comparisonRows: [
+      {
+        structure: '10 quarterly instalments, 20% discount',
+        source: 'Current dealer and network pages, 2026',
+        term: '2.5 years'
+      },
+      {
+        structure: '14 quarterly instalments, 20% discount',
+        source: 'Society pages and the Prime Block launch, 2025 to 2026',
+        term: '3.5 years'
+      },
+      {
+        structure: '16 quarterly instalments plus a possession fee, 21% discount',
+        source: 'Block-wise plans for Executive, A, C and D',
+        term: '4 years'
+      },
+      {
+        structure: '15 quarterly instalments plus a possession charge',
+        source: 'A Block D dealer page, 2025',
+        term: 'Not stated'
+      },
+      {
+        structure: 'Four-year quarterly instalments, up to 15% down',
+        source: 'An agency project page, Prime Block',
+        term: '4 years'
+      },
+      {
+        structure: 'Full cash only',
+        source: 'Developer-linked prices guide, 2026',
+        term: 'Not applicable'
+      }
+    ],
+    adviceText: 'What to do with that. Only the schedule the developer has issued for the current month applies to a new booking. If a figure looks unusually low, check which plan it came from and when it was published. Ask for the schedule on paper, with a date on it.'
+  },
+  additionalCosts: {
+    heading: 'What You Pay Besides the Plot Price',
+    items: [
+      {
+        name: 'Registration fee',
+        description: 'One-off at booking, reported at PKR 15,000 and PKR 20,000 by different sources.'
+      },
+      {
+        name: 'Possession charges',
+        description: 'Included in some block schedules and absent from others. Block C is described as having none.'
+      },
+      {
+        name: 'Position premiums',
+        description: "The developer group's published terms for a sister project set these at 15% for corner plots, 10% for main road and 5% for a short corner or green-facing plot. Confirm whether the same applies here."
+      },
+      {
+        name: 'Taxes',
+        description: 'One block schedule lists GST as a component.'
+      },
+      {
+        name: 'Transfer fee',
+        description: 'Payable when a plot changes hands, which applies to resale rather than new bookings.'
+      },
+      {
+        name: 'Development charges',
+        description: 'Which may already sit inside the price. Check rather than assume.'
+      }
+    ]
+  },
+  howToPay: {
+    heading: 'How to Pay',
+    guidelines: [
+      "Pay by pay order or demand draft made out to the developer's registered company name.",
+      "Cheques are not accepted under the group's published terms for a sister project; confirm the position here.",
+      "Keep the receipt for every payment, and expect a booking acknowledgement followed by your allotment documentation.",
+      "Never pay cash to an individual, and never pay into a personal account."
+    ],
+    overseasBuyersTitle: 'Overseas buyers',
+    overseasBuyersDesc: "Overseas Pakistanis can book using a NICOP or passport, with payment through official banking channels. Published developer schedules have included bank account details for both overseas and domestic transfers. Take the current account details from the sales office or the developer's own downloads section (faisaltowngroup.com/downloads), not from any copy circulating online.",
+    resalePurchasesTitle: 'Resale Purchases',
+    resalePurchasesDesc: "If you buy from an existing owner rather than the developer, the payment plan on this page does not apply. A resale is normally settled in full at transfer, and any remaining instalments on a file are a matter between you and the seller. What governs a resale instead is the transfer process: ownership verification, the No Demand Certificate confirming no dues remain, and the transfer recorded at the society office. Our plot verification guide sets out the sequence.",
+    missedInstalmentTitle: 'If You Miss an Instalment',
+    missedInstalmentDesc: "Instalment schedules usually carry a surcharge for late payment, and repeated default can lead to cancellation with deductions. The published Faisal Hills schedules we have seen do not state the policy, so confirm it in writing before you commit. Ask specifically: what is the grace period, what is the surcharge, and at what point is a booking cancelled.",
+    commercialPlotTitle: 'Commercial Plot Payment Terms',
+    commercialPlotDesc: "Commercial plots are priced and scheduled separately from residential plots. One source describes residential plots as full payment while commercial plots are offered on instalments with a down payment, quarterly instalments and a possession amount. Commercial sizes vary by block, from around 30 × 25 ft up to much larger plots in the Executive Block. Ask us for the commercial schedule for the specific block and size you are considering."
+  },
+  faqsSection: {
+    heading: 'Frequently Asked Questions',
+    faqs: [
+      {
+        q: 'What is the current Faisal Hills payment plan?',
+        a: 'A registration fee, a booking amount, then quarterly instalments, with a discount for paying in full. The most recent schedule we hold runs to ten quarterly instalments over two and a half years. Terms differ by block.'
+      },
+      {
+        q: 'How many instalments are there?',
+        a: 'Ten quarterly instalments on the current schedule. Older plans in circulation used 14, 15 or 16, which is why you will see different figures online.'
+      },
+      {
+        q: 'How much is the booking amount?',
+        a: 'Reported at 20 to 35% of the plot cost depending on block and payment mode. On the schedule above, a 5 Marla plot (5.55 Marla, 25 × 50 ft) requires PKR 1,990,000, about 33%.'
+      },
+      {
+        q: 'Is there a monthly instalment option?',
+        a: 'Instalments here are quarterly, every three months, rather than monthly.'
+      },
+      {
+        q: 'Is there a 10 Marla payment plan?',
+        a: 'Yes. The 35 × 70 ft plot, listed as 10 Marla or 10.89 Marla, appears on the schedule above at PKR 11,170,000 with a booking amount of PKR 3,370,000 and ten instalments of PKR 780,000.'
+      },
+      {
+        q: 'Is there a 14 Marla payment plan?',
+        a: 'Not on the schedule we hold. 14 Marla plots (40 × 80 ft, 14.22 on the developer\'s measure) exist in Blocks A, B and D, but no verifiable instalment schedule has been published for that size. Ask the sales office for current terms.'
+      },
+      {
+        q: 'What is the registration fee?',
+        a: 'A one-off fee at booking, reported at PKR 15,000 and PKR 20,000 by different sources, so confirm the amount before paying.'
+      },
+      {
+        q: 'Is there a discount for paying in full?',
+        a: 'Yes, reported at 20% on the current schedule and 21% on some block plans. On a 5 Marla plot that is a saving of roughly PKR 1,198,000 against the instalment total.'
+      },
+      {
+        q: 'Which blocks offer instalments?',
+        a: 'Prime Block is the main block with an active developer plan, and instalments have been reported in Block D. The Executive Block, Block A and Block C are described as full payment.'
+      },
+      {
+        q: 'How do I pay, and to whom?',
+        a: 'By pay order or demand draft in the developer\'s registered company name, with a receipt for every payment. Never pay cash to an individual or into a personal account.'
+      },
+      {
+        q: 'What happens if I miss an instalment?',
+        a: 'Published schedules do not state the policy. Ask for the grace period, the surcharge and the cancellation terms in writing before booking.'
+      }
+    ]
+  },
+  ctaAndAbout: {
+    ctaHeading: 'Get the Current Schedule',
+    ctaSubline: 'Tell us the block and plot size you are considering and we will send the schedule the developer has issued this month, in writing, along with what is available and the fees that apply on top.',
+    whatsappNumber: '+92 333 1113177',
+    phoneNumber: '+92 333 1113177',
+    officeLocation: 'Faisal Hills Main Gate Boulevard, GT Road Taxila / Rawalpindi',
+    aboutHeading: 'About this page',
+    aboutText: 'Reviewed by Senior Property Verification Desk of Faisal Hills Estate Advisory. Figures are drawn from published developer and dealer schedules and dated where possible; we do not publish a figure we cannot source. The scheme\'s approval can be checked with the Rawalpindi Development Authority (rda.gop.pk), and our RDA approval details explains what the NOC covers. Prices and terms are set by the developer and change without notice. If you find anything out of date, tell us and we will correct it.'
+  }
+};
+
+export function mergePaymentPlanCMS(incoming: any): PaymentPlanCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialPaymentPlanCMS;
+  const incVer = incoming.verificationHeader || {};
+  const incOver = incoming.overview || {};
+  const incHow = incoming.howItWorks || {};
+  const incPrime = incoming.primeBlockSchedule || {};
+  const incBlockPlans = incoming.paymentPlansByBlock || {};
+  const incWhyDiff = incoming.whyDifferentPlansOnline || {};
+  const incCosts = incoming.additionalCosts || {};
+  const incPay = incoming.howToPay || {};
+  const incFaqs = incoming.faqsSection || {};
+  const incCta = incoming.ctaAndAbout || {};
+
+  return {
+    verificationHeader: {
+      reviewerName: cleanVerifyText(incVer.reviewerName || initialPaymentPlanCMS.verificationHeader.reviewerName),
+      reviewerRole: cleanVerifyText(incVer.reviewerRole || initialPaymentPlanCMS.verificationHeader.reviewerRole),
+      scheduleVerifiedDate: cleanVerifyText(incVer.scheduleVerifiedDate || initialPaymentPlanCMS.verificationHeader.scheduleVerifiedDate),
+      pageLastUpdated: cleanVerifyText(incVer.pageLastUpdated || initialPaymentPlanCMS.verificationHeader.pageLastUpdated),
+      badgeText: cleanVerifyText(incVer.badgeText || initialPaymentPlanCMS.verificationHeader.badgeText)
+    },
+    overview: {
+      h1: cleanVerifyText(incOver.h1 || initialPaymentPlanCMS.overview.h1),
+      leadParagraph: cleanVerifyText(incOver.leadParagraph || initialPaymentPlanCMS.overview.leadParagraph),
+      termsNote: cleanVerifyText(incOver.termsNote || initialPaymentPlanCMS.overview.termsNote),
+      quickFacts: {
+        frequency: cleanVerifyText(incOver.quickFacts?.frequency || initialPaymentPlanCMS.overview.quickFacts.frequency),
+        term: cleanVerifyText(incOver.quickFacts?.term || initialPaymentPlanCMS.overview.quickFacts.term),
+        bookingAmount: cleanVerifyText(incOver.quickFacts?.bookingAmount || initialPaymentPlanCMS.overview.quickFacts.bookingAmount),
+        lumpSumDiscount: cleanVerifyText(incOver.quickFacts?.lumpSumDiscount || initialPaymentPlanCMS.overview.quickFacts.lumpSumDiscount),
+        registrationFee: cleanVerifyText(incOver.quickFacts?.registrationFee || initialPaymentPlanCMS.overview.quickFacts.registrationFee),
+        scheduleDate: cleanVerifyText(incOver.quickFacts?.scheduleDate || initialPaymentPlanCMS.overview.quickFacts.scheduleDate)
+      },
+      ctaWhatsapp: cleanVerifyText(incOver.ctaWhatsapp || initialPaymentPlanCMS.overview.ctaWhatsapp),
+      ctaCall: cleanVerifyText(incOver.ctaCall || initialPaymentPlanCMS.overview.ctaCall)
+    },
+    howItWorks: {
+      heading: cleanVerifyText(incHow.heading || initialPaymentPlanCMS.howItWorks.heading),
+      intro: cleanVerifyText(incHow.intro || initialPaymentPlanCMS.howItWorks.intro),
+      steps: Array.isArray(incHow.steps) && incHow.steps.length > 0
+        ? incHow.steps.map((s: any, idx: number) => ({
+            stepNumber: s.stepNumber || idx + 1,
+            title: cleanVerifyText(s.title || ''),
+            description: cleanVerifyText(s.description || '')
+          }))
+        : initialPaymentPlanCMS.howItWorks.steps,
+      payingInFullNote: cleanVerifyText(incHow.payingInFullNote || initialPaymentPlanCMS.howItWorks.payingInFullNote),
+      downPaymentCoversTitle: cleanVerifyText(incHow.downPaymentCoversTitle || initialPaymentPlanCMS.howItWorks.downPaymentCoversTitle),
+      downPaymentCoversDesc: cleanVerifyText(incHow.downPaymentCoversDesc || initialPaymentPlanCMS.howItWorks.downPaymentCoversDesc),
+      afterBookingTitle: cleanVerifyText(incHow.afterBookingTitle || initialPaymentPlanCMS.howItWorks.afterBookingTitle),
+      afterBookingDesc: cleanVerifyText(incHow.afterBookingDesc || initialPaymentPlanCMS.howItWorks.afterBookingDesc)
+    },
+    primeBlockSchedule: {
+      heading: cleanVerifyText(incPrime.heading || initialPaymentPlanCMS.primeBlockSchedule.heading),
+      intro: cleanVerifyText(incPrime.intro || initialPaymentPlanCMS.primeBlockSchedule.intro),
+      rows: Array.isArray(incPrime.rows) && incPrime.rows.length > 0
+        ? incPrime.rows.map((r: any) => ({
+            plotCutting: cleanVerifyText(r.plotCutting || ''),
+            totalPrice: cleanVerifyText(r.totalPrice || ''),
+            bookingAmount: cleanVerifyText(r.bookingAmount || ''),
+            quarterlyInstalments: cleanVerifyText(r.quarterlyInstalments || ''),
+            lumpSumDiscounted: cleanVerifyText(r.lumpSumDiscounted || '')
+          }))
+        : initialPaymentPlanCMS.primeBlockSchedule.rows,
+      reconciliationNote: cleanVerifyText(incPrime.reconciliationNote || initialPaymentPlanCMS.primeBlockSchedule.reconciliationNote),
+      marlaConventionNote: cleanVerifyText(incPrime.marlaConventionNote || initialPaymentPlanCMS.primeBlockSchedule.marlaConventionNote),
+      marla14Note: cleanVerifyText(incPrime.marla14Note || initialPaymentPlanCMS.primeBlockSchedule.marla14Note),
+      cost5MarlaExample: {
+        heading: cleanVerifyText(incPrime.cost5MarlaExample?.heading || initialPaymentPlanCMS.primeBlockSchedule.cost5MarlaExample.heading),
+        description: cleanVerifyText(incPrime.cost5MarlaExample?.description || initialPaymentPlanCMS.primeBlockSchedule.cost5MarlaExample.description),
+        savingsNote: cleanVerifyText(incPrime.cost5MarlaExample?.savingsNote || initialPaymentPlanCMS.primeBlockSchedule.cost5MarlaExample.savingsNote)
+      }
+    },
+    paymentPlansByBlock: {
+      heading: cleanVerifyText(incBlockPlans.heading || initialPaymentPlanCMS.paymentPlansByBlock.heading),
+      intro: cleanVerifyText(incBlockPlans.intro || initialPaymentPlanCMS.paymentPlansByBlock.intro),
+      blockRows: Array.isArray(incBlockPlans.blockRows) && incBlockPlans.blockRows.length > 0
+        ? incBlockPlans.blockRows.map((b: any) => ({
+            blockName: cleanVerifyText(b.blockName || ''),
+            blockSlug: cleanVerifyText(b.blockSlug || ''),
+            terms: cleanVerifyText(b.terms || ''),
+            notes: cleanVerifyText(b.notes || '')
+          }))
+        : initialPaymentPlanCMS.paymentPlansByBlock.blockRows,
+      footerNote: cleanVerifyText(incBlockPlans.footerNote || initialPaymentPlanCMS.paymentPlansByBlock.footerNote)
+    },
+    whyDifferentPlansOnline: {
+      heading: cleanVerifyText(incWhyDiff.heading || initialPaymentPlanCMS.whyDifferentPlansOnline.heading),
+      intro: cleanVerifyText(incWhyDiff.intro || initialPaymentPlanCMS.whyDifferentPlansOnline.intro),
+      comparisonRows: Array.isArray(incWhyDiff.comparisonRows) && incWhyDiff.comparisonRows.length > 0
+        ? incWhyDiff.comparisonRows.map((c: any) => ({
+            structure: cleanVerifyText(c.structure || ''),
+            source: cleanVerifyText(c.source || ''),
+            term: cleanVerifyText(c.term || '')
+          }))
+        : initialPaymentPlanCMS.whyDifferentPlansOnline.comparisonRows,
+      adviceText: cleanVerifyText(incWhyDiff.adviceText || initialPaymentPlanCMS.whyDifferentPlansOnline.adviceText)
+    },
+    additionalCosts: {
+      heading: cleanVerifyText(incCosts.heading || initialPaymentPlanCMS.additionalCosts.heading),
+      items: Array.isArray(incCosts.items) && incCosts.items.length > 0
+        ? incCosts.items.map((it: any) => ({
+            name: cleanVerifyText(it.name || ''),
+            description: cleanVerifyText(it.description || '')
+          }))
+        : initialPaymentPlanCMS.additionalCosts.items,
+    },
+    howToPay: {
+      heading: cleanVerifyText(incPay.heading || initialPaymentPlanCMS.howToPay.heading),
+      guidelines: Array.isArray(incPay.guidelines) && incPay.guidelines.length > 0
+        ? incPay.guidelines.map((g: string) => cleanVerifyText(g))
+        : initialPaymentPlanCMS.howToPay.guidelines,
+      overseasBuyersTitle: cleanVerifyText(incPay.overseasBuyersTitle || initialPaymentPlanCMS.howToPay.overseasBuyersTitle),
+      overseasBuyersDesc: cleanVerifyText(incPay.overseasBuyersDesc || initialPaymentPlanCMS.howToPay.overseasBuyersDesc),
+      resalePurchasesTitle: cleanVerifyText(incPay.resalePurchasesTitle || initialPaymentPlanCMS.howToPay.resalePurchasesTitle),
+      resalePurchasesDesc: cleanVerifyText(incPay.resalePurchasesDesc || initialPaymentPlanCMS.howToPay.resalePurchasesDesc),
+      missedInstalmentTitle: cleanVerifyText(incPay.missedInstalmentTitle || initialPaymentPlanCMS.howToPay.missedInstalmentTitle),
+      missedInstalmentDesc: cleanVerifyText(incPay.missedInstalmentDesc || initialPaymentPlanCMS.howToPay.missedInstalmentDesc),
+      commercialPlotTitle: cleanVerifyText(incPay.commercialPlotTitle || initialPaymentPlanCMS.howToPay.commercialPlotTitle),
+      commercialPlotDesc: cleanVerifyText(incPay.commercialPlotDesc || initialPaymentPlanCMS.howToPay.commercialPlotDesc)
+    },
+    faqsSection: {
+      heading: cleanVerifyText(incFaqs.heading || initialPaymentPlanCMS.faqsSection.heading),
+      faqs: Array.isArray(incFaqs.faqs) && incFaqs.faqs.length > 0
+        ? incFaqs.faqs.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialPaymentPlanCMS.faqsSection.faqs
+    },
+    ctaAndAbout: {
+      ctaHeading: cleanVerifyText(incCta.ctaHeading || initialPaymentPlanCMS.ctaAndAbout.ctaHeading),
+      ctaSubline: cleanVerifyText(incCta.ctaSubline || initialPaymentPlanCMS.ctaAndAbout.ctaSubline),
+      whatsappNumber: cleanVerifyText(incCta.whatsappNumber || initialPaymentPlanCMS.ctaAndAbout.whatsappNumber),
+      phoneNumber: cleanVerifyText(incCta.phoneNumber || initialPaymentPlanCMS.ctaAndAbout.phoneNumber),
+      officeLocation: cleanVerifyText(incCta.officeLocation || initialPaymentPlanCMS.ctaAndAbout.officeLocation),
+      aboutHeading: cleanVerifyText(incCta.aboutHeading || initialPaymentPlanCMS.ctaAndAbout.aboutHeading),
+      aboutText: cleanVerifyText(incCta.aboutText || initialPaymentPlanCMS.ctaAndAbout.aboutText)
+    }
+  };
+}
+
+export async function fetchPaymentPlanCMS(): Promise<PaymentPlanCMSData> {
+  const remote = await fetchSettingByKey<PaymentPlanCMSData>('faisal_payment_plan_cms');
+  if (remote) return mergePaymentPlanCMS(remote);
+
+  if (typeof window !== 'undefined') {
+    try {
+      const local = localStorage.getItem('faisal_payment_plan_cms');
+      if (local) return mergePaymentPlanCMS(JSON.parse(local));
+    } catch {}
+  }
+  return initialPaymentPlanCMS;
+}
+
+export async function savePaymentPlanCMS(cmsData: PaymentPlanCMSData, token?: string): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_payment_plan_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_payment_plan_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_payment_plan_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+

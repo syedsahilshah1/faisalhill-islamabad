@@ -192,14 +192,30 @@ export async function generateMetadata({ params }: BlockPageProps): Promise<Meta
   }
 
   if (params.slug === 'block-d') {
+    const canonical = `${BASE_URL}/blocks/block-d`;
     return {
-      title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
-      description: 'Faisal Hills Block D: 100% RDA-approved plots with natural freshwater springs, Brahma Bahtar M-1 Motorway access, and Medical City. Explore 5, 8, 10, 14 Marla & 1 Kanal plot prices, NOC & master plan.',
-      keywords: ['Faisal Hills Block D', 'Block D Faisal Hills plots', 'Faisal Hills Block D price', 'Block D payment plan', 'Faisal Hills Block D map', 'Brahma Bahtar Interchange Faisal Hills', 'Faisal Hills RDA NOC'],
+      title: 'Faisal Hills Block D: Possession, Plot Prices & Plots for Sale',
+      description: 'Faisal Hills Block D: possession status and how to take it, the five payment plans in circulation, plot sizes, rates and what to verify.',
+      keywords: [
+        'Faisal Hills Block D', 'Block D location', 'Block D map', 'Block D master plan', 'Block D plots',
+        'Block D plots for sale', 'Block D price', 'Block D plot prices', 'Block D plot rates', '5 Marla Block D',
+        '8 Marla Block D', '10 Marla Block D', '14 Marla Block D', '1 Kanal Block D', 'Block D possession',
+        'Block D payment plan', 'Block D development status', 'Faisal Hills RDA NOC'
+      ],
+      alternates: {
+        canonical: canonical,
+      },
       openGraph: {
-        title: 'Faisal Hills Block D – Prices, Master Plan, Margalla Springs & Payment Plan',
-        description: 'Faisal Hills Block D: 100% RDA-approved plots with natural freshwater springs, Brahma Bahtar M-1 Motorway access, and Medical City.',
+        title: 'Faisal Hills Block D: Possession, Plot Prices & Plots for Sale',
+        description: 'Faisal Hills Block D: possession status and how to take it, the five payment plans in circulation, plot sizes, rates and what to verify.',
+        url: canonical,
         images: [{ url: '/images/faisal-hills-drone-view.webp' }]
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Faisal Hills Block D: Possession, Plot Prices & Plots for Sale',
+        description: 'Faisal Hills Block D: possession status and how to take it, the five payment plans in circulation, plot sizes, rates and what to verify.',
+        images: ['/images/faisal-hills-drone-view.webp']
       }
     };
   }

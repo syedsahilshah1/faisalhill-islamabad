@@ -744,11 +744,13 @@ export default function BlockDCmsEditor({
                   text: 'text-[#7b002c]',
                   border: 'border-rose-100'
                 };
+                const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
                 setBlockDCms({
                   ...blockDCms,
                   whyInvestSection: {
-                    ...blockDCms.whyInvestSection,
-                    reasons: [...(blockDCms.whyInvestSection.reasons || []), newReason]
+                    heading: currentWhy.heading || 'Why Invest in Block D',
+                    subline: currentWhy.subline || '',
+                    reasons: [...(currentWhy.reasons || []), newReason]
                   }
                 });
               }}
@@ -765,10 +767,15 @@ export default function BlockDCmsEditor({
                 <button
                   type="button"
                   onClick={() => {
-                    const updated = blockDCms.whyInvestSection.reasons.filter((_, i) => i !== idx);
+                    const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
+                    const updated = (currentWhy.reasons || []).filter((_, i) => i !== idx);
                     setBlockDCms({
                       ...blockDCms,
-                      whyInvestSection: { ...blockDCms.whyInvestSection, reasons: updated }
+                      whyInvestSection: {
+                        heading: currentWhy.heading || 'Why Invest in Block D',
+                        subline: currentWhy.subline || '',
+                        reasons: updated
+                      }
                     });
                   }}
                   className="absolute top-4 right-4 p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer"
@@ -783,11 +790,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={reason.title}
                     onChange={(e) => {
-                      const updated = [...blockDCms.whyInvestSection.reasons];
-                      updated[idx].title = e.target.value;
+                      const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
+                      const updated = [...(currentWhy.reasons || [])];
+                      updated[idx] = { ...updated[idx], title: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        whyInvestSection: { ...blockDCms.whyInvestSection, reasons: updated }
+                        whyInvestSection: {
+                          heading: currentWhy.heading || 'Why Invest in Block D',
+                          subline: currentWhy.subline || '',
+                          reasons: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold"
@@ -800,11 +812,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={reason.tag}
                     onChange={(e) => {
-                      const updated = [...blockDCms.whyInvestSection.reasons];
-                      updated[idx].tag = e.target.value;
+                      const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
+                      const updated = [...(currentWhy.reasons || [])];
+                      updated[idx] = { ...updated[idx], tag: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        whyInvestSection: { ...blockDCms.whyInvestSection, reasons: updated }
+                        whyInvestSection: {
+                          heading: currentWhy.heading || 'Why Invest in Block D',
+                          subline: currentWhy.subline || '',
+                          reasons: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
@@ -817,11 +834,16 @@ export default function BlockDCmsEditor({
                     rows={3}
                     value={reason.desc}
                     onChange={(e) => {
-                      const updated = [...blockDCms.whyInvestSection.reasons];
-                      updated[idx].desc = e.target.value;
+                      const currentWhy = blockDCms.whyInvestSection || initialBlockDCMS.whyInvestSection || { heading: 'Why Invest in Block D', subline: '', reasons: [] };
+                      const updated = [...(currentWhy.reasons || [])];
+                      updated[idx] = { ...updated[idx], desc: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        whyInvestSection: { ...blockDCms.whyInvestSection, reasons: updated }
+                        whyInvestSection: {
+                          heading: currentWhy.heading || 'Why Invest in Block D',
+                          subline: currentWhy.subline || '',
+                          reasons: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
@@ -1070,11 +1092,13 @@ export default function BlockDCmsEditor({
                   tag: 'Planned Facility',
                   features: ['Feature 1', 'Feature 2', 'Feature 3']
                 };
+                const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
                 setBlockDCms({
                   ...blockDCms,
                   amenitiesSection: {
-                    ...blockDCms.amenitiesSection,
-                    amenitiesList: [...(blockDCms.amenitiesSection.amenitiesList || []), newAmenity]
+                    heading: currentAmen.heading || 'Amenities in Block D',
+                    subline: currentAmen.subline || '',
+                    amenitiesList: [...(currentAmen.amenitiesList || []), newAmenity]
                   }
                 });
               }}
@@ -1091,10 +1115,15 @@ export default function BlockDCmsEditor({
                 <button
                   type="button"
                   onClick={() => {
-                    const updated = blockDCms.amenitiesSection.amenitiesList.filter((_, i) => i !== idx);
+                    const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                    const updated = (currentAmen.amenitiesList || []).filter((_, i) => i !== idx);
                     setBlockDCms({
                       ...blockDCms,
-                      amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                      amenitiesSection: {
+                        heading: currentAmen.heading || 'Amenities in Block D',
+                        subline: currentAmen.subline || '',
+                        amenitiesList: updated
+                      }
                     });
                   }}
                   className="absolute top-4 right-4 p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer"
@@ -1109,11 +1138,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={amen.title}
                     onChange={(e) => {
-                      const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                      updated[idx].title = e.target.value;
+                      const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                      const updated = [...(currentAmen.amenitiesList || [])];
+                      updated[idx] = { ...updated[idx], title: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                        amenitiesSection: {
+                          heading: currentAmen.heading || 'Amenities in Block D',
+                          subline: currentAmen.subline || '',
+                          amenitiesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold"
@@ -1127,11 +1161,16 @@ export default function BlockDCmsEditor({
                       type="text"
                       value={amen.tag}
                       onChange={(e) => {
-                        const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                        updated[idx].tag = e.target.value;
+                        const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                        const updated = [...(currentAmen.amenitiesList || [])];
+                        updated[idx] = { ...updated[idx], tag: e.target.value };
                         setBlockDCms({
                           ...blockDCms,
-                          amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                          amenitiesSection: {
+                            heading: currentAmen.heading || 'Amenities in Block D',
+                            subline: currentAmen.subline || '',
+                            amenitiesList: updated
+                          }
                         });
                       }}
                       className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-[#7b002c]"
@@ -1142,11 +1181,16 @@ export default function BlockDCmsEditor({
                     <select
                       value={amen.category}
                       onChange={(e) => {
-                        const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                        updated[idx].category = e.target.value;
+                        const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                        const updated = [...(currentAmen.amenitiesList || [])];
+                        updated[idx] = { ...updated[idx], category: e.target.value as any };
                         setBlockDCms({
                           ...blockDCms,
-                          amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                          amenitiesSection: {
+                            heading: currentAmen.heading || 'Amenities in Block D',
+                            subline: currentAmen.subline || '',
+                            amenitiesList: updated
+                          }
                         });
                       }}
                       className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
@@ -1166,11 +1210,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={amen.image}
                     onChange={(e) => {
-                      const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                      updated[idx].image = e.target.value;
+                      const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                      const updated = [...(currentAmen.amenitiesList || [])];
+                      updated[idx] = { ...updated[idx], image: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                        amenitiesSection: {
+                          heading: currentAmen.heading || 'Amenities in Block D',
+                          subline: currentAmen.subline || '',
+                          amenitiesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono"
@@ -1183,11 +1232,16 @@ export default function BlockDCmsEditor({
                     rows={2}
                     value={amen.description}
                     onChange={(e) => {
-                      const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                      updated[idx].description = e.target.value;
+                      const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                      const updated = [...(currentAmen.amenitiesList || [])];
+                      updated[idx] = { ...updated[idx], description: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                        amenitiesSection: {
+                          heading: currentAmen.heading || 'Amenities in Block D',
+                          subline: currentAmen.subline || '',
+                          amenitiesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
@@ -1200,11 +1254,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={(amen.features || []).join(', ')}
                     onChange={(e) => {
-                      const updated = [...blockDCms.amenitiesSection.amenitiesList];
-                      updated[idx].features = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+                      const currentAmen = blockDCms.amenitiesSection || initialBlockDCMS.amenitiesSection || { heading: 'Amenities in Block D', subline: '', amenitiesList: [] };
+                      const updated = [...(currentAmen.amenitiesList || [])];
+                      updated[idx] = { ...updated[idx], features: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) };
                       setBlockDCms({
                         ...blockDCms,
-                        amenitiesSection: { ...blockDCms.amenitiesSection, amenitiesList: updated }
+                        amenitiesSection: {
+                          heading: currentAmen.heading || 'Amenities in Block D',
+                          subline: currentAmen.subline || '',
+                          amenitiesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
@@ -1240,11 +1299,13 @@ export default function BlockDCmsEditor({
                   desc: 'Construction and utility testing currently underway.',
                   image: '/images/faisal-hills-drone-view.webp'
                 };
+                const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
                 setBlockDCms({
                   ...blockDCms,
                   developmentMilestonesSection: {
-                    ...blockDCms.developmentMilestonesSection,
-                    milestonesList: [...(blockDCms.developmentMilestonesSection.milestonesList || []), newMilestone]
+                    heading: currentMs.heading || 'Development Milestones in Block D',
+                    subline: currentMs.subline || '',
+                    milestonesList: [...(currentMs.milestonesList || []), newMilestone]
                   }
                 });
               }}
@@ -1261,10 +1322,15 @@ export default function BlockDCmsEditor({
                 <button
                   type="button"
                   onClick={() => {
-                    const updated = blockDCms.developmentMilestonesSection.milestonesList.filter((_, i) => i !== idx);
+                    const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                    const updated = (currentMs.milestonesList || []).filter((_, i) => i !== idx);
                     setBlockDCms({
                       ...blockDCms,
-                      developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
+                      developmentMilestonesSection: {
+                        heading: currentMs.heading || 'Development Milestones in Block D',
+                        subline: currentMs.subline || '',
+                        milestonesList: updated
+                      }
                     });
                   }}
                   className="absolute top-4 right-4 p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer"
@@ -1279,11 +1345,16 @@ export default function BlockDCmsEditor({
                     type="text"
                     value={ms.title}
                     onChange={(e) => {
-                      const updated = [...blockDCms.developmentMilestonesSection.milestonesList];
-                      updated[idx].title = e.target.value;
+                      const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                      const updated = [...(currentMs.milestonesList || [])];
+                      updated[idx] = { ...updated[idx], title: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
+                        developmentMilestonesSection: {
+                          heading: currentMs.heading || 'Development Milestones in Block D',
+                          subline: currentMs.subline || '',
+                          milestonesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold"
@@ -1299,11 +1370,16 @@ export default function BlockDCmsEditor({
                       max="100"
                       value={ms.progress}
                       onChange={(e) => {
-                        const updated = [...blockDCms.developmentMilestonesSection.milestonesList];
-                        updated[idx].progress = Number(e.target.value);
+                        const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                        const updated = [...(currentMs.milestonesList || [])];
+                        updated[idx] = { ...updated[idx], progress: Number(e.target.value) };
                         setBlockDCms({
                           ...blockDCms,
-                          developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
+                          developmentMilestonesSection: {
+                            heading: currentMs.heading || 'Development Milestones in Block D',
+                            subline: currentMs.subline || '',
+                            milestonesList: updated
+                          }
                         });
                       }}
                       className="w-full accent-[#7b002c]"
@@ -1315,33 +1391,21 @@ export default function BlockDCmsEditor({
                       type="text"
                       value={ms.status}
                       onChange={(e) => {
-                        const updated = [...blockDCms.developmentMilestonesSection.milestonesList];
-                        updated[idx].status = e.target.value;
+                        const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                        const updated = [...(currentMs.milestonesList || [])];
+                        updated[idx] = { ...updated[idx], status: e.target.value };
                         setBlockDCms({
                           ...blockDCms,
-                          developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
+                          developmentMilestonesSection: {
+                            heading: currentMs.heading || 'Development Milestones in Block D',
+                            subline: currentMs.subline || '',
+                            milestonesList: updated
+                          }
                         });
                       }}
-                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-emerald-700"
+                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
                     />
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Image URL</label>
-                  <input
-                    type="text"
-                    value={ms.image}
-                    onChange={(e) => {
-                      const updated = [...blockDCms.developmentMilestonesSection.milestonesList];
-                      updated[idx].image = e.target.value;
-                      setBlockDCms({
-                        ...blockDCms,
-                        developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
-                      });
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono"
-                  />
                 </div>
 
                 <div className="space-y-1">
@@ -1350,14 +1414,41 @@ export default function BlockDCmsEditor({
                     rows={2}
                     value={ms.desc}
                     onChange={(e) => {
-                      const updated = [...blockDCms.developmentMilestonesSection.milestonesList];
-                      updated[idx].desc = e.target.value;
+                      const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                      const updated = [...(currentMs.milestonesList || [])];
+                      updated[idx] = { ...updated[idx], desc: e.target.value };
                       setBlockDCms({
                         ...blockDCms,
-                        developmentMilestonesSection: { ...blockDCms.developmentMilestonesSection, milestonesList: updated }
+                        developmentMilestonesSection: {
+                          heading: currentMs.heading || 'Development Milestones in Block D',
+                          subline: currentMs.subline || '',
+                          milestonesList: updated
+                        }
                       });
                     }}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase">Site Image URL</label>
+                  <input
+                    type="text"
+                    value={ms.image}
+                    onChange={(e) => {
+                      const currentMs = blockDCms.developmentMilestonesSection || initialBlockDCMS.developmentMilestonesSection || { heading: 'Development Milestones in Block D', subline: '', milestonesList: [] };
+                      const updated = [...(currentMs.milestonesList || [])];
+                      updated[idx] = { ...updated[idx], image: e.target.value };
+                      setBlockDCms({
+                        ...blockDCms,
+                        developmentMilestonesSection: {
+                          heading: currentMs.heading || 'Development Milestones in Block D',
+                          subline: currentMs.subline || '',
+                          milestonesList: updated
+                        }
+                      });
+                    }}
+                    className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono"
                   />
                 </div>
               </div>
