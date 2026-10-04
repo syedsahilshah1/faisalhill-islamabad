@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface BlockHeroInquiryFormProps {
   blockName: string;
@@ -10,6 +11,9 @@ interface BlockHeroInquiryFormProps {
 }
 
 export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHeroInquiryFormProps) {
+  // Keeps the WhatsApp hand-off in step with the number configured in the
+  // dashboard instead of a number baked into this component.
+  const { whatsappUrl } = useContactChannels();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [plotSize, setPlotSize] = useState('5 Marla');
@@ -55,7 +59,7 @@ export default function BlockHeroInquiryForm({ blockName, blockSlug }: BlockHero
         `Hi Faisal Hills Desk!\n\nI want rate list and available plots in *${blockName}*.\nName: ${name}\nPhone: ${phone}\nPlot Size: ${plotSize}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+        window.open(whatsappUrl(waText, undefined, true), '_blank');
       }, 700);
 
     } catch (err) {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { 
   Building2, ShieldCheck, MapPin, Database, CheckCircle2, Edit, Save, 
@@ -16,6 +16,8 @@ import SecuritySettingsTab from '@/components/admin/SecuritySettingsTab';
 import HomepageCmsTab from '@/components/admin/HomepageCmsTab';
 import BlocksPageCmsTab from '@/components/admin/BlocksPageCmsTab';
 import PaymentPlanCmsEditor from '@/components/admin/PaymentPlanCmsEditor';
+import MasterPlanCmsEditor from '@/components/admin/MasterPlanCmsEditor';
+import NocStatusCmsEditor from '@/components/admin/NocStatusCmsEditor';
 import {
   formatPKR,
   formatPriceRange,
@@ -94,41 +96,69 @@ import {
   mapLeadToCamel,
   PaymentPlanCMSData,
   initialPaymentPlanCMS,
-  fetchPaymentPlanCMS
+  fetchPaymentPlanCMS,
+  MasterPlanCMSData,
+  initialMasterPlanCMS,
+  fetchMasterPlanCMS,
+  NocStatusCMSData,
+  initialNocStatusCMS,
+  fetchNocStatusCMS
 } from '@/data/faisalHillsData';
+import { compressImageFile } from '@/components/admin/ImageUploader';
 
-function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
 
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
+import {
+  FALLBACK_PERMISSION_CATALOGUE,
+  PermissionDescriptor,
+  canAccessTab,
+  hasPermission,
+} from '@/lib/permissions';
+import { useDebouncedValue } from '@/lib/useDebounce';
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } else {
-          resolve((event.target?.result as string) || '');
-        }
-      };
-      img.onerror = () => resolve((event.target?.result as string) || '');
-      img.src = event.target?.result as string;
-    };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
-  });
-}
+/**
+ * Every tab the dashboard can render.
+ *
+ * `'blocks'` was previously part of this union but no tab used that id (the real
+ * one is `blocks_cms`), so `?tab=blocks` produced a blank dashboard. A single
+ * list now drives the type, the tab strip and the deep-link validation so they
+ * cannot drift.
+ */
+type DashboardTabId =
+  | 'homepage_cms'
+  | 'blocks_cms'
+  | 'master_plan_cms'
+  | 'payment_plan_cms'
+  | 'noc_cms'
+  | 'series'
+  | 'plots'
+  | 'legal'
+  | 'accounts'
+  | 'verification'
+  | 'leads'
+  | 'seo'
+  | 'gallery'
+  | 'blogs'
+  | 'users'
+  | 'security';
+
+const KNOWN_TAB_IDS: readonly string[] = [
+  'homepage_cms',
+  'blocks_cms',
+  'master_plan_cms',
+  'payment_plan_cms',
+  'noc_cms',
+  'series',
+  'plots',
+  'legal',
+  'accounts',
+  'verification',
+  'leads',
+  'seo',
+  'gallery',
+  'blogs',
+  'users',
+  'security',
+];
 
 export default function AdminLoginPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -140,8 +170,10 @@ export default function AdminLoginPage() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
 
   // Dashboard states
-  const [activeTab, setActiveTab] = useState<'homepage_cms' | 'blocks_cms' | 'payment_plan_cms' | 'series' | 'plots' | 'blocks' | 'legal' | 'accounts' | 'verification' | 'leads' | 'seo' | 'gallery' | 'blogs' | 'users' | 'security'>('homepage_cms');
+  const [activeTab, setActiveTab] = useState<DashboardTabId>('homepage_cms');
   const [paymentPlanCms, setPaymentPlanCms] = useState<PaymentPlanCMSData>(initialPaymentPlanCMS);
+  const [masterPlanCms, setMasterPlanCms] = useState<MasterPlanCMSData>(initialMasterPlanCMS);
+  const [nocCms, setNocCms] = useState<NocStatusCMSData>(initialNocStatusCMS);
   const [plots, setPlots] = useState<PlotItem[]>([]);
   const [plotFilterBlock, setPlotFilterBlock] = useState<string>('all');
   const [plotSearchQuery, setPlotSearchQuery] = useState<string>('');
@@ -302,6 +334,62 @@ export default function AdminLoginPage() {
   const [newPhotoCategory, setNewPhotoCategory] = useState<'Infrastructure' | 'Towers' | 'Amenities' | 'Entrance'>('Infrastructure');
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
 
+  // Gallery photo upload state. The file is sent to the media endpoint and the
+  // stored value becomes the returned path, not the image bytes.
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryUploadError, setGalleryUploadError] = useState('');
+  const galleryFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleGalleryPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setGalleryUploadError('');
+
+    if (!token) {
+      setGalleryUploadError('Your session has expired. Sign in again to upload images.');
+      return;
+    }
+
+    setGalleryUploading(true);
+
+    try {
+      const blob = await compressImageFile(file, 2048, 0.88);
+
+      const form = new FormData();
+      form.append('image', blob, file.name.replace(/\.[^/.]+$/, '') + '.webp');
+      form.append('folder', 'gallery');
+
+      const res = await fetch(`${getApiUrl()}/admin/media/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json'
+        },
+        body: form
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const firstField = data && data.errors ? Object.values(data.errors)[0] : null;
+        throw new Error((firstField as string) || data.message || `Upload failed (HTTP ${res.status}).`);
+      }
+
+      const data = await res.json();
+
+      if (!data || typeof data.url !== 'string' || !data.url) {
+        throw new Error('The server did not return an image URL.');
+      }
+
+      setNewPhotoUrl(data.url);
+    } catch (err) {
+      setGalleryUploadError(err instanceof Error ? err.message : 'Upload failed.');
+    } finally {
+      setGalleryUploading(false);
+      if (galleryFileInputRef.current) galleryFileInputRef.current.value = '';
+    }
+  };
+
   const [seoSettings, setSeoSettings] = useState<GlobalSeoSettings>(initialSeoConfig);
   const [selectedSeoPageSlug, setSelectedSeoPageSlug] = useState<string>('home');
 
@@ -393,8 +481,13 @@ export default function AdminLoginPage() {
 
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
-      if (tabParam && ['series', 'plots', 'blocks', 'legal', 'accounts', 'verification', 'leads', 'seo', 'gallery', 'blogs', 'users', 'security'].includes(tabParam)) {
-        setActiveTab(tabParam as any);
+
+      // Validated against the tab ids that actually exist. The previous list was
+      // a separate hand-maintained array containing `'blocks'`, which matches no
+      // tab id, so `?tab=blocks` set the active tab to a value that rendered
+      // nothing. The render guards below enforce the permission half.
+      if (tabParam && KNOWN_TAB_IDS.includes(tabParam)) {
+        setActiveTab(tabParam as DashboardTabId);
       }
     }
 
@@ -423,6 +516,8 @@ export default function AdminLoginPage() {
       if (data.home_hero_form_subtitle) setHomeHeroFormSubtitle(data.home_hero_form_subtitle);
     }).catch(console.error);
     fetchPaymentPlanCMS().then(data => { if (data) setPaymentPlanCms(data); }).catch(console.error);
+    fetchMasterPlanCMS().then(data => { if (data) setMasterPlanCms(data); }).catch(console.error);
+    fetchNocStatusCMS().then(data => { if (data) setNocCms(data); }).catch(console.error);
 
     // Check localStorage cache first for immediate responsiveness
     if (typeof window !== 'undefined') {
@@ -1841,6 +1936,38 @@ export default function AdminLoginPage() {
     }
   };
 
+  // The inventory table filtered its rows inline in JSX, so every keystroke in
+  // the search box re-filtered the entire plot list and re-rendered every row.
+  // Hoisting it here and debouncing the query reduces a per-character pass over
+  // the whole inventory to one pass per pause.
+  //
+  // These two hooks MUST stay above the `if (!isAuthenticated)` return below.
+  // This component renders the login screen and the dashboard from the same
+  // function, so any hook declared after that early return only exists in the
+  // authenticated render. Signing in then ran more hooks than the signed-out
+  // render had, and React threw "Rendered more hooks than during the previous
+  // render" and tore the whole dashboard down. Every hook in this component has
+  // to be declared before the first conditional return.
+  const debouncedPlotSearchQuery = useDebouncedValue(plotSearchQuery, 200);
+
+  const visiblePlots = useMemo(() => {
+    const q = debouncedPlotSearchQuery.toLowerCase().trim();
+
+    return plots.filter((plot) => {
+      const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
+      const plotType = plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential');
+      const matchesType = plotFilterType === 'all' || plotType === plotFilterType;
+      const matchesQuery = !q ||
+        (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
+        (plot.size && plot.size.toLowerCase().includes(q)) ||
+        (plot.dimensions && plot.dimensions.toLowerCase().includes(q)) ||
+        (plot.facing && plot.facing.toLowerCase().includes(q)) ||
+        (plot.street && plot.street.toLowerCase().includes(q)) ||
+        (plot.blockName && plot.blockName.toLowerCase().includes(q));
+      return matchesBlock && matchesType && matchesQuery;
+    });
+  }, [plots, plotFilterBlock, plotFilterType, debouncedPlotSearchQuery]);
+
   // -------------------------------------------------------------
   // 1. UNAUTHENTICATED LOGIN SCREEN
   // -------------------------------------------------------------
@@ -1987,33 +2114,35 @@ export default function AdminLoginPage() {
   // -------------------------------------------------------------
   // 2. AUTHENTICATED ADMIN DASHBOARD
   // -------------------------------------------------------------
-  const isSuperAdmin = currentUser?.role === 'super_admin';
-  const userPerms = currentUser?.permissions || [];
-  const hasPermission = (p: string | null) => {
-    if (!p) return true;
-    if (isSuperAdmin) return true;
-    if (!userPerms || userPerms.length === 0) return true; // default full access for existing admin accounts
-    return userPerms.includes(p);
-  };
+  const isSuperAdminUser = currentUser?.role === 'super_admin';
+
+  // Fails closed. An empty or absent grant set means no access, and each tab
+  // resolves its own capability, so access can be granted per page.
+  const can = (p: string | null) => hasPermission(currentUser, p);
+  const canTab = (tabId: string) => canAccessTab(currentUser, tabId);
 
   const allAvailableTabs = [
-    { id: 'homepage_cms' as const, label: '🏠 Homepage CMS Editor', icon: Home, badge: 'All 24 Sections', requiredPerm: 'manage_homepage_cms' },
-    { id: 'blocks_cms' as const, label: '🧱 Blocks Page & Sectors CMS', icon: Layers, badge: 'All Sections & Media', requiredPerm: 'manage_homepage_cms' },
-    { id: 'payment_plan_cms' as const, label: '💳 Payment Plan CMS', icon: DollarSign, badge: '2026 Schedule', requiredPerm: 'manage_homepage_cms' },
-    { id: 'series' as const, label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync', requiredPerm: 'manage_plots' },
-    { id: 'plots' as const, label: `Plots Inventory (${plots.length})`, icon: Layers, requiredPerm: 'manage_plots' },
-    { id: 'leads' as const, label: `Inquiries Log (${leadsList.length})`, icon: Users, requiredPerm: 'manage_leads' },
-    { id: 'blogs' as const, label: `Blogs CMS (${blogsList.length})`, icon: FileText, requiredPerm: 'manage_blogs' },
-    { id: 'gallery' as const, label: `Photo Gallery (${galleryList.length})`, icon: Camera, requiredPerm: 'manage_gallery' },
-    { id: 'seo' as const, label: `SEO & Meta Tags (${seoSettings.pages.length} Pages)`, icon: Globe, requiredPerm: 'manage_seo' },
-    { id: 'legal' as const, label: 'Legal Policies (Terms & Privacy)', icon: BookOpen, requiredPerm: 'manage_homepage_cms' },
-    { id: 'accounts' as const, label: 'Bank Accounts & Contacts', icon: CreditCard, requiredPerm: 'manage_homepage_cms' },
-    { id: 'verification' as const, label: 'Verification Date', icon: ShieldCheck, requiredPerm: 'manage_homepage_cms' },
-    ...(isSuperAdmin || hasPermission('manage_users') ? [{ id: 'users' as const, label: 'Administrators', icon: Users, badge: isSuperAdmin ? 'Super Admin' : undefined, requiredPerm: 'manage_users' }] : []),
-    { id: 'security' as const, label: 'Security & Password', icon: KeyRound, requiredPerm: null },
+    { id: 'homepage_cms' as const, label: '🏠 Homepage CMS Editor', icon: Home, badge: 'All Sections' },
+    { id: 'blocks_cms' as const, label: '🧱 Blocks Page & Sectors CMS', icon: Layers, badge: 'All Sections & Media' },
+    { id: 'master_plan_cms' as const, label: '🗺️ Master Plan CMS', icon: MapPin, badge: 'Full Map CMS' },
+    { id: 'payment_plan_cms' as const, label: '💳 Payment Plan CMS', icon: DollarSign, badge: '2026 Schedule' },
+    { id: 'noc_cms' as const, label: '🏛️ NOC Status & Approvals CMS', icon: ShieldCheck, badge: 'RDA Approved' },
+    { id: 'series' as const, label: '⚡ Plot Series & Prices', icon: Sparkles, badge: 'Live Sync' },
+    { id: 'plots' as const, label: `Plots Inventory (${plots.length})`, icon: Layers },
+    { id: 'leads' as const, label: `Inquiries Log (${leadsList.length})`, icon: Users },
+    { id: 'blogs' as const, label: `Blogs CMS (${blogsList.length})`, icon: FileText },
+    { id: 'gallery' as const, label: `Photo Gallery (${galleryList.length})`, icon: Camera },
+    { id: 'seo' as const, label: `SEO & Meta Tags (${seoSettings.pages.length} Pages)`, icon: Globe },
+    { id: 'legal' as const, label: 'Legal Policies (Terms & Privacy)', icon: BookOpen },
+    { id: 'accounts' as const, label: 'Bank Accounts & Contacts', icon: CreditCard },
+    { id: 'verification' as const, label: 'Verification Date', icon: ShieldCheck },
+    ...(canTab('users') ? [{ id: 'users' as const, label: 'Administrators', icon: Users, badge: isSuperAdminUser ? 'Super Admin' : undefined }] : []),
+    { id: 'security' as const, label: 'Security & Password', icon: KeyRound },
   ];
 
-  const dashboardTabs = allAvailableTabs.filter(t => hasPermission(t.requiredPerm));
+  // Filtered for the tab strip, and independently enforced on each render below.
+  // Both are required: the strip alone was bypassable via `?tab=`.
+  const dashboardTabs = allAvailableTabs.filter(t => canTab(t.id));
 
   return (
     <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 font-sans">
@@ -2183,17 +2312,31 @@ export default function AdminLoginPage() {
 
 
       {/* TAB: HOMEPAGE CMS EDITOR */}
-      {activeTab === 'homepage_cms' && (
+      {activeTab === 'homepage_cms' && canTab('homepage_cms') && (
         <HomepageCmsTab token={token} />
       )}
 
       {/* TAB: BLOCKS PAGE CMS EDITOR */}
-      {activeTab === 'blocks_cms' && (
+      {activeTab === 'blocks_cms' && canTab('blocks_cms') && (
         <BlocksPageCmsTab token={token} />
       )}
 
+      {/* TAB: MASTER PLAN CMS EDITOR */}
+      {activeTab === 'master_plan_cms' && canTab('master_plan_cms') && (
+        <MasterPlanCmsEditor
+          masterPlanCms={masterPlanCms}
+          setMasterPlanCms={setMasterPlanCms}
+          token={token}
+          onSaveSuccess={(msg) => {
+            setSaveNotification(true);
+            setNotificationMsg(msg);
+            setTimeout(() => setSaveNotification(false), 4000);
+          }}
+        />
+      )}
+
       {/* TAB: PAYMENT PLAN CMS EDITOR */}
-      {activeTab === 'payment_plan_cms' && (
+      {activeTab === 'payment_plan_cms' && canTab('payment_plan_cms') && (
         <PaymentPlanCmsEditor
           paymentPlanCms={paymentPlanCms}
           setPaymentPlanCms={setPaymentPlanCms}
@@ -2206,8 +2349,22 @@ export default function AdminLoginPage() {
         />
       )}
 
+      {/* TAB: NOC STATUS & APPROVALS CMS EDITOR */}
+      {activeTab === 'noc_cms' && canTab('noc_cms') && (
+        <NocStatusCmsEditor
+          nocCms={nocCms}
+          setNocCms={setNocCms}
+          token={token}
+          onSaveSuccess={(msg) => {
+            setSaveNotification(true);
+            setNotificationMsg(msg);
+            setTimeout(() => setSaveNotification(false), 4000);
+          }}
+        />
+      )}
+
       {/* TAB: PLOT SERIES & PRICE ENGINE */}
-      {activeTab === 'series' && (
+      {activeTab === 'series' && canTab('series') && (
         <div className="space-y-6">
           {/* Header & Reset Strip */}
           <div className="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-white p-5 sm:p-7 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
@@ -2440,7 +2597,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB 1: PLOTS INVENTORY & FOR SALE */}
-      {activeTab === 'plots' && (
+      {activeTab === 'plots' && canTab('plots') && (
         <div className="space-y-4">
           {/* Direct Banner to Series Manager */}
           <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -2534,22 +2691,7 @@ export default function AdminLoginPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
-                  {plots
-                    .filter((plot) => {
-                      const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
-                      const plotType = plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential');
-                      const matchesType = plotFilterType === 'all' || plotType === plotFilterType;
-                      const q = plotSearchQuery.toLowerCase().trim();
-                      const matchesQuery = !q || 
-                        (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
-                        (plot.size && plot.size.toLowerCase().includes(q)) ||
-                        (plot.dimensions && plot.dimensions.toLowerCase().includes(q)) ||
-                        (plot.facing && plot.facing.toLowerCase().includes(q)) ||
-                        (plot.street && plot.street.toLowerCase().includes(q)) ||
-                        (plot.blockName && plot.blockName.toLowerCase().includes(q));
-                      return matchesBlock && matchesType && matchesQuery;
-                    })
-                    .map((plot) => (
+                  {visiblePlots.map((plot) => (
                     <tr key={plot.id} className="hover:bg-slate-50 transition-colors">
                       <td className="p-3.5 font-bold font-serif text-[#7b002c] text-sm">
                         {plot.plotNumber || plot.id}
@@ -2644,20 +2786,7 @@ export default function AdminLoginPage() {
 
           {/* Mobile Cards View */}
           <div className="block md:hidden space-y-3">
-            {plots
-              .filter((plot) => {
-                const matchesBlock = plotFilterBlock === 'all' || plot.blockSlug === plotFilterBlock;
-                const plotType = plot.propertyType || (plot.category === 'Commercial' ? 'Commercial' : 'Residential');
-                const matchesType = plotFilterType === 'all' || plotType === plotFilterType;
-                const q = plotSearchQuery.toLowerCase().trim();
-                const matchesQuery = !q || 
-                  (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
-                  (plot.size && plot.size.toLowerCase().includes(q)) ||
-                  (plot.dimensions && plot.dimensions.toLowerCase().includes(q)) ||
-                  (plot.blockName && plot.blockName.toLowerCase().includes(q));
-                return matchesBlock && matchesType && matchesQuery;
-              })
-              .map((plot) => (
+            {visiblePlots.map((plot) => (
               <div key={plot.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
@@ -3376,7 +3505,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB: SEO & TECHNICAL METADATA CONTROL PANEL */}
-      {activeTab === 'seo' && (
+      {activeTab === 'seo' && canTab('seo') && (
         <SeoDashboardTab
           seoSettings={seoSettings}
           setSeoSettings={setSeoSettings}
@@ -3393,7 +3522,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB: PHOTO GALLERY MANAGER */}
-      {activeTab === 'gallery' && (
+      {activeTab === 'gallery' && canTab('gallery') && (
         <div className="space-y-8">
           
           {/* Upload New Photo Form */}
@@ -3468,27 +3597,43 @@ export default function AdminLoginPage() {
 
                 {/* Upload from Device Action Button */}
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <label className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-2 shadow-xs transition hover:scale-[1.02] active:scale-95">
-                    <Camera className="w-4 h-4" />
-                    <span>Upload from Device / Laptop Gallery</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          compressImageFile(file, 1920, 0.85).then((dataUrl) => {
-                            if (dataUrl) {
-                              setNewPhotoUrl(dataUrl);
-                            }
-                          });
-                        }
-                      }}
-                    />
-                  </label>
+                  {/* Uploads the file and sets `newPhotoUrl` to the returned
+                      path. The previous handler called the local
+                      `compressImageFile` and stored the resulting base64 data
+                      URL, which put the image bytes in the gallery settings
+                      JSON instead of a file. */}
+                  <button
+                    type="button"
+                    onClick={() => galleryFileInputRef.current?.click()}
+                    disabled={galleryUploading}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white text-xs font-bold rounded-xl cursor-pointer shadow-xs transition hover:scale-[1.02] active:scale-95"
+                  >
+                    {galleryUploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Camera className="w-4 h-4" />
+                    )}
+                    <span>
+                      {galleryUploading
+                        ? 'Uploading...'
+                        : 'Upload from Device / Laptop Gallery'}
+                    </span>
+                  </button>
+                  <input
+                    ref={galleryFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                    className="hidden"
+                    onChange={handleGalleryPhotoUpload}
+                  />
                   <span className="text-xs text-slate-400 font-medium">PNG, JPG, WEBP supported</span>
                 </div>
+
+                {galleryUploadError && (
+                  <p role="alert" className="text-[11px] text-red-700 bg-red-50 border border-red-200 px-2 py-1 rounded-lg font-semibold">
+                    {galleryUploadError}
+                  </p>
+                )}
 
                 {/* Manual [src] URL Input */}
                 <div className="space-y-1">
@@ -3600,7 +3745,7 @@ export default function AdminLoginPage() {
 
 
       {/* TAB 3: LEGAL POLICIES (TERMS & PRIVACY POLICY) */}
-      {activeTab === 'legal' && (
+      {activeTab === 'legal' && canTab('legal') && (
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -3770,7 +3915,7 @@ export default function AdminLoginPage() {
 
 
       {/* TAB 4: BANK ACCOUNTS & SOCIAL/CONTACT LINKS */}
-      {activeTab === 'accounts' && (
+      {activeTab === 'accounts' && canTab('accounts') && (
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -4004,6 +4149,20 @@ export default function AdminLoginPage() {
               </div>
 
               <div className="md:col-span-2 space-y-1.5">
+                <label className="block font-bold text-slate-800">Map Directions Link (External URL)</label>
+                <input
+                  type="url"
+                  value={contactInfo.mapDirectionsUrl || ''}
+                  onChange={(e) => setContactInfo(prev => ({ ...prev, mapDirectionsUrl: e.target.value }))}
+                  placeholder="https://maps.google.com/?q=Faisal+Hills+Taxila"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-[#7b002c]"
+                />
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Backs every &ldquo;Directions&rdquo; and &ldquo;Open in Google Maps&rdquo; button site-wide. Must be an http(s) URL; anything else is ignored in favour of the default.
+                </p>
+              </div>
+
+              <div className="md:col-span-2 space-y-1.5">
                 <label className="block font-bold text-slate-800">Head Office Address</label>
                 <input
                   type="text"
@@ -4049,7 +4208,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB 4: DATA VERIFICATION TIMESTAMP */}
-      {activeTab === 'verification' && (
+      {activeTab === 'verification' && canTab('verification') && (
         <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm max-w-xl space-y-5">
           <div className="space-y-1">
             <h3 className="font-serif text-lg sm:text-xl font-bold text-[#7b002c]">Verification Date Requirement</h3>
@@ -4079,7 +4238,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB 5: LEADS LOG */}
-      {activeTab === 'leads' && (
+      {activeTab === 'leads' && canTab('leads') && (
         <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div className="flex justify-between items-center border-b border-slate-100 pb-3">
             <div>
@@ -4147,7 +4306,7 @@ export default function AdminLoginPage() {
       )}
 
       {/* TAB 7: BLOGS CMS */}
-      {activeTab === 'blogs' && (
+      {activeTab === 'blogs' && canTab('blogs') && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <span className="text-slate-655 font-medium">Create, publish & update Faisal Hills real estate blog posts</span>
@@ -5087,7 +5246,7 @@ export default function AdminLoginPage() {
 
 
       {/* TAB: ADMINISTRATOR MANAGEMENT (SUPER ADMIN / MANAGE USERS) */}
-      {activeTab === 'users' && (currentUser?.role === 'super_admin' || hasPermission('manage_users')) && (
+      {activeTab === 'users' && canTab('users') && (
         <AdminManagementTab token={token || ''} currentUser={currentUser} />
       )}
 

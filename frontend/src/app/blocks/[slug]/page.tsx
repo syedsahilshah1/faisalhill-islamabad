@@ -23,7 +23,16 @@ import {
   fetchBlocks,
   fetchBlock,
   fetchPlots,
-  fetchSeo
+  fetchSeo,
+  fetchSettingByKey,
+  formatWhatsAppUrl,
+  type ContactInfoData,
+  type SocialLinksData,
+  fetchExecutiveBlockCMS,
+  fetchBlockB1ExtensionCMS,
+  fetchBlockCCMS,
+  fetchHillsWalkCMS,
+  fetchFaisalJewelCMS
 } from '@/data/faisalHillsData';
 import InteractiveMasterPlan from '@/components/map/InteractiveMasterPlan';
 import FaqAccordion from '@/components/ui/FaqAccordion';
@@ -236,8 +245,22 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
   const allBlocks = await fetchBlocks();
   const otherBlocks = allBlocks.filter((b) => b.slug !== block.slug);
 
+  // Contact channels come from the dashboard, not from literals in this file.
+  // `fetchSettingByKey` coalesces and caches, so this costs no extra request
+  // beyond the one the client components on this page already make.
+  const [contactInfo, socialLinks] = await Promise.all([
+    fetchSettingByKey<ContactInfoData>('contact_info'),
+    fetchSettingByKey<SocialLinksData>('social_links'),
+  ]);
+  const salesWhatsapp = contactInfo?.salesHotline || socialLinks?.whatsapp;
+  const plotBookingWhatsappUrl = formatWhatsAppUrl(
+    salesWhatsapp,
+    'Hi, I am interested in Faisal Hills plot booking.'
+  );
+  const salesWhatsappUrl = formatWhatsAppUrl(salesWhatsapp);
+
   // Authentic Hero images and descriptions for custom blocks with dynamic DB override
-  const heroBg = block.heroImage || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
+  let heroBg = block.heroImage || ((block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels')
     ? '/faisal-jewel-building.webp'
     : block.slug === 'prime-block'
     ? '/images/faisal-hills-executive-block.webp'
@@ -255,7 +278,8 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     ? '/images/faisal-hills-site-header.webp'
     : '/images/faisal-hills-site-header.webp');
 
-  const heroSubtitle = block.subtitle;
+  let heroSubtitle = block.subtitle;
+  let heroTitle = block.name;
 
   const getHeroDescription = () => {
     if (block.slug === 'block-a' || block.slug === 'prime-block' || block.slug === 'block-c' || block.slug === 'block-d' || block.slug === 'block-b' || block.slug === 'block-b1-extension' || block.slug === 'hills-walk' || block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels' || block.id === 'faisal-jewels') return '';
@@ -263,7 +287,57 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
     return 'Comprehensive overview and master layout of this sector in Faisal Hills Islamabad.';
   };
 
-  const heroDesc = getHeroDescription();
+  let heroDesc = getHeroDescription();
+
+  if (block.slug === 'executive-block') {
+    const execCms = await fetchExecutiveBlockCMS();
+    if (execCms?.hero) {
+      if (execCms.hero.bgImage) heroBg = execCms.hero.bgImage;
+      if (execCms.hero.eyebrow) heroSubtitle = execCms.hero.eyebrow;
+      if (execCms.hero.title) heroTitle = execCms.hero.title;
+      if (execCms.hero.subtitle) heroDesc = execCms.hero.subtitle;
+    }
+  }
+
+  if (block.slug === 'block-b1-extension') {
+    const b1Cms = await fetchBlockB1ExtensionCMS();
+    if (b1Cms?.hero) {
+      if (b1Cms.hero.bgImage) heroBg = b1Cms.hero.bgImage;
+      if (b1Cms.hero.eyebrow) heroSubtitle = b1Cms.hero.eyebrow;
+      if (b1Cms.hero.title) heroTitle = b1Cms.hero.title;
+      if (b1Cms.hero.subtitle) heroDesc = b1Cms.hero.subtitle;
+    }
+  }
+
+  if (block.slug === 'block-c') {
+    const cCms = await fetchBlockCCMS();
+    if (cCms?.hero) {
+      if (cCms.hero.bgImage) heroBg = cCms.hero.bgImage;
+      if (cCms.hero.eyebrow) heroSubtitle = cCms.hero.eyebrow;
+      if (cCms.hero.title) heroTitle = cCms.hero.title;
+      if (cCms.hero.subtitle) heroDesc = cCms.hero.subtitle;
+    }
+  }
+
+  if (block.slug === 'hills-walk') {
+    const hwCms = await fetchHillsWalkCMS();
+    if (hwCms?.hero) {
+      if (hwCms.hero.bgImage) heroBg = hwCms.hero.bgImage;
+      if (hwCms.hero.eyebrow) heroSubtitle = hwCms.hero.eyebrow;
+      if (hwCms.hero.title) heroTitle = hwCms.hero.title;
+      if (hwCms.hero.subtitle) heroDesc = hwCms.hero.subtitle;
+    }
+  }
+
+  if (block.slug === 'faisal-jewel-islamabad' || block.slug === 'faisal-jewels' || block.id === 'faisal-jewels') {
+    const fjCms = await fetchFaisalJewelCMS();
+    if (fjCms?.hero) {
+      if (fjCms.hero.bgImage) heroBg = fjCms.hero.bgImage;
+      if (fjCms.hero.eyebrow) heroSubtitle = fjCms.hero.eyebrow;
+      if (fjCms.hero.title) heroTitle = fjCms.hero.title;
+      if (fjCms.hero.subtitle) heroDesc = fjCms.hero.subtitle;
+    }
+  }
 
   return (
     <div className="space-y-8 lg:space-y-10 pb-20">
@@ -310,7 +384,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
               <h1 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
-                {block.name}
+                {heroTitle}
               </h1>
               {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
@@ -331,7 +405,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                   <span>Call Sales Desk</span>
                 </a>
                 <a
-                  href="https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Faisal%20Hills%20plot%20booking."
+                  href={plotBookingWhatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg transition-all hover:scale-105"
@@ -1539,7 +1613,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
                 <a
-                  href="https://wa.me/923331113177"
+                  href={salesWhatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
@@ -1955,7 +2029,10 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                           <span className="font-serif font-bold text-lg text-[#7b002c]">{plot.priceFormatted}</span>
                         </div>
                         <a
-                          href={`https://wa.me/923331113177?text=I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`}
+                          href={formatWhatsAppUrl(
+                            salesWhatsapp,
+                            `I'm interested in Plot ${plot.plotNumber} (${plot.size}) in ${block.name}, Faisal Hills. Price: ${plot.priceFormatted}. Please share more details.`
+                          )}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3.5 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] font-bold rounded-xl transition-all duration-300 hover:scale-105 shadow flex items-center gap-1.5"
@@ -2438,7 +2515,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <a
-                href="https://wa.me/923331113177"
+                href={salesWhatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"

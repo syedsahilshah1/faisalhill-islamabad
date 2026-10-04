@@ -39,12 +39,15 @@ import {
   fetchPaymentPlanCMS,
   formatLeadDateTime
 } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface PaymentPlanClientProps {
   initialCmsData?: PaymentPlanCMSData;
 }
 
 export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientProps) {
+  // The sales desk number comes from the dashboard-editable contact settings.
+  const { whatsappUrl } = useContactChannels();
   const [cms, setCms] = useState<PaymentPlanCMSData>(initialCmsData || initialPaymentPlanCMS);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -94,7 +97,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
     );
 
     setTimeout(() => {
-      window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+      window.open(whatsappUrl(waText, undefined, true), '_blank');
     }, 600);
   };
 

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\PermissionRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class AdminUserController extends Controller
 {
@@ -18,11 +20,39 @@ class AdminUserController extends Controller
         $users = User::select(['id', 'name', 'email', 'role', 'status', 'permissions', 'created_at', 'updated_at'])
             ->orderByRaw("CASE WHEN role = 'super_admin' THEN 0 ELSE 1 END")
             ->orderBy('id', 'asc')
-            ->get();
+            ->get()
+            ->map(fn (User $user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'status' => $user->status,
+                // Reported through the registry so the client is never shown a
+                // stored value the server would refuse to honour.
+                'permissions' => $user->effectivePermissions(),
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ]);
 
         return response()->json([
             'success' => true,
-            'users' => $users
+            'users' => $users,
+        ]);
+    }
+
+    /**
+     * The permission catalogue the dashboard's grants UI renders.
+     *
+     * Served from the server so the picker can never offer a capability the API
+     * would reject, which is what previously allowed arbitrary values into the
+     * `permissions` column.
+     */
+    public function permissions()
+    {
+        return response()->json([
+            'success' => true,
+            'permissions' => PermissionRegistry::forApi(),
+            'groups' => PermissionRegistry::grouped(),
         ]);
     }
 
@@ -31,6 +61,8 @@ class AdminUserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validatePermissions($request);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
@@ -46,22 +78,18 @@ class AdminUserController extends Controller
             'password' => Hash::make($request->input('password')),
             'role' => 'admin',
             'status' => $request->input('status', 'active'),
-            'permissions' => $request->input('permissions', []),
+            // Sanitised rather than stored verbatim, so an unrecognised value can
+            // never reach the column that authorization decisions are made from.
+            'permissions' => PermissionRegistry::sanitize($request->input('permissions', [])),
             'email_verified_at' => now(),
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Administrator account created successfully.',
-            'user' => [
-                'id' => $admin->id,
-                'name' => $admin->name,
-                'email' => $admin->email,
-                'role' => $admin->role,
-                'status' => $admin->status,
-                'permissions' => $admin->permissions,
+            'user' => array_merge($admin->toDashboardArray(), [
                 'created_at' => $admin->created_at,
-            ]
+            ]),
         ], 201);
     }
 
@@ -80,6 +108,8 @@ class AdminUserController extends Controller
             ], 403);
         }
 
+        $this->validatePermissions($request);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($targetUser->id)],
@@ -93,7 +123,7 @@ class AdminUserController extends Controller
         $targetUser->status = $request->input('status');
 
         if ($request->has('permissions')) {
-            $targetUser->permissions = $request->input('permissions');
+            $targetUser->permissions = PermissionRegistry::sanitize($request->input('permissions'));
         }
 
         if ($request->filled('password')) {
@@ -112,16 +142,58 @@ class AdminUserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Administrator account updated successfully.',
-            'user' => [
-                'id' => $targetUser->id,
-                'name' => $targetUser->name,
-                'email' => $targetUser->email,
-                'role' => $targetUser->role,
-                'status' => $targetUser->status,
-                'permissions' => $targetUser->permissions,
+            'user' => array_merge($targetUser->toDashboardArray(), [
                 'updated_at' => $targetUser->updated_at,
-            ]
+            ]),
         ]);
+    }
+
+    /**
+     * Reject permission values the server does not recognise, and prevent an
+     * actor from granting capabilities they do not themselves hold.
+     *
+     * Previously `permissions` was validated only as "is an array", so a client
+     * could persist arbitrary values into the column that now drives
+     * authorization. Failing loudly is better than silently dropping an unknown
+     * key, because otherwise a superadmin could tick a box that has no effect
+     * and believe an administrator had been restricted.
+     *
+     * The subset check closes a self-escalation path: an administrator holding
+     * only `manage_users` could previously grant themselves — or any other
+     * account — every permission, including ones they were never given. Only a
+     * superadmin, who bypasses the check entirely, may grant the full set.
+     */
+    private function validatePermissions(Request $request): void
+    {
+        if (! $request->has('permissions')) {
+            return;
+        }
+
+        $request->validate([
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string', Rule::in(PermissionRegistry::all())],
+        ], [
+            'permissions.*.in' => 'Unknown permission. An administrator can only be granted capabilities the server recognises.',
+        ]);
+
+        $actor = $request->user();
+
+        if ($actor === null || $actor->isSuperAdmin()) {
+            return;
+        }
+
+        $requested = array_values(array_filter(
+            (array) $request->input('permissions', []),
+            'is_string'
+        ));
+
+        $escalation = array_values(array_diff($requested, $actor->effectivePermissions()));
+
+        if ($escalation !== []) {
+            throw ValidationException::withMessages([
+                'permissions' => 'You cannot grant capabilities you do not hold yourself: '.implode(', ', $escalation).'.',
+            ]);
+        }
     }
 
     /**

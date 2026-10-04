@@ -6,16 +6,22 @@ import {
   CheckCircle2, AlertCircle, Loader2, RefreshCw, X, Lock, KeyRound, 
   UserCheck, UserX, Mail, User as UserIcon, CheckSquare, Square
 } from 'lucide-react';
-import { 
-  AdminUser, 
-  apiFetchAdminUsers, 
-  apiCreateAdminUser, 
-  apiUpdateAdminUser, 
-  apiToggleAdminStatus, 
+import {
+  AdminUser,
+  apiFetchAdminUsers,
+  apiFetchPermissionCatalogue,
+  apiCreateAdminUser,
+  apiUpdateAdminUser,
+  apiToggleAdminStatus,
   apiDeleteAdminUser,
-  ALL_DASHBOARD_PERMISSIONS,
-  UserPermissionKey
 } from '@/data/faisalHillsData';
+import {
+  FALLBACK_PERMISSION_CATALOGUE,
+  PermissionDescriptor,
+  UserPermissionKey,
+  groupCatalogue,
+  isSuperAdmin,
+} from '@/lib/permissions';
 
 interface AdminManagementTabProps {
   token: string;
@@ -28,27 +34,35 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  /**
+   * The capability list comes from the server so the picker can never offer a
+   * permission the API would reject. The fallback is only used if that request
+   * fails.
+   */
+  const [catalogue, setCatalogue] = useState<PermissionDescriptor[]>(FALLBACK_PERMISSION_CATALOGUE);
+
+  const groupedCatalogue = groupCatalogue(catalogue);
+
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
-  // Form states with granular RBAC permissions
+  /**
+   * New accounts start with nothing. Defaulting a new administrator to a broad
+   * grant set means the common mistake — adding someone, forgetting to review
+   * the boxes — silently hands over access to leads and content.
+   */
+  const NO_PERMISSIONS: UserPermissionKey[] = [];
+
   const [createForm, setCreateForm] = useState({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
     status: 'active' as 'active' | 'inactive',
-    permissions: [
-      'manage_leads',
-      'manage_plots',
-      'manage_blogs',
-      'manage_gallery',
-      'manage_homepage_cms',
-      'manage_seo'
-    ] as UserPermissionKey[],
+    permissions: NO_PERMISSIONS,
   });
 
   const [editForm, setEditForm] = useState({
@@ -81,6 +95,20 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
     loadUsers();
   }, [token]);
 
+  useEffect(() => {
+    if (!token) return;
+
+    apiFetchPermissionCatalogue(token)
+      .then((permissions) => {
+        if (permissions.length > 0) {
+          setCatalogue(permissions);
+        }
+      })
+      .catch(() => {
+        // Keep the fallback catalogue; the server still validates on save.
+      });
+  }, [token]);
+
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createForm.name || !createForm.email || !createForm.password) {
@@ -109,14 +137,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
         password: '',
         password_confirmation: '',
         status: 'active',
-        permissions: [
-          'manage_leads',
-          'manage_plots',
-          'manage_blogs',
-          'manage_gallery',
-          'manage_homepage_cms',
-          'manage_seo'
-        ],
+        permissions: NO_PERMISSIONS,
       });
       loadUsers();
     } catch (err: any) {
@@ -127,7 +148,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
   };
 
   const handleEditOpen = (user: AdminUser) => {
-    if (user.role === 'super_admin') return; // Protected
+    if (isSuperAdmin(user)) return; // Protected
     setSelectedUser(user);
     setEditForm({
       name: user.name,
@@ -135,9 +156,11 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
       status: user.status,
       password: '',
       password_confirmation: '',
-      permissions: (user.permissions && user.permissions.length > 0)
-        ? (user.permissions as UserPermissionKey[])
-        : ['manage_leads', 'manage_plots', 'manage_blogs', 'manage_gallery', 'manage_homepage_cms', 'manage_seo'],
+      // Shown exactly as stored. The previous code substituted a default set
+      // when the stored array was empty, so merely opening the edit dialog on a
+      // zero-permission account and pressing save escalated them to six
+      // permissions — a real privilege escalation reachable by accident.
+      permissions: Array.isArray(user.permissions) ? ([...user.permissions] as UserPermissionKey[]) : [],
     });
     setModalError('');
     setIsEditModalOpen(true);
@@ -370,7 +393,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                           {!isSuper && (
                             <div className="flex flex-wrap gap-1 max-w-xs">
                               {userPerms.map((pKey: string) => {
-                                const found = ALL_DASHBOARD_PERMISSIONS.find(p => p.key === pKey);
+                                const found = catalogue.find(p => p.key === pKey);
                                 return (
                                   <span key={pKey} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
                                     {found?.label || pKey}
@@ -577,48 +600,55 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                   <button
                     type="button"
                     onClick={() => {
-                      if (createForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length) {
+                      if (createForm.permissions.length === catalogue.length) {
                         setCreateForm({ ...createForm, permissions: [] });
                       } else {
-                        setCreateForm({ ...createForm, permissions: ALL_DASHBOARD_PERMISSIONS.map(p => p.key as UserPermissionKey) });
+                        setCreateForm({ ...createForm, permissions: catalogue.map(p => p.key) });
                       }
                     }}
                     className="text-[11px] font-bold text-[#7b002c] hover:underline cursor-pointer"
                   >
-                    {createForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                    {createForm.permissions.length === catalogue.length ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  {ALL_DASHBOARD_PERMISSIONS.map((perm) => {
-                    const isChecked = createForm.permissions.includes(perm.key as UserPermissionKey);
-                    return (
-                      <label
-                        key={perm.key}
-                        className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
-                          isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCreateForm({ ...createForm, permissions: [...createForm.permissions, perm.key as UserPermissionKey] });
-                            } else {
-                              setCreateForm({ ...createForm, permissions: createForm.permissions.filter(p => p !== perm.key) });
-                            }
-                          }}
-                          className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
-                        />
-                        <div>
-                          <div className="text-xs font-bold text-slate-800">{perm.label}</div>
-                          <div className="text-[10px] text-slate-500 leading-tight">{perm.desc}</div>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
+                {groupedCatalogue.map(({ group, items }) => (
+                  <div key={group} className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                      {group}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {items.map((perm) => {
+                        const isChecked = createForm.permissions.includes(perm.key as UserPermissionKey);
+                        return (
+                          <label
+                            key={perm.key}
+                            className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
+                              isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCreateForm({ ...createForm, permissions: [...createForm.permissions, perm.key as UserPermissionKey] });
+                                } else {
+                                  setCreateForm({ ...createForm, permissions: createForm.permissions.filter(p => p !== perm.key) });
+                                }
+                              }}
+                              className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
+                            />
+                            <div>
+                              <div className="text-xs font-bold text-slate-800">{perm.label}</div>
+                              <div className="text-[10px] text-slate-500 leading-tight">{perm.description}</div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-slate-100">
@@ -728,48 +758,55 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                   <button
                     type="button"
                     onClick={() => {
-                      if (editForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length) {
+                      if (editForm.permissions.length === catalogue.length) {
                         setEditForm({ ...editForm, permissions: [] });
                       } else {
-                        setEditForm({ ...editForm, permissions: ALL_DASHBOARD_PERMISSIONS.map(p => p.key as UserPermissionKey) });
+                        setEditForm({ ...editForm, permissions: catalogue.map(p => p.key) });
                       }
                     }}
                     className="text-[11px] font-bold text-[#7b002c] hover:underline cursor-pointer"
                   >
-                    {editForm.permissions.length === ALL_DASHBOARD_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+                    {editForm.permissions.length === catalogue.length ? 'Deselect All' : 'Select All'}
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  {ALL_DASHBOARD_PERMISSIONS.map((perm) => {
-                    const isChecked = editForm.permissions.includes(perm.key as UserPermissionKey);
-                    return (
-                      <label
-                        key={perm.key}
-                        className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
-                          isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setEditForm({ ...editForm, permissions: [...editForm.permissions, perm.key as UserPermissionKey] });
-                            } else {
-                              setEditForm({ ...editForm, permissions: editForm.permissions.filter(p => p !== perm.key) });
-                            }
-                          }}
-                          className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
-                        />
-                        <div>
-                          <div className="text-xs font-bold text-slate-800">{perm.label}</div>
-                          <div className="text-[10px] text-slate-500 leading-tight">{perm.desc}</div>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
+                {groupedCatalogue.map(({ group, items }) => (
+                  <div key={group} className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                      {group}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {items.map((perm) => {
+                        const isChecked = editForm.permissions.includes(perm.key as UserPermissionKey);
+                        return (
+                          <label
+                            key={perm.key}
+                            className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer border ${
+                              isChecked ? 'bg-white border-[#7b002c]/40 shadow-xs' : 'bg-transparent border-transparent hover:bg-white/60'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setEditForm({ ...editForm, permissions: [...editForm.permissions, perm.key as UserPermissionKey] });
+                                } else {
+                                  setEditForm({ ...editForm, permissions: editForm.permissions.filter(p => p !== perm.key) });
+                                }
+                              }}
+                              className="mt-0.5 rounded text-[#7b002c] focus:ring-[#7b002c]"
+                            />
+                            <div>
+                              <div className="text-xs font-bold text-slate-800">{perm.label}</div>
+                              <div className="text-[10px] text-slate-500 leading-tight">{perm.description}</div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">

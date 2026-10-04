@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Home,
@@ -29,6 +29,7 @@ import {
 } from '@/utils/plotSeriesEngine';
 import { getStoredPlots, getStoredBlockConfigs } from '@/utils/plotStore';
 import { fetchPlots } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface DynamicPlotSeriesExplorerProps {
   blockSlug?: string;
@@ -66,6 +67,10 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   blockName = 'Executive Block',
 }) => {
   const [activeCategory, setActiveCategory] = useState<'residential' | 'commercial'>('residential');
+  // Contact channels come from social_links / contact_info so a
+  // number changed in the dashboard updates every link on this page.
+  const { whatsappUrl, telUrl } = useContactChannels();
+
   const [selectedSize, setSelectedSize] = useState<string>('5 Marla');
   const [selectedSeriesIndex, setSelectedSeriesIndex] = useState<number>(0);
   const [selectedComPlotIndex, setSelectedComPlotIndex] = useState<number>(0);
@@ -103,11 +108,12 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
   const currentPlots = isClient ? allPlots : INITIAL_PLOTS_INVENTORY;
   const currentConfigs = isClient && storedConfigs ? storedConfigs : BLOCK_SERIES_CONFIGS;
 
-  const seriesGroups: SeriesGroupResult[] = calculateSeriesGroups(
-    currentPlots,
-    blockSlug,
-    selectedSize,
-    currentConfigs
+  // Grouping walks every plot in the block, so it is memoized on the values it
+  // actually reads. It previously ran on every render, including renders caused
+  // by unrelated state such as the open/closed panel below.
+  const seriesGroups: SeriesGroupResult[] = useMemo(
+    () => calculateSeriesGroups(currentPlots, blockSlug, selectedSize, currentConfigs),
+    [currentPlots, blockSlug, selectedSize, currentConfigs]
   );
   const activeSeries = seriesGroups[selectedSeriesIndex] || seriesGroups[0] || null;
 
@@ -233,7 +239,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     Prime Block offers guaranteed fixed launch rates without series fluctuations or hidden premiums.
                   </p>
                   <a
-                    href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Fixed%20Price%20Booking%20in%20Prime%20Block.`}
+                    href={whatsappUrl("Hi, I am inquiring about ${encodeURIComponent(selectedSize)} Fixed Price Booking in Prime Block.")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
@@ -445,7 +451,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                             </Link>
 
                             <a
-                              href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20interested%20in%20Plot%20${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))}%20(${plot.size}%2C%20Series%20${activeSeries.label}%2C%20${plot.locationType})%20in%20${encodeURIComponent(blockName)}.`}
+                              href={whatsappUrl("Hi, I am interested in Plot ${encodeURIComponent((plot as any).displayNumber || String(plot.plotNumber))} (${plot.size}, Series ${activeSeries.label}, ${plot.locationType}) in ${encodeURIComponent(blockName)}.")}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 text-center cursor-pointer shadow-xs"
@@ -471,7 +477,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                   Individual plot prices reflect exact road width, facing (Corner/Park), and immediate possession status.
                 </p>
                 <a
-                  href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedSize)}%20Series%20${activeSeries.label}%20plots%20in%20${encodeURIComponent(blockName)}.`}
+                  href={whatsappUrl("Hi, I am inquiring about ${encodeURIComponent(selectedSize)} Series ${activeSeries.label} plots in ${encodeURIComponent(blockName)}.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
@@ -548,7 +554,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
                     Direct commercial inventory near Faisal Jewel skyscraper and Roots International School.
                   </p>
                   <a
-                    href={`https://wa.me/923331113177?text=Hi%2C%20I%20am%20inquiring%20about%20${encodeURIComponent(selectedComPlot.size)}%20Commercial%20Plot%20in%20${encodeURIComponent(blockName)}.`}
+                    href={whatsappUrl("Hi, I am inquiring about ${encodeURIComponent(selectedComPlot.size)} Commercial Plot in ${encodeURIComponent(blockName)}.")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2 shrink-0 cursor-pointer"

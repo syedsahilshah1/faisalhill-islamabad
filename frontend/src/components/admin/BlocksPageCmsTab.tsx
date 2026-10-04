@@ -27,6 +27,31 @@ import {
   fetchBlockACMS,
   saveBlockACMS,
   mergeBlockACMS,
+  ExecutiveBlockCMSData,
+  initialExecutiveBlockCMS,
+  fetchExecutiveBlockCMS,
+  saveExecutiveBlockCMS,
+  mergeExecutiveBlockCMS,
+  BlockB1ExtensionCMSData,
+  initialBlockB1ExtensionCMS,
+  fetchBlockB1ExtensionCMS,
+  saveBlockB1ExtensionCMS,
+  mergeBlockB1ExtensionCMS,
+  BlockCCMSData,
+  initialBlockCCMS,
+  fetchBlockCCMS,
+  saveBlockCCMS,
+  mergeBlockCCMS,
+  HillsWalkCMSData,
+  initialHillsWalkCMS,
+  fetchHillsWalkCMS,
+  saveHillsWalkCMS,
+  mergeHillsWalkCMS,
+  FaisalJewelCMSData,
+  initialFaisalJewelCMS,
+  fetchFaisalJewelCMS,
+  saveFaisalJewelCMS,
+  mergeFaisalJewelCMS,
   cleanVerifyText,
   BlockInfo,
   blocksData,
@@ -36,10 +61,16 @@ import {
   GalleryItem,
   fetchGallery
 } from '@/data/faisalHillsData';
+import { ImageUploader } from './ImageUploader';
 import BlockACmsEditor from '@/components/admin/BlockACmsEditor';
 import BlockBCmsEditor from '@/components/admin/BlockBCmsEditor';
 import BlockDCmsEditor from '@/components/admin/BlockDCmsEditor';
 import PrimeBlockCmsEditor from '@/components/admin/PrimeBlockCmsEditor';
+import ExecutiveBlockCmsEditor from '@/components/admin/ExecutiveBlockCmsEditor';
+import BlockB1ExtensionCmsEditor from '@/components/admin/BlockB1ExtensionCmsEditor';
+import BlockCCmsEditor from '@/components/admin/BlockCCmsEditor';
+import HillsWalkCmsEditor from '@/components/admin/HillsWalkCmsEditor';
+import FaisalJewelCmsEditor from '@/components/admin/FaisalJewelCmsEditor';
 import CmsRichTextarea from '@/components/admin/CmsRichTextarea';
 import {
   Save, RefreshCw, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp,
@@ -49,155 +80,6 @@ import {
   Trees,
   Activity
 } from 'lucide-react';
-
-function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } else {
-          resolve((event.target?.result as string) || '');
-        }
-      };
-      img.onerror = () => resolve((event.target?.result as string) || '');
-      img.src = event.target?.result as string;
-    };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
-  });
-}
-
-interface ImageUploaderProps {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  placeholder?: string;
-  helper?: string;
-}
-
-const ImageUploader: React.FC<ImageUploaderProps> = ({
-  label,
-  value,
-  onChange,
-  placeholder = 'Image URL or upload from device',
-  helper = 'Supports JPG, PNG, WEBP from PC / Mobile'
-}) => {
-  const [uploading, setUploading] = useState(false);
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const dataUrl = await compressImageFile(file, 1920, 0.85);
-      if (dataUrl) {
-        onChange(dataUrl);
-      }
-    } catch (err) {
-      console.error('Failed to process image:', err);
-    } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-          {label}
-        </label>
-        <button
-          type="button"
-          onClick={() => setShowUrlInput(!showUrlInput)}
-          className="text-[11px] text-[#7b002c] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
-        >
-          <Link2 className="w-3 h-3" />
-          <span>{showUrlInput ? 'Hide URL Input' : 'Paste Image URL'}</span>
-        </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        {/* Preview Thumbnail */}
-        <div className="relative w-28 h-20 bg-slate-900 rounded-xl overflow-hidden border border-slate-200 shadow-inner shrink-0 group">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-[10px] gap-1">
-              <Camera className="w-4 h-4" />
-              <span>No image</span>
-            </div>
-          )}
-          {value && (
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="absolute top-1 right-1 p-1 bg-black/70 hover:bg-red-600 text-white rounded-md transition-colors"
-              title="Remove image"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-
-        {/* Upload Controls */}
-        <div className="flex-1 space-y-2 w-full">
-          <div className="flex items-center gap-2">
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFile}
-              className="hidden"
-              id={`img-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
-            />
-            <label
-              htmlFor={`img-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer transition-all shadow-sm active:scale-95"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>{uploading ? 'Processing Image...' : 'Upload from Device'}</span>
-            </label>
-            <span className="text-[11px] text-slate-500">{helper}</span>
-          </div>
-
-          {showUrlInput && (
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] transition font-mono"
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface BlocksPageCmsTabProps {
   token?: string | null;
@@ -209,21 +91,16 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [blockACms, setBlockACms] = useState<BlockACMSData>(initialBlockACMS);
   const [blockBCms, setBlockBCms] = useState<BlockBCMSData>(initialBlockBCMS);
   const [blockDCms, setBlockDCms] = useState<BlockDCMSData>(initialBlockDCMS);
-  const [activeSection, setActiveSection] = useState<string>('hero');
+  const [executiveBlockCms, setExecutiveBlockCms] = useState<ExecutiveBlockCMSData>(initialExecutiveBlockCMS);
+  const [blockB1ExtCms, setBlockB1ExtCms] = useState<BlockB1ExtensionCMSData>(initialBlockB1ExtensionCMS);
+  const [blockCCms, setBlockCCms] = useState<BlockCCMSData>(initialBlockCCMS);
+  const [hillsWalkCms, setHillsWalkCms] = useState<HillsWalkCMSData>(initialHillsWalkCMS);
+  const [faisalJewelCms, setFaisalJewelCms] = useState<FaisalJewelCMSData>(initialFaisalJewelCMS);
+  const [activeSection, setActiveSection] = useState<string>('executiveBlock');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
 
-  // Individual Block Detail Management State
-  const [blocksList, setBlocksList] = useState<BlockInfo[]>(blocksData);
-  const [selectedBlockSlug, setSelectedBlockSlug] = useState<string>('executive-block');
-  const [editingBlock, setEditingBlock] = useState<BlockInfo | null>(blocksData[0]);
-  const [isSavingBlock, setIsSavingBlock] = useState(false);
-  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  const [galleryPickerTarget, setGalleryPickerTarget] = useState<'hero' | 'masterPlan' | 'commercialHero' | null>(null);
-  const [commercialHeroImage, setCommercialHeroImage] = useState<string>('/images/hills-walk-commercial-aerial.webp');
-  const [isSavingCommercialHero, setIsSavingCommercialHero] = useState(false);
-  const [newHighlightText, setNewHighlightText] = useState<string>('');
 
   // Load live data on mount
   useEffect(() => {
@@ -247,37 +124,27 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       if (dData) setBlockDCms(mergeBlockDCMS(dData));
     });
 
-    fetchBlocks().then((data) => {
-      if (data && data.length > 0) {
-        try {
-          if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('faisal_blocks_custom_v1');
-            if (stored) {
-              const customMap = JSON.parse(stored);
-              const merged = data.map(b => customMap[b.slug] ? { ...b, ...customMap[b.slug] } : b);
-              setBlocksList(merged);
-              const cur = merged.find(b => b.slug === selectedBlockSlug) || merged[0];
-              setEditingBlock(cur);
-              return;
-            }
-          }
-        } catch {}
-        setBlocksList(data);
-        const cur = data.find(b => b.slug === selectedBlockSlug) || data[0];
-        setEditingBlock(cur);
-      }
+    fetchExecutiveBlockCMS().then((eData) => {
+      if (eData) setExecutiveBlockCms(mergeExecutiveBlockCMS(eData));
     });
 
-    fetchGallery().then((g) => {
-      if (g && g.length > 0) setGalleryList(g);
+    fetchBlockB1ExtensionCMS().then((b1Data) => {
+      if (b1Data) setBlockB1ExtCms(mergeBlockB1ExtensionCMS(b1Data));
     });
 
-    try {
-      if (typeof window !== 'undefined') {
-        const commImg = localStorage.getItem('faisal_commercial_hero_image');
-        if (commImg) setCommercialHeroImage(commImg);
-      }
-    } catch {}
+    fetchBlockCCMS().then((cData) => {
+      if (cData) setBlockCCms(mergeBlockCCMS(cData));
+    });
+
+    fetchHillsWalkCMS().then((hwData) => {
+      if (hwData) setHillsWalkCms(mergeHillsWalkCMS(hwData));
+    });
+
+    fetchFaisalJewelCMS().then((fjData) => {
+      if (fjData) setFaisalJewelCms(mergeFaisalJewelCMS(fjData));
+    });
+
+
 
     const handleStorage = () => {
       try {
@@ -300,6 +167,26 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
         const dLocal = localStorage.getItem('faisal_block_d_cms');
         if (dLocal) setBlockDCms(mergeBlockDCMS(JSON.parse(dLocal)));
       } catch {}
+      try {
+        const eLocal = localStorage.getItem('faisal_executive_block_cms');
+        if (eLocal) setExecutiveBlockCms(mergeExecutiveBlockCMS(JSON.parse(eLocal)));
+      } catch {}
+      try {
+        const b1Local = localStorage.getItem('faisal_block_b1_ext_cms');
+        if (b1Local) setBlockB1ExtCms(mergeBlockB1ExtensionCMS(JSON.parse(b1Local)));
+      } catch {}
+      try {
+        const cLocal = localStorage.getItem('faisal_block_c_cms');
+        if (cLocal) setBlockCCms(mergeBlockCCMS(JSON.parse(cLocal)));
+      } catch {}
+      try {
+        const hwLocal = localStorage.getItem('faisal_hills_walk_cms');
+        if (hwLocal) setHillsWalkCms(mergeHillsWalkCMS(JSON.parse(hwLocal)));
+      } catch {}
+      try {
+        const fjLocal = localStorage.getItem('faisal_jewel_cms');
+        if (fjLocal) setFaisalJewelCms(mergeFaisalJewelCMS(JSON.parse(fjLocal)));
+      } catch {}
     };
 
     window.addEventListener('faisal_blocks_cms_updated', handleStorage);
@@ -307,6 +194,11 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     window.addEventListener('faisal_prime_block_cms_updated', handleStorage);
     window.addEventListener('faisal_block_b_cms_updated', handleStorage);
     window.addEventListener('faisal_block_d_cms_updated', handleStorage);
+    window.addEventListener('faisal_executive_block_cms_updated', handleStorage);
+    window.addEventListener('faisal_block_b1_ext_cms_updated', handleStorage);
+    window.addEventListener('faisal_block_c_cms_updated', handleStorage);
+    window.addEventListener('faisal_hills_walk_cms_updated', handleStorage);
+    window.addEventListener('faisal_jewel_cms_updated', handleStorage);
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('faisal_blocks_cms_updated', handleStorage);
@@ -314,111 +206,14 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       window.removeEventListener('faisal_prime_block_cms_updated', handleStorage);
       window.removeEventListener('faisal_block_b_cms_updated', handleStorage);
       window.removeEventListener('faisal_block_d_cms_updated', handleStorage);
+      window.removeEventListener('faisal_executive_block_cms_updated', handleStorage);
+      window.removeEventListener('faisal_block_b1_ext_cms_updated', handleStorage);
+      window.removeEventListener('faisal_block_c_cms_updated', handleStorage);
+      window.removeEventListener('faisal_hills_walk_cms_updated', handleStorage);
+      window.removeEventListener('faisal_jewel_cms_updated', handleStorage);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
-
-  const handleSelectBlockToEdit = (slug: string) => {
-    setSelectedBlockSlug(slug);
-    const found = blocksList.find(b => b.slug === slug) || blocksData.find(b => b.slug === slug);
-    if (found) {
-      setEditingBlock({ ...found });
-    }
-  };
-
-  const safeSaveBlocksLocally = (block: Partial<BlockInfo>) => {
-    try {
-      if (typeof window !== 'undefined') {
-        const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
-        existing[block.slug || ''] = block;
-        localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
-        window.dispatchEvent(new Event('faisal_blocks_updated'));
-      }
-    } catch (e) {
-      console.warn("Local storage quota exceeded for block images; saving lightweight metadata cache.");
-      try {
-        if (typeof window !== 'undefined') {
-          const existing = JSON.parse(localStorage.getItem('faisal_blocks_custom_v1') || '{}');
-          const lightweight = {
-            ...block,
-            heroImage: block.heroImage?.startsWith('data:') ? '' : block.heroImage,
-            masterPlanImage: block.masterPlanImage?.startsWith('data:') ? '' : block.masterPlanImage
-          };
-          existing[block.slug || ''] = lightweight;
-          localStorage.setItem('faisal_blocks_custom_v1', JSON.stringify(existing));
-          window.dispatchEvent(new Event('faisal_blocks_updated'));
-        }
-      } catch (innerErr) {}
-    }
-  };
-
-  const handleSaveBlock = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!editingBlock) return;
-    setIsSavingBlock(true);
-    
-    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
-
-    setBlocksList(prev => prev.map(b => (b.slug === editingBlock.slug || (editingBlock.id && b.id === editingBlock.id)) ? { ...b, ...editingBlock } as BlockInfo : b));
-    safeSaveBlocksLocally(editingBlock);
-
-    if (activeToken) {
-      try {
-        const identifier = editingBlock.slug || editingBlock.id || '';
-        if (identifier) {
-          const updated = await apiUpdateBlock(identifier, editingBlock, activeToken);
-          setBlocksList(prev => prev.map(b => (b.id === updated.id || b.slug === updated.slug) ? updated : b));
-          setEditingBlock(updated);
-        }
-      } catch (err) {
-        console.error('API block update error, saved locally:', err);
-      }
-    }
-
-    setIsSavingBlock(false);
-    setStatusMsg(`Block "${editingBlock.name}" updated and published successfully!`);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3500);
-  };
-
-  const handleSaveCommercialHero = async () => {
-    setIsSavingCommercialHero(true);
-    const activeToken = token || (typeof window !== 'undefined' ? sessionStorage.getItem('faisal_admin_token') : null) || '';
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('faisal_commercial_hero_image', commercialHeroImage);
-    }
-    
-    if (activeToken) {
-      try {
-        await apiUpdateSetting('commercial_hero_image', commercialHeroImage, activeToken);
-      } catch (err) {
-        console.error('Failed to update commercial hero image via API:', err);
-      }
-    }
-    setIsSavingCommercialHero(false);
-    setStatusMsg('Commercial Hub hero background image updated and published successfully!');
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3500);
-  };
-
-  const handleAddHighlight = () => {
-    if (!newHighlightText.trim() || !editingBlock) return;
-    const currentHighlights = editingBlock.highlights || [];
-    setEditingBlock({
-      ...editingBlock,
-      highlights: [...currentHighlights, newHighlightText.trim()]
-    });
-    setNewHighlightText('');
-  };
-
-  const handleRemoveHighlight = (idx: number) => {
-    if (!editingBlock || !editingBlock.highlights) return;
-    setEditingBlock({
-      ...editingBlock,
-      highlights: editingBlock.highlights.filter((_, i) => i !== idx)
-    });
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -429,19 +224,15 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     const okPrime = await savePrimeBlockCMS(primeCms, activeToken);
     const okBlockB = await saveBlockBCMS(blockBCms, activeToken);
     const okBlockD = await saveBlockDCMS(blockDCms, activeToken);
-    if (editingBlock) {
-      safeSaveBlocksLocally(editingBlock);
-      if (activeToken) {
-        const identifier = editingBlock.slug || editingBlock.id || '';
-        if (identifier) {
-          apiUpdateBlock(identifier, editingBlock, activeToken).catch(() => {});
-        }
-      }
-    }
+    const okExec = await saveExecutiveBlockCMS(executiveBlockCms, activeToken);
+    const okB1Ext = await saveBlockB1ExtensionCMS(blockB1ExtCms, activeToken);
+    const okBlockC = await saveBlockCCMS(blockCCms, activeToken);
+    const okHillsWalk = await saveHillsWalkCMS(hillsWalkCms, activeToken);
+    const okFaisalJewel = await saveFaisalJewelCMS(faisalJewelCms, activeToken);
     setIsSaving(false);
-    if (okBlocks || okBlockA || okPrime || okBlockB || okBlockD) {
+    if (okBlocks || okBlockA || okPrime || okBlockB || okBlockD || okExec || okB1Ext || okBlockC || okHillsWalk || okFaisalJewel) {
       setSaveSuccess(true);
-      setStatusMsg('Blocks, Block A, Block B, Block D, and Prime Block content successfully saved and published live!');
+      setStatusMsg('All blocks content (Block A, B, C, D, Prime, Executive, B1 Ext, Hills Walk, Faisal Jewel) successfully saved and published live!');
       setTimeout(() => setSaveSuccess(false), 4000);
     } else {
       setStatusMsg('Saved locally in browser. Note: API sync pending backend authentication.');
@@ -451,12 +242,17 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   };
 
   const handleResetToAuditedDefaults = () => {
-    if (window.confirm('Are you sure you want to reset all Blocks, Block A, Block B, Block D, and Prime Block sections to official audited defaults?')) {
+    if (window.confirm('Are you sure you want to reset all Blocks and Sectors (Block A, B, C, D, Prime, Executive, B1 Ext, Hills Walk, Faisal Jewel) to official audited defaults?')) {
       setCms(initialBlocksPageCMS);
       setBlockACms(initialBlockACMS);
       setPrimeCms(initialPrimeBlockCMS);
       setBlockBCms(initialBlockBCMS);
       setBlockDCms(initialBlockDCMS);
+      setExecutiveBlockCms(initialExecutiveBlockCMS);
+      setBlockB1ExtCms(initialBlockB1ExtensionCMS);
+      setBlockCCms(initialBlockCCMS);
+      setHillsWalkCms(initialHillsWalkCMS);
+      setFaisalJewelCms(initialFaisalJewelCMS);
       setStatusMsg('Reset to audited defaults. Click "Save Live Changes" to publish.');
     }
   };
@@ -464,6 +260,18 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   const [mainScope, setMainScope] = useState<'individual-blocks' | 'main-page-sections'>('individual-blocks');
 
   const societyBlocksList = [
+    {
+      id: 'executive-block',
+      name: 'Executive Block',
+      tagline: 'Main Entrance & 225ft Boulevard',
+      type: 'detailed-cms',
+      cmsKey: 'executiveBlock',
+      badge: '⭐ Full 12-Section CMS',
+      badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
+      icon: Sparkles,
+      slug: 'executive-block',
+      path: '/blocks/executive-block'
+    },
     {
       id: 'block-a',
       name: 'Block A',
@@ -477,16 +285,52 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       path: '/blocks/block-a'
     },
     {
-      id: 'block-d',
-      name: 'Block D',
-      tagline: 'Margalla Scenic & Economical Living',
+      id: 'block-c',
+      name: 'Block C',
+      tagline: 'M-1 Interchange Gateway & Hills Walk',
       type: 'detailed-cms',
-      cmsKey: 'blockD',
-      badge: '⭐ Full 10-Section CMS',
+      cmsKey: 'blockC',
+      badge: '⭐ Full 13-Section CMS',
+      badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+      icon: Building2,
+      slug: 'block-c',
+      path: '/blocks/block-c'
+    },
+    {
+      id: 'block-b1-extension',
+      name: 'Block B1 Extension',
+      tagline: 'Fast Developing Modern Sector',
+      type: 'detailed-cms',
+      cmsKey: 'blockB1Extension',
+      badge: '⭐ Full 12-Section CMS',
       badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
       icon: Sparkles,
-      slug: 'block-d',
-      path: '/blocks/block-d'
+      slug: 'block-b1-extension',
+      path: '/blocks/block-b1-extension'
+    },
+    {
+      id: 'hills-walk',
+      name: 'Hills Walk Commercial',
+      tagline: 'Dining & Retail Promenade',
+      type: 'detailed-cms',
+      cmsKey: 'hillsWalk',
+      badge: '⭐ Full 10-Section CMS',
+      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+      icon: Building2,
+      slug: 'hills-walk',
+      path: '/blocks/hills-walk'
+    },
+    {
+      id: 'faisal-jewels',
+      name: 'Faisal Jewel',
+      tagline: '27-Storey Skyscraper Landmark',
+      type: 'detailed-cms',
+      cmsKey: 'faisalJewel',
+      badge: '⭐ Full 9-Section CMS & Units',
+      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
+      icon: Building2,
+      slug: 'faisal-jewel-islamabad',
+      path: '/blocks/faisal-jewel-islamabad'
     },
     {
       id: 'block-b',
@@ -501,6 +345,18 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       path: '/blocks/block-b'
     },
     {
+      id: 'block-d',
+      name: 'Block D',
+      tagline: 'Margalla Scenic & Economical Living',
+      type: 'detailed-cms',
+      cmsKey: 'blockD',
+      badge: '⭐ Full 10-Section CMS',
+      badgeColor: 'bg-rose-100 text-[#7b002c] border-rose-300',
+      icon: Sparkles,
+      slug: 'block-d',
+      path: '/blocks/block-d'
+    },
+    {
       id: 'prime-block',
       name: 'Prime Block',
       tagline: 'Flagship Luxury Enclave',
@@ -511,61 +367,6 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       icon: Star,
       slug: 'prime-block',
       path: '/blocks/prime-block'
-    },
-    {
-      id: 'executive-block',
-      name: 'Executive Block',
-      tagline: 'Main Entrance & 225ft Boulevard',
-      type: 'individual-block',
-      slug: 'executive-block',
-      badge: '🏛️ Sector Detail Page',
-      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
-      icon: Building2,
-      path: '/blocks/executive-block'
-    },
-    {
-      id: 'block-b1-extension',
-      name: 'Block B1 Extension',
-      tagline: 'Fast Developing Modern Sector',
-      type: 'individual-block',
-      slug: 'block-b1-extension',
-      badge: '🏛️ Sector Detail Page',
-      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
-      icon: Building2,
-      path: '/blocks/block-b1-extension'
-    },
-    {
-      id: 'block-c',
-      name: 'Block C',
-      tagline: 'M-1 Interchange Gateway & Hills Walk',
-      type: 'individual-block',
-      slug: 'block-c',
-      badge: '🏛️ Sector Detail Page',
-      badgeColor: 'bg-slate-100 text-slate-700 border-slate-300',
-      icon: Building2,
-      path: '/blocks/block-c'
-    },
-    {
-      id: 'hills-walk',
-      name: 'Hills Walk Commercial',
-      tagline: 'Dining & Retail Promenade',
-      type: 'individual-block',
-      slug: 'hills-walk',
-      badge: '🛍️ Commercial Hub',
-      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
-      icon: Building2,
-      path: '/blocks/hills-walk'
-    },
-    {
-      id: 'faisal-jewels',
-      name: 'Faisal Jewel',
-      tagline: '27-Storey Skyscraper Landmark',
-      type: 'individual-block',
-      slug: 'faisal-jewel-islamabad',
-      badge: '🏙️ Luxury Highrise',
-      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
-      icon: Building2,
-      path: '/blocks/faisal-jewel-islamabad'
     }
   ];
 
@@ -585,24 +386,12 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
   ];
 
   const isCurrentBlock = (b: typeof societyBlocksList[0]) => {
-    if (b.type === 'detailed-cms') return activeSection === b.cmsKey;
-    if (b.type === 'prime-cms') return activeSection === 'primeBlock';
-    if (b.type === 'individual-block') {
-      return activeSection === 'individualBlocks' && (selectedBlockSlug === b.slug || (b.slug === 'faisal-jewel-islamabad' && selectedBlockSlug === 'faisal-jewels'));
-    }
-    return false;
+    return activeSection === b.cmsKey;
   };
 
   const handleSelectSocietyBlock = (b: typeof societyBlocksList[0]) => {
     setMainScope('individual-blocks');
-    if (b.type === 'detailed-cms' && b.cmsKey) {
-      setActiveSection(b.cmsKey);
-    } else if (b.type === 'prime-cms') {
-      setActiveSection('primeBlock');
-    } else {
-      setActiveSection('individualBlocks');
-      handleSelectBlockToEdit(b.slug);
-    }
+    setActiveSection(b.cmsKey);
   };
 
   const activeBlockObject = societyBlocksList.find(b => isCurrentBlock(b));
@@ -674,8 +463,8 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
             type="button"
             onClick={() => {
               setMainScope('individual-blocks');
-              if (!['blockD', 'blockB', 'primeBlock', 'individualBlocks'].includes(activeSection)) {
-                setActiveSection('blockD');
+              if (!['executiveBlock', 'blockA', 'blockB', 'blockC', 'blockD', 'primeBlock', 'blockB1Extension', 'hillsWalk', 'faisalJewel'].includes(activeSection)) {
+                setActiveSection('executiveBlock');
               }
             }}
             className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -697,7 +486,7 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
             type="button"
             onClick={() => {
               setMainScope('main-page-sections');
-              if (['blockD', 'blockB', 'primeBlock', 'individualBlocks'].includes(activeSection)) {
+              if (['executiveBlock', 'blockA', 'blockB', 'blockC', 'blockD', 'primeBlock', 'blockB1Extension', 'hillsWalk', 'faisalJewel'].includes(activeSection)) {
                 setActiveSection('hero');
               }
             }}
@@ -839,6 +628,7 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
             </div>
 
             <ImageUploader
+            token={token || undefined}
               label="Hero Panoramic Background Image"
               value={cms.hero.heroImage}
               onChange={(val) => setCms({ ...cms, hero: { ...cms.hero, heroImage: val } })}
@@ -1038,839 +828,7 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
         </div>
       )}
 
-      {/* ========================================================= */}
-      {/* SECTION: BLOCK B DETAILED CMS (ALL SECTIONS)              */}
-      {/* ========================================================= */}
-      {activeSection === 'blockB' && (
-        <BlockBCmsEditor
-          blockBCms={blockBCms}
-          setBlockBCms={setBlockBCms}
-          token={token}
-          onSaveSuccess={(msg) => {
-            setSaveSuccess(true);
-            setStatusMsg(msg);
-            setTimeout(() => setSaveSuccess(false), 4000);
-          }}
-        />
-      )}
 
-      {/* ========================================================= */}
-      {/* SECTION: BLOCK D DETAILED CMS (ALL SECTIONS)              */}
-      {/* ========================================================= */}
-      {activeSection === 'blockD' && (
-        <BlockDCmsEditor
-          blockDCms={blockDCms}
-          setBlockDCms={setBlockDCms}
-          token={token}
-          onSaveSuccess={(msg) => {
-            setSaveSuccess(true);
-            setStatusMsg(msg);
-            setTimeout(() => setSaveSuccess(false), 4000);
-          }}
-        />
-      )}
-
-      {/* ========================================================= */}
-      {/* SECTION: INDIVIDUAL SECTOR PAGES & MEDIA (/blocks/[slug]) */}
-      {/* ========================================================= */}
-      {activeSection === 'individualBlocks' && (
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[#7b002c] uppercase tracking-wider">
-                <Building2 className="w-4 h-4 text-[#7b002c]" />
-                <span>Individual Society Blocks & Media Management</span>
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 mt-1">
-                Edit Sector Headings, Descriptions, Media & NOC Details
-              </h3>
-              <p className="text-xs text-slate-600 mt-1">
-                Select any block below to manage its specific hero banner, layout map, pricing ranges, and content for <code className="text-[#7b002c] font-mono bg-slate-100 px-1 py-0.5 rounded">/blocks/[slug]</code>.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-                {blocksList.length} Society Blocks
-              </span>
-              <a
-                href={`/blocks/${selectedBlockSlug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-rose-50 text-[#7b002c] border border-rose-200 hover:bg-rose-100 transition inline-flex items-center gap-1.5"
-              >
-                <span>View Live Block</span>
-                <Globe className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
-
-          {/* Block Selection Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-            {blocksList.map((b) => (
-              <button
-                key={b.id || b.slug}
-                onClick={() => handleSelectBlockToEdit(b.slug)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer border ${
-                  selectedBlockSlug === b.slug
-                    ? 'bg-[#7b002c] text-white border-[#7b002c] shadow-md scale-102'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
-                }`}
-              >
-                {b.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Prime Block Dedicated CMS Banner Notice */}
-          {selectedBlockSlug === 'prime-block' && (
-            <div className="bg-gradient-to-r from-amber-50 to-amber-100/60 border-2 border-amber-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 shadow-md">
-                  <Star className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-serif font-bold text-base text-slate-900">
-                      Prime Block Features a Dedicated 12-Section CMS
-                    </h4>
-                    <span className="px-2 py-0.5 bg-amber-200 text-amber-900 text-[10px] font-bold rounded-full uppercase">
-                      Recommended
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-700 mt-0.5">
-                    Manage all 12 sections: 4-year installment plan tables, plot sizes & dimensions, 8 facility cards, development status checklist, and FAQs.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveSection('primeBlock')}
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
-              >
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Open Dedicated Prime Block CMS →</span>
-              </button>
-            </div>
-          )}
-
-          {/* Block B Dedicated CMS Banner Notice */}
-          {selectedBlockSlug === 'block-b' && (
-            <div className="bg-gradient-to-r from-rose-50 to-rose-100/60 border-2 border-rose-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shrink-0 shadow-md">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-serif font-bold text-base text-slate-900">
-                    Block B Features a Dedicated 13-Section CMS
-                  </h4>
-                  <p className="text-xs text-slate-700 mt-0.5">
-                    Manage all 13 sections: sports arena, 2-kanal plot checks, price per sqft comparisons, and amenities.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveSection('blockB')}
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
-              >
-                <Sparkles className="w-4 h-4 text-rose-200" />
-                <span>Open Dedicated Block B CMS →</span>
-              </button>
-            </div>
-          )}
-
-          {/* Block D Dedicated CMS Banner Notice */}
-          {selectedBlockSlug === 'block-d' && (
-            <div className="bg-gradient-to-r from-rose-50 to-rose-100/60 border-2 border-rose-300 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-[#7b002c] text-white flex items-center justify-center font-bold shrink-0 shadow-md">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-serif font-bold text-base text-slate-900">
-                    Block D Features a Dedicated 10-Section CMS
-                  </h4>
-                  <p className="text-xs text-slate-700 mt-0.5">
-                    Manage all 10 sections: price schedule matrix, travel time benchmarks, 6 investment reasons, and amenities.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveSection('blockD')}
-                className="px-5 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer shrink-0 active:scale-95"
-              >
-                <Sparkles className="w-4 h-4 text-rose-200" />
-                <span>Open Dedicated Block D CMS →</span>
-              </button>
-            </div>
-          )}
-
-          {/* Commercial Hub Hero Banner Card (Active for Hills Walk / Commercial) */}
-          {selectedBlockSlug === 'hills-walk' && (
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-purple-200/80 shadow-sm space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-purple-700 text-white flex items-center justify-center font-bold shadow-sm">
-                    <Building2 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-bold text-lg text-slate-900">
-                      Commercial Hub Hero Background Banner
-                    </h4>
-                    <span className="text-xs text-slate-500 font-medium">
-                      Live Route: <code className="text-purple-700 bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/faisal-hills-commercial</code>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href="/faisal-hills-commercial"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
-                  >
-                    <span>View Commercial Page</span>
-                    <Globe className="w-3.5 h-3.5" />
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={handleSaveCommercialHero}
-                    disabled={isSavingCommercialHero}
-                    className="px-5 py-2 bg-purple-700 hover:bg-purple-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer"
-                  >
-                    {isSavingCommercialHero ? (
-                      <>
-                        <Loader2 className="w-4 h-4 text-white animate-spin" />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 text-white" />
-                        <span>Save Commercial Banner</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Camera className="w-3.5 h-3.5 text-purple-700" />
-                      <span>Upload or Select Commercial Banner</span>
-                    </label>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setGalleryPickerTarget('commercialHero')}
-                        className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
-                      >
-                        <Camera className="w-3.5 h-3.5" />
-                        <span>Choose from Photo Gallery</span>
-                      </button>
-
-                      <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
-                        <ImageIcon className="w-3.5 h-3.5" />
-                        <span>Upload from Device</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              compressImageFile(file, 1920, 0.85).then((dataUrl) => {
-                                if (dataUrl) {
-                                  setCommercialHeroImage(dataUrl);
-                                }
-                              });
-                            }
-                          }}
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <span className="text-[11px] font-semibold text-slate-600">Background Image URL:</span>
-                    <input
-                      type="text"
-                      value={commercialHeroImage}
-                      onChange={(e) => setCommercialHeroImage(e.target.value)}
-                      placeholder="e.g. /images/commercial/flagship-store.webp or https://..."
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-purple-700 focus:bg-white"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">Commercial Presets:</span>
-                    {[
-                      { label: 'Flagship Store', url: '/images/commercial/flagship-store.webp' },
-                      { label: 'Hypermarket Plaza', url: '/images/commercial/hypermarket.webp' },
-                      { label: 'Food Court Hub', url: '/images/commercial/food-court.webp' },
-                      { label: 'Boutique Lifestyle', url: '/images/commercial/lifestyle-boutique.jpg' },
-                      { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
-                    ].map((preset, pIdx) => (
-                      <button
-                        key={pIdx}
-                        type="button"
-                        onClick={() => setCommercialHeroImage(preset.url)}
-                        className="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-purple-50 hover:text-purple-700 border border-slate-200 font-medium transition cursor-pointer"
-                      >
-                        + {preset.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="lg:col-span-5">
-                  <div className="space-y-1.5">
-                    <span className="text-[11px] font-semibold text-slate-600 block">Live Banner Preview:</span>
-                    <div className="h-44 rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
-                      <img
-                        src={commercialHeroImage}
-                        alt="Commercial Hero Preview"
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/50 flex flex-col justify-end p-4 text-white">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300">Commercial Hub</span>
-                        <strong className="font-serif text-sm line-clamp-1">Faisal Hills Commercial Plots for Sale</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Active Block Edit Form */}
-          {editingBlock && (
-            <form onSubmit={handleSaveBlock} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold font-serif text-xl border border-[#7b002c]/20">
-                    {editingBlock.name?.replace('Block ', '').charAt(0) || 'B'}
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-bold text-lg sm:text-xl text-slate-900">
-                      Editing: {editingBlock.name}
-                    </h4>
-                    <span className="text-xs text-slate-500 font-medium">
-                      Sector Slug: <code className="text-[#7b002c] bg-slate-100 px-1.5 py-0.5 rounded font-mono font-bold">/blocks/{editingBlock.slug}</code>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href={`/blocks/${editingBlock.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center gap-1.5"
-                  >
-                    <span>View Public Page</span>
-                    <Globe className="w-3.5 h-3.5" />
-                  </a>
-
-                  <button
-                    type="submit"
-                    disabled={isSavingBlock}
-                    className="px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2 transition cursor-pointer hover:scale-102"
-                  >
-                    {isSavingBlock ? (
-                      <>
-                        <Loader2 className="w-4 h-4 text-white animate-spin" />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 text-white" />
-                        <span>Save &amp; Publish Block</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Form Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                {/* 1. Hero Background Image Section */}
-                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Camera className="w-3.5 h-3.5 text-[#7b002c]" />
-                      <span>Hero Background Banner Image</span>
-                    </label>
-                    {editingBlock.heroImage && (
-                      <button
-                        type="button"
-                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, heroImage: '' }) : null)}
-                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
-                      >
-                        Remove Image
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setGalleryPickerTarget('hero')}
-                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
-                    >
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>Choose from Photo Gallery</span>
-                    </button>
-
-                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
-                      <ImageIcon className="w-3.5 h-3.5" />
-                      <span>Upload from Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
-                              if (dataUrl) {
-                                setEditingBlock(prev => prev ? ({ ...prev, heroImage: dataUrl }) : null);
-                              }
-                            });
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-
-                  <input
-                    type="text"
-                    value={editingBlock.heroImage || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, heroImage: e.target.value }) : null)}
-                    placeholder="Or paste image URL (e.g. /images/... or https://...)"
-                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
-                  />
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-700">Hero Image Alt Tag (SEO)</label>
-                    <input
-                      type="text"
-                      value={editingBlock.heroImageAlt || ''}
-                      onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, heroImageAlt: e.target.value }) : null)}
-                      placeholder={`Faisal Hills ${editingBlock.name} Aerial View & Landscape`}
-                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="text-[10px] text-slate-500 font-bold uppercase">Presets:</span>
-                    {[
-                      { label: 'Executive Aerial', url: '/images/faisal-hills-executive-block.webp' },
-                      { label: 'Drone Site View', url: '/images/faisal-hills-drone-view.webp' },
-                      { label: 'Sports Arena View', url: '/images/faisal-hills-sports-arena.webp' },
-                      { label: 'European Promenade', url: '/images/hills-walk-commercial-aerial.webp' },
-                      { label: 'Margalla Springs', url: '/images/faisal-hills-site-header.webp' },
-                    ].map((preset, pIdx) => (
-                      <button
-                        key={pIdx}
-                        type="button"
-                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, heroImage: preset.url }) : null)}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition cursor-pointer"
-                      >
-                        + {preset.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {editingBlock.heroImage && (
-                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
-                      <img
-                        src={editingBlock.heroImage}
-                        alt="Hero Background Preview"
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                      />
-                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                        Hero Banner Preview
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* 2. Master Plan Map Image Section */}
-                <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#7b002c]" />
-                      <span>Master Plan / Layout Map Image</span>
-                    </label>
-                    {editingBlock.masterPlanImage && (
-                      <button
-                        type="button"
-                        onClick={() => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: '' }) : null)}
-                        className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
-                      >
-                        Remove Map
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setGalleryPickerTarget('masterPlan')}
-                      className="px-3 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs transition"
-                    >
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>Choose from Photo Gallery</span>
-                    </button>
-
-                    <label className="px-3 py-1.5 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
-                      <ImageIcon className="w-3.5 h-3.5" />
-                      <span>Upload Map File</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            compressImageFile(file, 2560, 0.88).then((dataUrl) => {
-                              if (dataUrl) {
-                                setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: dataUrl }) : null);
-                              }
-                            });
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-
-                  <input
-                    type="text"
-                    value={editingBlock.masterPlanImage || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: e.target.value }) : null)}
-                    placeholder="Or paste map image URL..."
-                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
-                  />
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-700">Master Plan Image Alt Tag (SEO)</label>
-                    <input
-                      type="text"
-                      value={editingBlock.masterPlanImageAlt || ''}
-                      onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, masterPlanImageAlt: e.target.value }) : null)}
-                      placeholder={`Faisal Hills ${editingBlock.name} Master Plan Blueprint Map`}
-                      className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-                    />
-                  </div>
-
-                  {editingBlock.masterPlanImage && (
-                    <div className="h-36 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
-                      <img
-                        src={editingBlock.masterPlanImage}
-                        alt="Master Plan Preview"
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                      />
-                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                        Master Plan Layout Preview
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. Block Name & Title */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Block Name / Title *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingBlock.name || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
-                    placeholder="e.g. Executive Block"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 4. Tagline / Subtitle */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Main Heading / Tagline / Subtitle *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingBlock.subtitle || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, subtitle: e.target.value }) : null)}
-                    placeholder="e.g. Main Entrance & Commercial Hub with RDA-Approved Freehold Plots"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 5. NOC Approval Status */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">NOC Approval Status</label>
-                  <input
-                    type="text"
-                    value={editingBlock.nocStatus || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, nocStatus: e.target.value }) : null)}
-                    placeholder="e.g. 100% RDA Approved (MP&TE/F-PH-1/21)"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 6. Last Verified Date */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Last Verified / Update Date</label>
-                  <input
-                    type="text"
-                    value={editingBlock.verificationDate || 'August 2026'}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, verificationDate: e.target.value }) : null)}
-                    placeholder="e.g. August 2026"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 7. Residential Price Range */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Residential Price Range</label>
-                  <input
-                    type="text"
-                    value={editingBlock.priceRange?.residential || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({
-                      ...prev,
-                      priceRange: { ...prev.priceRange, residential: e.target.value, commercial: prev.priceRange?.commercial || '' }
-                    }) : null)}
-                    placeholder="e.g. PKR 65 Lacs – 1.85 Crore"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 8. Commercial Price Range */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Commercial Price Range</label>
-                  <input
-                    type="text"
-                    value={editingBlock.priceRange?.commercial || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({
-                      ...prev,
-                      priceRange: { ...prev.priceRange, commercial: e.target.value, residential: prev.priceRange?.residential || '' }
-                    }) : null)}
-                    placeholder="e.g. PKR 2.8 Crore – 5.5 Crore"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 9. Total Plots Count */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Total Plots Count</label>
-                  <input
-                    type="number"
-                    value={editingBlock.totalPlots || 1200}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, totalPlots: Number(e.target.value) }) : null)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 10. Category Tag */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Category Status</label>
-                  <select
-                    value={editingBlock.category || 'developed'}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, category: e.target.value as any }) : null)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:border-[#7b002c] cursor-pointer"
-                  >
-                    <option value="developed">Developed (Possession Ready)</option>
-                    <option value="upcoming">Upcoming (Fast-Paced Development)</option>
-                    <option value="commercial_project">Commercial Project / Hub</option>
-                  </select>
-                </div>
-
-                {/* 11. Location Details */}
-                <div className="md:col-span-2 space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800">Location &amp; Highway Access Details</label>
-                  <input
-                    type="text"
-                    value={editingBlock.locationDetails || ''}
-                    onChange={(e) => setEditingBlock(prev => prev ? ({ ...prev, locationDetails: e.target.value }) : null)}
-                    placeholder="e.g. Direct Frontage on Main GT Road (N-5) with 220ft Central Boulevard Access"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
-                  />
-                </div>
-
-                {/* 12. Detailed Description */}
-                <div className="md:col-span-2">
-                  <CmsRichTextarea
-                    label="Block Overview & Comprehensive Description"
-                    rows={4}
-                    value={editingBlock.description || ''}
-                    onChange={(val) => setEditingBlock(prev => prev ? ({ ...prev, description: val }) : null)}
-                    placeholder="Enter comprehensive overview, possession updates, lifestyle facilities, and investment potential..."
-                  />
-                </div>
-
-                {/* 13. Key Highlights & Features Manager */}
-                <div className="md:col-span-2 space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <label className="block text-xs font-bold text-slate-800 flex items-center justify-between">
-                    <span>Key Sector Highlights &amp; Features</span>
-                    <span className="text-[10px] text-slate-500 font-normal">{(editingBlock.highlights || []).length} highlights active</span>
-                  </label>
-
-                  {/* Existing Highlights Pills */}
-                  <div className="flex flex-wrap gap-2">
-                    {(editingBlock.highlights || []).map((highlight, hIdx) => (
-                      <span
-                        key={hIdx}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs"
-                      >
-                        <span>✓ {highlight}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveHighlight(hIdx)}
-                          className="text-slate-400 hover:text-red-600 transition cursor-pointer ml-1"
-                          title="Remove highlight"
-                        >
-                          ✕
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Add New Highlight Input */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200/80">
-                    <input
-                      type="text"
-                      value={newHighlightText}
-                      onChange={(e) => setNewHighlightText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddHighlight();
-                        }
-                      }}
-                      placeholder="Add a new highlight (e.g. Grand Jamia Mosque, 220ft Boulevard) and press Add..."
-                      className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-[#7b002c]"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddHighlight}
-                      className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
-                    >
-                      + Add Highlight
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <span className="text-xs text-slate-500 italic">
-                  Changes save directly to the database and update this sector's public page immediately.
-                </span>
-                <button
-                  type="submit"
-                  disabled={isSavingBlock}
-                  className="px-7 py-3 bg-[#7b002c] hover:bg-[#9e1245] disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition cursor-pointer hover:scale-102"
-                >
-                  {isSavingBlock ? (
-                    <>
-                      <Loader2 className="w-4 h-4 text-white animate-spin" />
-                      <span>Publishing Block Updates...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 text-white" />
-                      <span>Save &amp; Publish Block Updates</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Photo Gallery Picker Modal */}
-          {galleryPickerTarget && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-fade-in">
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <h4 className="font-serif font-bold text-xl text-slate-900 flex items-center gap-2">
-                      <Camera className="w-5 h-5 text-[#7b002c]" />
-                      <span>Select Photo for {galleryPickerTarget === 'hero' ? 'Hero Background Banner' : galleryPickerTarget === 'commercialHero' ? 'Commercial Hub Banner' : 'Master Plan Map'}</span>
-                    </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Click any photo from your gallery below to set it instantly.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setGalleryPickerTarget(null)}
-                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {/* Gallery Image Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {galleryList.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        if (galleryPickerTarget === 'hero') {
-                          setEditingBlock(prev => prev ? ({ ...prev, heroImage: item.imageUrl }) : null);
-                        } else if (galleryPickerTarget === 'commercialHero') {
-                          setCommercialHeroImage(item.imageUrl);
-                        } else {
-                          setEditingBlock(prev => prev ? ({ ...prev, masterPlanImage: item.imageUrl }) : null);
-                        }
-                        setGalleryPickerTarget(null);
-                      }}
-                      className="group relative rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-[#7b002c] shadow-xs hover:shadow-lg transition-all duration-300 aspect-video bg-slate-900 cursor-pointer text-left"
-                    >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                      <div className="absolute bottom-2 left-2 right-2 text-white">
-                        <span className="text-[9px] uppercase tracking-wider font-bold bg-[#7b002c] px-1.5 py-0.5 rounded text-white inline-block mb-1">
-                          {item.category}
-                        </span>
-                        <div className="text-[11px] font-bold truncate group-hover:text-amber-300">
-                          {item.title}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setGalleryPickerTarget(null)}
-                    className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
-                  >
-                    Close Picker
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
-      )}
 
       {/* ========================================================= */}
       {/* SECTION 2: AT A GLANCE TABLE                             */}
@@ -2248,6 +1206,7 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
                 </div>
 
                 <ImageUploader
+                token={token || undefined}
                   label={`${blk.name} Featured Image`}
                   value={blk.heroImage}
                   onChange={(val) => {
@@ -3048,12 +2007,92 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
       )}
 
       {/* ========================================================= */}
+      {/* SECTION: EXECUTIVE BLOCK DETAILED CMS (ALL 12 SECTIONS)   */}
+      {/* ========================================================= */}
+      {activeSection === 'executiveBlock' && (
+        <ExecutiveBlockCmsEditor
+          executiveBlockCms={executiveBlockCms}
+          setExecutiveBlockCms={setExecutiveBlockCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
       {/* SECTION: PRIME BLOCK DETAILED CMS (ALL 12 SECTIONS)       */}
       {/* ========================================================= */}
       {activeSection === 'primeBlock' && (
         <PrimeBlockCmsEditor
           primeCms={primeCms}
           setPrimeCms={setPrimeCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK B1 EXTENSION DETAILED CMS (ALL 12 SECTIONS) */}
+      {/* ========================================================= */}
+      {activeSection === 'blockB1Extension' && (
+        <BlockB1ExtensionCmsEditor
+          blockB1ExtCms={blockB1ExtCms}
+          setBlockB1ExtCms={setBlockB1ExtCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: BLOCK C DETAILED CMS (ALL 13 SECTIONS)          */}
+      {/* ========================================================= */}
+      {activeSection === 'blockC' && (
+        <BlockCCmsEditor
+          blockCCms={blockCCms}
+          setBlockCCms={setBlockCCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: HILLS WALK COMMERCIAL DETAILED CMS (10 SECTIONS) */}
+      {/* ========================================================= */}
+      {activeSection === 'hillsWalk' && (
+        <HillsWalkCmsEditor
+          hillsWalkCms={hillsWalkCms}
+          setHillsWalkCms={setHillsWalkCms}
+          token={token || undefined}
+          onSaveSuccess={(msg) => {
+            setSaveSuccess(true);
+            setStatusMsg(msg);
+            setTimeout(() => setSaveSuccess(false), 4000);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION: FAISAL JEWEL 27-STOREY DETAILED CMS (9 SECTIONS) */}
+      {/* ========================================================= */}
+      {activeSection === 'faisalJewel' && (
+        <FaisalJewelCmsEditor
+          faisalJewelCms={faisalJewelCms}
+          setFaisalJewelCms={setFaisalJewelCms}
           token={token || undefined}
           onSaveSuccess={(msg) => {
             setSaveSuccess(true);
@@ -3094,3 +2133,5 @@ export default function BlocksPageCmsTab({ token }: BlocksPageCmsTabProps) {
     </div>
   );
 }
+
+

@@ -6,7 +6,11 @@ import {
   PlotItem,
   fetchPlots,
   BlockInfo,
-  fetchBlock
+  fetchBlock,
+  BlockB1ExtensionCMSData,
+  initialBlockB1ExtensionCMS,
+  fetchBlockB1ExtensionCMS,
+  mergeBlockB1ExtensionCMS
 } from '@/data/faisalHillsData';
 import FormattedText from '@/components/ui/FormattedText';
 import {
@@ -60,171 +64,36 @@ import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 import { DynamicPlotSeriesExplorer } from '../plots/DynamicPlotSeriesExplorer';
+import { useContactChannels } from '@/lib/useContactChannels';
 
-interface B1ExtensionPriceRow {
-  size: string;
-  dimensions: string;
-  sqYards: string;
-  category: 'Residential' | 'Commercial';
-  priceRange: string;
-  possession: string;
-  highlight: string;
-}
-
-const b1ExtensionPriceSchedule: B1ExtensionPriceRow[] = [
-  {
-    size: '5 Marla',
-    dimensions: '25 × 50',
-    sqYards: '139 Sq. Yds',
-    category: 'Residential',
-    priceRange: 'PKR 38 Lacs – 48 Lacs',
-    possession: 'Early Possession Phase',
-    highlight: 'Lowest entry price point in society with maximum capital appreciation upside.'
-  },
-  {
-    size: '8 Marla',
-    dimensions: '30 × 60',
-    sqYards: '200 Sq. Yds',
-    category: 'Residential',
-    priceRange: 'PKR 58 Lacs – 72 Lacs',
-    possession: 'Development in Progress',
-    highlight: 'Ideal family-size plot cut balancing generous indoor layout and affordability.'
-  },
-  {
-    size: '10 Marla',
-    dimensions: '35 × 70',
-    sqYards: '272 Sq. Yds',
-    category: 'Residential',
-    priceRange: 'PKR 75 Lacs – 95 Lacs',
-    possession: 'Development in Progress',
-    highlight: 'Executive single & double unit luxury villa cut with high elevation Margalla view.'
-  },
-  {
-    size: 'Commercial (Avenue)',
-    dimensions: 'Standard Sector Cuts',
-    sqYards: 'Varies',
-    category: 'Commercial',
-    priceRange: 'PKR 1.2 Crore – 2.5 Crore',
-    possession: 'Commercial Phase',
-    highlight: 'Commercial plots situated on wide internal sector boulevards for retail & plazas.'
+const getAmenityIcon = (iconType: string) => {
+  switch (iconType?.toLowerCase()) {
+    case 'zap':
+      return Zap;
+    case 'droplets':
+      return Droplets;
+    case 'shieldcheck':
+    case 'shield':
+      return ShieldCheck;
+    case 'landmark':
+      return Landmark;
+    case 'trees':
+      return Trees;
+    case 'activity':
+      return Activity;
+    case 'shoppingbag':
+      return ShoppingBag;
+    case 'graduationcap':
+      return GraduationCap;
+    case 'compass':
+      return Compass;
+    case 'building2':
+    case 'building':
+      return Building2;
+    default:
+      return Sparkles;
   }
-];
-
-const b1DriveTimes = [
-  { destination: 'Taxila City & Museum', time: '5 mins', distance: '3.2 km', note: 'Direct GT Road N-5 corridor' },
-  { destination: 'Multi Gardens B-17 Islamabad', time: '6 mins', distance: '4.8 km', note: 'Direct sector-to-sector connection' },
-  { destination: 'UET Taxila & HITEC University', time: '8 mins', distance: '6.5 km', note: 'Short commute for faculty & students' },
-  { destination: 'Block B Central Sports Complex', time: '3 mins', distance: '1.5 km', note: 'Direct internal avenue connection' },
-  { destination: 'M-1 Motorway Toll Plaza', time: '12 mins', distance: '11 km', note: 'Quick inter-provincial transit' },
-  { destination: 'New Islamabad International Airport', time: '25 mins', distance: '28 km', note: 'Direct motorway / expressway link' }
-];
-
-const b1ExtensionAmenities = [
-  {
-    icon: Zap,
-    title: '100% Underground Electrification',
-    desc: 'Uninterrupted power grid with underground cabling, high-capacity transformers, and modern street lighting.',
-    category: 'Utilities'
-  },
-  {
-    icon: Droplets,
-    title: 'Clean Water Filtration Plant',
-    desc: 'Dedicated high-capacity RO filtration plants delivering 24/7 clean potable drinking water.',
-    category: 'Utilities'
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Gated Security & 24/7 CCTV',
-    desc: 'Round-the-clock physical security patrols, smart RFID entry gates, and society-wide surveillance.',
-    category: 'Security'
-  },
-  {
-    icon: Landmark,
-    title: 'Dedicated Sector Jamia Mosque',
-    desc: 'Beautiful modern architecture Jamia mosque reservations within walking distance of all plot streets.',
-    category: 'Community'
-  },
-  {
-    icon: Trees,
-    title: 'Lush Sector Parks & Playgrounds',
-    desc: 'Family parks, landscaped green belts, children play areas, and tree-lined jogging paths.',
-    category: 'Environment'
-  },
-  {
-    icon: GraduationCap,
-    title: 'Educational Catchment',
-    desc: 'Immediate access to Roots Millennium campus, UET Taxila, and HITEC University educational institutions.',
-    category: 'Community'
-  },
-  {
-    icon: ShoppingBag,
-    title: 'Sector Commercial Hubs',
-    desc: 'Dedicated commercial arcade zones for supermarkets, retail shops, pharmacies, and food outlets.',
-    category: 'Commercial'
-  },
-  {
-    icon: Compass,
-    title: '40ft to 150ft Paved Streets',
-    desc: 'Expansive wide carpeted asphalt road network with concrete curb stones and storm drainage culverts.',
-    category: 'Infrastructure'
-  }
-];
-
-const b1SliderImages = [
-  {
-    image: '/images/faisal-hills-drone-view.webp',
-    title: 'Boulevard Road Network',
-    sub: 'Active road leveling & infrastructure carpeting across B1 Extension',
-    tag: 'Infrastructure'
-  },
-  {
-    image: '/images/faisal-hills-miyawaki-forest.webp',
-    title: 'Margalla Hillside Panorama',
-    sub: 'Serene foothill environment with fresh natural air and mountain contours',
-    tag: 'Scenic Setting'
-  },
-  {
-    image: '/images/faisal-hills-jamia-mosque.webp',
-    title: 'Community Jamia Mosque',
-    sub: 'Dedicated sector mosque reservations with traditional Islamic architecture',
-    tag: 'Community Life'
-  },
-  {
-    image: '/images/faisal-hills-glow-park.webp',
-    title: 'Sector Parks & Green Belts',
-    sub: 'Dedicated family recreational grounds and children play areas',
-    tag: 'Green Spaces'
-  },
-  {
-    image: '/images/hills-walk-commercial-aerial.webp',
-    title: 'Highway & Sector Connectivity',
-    sub: 'Seamless internal access linking Block B, Block A, and Block D',
-    tag: 'Strategic Access'
-  }
-];
-
-const b1Faqs = [
-  {
-    q: 'Where exactly is Faisal Hills Block B1 Extension located?',
-    a: 'Block B1 Extension sits inside the wider Faisal Hills master plan on the GT Road (N-5) near the Taxila Bypass. It is situated internally beside Block B, bordering Block A, Block D, and the Prime Block with direct connectivity to wide central boulevards.'
-  },
-  {
-    q: 'Why is B1 Extension considered the most affordable block in Faisal Hills?',
-    a: 'B1 Extension was launched to absorb excess demand and provide an entry-level residential opportunity for budget-conscious buyers and long-term investors. It carries lower initial plot rates while sharing the exact same 100% RDA-approved NOC and high-grade Zedem infrastructure as fully mature sectors.'
-  },
-  {
-    q: 'What plot sizes are available in Block B1 Extension?',
-    a: 'Block B1 Extension features 5 Marla (25×50), 8 Marla (30×60), and 10 Marla (35×70) residential plots, alongside select commercial avenue cuts designed for neighborhood retail and markets.'
-  },
-  {
-    q: 'What is the current development and possession status of B1 Extension?',
-    a: 'Heavy earthwork, sector leveling, underground drainage, and road network laying are progressing actively on ground. Early possession will be handed over in phases as utility lines and road carpeting are finalized.'
-  },
-  {
-    q: 'How does the plot booking and file transfer process work?',
-    a: 'Plots in B1 Extension are traded via official file transfer at the Zedem International head office. Our team provides complete on-ground verification, NDC dues clearance, and official file transfer facilitation.'
-  }
-];
+};
 
 const plotCalculations = {
   '5 Marla': {
@@ -254,6 +123,9 @@ const plotCalculations = {
 };
 
 export default function BlockB1ExtensionContent() {
+
+  const { whatsappUrl, telUrl } = useContactChannels();
+  const [cms, setCms] = useState<BlockB1ExtensionCMSData>(initialBlockB1ExtensionCMS);
   const [activeCategory, setActiveCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
   const [selectedCalcSize, setSelectedCalcSize] = useState<'5 Marla' | '8 Marla' | '10 Marla'>('5 Marla');
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
@@ -261,7 +133,6 @@ export default function BlockB1ExtensionContent() {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [selectedPlotForInquiry, setSelectedPlotForInquiry] = useState<string | null>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [b1Plots, setB1Plots] = useState<PlotItem[]>([]);
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
@@ -270,6 +141,10 @@ export default function BlockB1ExtensionContent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
+    fetchBlockB1ExtensionCMS().then((cmsData) => {
+      if (cmsData) setCms(mergeBlockB1ExtensionCMS(cmsData));
+    });
+
     fetchBlock('block-b1-extension').then((b) => {
       if (b) setBlockInfo(b);
     });
@@ -289,6 +164,9 @@ export default function BlockB1ExtensionContent() {
       .catch(console.error);
 
     const handleSync = () => {
+      fetchBlockB1ExtensionCMS().then((cmsData) => {
+        if (cmsData) setCms(mergeBlockB1ExtensionCMS(cmsData));
+      });
       fetchBlock('block-b1-extension').then((b) => {
         if (b) setBlockInfo(b);
       });
@@ -306,11 +184,16 @@ export default function BlockB1ExtensionContent() {
         })
         .catch(console.error);
     };
+
+    window.addEventListener('faisal_block_b1_ext_cms_updated', handleSync);
     window.addEventListener('faisal_plots_updated', handleSync);
     window.addEventListener('faisal_blocks_updated', handleSync);
+    window.addEventListener('storage', handleSync);
     return () => {
+      window.removeEventListener('faisal_block_b1_ext_cms_updated', handleSync);
       window.removeEventListener('faisal_plots_updated', handleSync);
       window.removeEventListener('faisal_blocks_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
     };
   }, []);
 
@@ -324,22 +207,16 @@ export default function BlockB1ExtensionContent() {
   }, []);
 
   const filteredAmenities = useMemo(() => {
-    if (selectedAmenityCategory === 'All') return b1ExtensionAmenities;
-    return b1ExtensionAmenities.filter((a) => a.category === selectedAmenityCategory);
-  }, [selectedAmenityCategory]);
+    const list = cms.amenities.items || [];
+    if (selectedAmenityCategory === 'All') return list;
+    return list.filter((a) => a.category?.toLowerCase() === selectedAmenityCategory.toLowerCase());
+  }, [cms.amenities.items, selectedAmenityCategory]);
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % b1SliderImages.length);
-  };
-
-  const handlePrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + b1SliderImages.length) % b1SliderImages.length);
-  };
-
-  const filteredPrices = b1ExtensionPriceSchedule.filter((row) => {
-    if (activeCategory === 'All') return true;
-    return row.category === activeCategory;
-  });
+  const filteredPrices = useMemo(() => {
+    const rows = cms.priceSchedule.rows || [];
+    if (activeCategory === 'All') return rows;
+    return rows.filter((row) => row.category === activeCategory);
+  }, [cms.priceSchedule.rows, activeCategory]);
 
   const handleSubmitLead = (e: React.FormEvent) => {
     e.preventDefault();
@@ -396,14 +273,18 @@ export default function BlockB1ExtensionContent() {
               <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Hills Block B-1 Extension Overview"
+                  text={cms.overview.h1 || "Faisal Hills Block B-1 Extension Overview"}
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
 
                 <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
-                  {blockInfo?.description ? (
+                  {cms.overview.leadParagraph ? (
+                    <div>
+                      <FormattedText text={cms.overview.leadParagraph} />
+                    </div>
+                  ) : blockInfo?.description ? (
                     <div>
                       <FormattedText text={blockInfo.description} />
                     </div>
@@ -415,12 +296,26 @@ export default function BlockB1ExtensionContent() {
 
                   {isOverviewExpanded && (
                     <div className="space-y-3 pt-1 animate-fadeIn">
-                      <p>
-                        <FormattedText text="Designed specifically for families seeking modern suburban comfort and savvy investors looking for rapid capital appreciation multiples, B1 Extension offers 5 Marla, 8 Marla, and 10 Marla residential plots, alongside select commercial avenue cuts." />
-                      </p>
-                      <p>
-                        <FormattedText text="With dedicated underground electrification, Jamia mosques, family parks, and wide 40ft to 150ft paved boulevards, B-1 Extension connects smoothly to the central sports complex and the Main GT Road (N-5) without highway traffic noise." />
-                      </p>
+                      {cms.overview.expandedParagraph1 && (
+                        <p>
+                          <FormattedText text={cms.overview.expandedParagraph1} />
+                        </p>
+                      )}
+                      {cms.overview.expandedParagraph2 && (
+                        <p>
+                          <FormattedText text={cms.overview.expandedParagraph2} />
+                        </p>
+                      )}
+                      {!cms.overview.expandedParagraph1 && !cms.overview.expandedParagraph2 && (
+                        <>
+                          <p>
+                            <FormattedText text="Designed specifically for families seeking modern suburban comfort and savvy investors looking for rapid capital appreciation multiples, B1 Extension offers 5 Marla, 8 Marla, and 10 Marla residential plots, alongside select commercial avenue cuts." />
+                          </p>
+                          <p>
+                            <FormattedText text="With dedicated underground electrification, Jamia mosques, family parks, and wide 40ft to 150ft paved boulevards, B-1 Extension connects smoothly to the central sports complex and the Main GT Road (N-5) without highway traffic noise." />
+                          </p>
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -443,18 +338,18 @@ export default function BlockB1ExtensionContent() {
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={blockInfo?.heroImage || '/images/faisal-hills-drone-view.webp'}
-                    alt={blockInfo?.heroImageAlt || 'Faisal Hills Block B1 Extension Sector Overview'}
+                    src={cms.overview.photoUrl || blockInfo?.heroImage || '/images/faisal-hills-drone-view.webp'}
+                    alt={cms.overview.photoAlt || blockInfo?.heroImageAlt || 'Faisal Hills Block B1 Extension Sector Overview'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 </div>
 
                 <div className="p-5 bg-slate-900 text-white space-y-1">
                   <span className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider block">
-                    High Value Residential Pocket
+                    {cms.overview.photoTag || "High Value Residential Pocket"}
                   </span>
                   <h3 className="font-serif font-bold text-lg sm:text-xl text-white">
-                    B-1 Extension Master Development
+                    {cms.overview.photoCaption || "B-1 Extension Master Development"}
                   </h3>
                   <p className="text-xs text-slate-300 font-sans leading-relaxed">
                     Internal sector connectivity linking Block B, Block A, and Block D.
@@ -475,10 +370,10 @@ export default function BlockB1ExtensionContent() {
           <div className="border-b border-slate-200 pb-5">
             <div className="space-y-2 max-w-2xl">
               <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
-                Block B-1 Extension Location & Road Connectivity Map
+                {cms.location.h2 || "Block B-1 Extension Location & Road Connectivity Map"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                Positioned inside the serene interior pocket between Block B, Block A, Block D, and Prime Block:
+                {cms.location.leadParagraph || "Positioned inside the serene interior pocket between Block B, Block A, Block D, and Prime Block:"}
               </p>
             </div>
           </div>
@@ -489,7 +384,7 @@ export default function BlockB1ExtensionContent() {
           <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
             <iframe
               title="Faisal Hills B1 Extension Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              src={cms.location.googleMapEmbedUrl || "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -518,7 +413,17 @@ export default function BlockB1ExtensionContent() {
         </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {b1DriveTimes.map((dest, idx) => (
+          {(cms.location.driveTimes && cms.location.driveTimes.length > 0
+            ? cms.location.driveTimes
+            : [
+                { destination: 'Taxila City & Museum', time: '5 mins', distance: '3.2 km', note: 'Direct GT Road N-5 corridor' },
+                { destination: 'Multi Gardens B-17 Islamabad', time: '6 mins', distance: '4.8 km', note: 'Direct sector-to-sector connection' },
+                { destination: 'UET Taxila & HITEC University', time: '8 mins', distance: '6.5 km', note: 'Short commute for faculty & students' },
+                { destination: 'Block B Central Sports Complex', time: '3 mins', distance: '1.5 km', note: 'Direct internal avenue connection' },
+                { destination: 'M-1 Motorway Toll Plaza', time: '12 mins', distance: '11 km', note: 'Quick inter-provincial transit' },
+                { destination: 'New Islamabad International Airport', time: '25 mins', distance: '28 km', note: 'Direct motorway / expressway link' }
+              ]
+          ).map((dest, idx) => (
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between gap-2">
@@ -545,10 +450,10 @@ export default function BlockB1ExtensionContent() {
           <div className="border-b border-slate-200 pb-5">
             <div className="space-y-2 max-w-2xl">
               <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-                Faisal Hills Block B1 Extension Master Plan & Cuts
+                {cms.masterPlan.h2 || "Faisal Hills Block B1 Extension Master Plan & Cuts"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                Explore the sector layout, 40ft to 150ft street hierarchy, and demarcated residential plot cuts:
+                {cms.masterPlan.leadParagraph || "Explore the sector layout, 40ft to 150ft street hierarchy, and demarcated residential plot cuts:"}
               </p>
             </div>
           </div>
@@ -564,7 +469,7 @@ export default function BlockB1ExtensionContent() {
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
                 <img
-                  src="/images/faisal-hills-master-plan-map.webp"
+                  src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-master-plan-map.webp"}
                   alt="Faisal Hills B1 Extension Master Plan Layout"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -578,7 +483,7 @@ export default function BlockB1ExtensionContent() {
               className="w-full py-3 px-4 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
             >
               <Download className="w-4 h-4" />
-              <span>Download Master Plan</span>
+              <span>{cms.masterPlan.downloadButtonText || "Download Master Plan"}</span>
             </button>
           </div>
 
@@ -662,10 +567,10 @@ export default function BlockB1ExtensionContent() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
             <div className="space-y-1.5">
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-                B1 Extension Plot Pricing Schedule
+                {cms.priceSchedule.h2 || "B1 Extension Plot Pricing Schedule"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                Transparent market rates for resale files and plot cuts in Faisal Hills B1 Extension:
+                {cms.priceSchedule.leadParagraph || "Transparent market rates for resale files and plot cuts in Faisal Hills B1 Extension:"}
               </p>
             </div>
 
@@ -895,9 +800,7 @@ export default function BlockB1ExtensionContent() {
                       </Link>
 
                       <a
-                        href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                          `Hi! I am interested in B-1 Extension plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
-                        )}`}
+                        href={whatsappUrl((`Hi! I am interested in B-1 Extension plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`))}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
@@ -928,7 +831,7 @@ export default function BlockB1ExtensionContent() {
             </div>
 
             <a
-              href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20B1%20Extension."
+              href={whatsappUrl("Hello! I want to list or sell my plot in Faisal Hills Block B1 Extension.")}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
@@ -949,10 +852,10 @@ export default function BlockB1ExtensionContent() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
             <div className="space-y-2 max-w-2xl">
               <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900">
-                World-Class Amenities in Block B1 Extension
+                {cms.amenities.h2 || "World-Class Amenities in Block B1 Extension"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                Full-scale utilities and community features engineered for peaceful residential living:
+                {cms.amenities.leadParagraph || "Full-scale utilities and community features engineered for peaceful residential living:"}
               </p>
             </div>
 
@@ -978,7 +881,7 @@ export default function BlockB1ExtensionContent() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filteredAmenities.map((amenity, idx) => {
-            const Icon = amenity.icon;
+            const Icon = getAmenityIcon(amenity.iconType || amenity.category);
             return (
               <ScrollReveal key={idx} direction="up" delay={idx * 30}>
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3 h-full flex flex-col justify-between">
@@ -1133,9 +1036,7 @@ export default function BlockB1ExtensionContent() {
                     <span>View Available {selectedCalcSize} Plots</span>
                   </a>
                   <a
-                    href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                      `Hello! I am interested in verified ${selectedCalcSize} plots listed for sale in Faisal Hills Block B-1 Extension.`
-                    )}`}
+                    href={whatsappUrl((`Hello! I am interested in verified ${selectedCalcSize} plots listed for sale in Faisal Hills Block B-1 Extension.`))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3 px-5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
@@ -1154,20 +1055,20 @@ export default function BlockB1ExtensionContent() {
         <div className="space-y-6">
           <div className="space-y-1.5 border-b border-slate-200 pb-5">
             <h2 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-              B1 Extension Construction & Handover Roadmap
+              {cms.developmentStatus.h2 || "B1 Extension Construction & Handover Roadmap"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              Track key milestones from heavy civil grading to upcoming possession handovers:
+              {cms.developmentStatus.leadParagraph || "Track key milestones from heavy civil grading to upcoming possession handovers:"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {[
               { step: '01', title: 'RDA Sanction & Master Plan', status: 'Completed', note: '100% legally cleared land zoning & layout sanction.', state: 'done' },
-              { step: '02', title: 'Heavy Earthwork & Leveling', status: '85%+ Done', note: 'Ground cutting, hill contour grading, and plot pegs.', state: 'done' },
-              { step: '03', title: 'Underground Sewerage & Water', status: 'In Progress', note: 'Laying deep RCC pipes and storm drainage culverts.', state: 'active' },
+              { step: '02', title: 'Heavy Earthwork & Leveling', status: cms.developmentStatus.stat1Value ? `${cms.developmentStatus.stat1Value} Done` : '85%+ Done', note: 'Ground cutting, hill contour grading, and plot pegs.', state: 'done' },
+              { step: '03', title: 'Underground Sewerage & Water', status: cms.developmentStatus.stat2Value || 'In Progress', note: 'Laying deep RCC pipes and storm drainage culverts.', state: 'active' },
               { step: '04', title: 'Road Base & Asphalt Carpeting', status: 'Ongoing', note: 'Compacting aggregate base course on sector streets.', state: 'active' },
-              { step: '05', title: 'Possession & Villa Construction', status: 'Upcoming Phase', note: 'Final electricity energization and plot handover.', state: 'upcoming' }
+              { step: '05', title: 'Possession & Villa Construction', status: cms.developmentStatus.stat3Value || 'Upcoming Phase', note: 'Final electricity energization and plot handover.', state: 'upcoming' }
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -1200,47 +1101,37 @@ export default function BlockB1ExtensionContent() {
           </div>
         </div>
 
-        {/* Value Discrepancy & Price Delta */}
+        {/* Value Discrepancy & Why Invest Rationale */}
         <div className="bg-slate-900 text-white rounded-3xl p-7 sm:p-10 lg:p-12 border border-slate-800 shadow-xl space-y-6">
           <div className="space-y-2 max-w-3xl">
             <span className="text-amber-400 text-xs font-bold uppercase tracking-wider block">
               Market Price Discrepancy & Opportunity
             </span>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
-              Why B1 Extension is the #1 Value Opportunity in Faisal Hills
+              {cms.whyInvest.h2 || "Why B1 Extension is the #1 Value Opportunity in Faisal Hills"}
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              Compare 5 Marla benchmark rates across sectors. B1 Extension carries a ~50% entry discount compared to mature sectors, giving early buyers the highest runway for capital appreciation:
+              {cms.whyInvest.leadParagraph || "Compare 5 Marla benchmark rates across sectors. B1 Extension carries a ~50% entry discount compared to mature sectors, giving early buyers the highest runway for capital appreciation:"}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Executive Block</span>
-              <div className="font-serif text-xl font-bold text-slate-200">PKR 95L – 1.30 Cr</div>
-              <p className="text-[11px] text-slate-400">Mature entrance block with premium commercial status.</p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Block A</span>
-              <div className="font-serif text-xl font-bold text-slate-200">PKR 85L – 1.15 Cr</div>
-              <p className="text-[11px] text-slate-400">Fully developed & inhabited family community.</p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Block B</span>
-              <div className="font-serif text-xl font-bold text-slate-200">PKR 70L – 95L</div>
-              <p className="text-[11px] text-slate-400">Central boulevard sector with dedicated sports complex.</p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#7b002c]/40 border border-rose-400/50 ring-2 ring-rose-500/20 space-y-2">
-              <span className="text-xs font-bold text-rose-200 uppercase tracking-wider flex items-center justify-between">
-                <span>B1 Extension</span>
-                <span className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Best Value</span>
-              </span>
-              <div className="font-serif text-2xl font-bold text-white">PKR 38L – 48L</div>
-              <p className="text-[11px] text-rose-100/90 font-medium">50%+ entry discount with identical NOC legal security.</p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            {(cms.whyInvest.reasons && cms.whyInvest.reasons.length > 0
+              ? cms.whyInvest.reasons
+              : [
+                  { title: "Highest ROI Potential", desc: "Lower entry acquisition costs provide significantly higher percentage capital appreciation as possession approaches." },
+                  { title: "Proximity to Block B Sports Arena", desc: "Enjoy immediate walking access to the mega sports complex, cricket ground, and club facilities of Block B." },
+                  { title: "100% RDA Approved Titles", desc: "Safe, legally sanctioned layout plan giving peace of mind to local and overseas buyers." },
+                  { title: "Fast-Paced Earthwork & Roadworks", desc: "Active machinery on-ground completing road leveling, boundary walls, and sewerage piping." },
+                  { title: "Scenic Margalla Elevation", desc: "Higher topographical elevation offering cool mountain breezes and panoramic hill views." },
+                  { title: "Official Developer Transfers", desc: "Transfers handled transparently at Zedem International Head Office with zero dealer file risk." }
+                ]
+            ).map((r, idx) => (
+              <div key={idx} className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <span className="text-xs font-bold text-amber-300 uppercase tracking-wider block">{r.title}</span>
+                <p className="text-xs text-slate-300 font-sans leading-relaxed">{r.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -1249,26 +1140,31 @@ export default function BlockB1ExtensionContent() {
           <div className="lg:col-span-7 space-y-5">
             <div className="space-y-2">
               <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-900">
-                How to Book a Resale Plot in B1 Extension
+                {cms.transferProcess.h2 || "How to Book a Resale Plot in B1 Extension"}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                Securing a plot follows standard verified procedures at Zedem International head office:
+                {cms.transferProcess.leadParagraph || "Securing a plot follows standard verified procedures at Zedem International head office:"}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              {[
-                { title: 'CNIC / NICOP Copies', desc: 'Two clear copies of buyer CNIC (or NICOP for overseas buyers).' },
-                { title: 'Next of Kin Details', desc: 'Two clear copies of your designated nominee / Next of Kin CNIC.' },
-                { title: 'Passport Photographs', desc: 'Two recent passport-size photos with clean white background.' },
-                { title: 'Payment Instrument', desc: 'Demand draft / pay order in developer name for clear transaction record.' }
-              ].map((doc, idx) => (
+              {(cms.transferProcess.steps && cms.transferProcess.steps.length > 0
+                ? cms.transferProcess.steps
+                : [
+                    { title: 'CNIC / NICOP Copies', points: ['Two clear copies of buyer CNIC (or NICOP for overseas buyers).'], tag: 'Step 1' },
+                    { title: 'Next of Kin Details', points: ['Two clear copies of your designated nominee / Next of Kin CNIC.'], tag: 'Step 2' },
+                    { title: 'Passport Photographs', points: ['Two recent passport-size photos with clean white background.'], tag: 'Step 3' },
+                    { title: 'Payment Instrument', points: ['Demand draft / pay order in developer name for clear transaction record.'], tag: 'Step 4' }
+                  ]
+              ).map((doc, idx) => (
                 <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>{doc.title}</span>
                   </div>
-                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed">{doc.desc}</p>
+                  <div className="text-[11px] text-slate-600 font-sans leading-relaxed">
+                    {Array.isArray(doc.points) ? doc.points.join(', ') : ''}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1294,10 +1190,10 @@ export default function BlockB1ExtensionContent() {
 
                 <div className="space-y-2">
                   <h4 className="font-serif font-bold text-xl sm:text-2xl text-white">
-                    B1 Extension Transfer Desk
+                    {cms.transferProcess.bannerHeading || "B1 Extension Transfer Desk"}
                   </h4>
                   <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                    Our certified advisors coordinate file verification, NDC clearance, and legal biometric transfer directly at Zedem International head office.
+                    {cms.transferProcess.bannerSubtext || "Our certified advisors coordinate file verification, NDC clearance, and legal biometric transfer directly at Zedem International head office."}
                   </p>
                 </div>
 
@@ -1326,13 +1222,13 @@ export default function BlockB1ExtensionContent() {
 
               <div className="pt-2">
                 <a
-                  href="https://wa.me/923331113177?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20plot%20in%20Faisal%20Hills%20Block%20B1%20Extension"
+                  href={whatsappUrl((cms.transferProcess.bannerWhatsapp || "I am interested in verifying and booking a plot in Faisal Hills Block B1 Extension"))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp Plot Verification Desk</span>
+                  <span>{cms.transferProcess.bannerButtonText || "WhatsApp Plot Verification Desk"}</span>
                 </a>
               </div>
             </div>
@@ -1350,15 +1246,39 @@ export default function BlockB1ExtensionContent() {
         <div className="space-y-6">
           <div className="space-y-1.5 border-b border-slate-200 pb-4">
             <span className="text-[#7b002c] font-bold text-xs uppercase tracking-widest block">
-              Frequently Asked Questions
+              {cms.faqs.sectionTag || "FAQ'S"}
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
-              Everything You Need to Know About B1 Extension
+              {cms.faqs.h2 || "Everything You Need to Know About B1 Extension"}
             </h2>
           </div>
 
           <div className="space-y-3">
-            {b1Faqs.map((faq, idx) => (
+            {(cms.faqs.items && cms.faqs.items.length > 0
+              ? cms.faqs.items
+              : [
+                  {
+                    q: 'Where exactly is Faisal Hills Block B1 Extension located?',
+                    a: 'Block B1 Extension sits inside the wider Faisal Hills master plan on the GT Road (N-5) near the Taxila Bypass. It is situated internally beside Block B, bordering Block A, Block D, and the Prime Block with direct connectivity to wide central boulevards.'
+                  },
+                  {
+                    q: 'Why is B1 Extension considered the most affordable block in Faisal Hills?',
+                    a: 'B1 Extension was launched to absorb excess demand and provide an entry-level residential opportunity for budget-conscious buyers and long-term investors. It carries lower initial plot rates while sharing the exact same 100% RDA-approved NOC and high-grade Zedem infrastructure as fully mature sectors.'
+                  },
+                  {
+                    q: 'What plot sizes are available in Block B1 Extension?',
+                    a: 'Block B1 Extension features 5 Marla (25×50), 8 Marla (30×60), and 10 Marla (35×70) residential plots, alongside select commercial avenue cuts designed for neighborhood retail and markets.'
+                  },
+                  {
+                    q: 'What is the current development and possession status of B1 Extension?',
+                    a: 'Heavy earthwork, sector leveling, underground drainage, and road network laying are progressing actively on ground. Early possession will be handed over in phases as utility lines and road carpeting are finalized.'
+                  },
+                  {
+                    q: 'How does the plot booking and file transfer process work?',
+                    a: 'Plots in B1 Extension are traded via official file transfer at the Zedem International head office. Our team provides complete on-ground verification, NDC dues clearance, and official file transfer facilitation.'
+                  }
+                ]
+            ).map((faq, idx) => (
               <div
                 key={idx}
                 className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all shadow-xs"
@@ -1377,7 +1297,7 @@ export default function BlockB1ExtensionContent() {
                 </button>
                 {openFaq === idx && (
                   <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-600 font-sans leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
-                    {faq.a}
+                    <FormattedText text={faq.a} />
                   </div>
                 )}
               </div>
@@ -1389,20 +1309,23 @@ export default function BlockB1ExtensionContent() {
         <div className="bg-gradient-to-br from-[#7b002c] via-[#5a0020] to-slate-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl space-y-8">
           <div className="max-w-2xl space-y-2">
             <span className="text-rose-200 text-xs font-bold uppercase tracking-wider block">
-              Priority Consultation
+              {cms.scheduleTour.tag || "Priority Consultation"}
             </span>
             <h2 className="font-serif text-2xl sm:text-4xl font-bold">
-              Interested in Faisal Hills B1 Extension?
+              {cms.scheduleTour.h3 || "Interested in Faisal Hills B1 Extension?"}
             </h2>
             <p className="text-xs sm:text-sm text-rose-100/90 font-sans leading-relaxed">
-              Leave your contact details below to receive current availability, verified resale prices, and on-ground plot verification assistance.
+              {cms.scheduleTour.leadParagraph || "Leave your contact details below to receive current availability, verified resale prices, and on-ground plot verification assistance."}
             </p>
           </div>
 
           {formSubmitted ? (
             <div className="p-6 bg-emerald-500/20 border border-emerald-400/40 rounded-2xl text-emerald-200 font-sans text-sm flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
-              <span>Thank you! Your inquiry has been received. Our senior consultant will contact you shortly.</span>
+              <div>
+                <strong className="block font-bold text-white">{cms.scheduleTour.thankYouHeading || "Thank you!"}</strong>
+                <span>{cms.scheduleTour.thankYouMessage || "Your inquiry has been received. Our senior consultant will contact you shortly."}</span>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmitLead} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1446,7 +1369,7 @@ export default function BlockB1ExtensionContent() {
                   type="submit"
                   className="w-full py-3 px-6 bg-white hover:bg-rose-50 text-[#7b002c] font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Submit Inquiry</span>
+                  <span>{cms.scheduleTour.buttonText || "Submit Inquiry"}</span>
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>

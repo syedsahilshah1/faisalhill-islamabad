@@ -35,6 +35,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 import { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 const getBlockUrl = (blockName: string): string => {
   const b = (blockName || '').toLowerCase();
@@ -55,6 +56,7 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ initialCms }: HomeClientProps) {
+  const { directionsUrl } = useContactChannels();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'all' | 'developed' | 'rising' | 'upcoming'>('all');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -792,7 +794,7 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                       <span>Main GT Road N-5, Near Taxila & Margalla Hills</span>
                     </div>
                     <a
-                      href="https://maps.google.com/?q=Faisal+Hills+Taxila"
+                      href={directionsUrl(cms.location.mapEmbedUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-sm shrink-0"

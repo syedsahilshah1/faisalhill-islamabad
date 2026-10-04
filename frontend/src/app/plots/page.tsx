@@ -1,10 +1,15 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { fetchSeo } from '@/data/faisalHillsData';
+import { fetchPlots, fetchSeo, PlotItem } from '@/data/faisalHillsData';
 import { JsonLd, generateBreadcrumbSchema, generateRealEstateListingSchema } from '@/components/seo/JsonLd';
 import PlotsClient from './PlotsClient';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
+
+// The inventory is fetched on the server and embedded in the prerendered HTML.
+// Without this the page renders as an empty shell and every visit then makes a
+// client-side request for data the server had already fetched.
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchSeo('plots');
@@ -44,7 +49,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PlotsPage() {
+export default async function PlotsPage() {
+  const initialPlots: PlotItem[] = await fetchPlots();
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: BASE_URL },
     { name: 'Plots for Sale', url: `${BASE_URL}/plots` },
@@ -64,7 +71,7 @@ export default function PlotsPage() {
   return (
     <>
       <JsonLd data={[breadcrumbSchema, realEstateSchema]} />
-      <PlotsClient />
+      <PlotsClient initialPlots={initialPlots} />
     </>
   );
 }

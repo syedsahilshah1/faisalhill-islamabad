@@ -8,6 +8,7 @@ import {
 } from '@/data/faisalHillsData';
 import CmsRichTextarea from './CmsRichTextarea';
 import CmsRichInput from './CmsRichInput';
+import { ImageUploader } from './ImageUploader';
 import {
   Save,
   RotateCcw,
@@ -39,153 +40,6 @@ import {
   X,
   Upload
 } from 'lucide-react';
-
-function compressImageFile(file: File, maxWidth = 1920, quality = 0.85): Promise<string> {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } else {
-          resolve((event.target?.result as string) || '');
-        }
-      };
-      img.onerror = () => resolve((event.target?.result as string) || '');
-      img.src = event.target?.result as string;
-    };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
-  });
-}
-
-interface ImageUploaderProps {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  placeholder?: string;
-  helper?: string;
-}
-
-const ImageUploader: React.FC<ImageUploaderProps> = ({
-  label,
-  value,
-  onChange,
-  placeholder = 'Image URL or upload from device',
-  helper = 'Supports JPG, PNG, WEBP from PC / Mobile'
-}) => {
-  const [uploading, setUploading] = useState(false);
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const dataUrl = await compressImageFile(file, 1920, 0.85);
-      if (dataUrl) {
-        onChange(dataUrl);
-      }
-    } catch (err) {
-      console.error('Failed to process image:', err);
-    } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-          {label}
-        </label>
-        <button
-          type="button"
-          onClick={() => setShowUrlInput(!showUrlInput)}
-          className="text-[11px] text-[#7b002c] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
-        >
-          <Link2 className="w-3 h-3" />
-          <span>{showUrlInput ? 'Hide URL Input' : 'Paste Image URL'}</span>
-        </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="relative w-28 h-20 bg-slate-900 rounded-xl overflow-hidden border border-slate-200 shadow-inner shrink-0 group">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-[10px] gap-1">
-              <Camera className="w-4 h-4" />
-              <span>No image</span>
-            </div>
-          )}
-          {value && (
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="absolute top-1 right-1 p-1 bg-black/70 hover:bg-red-600 text-white rounded-md transition-colors"
-              title="Remove image"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex-1 space-y-2 w-full">
-          <div className="flex items-center gap-2">
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFile}
-              className="hidden"
-              id={`img-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
-            />
-            <label
-              htmlFor={`img-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer transition-all shadow-sm active:scale-95"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>{uploading ? 'Processing Image...' : 'Upload from Device'}</span>
-            </label>
-            <span className="text-[11px] text-slate-500">{helper}</span>
-          </div>
-
-          {showUrlInput && (
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#7b002c] transition font-mono"
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface PrimeBlockCmsEditorProps {
   primeCms: PrimeBlockCMSData;
@@ -500,30 +354,21 @@ export default function PrimeBlockCmsEditor({
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div className="lg:col-span-7 space-y-3.5">
-                  <div className="flex flex-wrap gap-2">
-                    <label className="px-3.5 py-2 bg-slate-800 hover:bg-black text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow-xs transition">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Upload New Image from Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            compressImageFile(file, 1920, 0.85).then((dataUrl) => {
-                              if (dataUrl) {
-                                setPrimeCms({
-                                  ...primeCms,
-                                  overview: { ...primeCms.overview, image: dataUrl }
-                                });
-                              }
-                            });
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
+                  {/* Replaces a hand-rolled file input that downscaled the image
+                      and assigned the resulting base64 data URL straight into
+                      CMS state. That wrote image bytes into the settings JSON
+                      column; this uploads the file and stores only its path. */}
+                  <ImageUploader
+                    label="Overview Feature Image"
+                    value={primeCms.overview.image || ''}
+                    onChange={(val) => setPrimeCms({
+                      ...primeCms,
+                      overview: { ...primeCms.overview, image: val }
+                    })}
+                    token={token || undefined}
+                    folder="prime-block"
+                    placeholder="/images/faisal-hills-drone-view.webp"
+                  />
 
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700 block mb-1">
@@ -744,6 +589,26 @@ export default function PrimeBlockCmsEditor({
                 })}
                 className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs"
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Google Map Embed URL
+              </label>
+              <input
+                type="text"
+                value={primeCms.location.googleMapIframeUrl || ''}
+                onChange={(e) => setPrimeCms({
+                  ...primeCms,
+                  location: { ...primeCms.location, googleMapIframeUrl: e.target.value }
+                })}
+                placeholder="https://maps.google.com/maps?q=...&output=embed"
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono"
+              />
+              <p className="text-[11px] text-slate-500 mt-1">
+                Controls the map embedded in the Prime Block location section. Paste a
+                Google Maps <code className="font-mono">/maps?q=...&amp;output=embed</code> URL.
+              </p>
             </div>
           </div>
         </div>

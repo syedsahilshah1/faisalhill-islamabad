@@ -1,32 +1,57 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// In-memory cache for fast redirect lookups
-let cachedRedirects: { source_url: string; destination_url: string; status_code: number }[] = [];
-let lastCacheTime = 0;
-const CACHE_TTL_MS = 60 * 1000; // 1 minute cache
+type RedirectRule = { source_url: string; destination_url: string; status_code: number };
 
-async function getRedirects(): Promise<{ source_url: string; destination_url: string; status_code: number }[]> {
+// Redirect rules are looked up on every single request, so they are held as a
+// keyed map rather than an array scanned per request.
+let redirectMap: Map<string, RedirectRule> | null = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+/**
+ * `redirectMap === null` means "not loaded yet". A separate loaded flag is not
+ * needed, but an *empty* map must still be cached: the previous code treated an
+ * empty redirect list as a miss and refetched the API on every request.
+ */
+async function getRedirectMap(): Promise<Map<string, RedirectRule>> {
   const now = Date.now();
-  if (cachedRedirects.length > 0 && now - lastCacheTime < CACHE_TTL_MS) {
-    return cachedRedirects;
+
+  if (redirectMap && now - lastCacheTime < CACHE_TTL_MS) {
+    return redirectMap;
   }
 
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
     const res = await fetch(`${apiUrl}/redirects/active`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 300 }
     });
+
     if (res.ok) {
-      cachedRedirects = await res.json();
+      const rules: RedirectRule[] = await res.json();
+      const map = new Map<string, RedirectRule>();
+
+      for (const rule of rules ?? []) {
+        const src = rule.source_url.length > 1 && rule.source_url.endsWith('/') ? rule.source_url.slice(0, -1) : rule.source_url;
+        map.set(src.toLowerCase(), rule);
+      }
+
+      redirectMap = map;
       lastCacheTime = now;
-      return cachedRedirects;
+      return map;
     }
   } catch (e) {
     // Fallback quietly if backend is not yet booted or during build
   }
 
-  return cachedRedirects;
+  // Keep serving the previous snapshot rather than hammering a failing backend
+  // on every request.
+  if (redirectMap) {
+    return redirectMap;
+  }
+
+  redirectMap = new Map();
+  return redirectMap;
 }
 
 export async function middleware(request: NextRequest) {
@@ -46,11 +71,8 @@ export async function middleware(request: NextRequest) {
   const normalizedPath = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
   // Check active redirects from database/API
-  const redirects = await getRedirects();
-  const matched = redirects.find(r => {
-    const src = r.source_url.length > 1 && r.source_url.endsWith('/') ? r.source_url.slice(0, -1) : r.source_url;
-    return src.toLowerCase() === normalizedPath.toLowerCase();
-  });
+  const redirectMapForRequest = await getRedirectMap();
+  const matched = redirectMapForRequest.get(normalizedPath.toLowerCase());
 
   if (matched) {
     const destination = matched.destination_url;
@@ -63,7 +85,8 @@ export async function middleware(request: NextRequest) {
 
     const statusCode = matched.status_code || 301;
 
-    // Fire non-blocking hit increment
+    // Fire non-blocking hit increment. Kept off the response path so redirect
+    // latency never depends on a database write.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
     fetch(`${apiUrl}/redirects/hit`, {
       method: 'POST',

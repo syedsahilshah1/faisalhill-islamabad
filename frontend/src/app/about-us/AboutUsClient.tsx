@@ -41,8 +41,11 @@ import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import { defaultContactInfo, ContactInfoData, fetchSettingByKey, formatTelUrl } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 export default function AboutUsClient() {
+
+  const { whatsappUrl, telUrl } = useContactChannels();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isSeeMoreOpen, setIsSeeMoreOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<number>(0);
@@ -758,7 +761,7 @@ export default function AboutUsClient() {
             </button>
 
             <a
-              href="https://wa.me/923331113177?text=Hello%2C%20I%20would%20like%20to%20consult%20with%20the%20Faisal%20Hills%20advisory%20team%20regarding%20plot%20options."
+              href={whatsappUrl("Hello, I would like to consult with the Faisal Hills advisory team regarding plot options.")}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all hover:scale-105"

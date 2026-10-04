@@ -46,7 +46,13 @@ import {
   submitLead,
   formatPlotPrice,
   BlockInfo,
-  fetchBlock
+  fetchBlock,
+  BlockCCMSData,
+  BlockCPriceRow,
+  initialBlockCCMS,
+  fetchBlockCCMS,
+  mergeBlockCCMS,
+  formatWhatsAppUrl
 } from '@/data/faisalHillsData';
 import FormattedText from '@/components/ui/FormattedText';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
@@ -56,18 +62,6 @@ import CountUpNumber from '@/components/ui/CountUpNumber';
 import FaqAccordion from '@/components/ui/FaqAccordion';
 import { DynamicPlotSeriesExplorer } from '@/components/plots/DynamicPlotSeriesExplorer';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
-
-// Price schedule benchmark rows for Block C
-interface BlockCPriceRow {
-  size: string;
-  dimensions: string;
-  sqYards: string;
-  sqFeet: string;
-  category: 'Residential' | 'Commercial';
-  priceRange: string;
-  possession: string;
-  highlight: string;
-}
 
 const blockCPriceSchedule: BlockCPriceRow[] = [
   {
@@ -494,6 +488,7 @@ export default function BlockCContent() {
   const [selectedPriceCategory, setSelectedPriceCategory] = useState<'All' | 'Residential' | 'Commercial'>('All');
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
+  const [cms, setCms] = useState<BlockCCMSData>(initialBlockCCMS);
 
   // Lead Form State
   const [formData, setFormData] = useState({
@@ -511,6 +506,10 @@ export default function BlockCContent() {
       if (b) setBlockInfo(b);
     });
 
+    fetchBlockCCMS().then((cData) => {
+      if (cData) setCms(mergeBlockCCMS(cData));
+    });
+
     fetchPlots()
       .then((data) => {
         if (data && data.length > 0) setAllPlots(data);
@@ -526,12 +525,20 @@ export default function BlockCContent() {
           if (data && data.length > 0) setAllPlots(data);
         })
         .catch(console.error);
+      try {
+        const local = localStorage.getItem('faisal_block_c_cms');
+        if (local) setCms(mergeBlockCCMS(JSON.parse(local)));
+      } catch {}
     };
     window.addEventListener('faisal_plots_updated', handleSync);
     window.addEventListener('faisal_blocks_updated', handleSync);
+    window.addEventListener('faisal_block_c_cms_updated', handleSync);
+    window.addEventListener('storage', handleSync);
     return () => {
       window.removeEventListener('faisal_plots_updated', handleSync);
       window.removeEventListener('faisal_blocks_updated', handleSync);
+      window.removeEventListener('faisal_block_c_cms_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
     };
   }, []);
 
@@ -554,10 +561,45 @@ export default function BlockCContent() {
     );
   }, [blockCPlots, selectedSizeFilter]);
 
+  const priceRows = useMemo(() => {
+    return (cms.priceScheduleSection?.tableRows && cms.priceScheduleSection.tableRows.length > 0)
+      ? cms.priceScheduleSection.tableRows
+      : blockCPriceSchedule;
+  }, [cms.priceScheduleSection?.tableRows]);
+
   const filteredPriceSchedule = useMemo(() => {
-    if (selectedPriceCategory === 'All') return blockCPriceSchedule;
-    return blockCPriceSchedule.filter((r) => r.category === selectedPriceCategory);
-  }, [selectedPriceCategory]);
+    if (selectedPriceCategory === 'All') return priceRows;
+    return priceRows.filter((r: BlockCPriceRow) => r.category === selectedPriceCategory);
+  }, [selectedPriceCategory, priceRows]);
+
+  const whyInvestReasons = useMemo(() => {
+    return (cms.whoSuitsSection?.reasons && cms.whoSuitsSection.reasons.length > 0)
+      ? cms.whoSuitsSection.reasons
+      : blockCWhyInvestReasons;
+  }, [cms.whoSuitsSection?.reasons]);
+
+  const faqItems = useMemo(() => {
+    return (cms.faqsSection?.faqs && cms.faqsSection.faqs.length > 0)
+      ? cms.faqsSection.faqs
+      : blockCFaqs;
+  }, [cms.faqsSection?.faqs]);
+
+  const travelTimes = useMemo(() => {
+    return (cms.location?.travelTimes && cms.location.travelTimes.length > 0)
+      ? cms.location.travelTimes
+      : blockCTravelTimes;
+  }, [cms.location?.travelTimes]);
+
+  const transferSteps = useMemo(() => {
+    return (cms.transferProcess.steps && cms.transferProcess.steps.length > 0)
+      ? cms.transferProcess.steps
+      : [
+          { step: '01', title: 'File Verification', desc: 'Verify membership certificate and allotment letter at Zedem International head office.' },
+          { step: '02', title: 'NDC Application', desc: 'Apply for No Demand Certificate to ensure all society dues and development charges are clear.' },
+          { step: '03', title: 'Biometric Transfer', desc: 'Buyer and seller appear for biometric verification, thumb impression, and official transfer submission.' },
+          { step: '04', title: 'Allotment Handover', desc: 'Receive the official updated Faisal Hills transfer letter and possession certificate.' }
+        ];
+  }, [cms.transferProcess.steps]);
 
   const filteredAmenities = useMemo(() => {
     if (selectedAmenityFilter === 'all') return blockCAmenities;
@@ -721,7 +763,10 @@ export default function BlockCContent() {
           <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
             <iframe
               title="Faisal Hills Block C Google Map Location"
-              src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              // Reads the dashboard-editable field the CMS already carries. This
+              // was a hardcoded iframe URL, so editing the map in the Block C
+              // editor had no effect on the public page.
+              src={cms.location?.googleMapIframeUrl || "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -755,7 +800,7 @@ export default function BlockCContent() {
 
         {/* Mobile View: Compact Options Accordion List */}
         <div className="block sm:hidden space-y-2">
-          {blockCTravelTimes.map((dest, idx) => {
+          {travelTimes.map((dest, idx) => {
             const isSelected = activeLandmarkIndex === idx;
             return (
               <div
@@ -804,7 +849,7 @@ export default function BlockCContent() {
 
         {/* Desktop & Tablet View: Grid Cards */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
-          {blockCTravelTimes.map((dest, idx) => (
+          {travelTimes.map((dest, idx) => (
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-[#7b002c]/40 hover:bg-white hover:shadow-md transition-all space-y-2 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between gap-2">
@@ -1193,7 +1238,7 @@ export default function BlockCContent() {
                       <span>Contact</span>
                     </button>
                     <a
-                      href={`https://wa.me/923331113177?text=Hello!%20I%20am%20interested%20in%20Faisal%20Hills%20Block%20C%20Plot%20${plot.plotNumber}%20(${plot.size}).%20Please%20share%20latest%20price%20and%20transfer%20details.`}
+                      href={formatWhatsAppUrl(cms.closingSiteVisitSection?.whatsappNumber, "Hello! I am interested in Faisal Hills Block C Plot ${plot.plotNumber} (${plot.size}). Please share latest price and transfer details.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center cursor-pointer shrink-0 shadow-xs"
@@ -1226,7 +1271,7 @@ export default function BlockCContent() {
           </div>
 
           <a
-            href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Block%20C."
+            href={formatWhatsAppUrl(cms.closingSiteVisitSection?.whatsappNumber, "Hello! I want to list or sell my plot in Faisal Hills Block C.")}
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md shrink-0 flex items-center gap-2"
@@ -1396,9 +1441,20 @@ export default function BlockCContent() {
 
         {/* Mobile View: Compact Interactive Accordion List */}
         <div className="block sm:hidden space-y-2.5">
-          {blockCWhyInvestReasons.map((item, idx) => {
+          {whyInvestReasons.map((item: any, idx: number) => {
             const isSelected = activeWhyInvestOption === idx;
-            const Icon = item.icon;
+            const Icon = typeof item.icon === 'function'
+              ? item.icon
+              : item.icon === 'ShoppingBag' ? ShoppingBag
+              : item.icon === 'Droplets' ? Droplets
+              : item.icon === 'Car' ? Car
+              : item.icon === 'ShieldCheck' ? ShieldCheck
+              : item.icon === 'Compass' ? Compass
+              : item.icon === 'TrendingUp' ? TrendingUp
+              : Sparkles;
+            const bgClass = item.bg || 'bg-rose-50';
+            const textClass = item.text || 'text-[#7b002c]';
+            const borderClass = item.border || 'border-rose-100';
             return (
               <div
                 key={idx}
@@ -1415,7 +1471,7 @@ export default function BlockCContent() {
                       className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 border ${
                         isSelected
                           ? 'bg-[#7b002c] text-white border-[#7b002c]'
-                          : `${item.bg} ${item.text} ${item.border}`
+                          : `${bgClass} ${textClass} ${borderClass}`
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -1447,15 +1503,26 @@ export default function BlockCContent() {
 
         {/* Desktop/Tablet View: Clean 6-Card Grid */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blockCWhyInvestReasons.map((item, idx) => {
-            const Icon = item.icon;
+          {whyInvestReasons.map((item: any, idx: number) => {
+            const Icon = typeof item.icon === 'function'
+              ? item.icon
+              : item.icon === 'ShoppingBag' ? ShoppingBag
+              : item.icon === 'Droplets' ? Droplets
+              : item.icon === 'Car' ? Car
+              : item.icon === 'ShieldCheck' ? ShieldCheck
+              : item.icon === 'Compass' ? Compass
+              : item.icon === 'TrendingUp' ? TrendingUp
+              : Sparkles;
+            const bgClass = item.bg || 'bg-rose-50';
+            const textClass = item.text || 'text-[#7b002c]';
+            const borderClass = item.border || 'border-rose-100';
             return (
               <div
                 key={idx}
                 className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-3"
               >
                 <div
-                  className={`w-10 h-10 rounded-xl ${item.bg} ${item.text} flex items-center justify-center border ${item.border}`}
+                  className={`w-10 h-10 rounded-xl ${bgClass} ${textClass} flex items-center justify-center border ${borderClass}`}
                 >
                   <Icon className="w-5 h-5" />
                 </div>
@@ -1608,7 +1675,7 @@ export default function BlockCContent() {
           </p>
         </div>
 
-        <FaqAccordion faqs={blockCFaqs} blockName="Block C" />
+        <FaqAccordion faqs={faqItems} blockName="Block C" />
       </section>
 
       {/* ========================================================= */}

@@ -1,4 +1,8 @@
 import { ReactNode } from "react";
+import { coalescedFetch, invalidateApiCache, invalidateApiResource, invalidateForWrite } from "@/lib/apiCache";
+import type { PermissionDescriptor, UserPermissionKey } from "@/lib/permissions";
+
+export { invalidateApiCache, invalidateApiResource };
 
 export interface BlockInfo {
   id: string;
@@ -1595,7 +1599,34 @@ export function getApiUrl(): string {
 
 export const API_URL = typeof window !== 'undefined' ? getApiUrl() : (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api');
 
+/**
+ * Single network primitive for the whole data layer.
+ *
+ * GET and HEAD requests are routed through the coalescing cache in
+ * `lib/apiCache`, which means every call site in this file — server components,
+ * client components and `generateMetadata` alike — gets request collapsing for
+ * free. Writes bypass it entirely.
+ */
 export async function safeFetch(url: string, init?: RequestInit, timeoutMs = 2500): Promise<Response | null> {
+  const method = (init?.method ?? 'GET').toUpperCase();
+
+  if (method !== 'GET' && method !== 'HEAD') {
+    const res = await rawFetch(url, init, timeoutMs);
+
+    // A successful mutation invalidates that resource family's cached reads, so
+    // the next read reflects the change instead of waiting out the TTL. Handling
+    // it here covers all ~30 write helpers without touching each one.
+    if (res && res.ok) {
+      invalidateForWrite(url);
+    }
+
+    return res;
+  }
+
+  return coalescedFetch(url, () => rawFetch(url, init, timeoutMs), undefined, init);
+}
+
+async function rawFetch(url: string, init?: RequestInit, timeoutMs = 2500): Promise<Response | null> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -1610,7 +1641,62 @@ export async function safeFetch(url: string, init?: RequestInit, timeoutMs = 250
   }
 }
 
-let _cachedBlocks: BlockInfo[] = [];
+/**
+ * Module-level value cache with an explicit TTL.
+ *
+ * `null` means "not cached yet", which is what lets an intentionally empty API
+ * response (an inventory with no plots, a site with no blogs) be served from
+ * cache instead of re-requested on every single render.
+ */
+class ValueCache<T> {
+  private value: T | null = null;
+  private expiresAt = 0;
+
+  constructor(private readonly ttlMs: number) {}
+
+  get fresh(): boolean {
+    return this.value !== null && this.expiresAt > Date.now();
+  }
+
+  read(): T | null {
+    return this.fresh ? this.value : null;
+  }
+
+  write(value: T): T {
+    this.value = value;
+    this.expiresAt = Date.now() + this.ttlMs;
+    return value;
+  }
+
+  clear(): void {
+    this.value = null;
+    this.expiresAt = 0;
+  }
+}
+
+const _blocksCache = new ValueCache<BlockInfo[]>(120_000);
+const _blocksBySlugCache = new ValueCache<Record<string, BlockInfo | null>>(120_000);
+const _plotsCache = new ValueCache<PlotItem[]>(30_000);
+const _galleryCache = new ValueCache<GalleryItem[]>(120_000);
+
+/**
+ * Apply an optimistic mutation to the cached plot list and drop the cached
+ * `/plots` responses.
+ *
+ * The admin helpers below write through the raw `fetch` API rather than
+ * `safeFetch`, so they invalidate explicitly. Keeping the local list in sync
+ * means the dashboard table updates without a refetch, while the response cache
+ * is still discarded so the next public read comes from the server.
+ */
+function applyPlotCacheUpdate(transform: (plots: PlotItem[]) => PlotItem[]): void {
+  const current = _plotsCache.read();
+
+  if (current) {
+    _plotsCache.write(transform(current));
+  }
+
+  invalidateApiResource('/plots');
+}
 
 function applyLocalBlockOverrides(blocks: BlockInfo[]): BlockInfo[] {
   if (typeof window === 'undefined') return blocks;
@@ -1628,25 +1714,37 @@ function applyLocalBlockOverrides(blocks: BlockInfo[]): BlockInfo[] {
 }
 
 export async function fetchBlocks(forceRefresh = false): Promise<BlockInfo[]> {
-  if (!forceRefresh && _cachedBlocks.length > 0) {
-    return applyLocalBlockOverrides(_cachedBlocks);
+  if (forceRefresh) {
+    _blocksCache.clear();
+    invalidateApiResource('/blocks');
   }
+
+  const cached = _blocksCache.read();
+  if (cached) {
+    return applyLocalBlockOverrides(cached);
+  }
+
   try {
     const res = await safeFetch(`${getApiUrl()}/blocks`, { next: { revalidate: 300 } });
     if (!res || !res.ok) {
-      _cachedBlocks = blocksData;
       return applyLocalBlockOverrides(blocksData);
     }
     const data = await res.json();
-    _cachedBlocks = data.map(mapBlockToCamel);
-    return applyLocalBlockOverrides(_cachedBlocks);
+    return applyLocalBlockOverrides(_blocksCache.write(data.map(mapBlockToCamel)));
   } catch (e) {
-    _cachedBlocks = blocksData;
     return applyLocalBlockOverrides(blocksData); // fallback
   }
 }
 
 export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
+  if (typeof window !== 'undefined') {
+    const cachedAll = _blocksBySlugCache.read();
+
+    if (cachedAll && slug in cachedAll) {
+      return cachedAll[slug];
+    }
+  }
+
   let baseBlock: BlockInfo | null = null;
   try {
     const res = await safeFetch(`${getApiUrl()}/blocks/${slug}`, { next: { revalidate: 300 } });
@@ -1677,39 +1775,54 @@ export async function fetchBlock(slug: string): Promise<BlockInfo | null> {
     } catch {}
   }
 
+  if (typeof window !== 'undefined') {
+    const cachedAll = _blocksBySlugCache.read() ?? {};
+    cachedAll[slug] = baseBlock;
+    _blocksBySlugCache.write(cachedAll);
+  }
+
   return baseBlock;
 }
 
-let _cachedPlots: PlotItem[] = [];
-
 export async function fetchPlots(forceRefresh = false): Promise<PlotItem[]> {
-  if (!forceRefresh && _cachedPlots.length > 0) {
-    return _cachedPlots;
+  if (forceRefresh) {
+    _plotsCache.clear();
+    invalidateApiResource('/plots');
+  }
+
+  const cached = _plotsCache.read();
+  if (cached) {
+    return cached;
   }
 
   try {
     const res = await safeFetch(`${getApiUrl()}/plots`, { next: { revalidate: 120 } });
-    if (!res || !res.ok) return _cachedPlots.length > 0 ? _cachedPlots : plotInventoryData;
+    if (!res || !res.ok) return plotInventoryData;
     const data = await res.json();
-    _cachedPlots = Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : []);
-    return _cachedPlots;
+    return _plotsCache.write(
+      Array.isArray(data) ? data.map(mapPlotToCamel) : (data?.data ? data.data.map(mapPlotToCamel) : [])
+    );
   } catch (e) {
-    return _cachedPlots.length > 0 ? _cachedPlots : plotInventoryData;
+    return plotInventoryData;
   }
 }
 
-let _cachedGallery: GalleryItem[] = [];
-
 export async function fetchGallery(forceRefresh = false): Promise<GalleryItem[]> {
-  if (!forceRefresh && _cachedGallery.length > 0) {
-    return _cachedGallery;
+  if (forceRefresh) {
+    _galleryCache.clear();
+    invalidateApiResource('/gallery');
   }
+
+  const cached = _galleryCache.read();
+  if (cached) {
+    return cached;
+  }
+
   try {
     const res = await safeFetch(`${getApiUrl()}/gallery`, { next: { revalidate: 300 } });
     if (!res || !res.ok) return initialGalleryData;
     const data = await res.json();
-    _cachedGallery = data.map(mapGalleryToCamel);
-    return _cachedGallery;
+    return _galleryCache.write(data.map(mapGalleryToCamel));
   } catch (e) {
     return initialGalleryData; // fallback
   }
@@ -1989,6 +2102,27 @@ export async function apiFetchAdminUsers(token: string): Promise<AdminUser[]> {
   return data.users || [];
 }
 
+/**
+ * The grantable capability catalogue, straight from the server.
+ *
+ * The picker renders from this rather than a hardcoded list so a permission the
+ * API would reject can never be offered in the first place.
+ */
+export async function apiFetchPermissionCatalogue(token: string): Promise<PermissionDescriptor[]> {
+  const res = await fetch(`${getApiUrl()}/admin/permissions`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'Failed to load the permission catalogue.');
+  }
+  const data = await res.json();
+  return Array.isArray(data.permissions) ? data.permissions : [];
+}
+
 export async function apiCreateAdminUser(payload: AdminUserPayload, token: string): Promise<{ success: boolean; message: string; user: AdminUser }> {
   const res = await fetch(`${getApiUrl()}/admin/users`, {
     method: 'POST',
@@ -2090,9 +2224,7 @@ export async function apiUpdatePlot(id: string, plot: Partial<PlotItem>, token: 
   if (!res.ok) throw new Error('Failed to update plot');
   const data = await res.json();
   const updated = mapPlotToCamel(data);
-  if (_cachedPlots) {
-    _cachedPlots = _cachedPlots.map(p => p.id === id ? updated : p);
-  }
+  applyPlotCacheUpdate(current => current.map(p => (p.id === id ? updated : p)));
   return updated;
 }
 
@@ -2131,9 +2263,7 @@ export async function apiCreatePlot(plot: Partial<PlotItem>, token: string): Pro
   if (!res.ok) throw new Error('Failed to create plot');
   const data = await res.json();
   const created = mapPlotToCamel(data);
-  if (_cachedPlots) {
-    _cachedPlots = [created, ..._cachedPlots];
-  }
+  applyPlotCacheUpdate(current => [created, ...current]);
   return created;
 }
 
@@ -2146,9 +2276,7 @@ export async function apiDeletePlot(id: string, token: string): Promise<any> {
     }
   });
   if (!res.ok) throw new Error('Failed to delete plot');
-  if (_cachedPlots) {
-    _cachedPlots = _cachedPlots.filter(p => p.id !== id);
-  }
+  applyPlotCacheUpdate(current => current.filter(p => p.id !== id));
 }
 
 export async function apiFetchLeads(token: string): Promise<LeadItem[]> {
@@ -2682,6 +2810,13 @@ export interface ContactInfoData {
   phoneNumbers: string[];
   salesHotline: string;
   email: string;
+  /**
+   * External link behind every "Directions" / "Open in Google Maps" control.
+   *
+   * These used to be `https://maps.google.com/?q=Faisal+Hills+Taxila` literals
+   * in four components, so pointing the site at a new map meant editing code.
+   */
+  mapDirectionsUrl?: string;
 }
 
 export const defaultTermsOfService: LegalPolicyData = {
@@ -2769,23 +2904,39 @@ export const defaultContactInfo: ContactInfoData = {
   salesDesk: '',
   phoneNumbers: [],
   salesHotline: '+92 333 1113177',
-  email: 'info@faisalhillsislamabadfh.com'
+  email: 'info@faisalhillsislamabadfh.com',
+  mapDirectionsUrl: 'https://maps.google.com/?q=Faisal+Hills+Taxila'
 };
 
 // -------------------------------------------------------------
 // Settings API Helpers
 // -------------------------------------------------------------
 
-export async function fetchSettingByKey<T>(key: string, forceFresh = true): Promise<T | null> {
+/**
+ * Read a single site setting.
+ *
+ * `forceFresh` is opt-in and is meant for admin screens that must reflect an
+ * unsaved change. The previous default was `forceFresh = true`, which appended
+ * a cache-busting timestamp and sent `cache: 'no-store'` on every call — the
+ * root layout alone turned that into two guaranteed uncached backend requests on
+ * every page load. The default is now a normal cached read.
+ */
+export async function fetchSettingByKey<T>(key: string, forceFresh = false): Promise<T | null> {
   try {
-    const url = forceFresh ? `${getApiUrl()}/settings/${key}?_t=${Date.now()}` : `${getApiUrl()}/settings/${key}`;
-    const res = await safeFetch(url, {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      }
-    });
+    const url = forceFresh
+      ? `${getApiUrl()}/settings/${key}?_t=${Date.now()}`
+      : `${getApiUrl()}/settings/${key}`;
+
+    const res = await safeFetch(url, forceFresh
+      ? {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        }
+      : { next: { revalidate: 300 } });
+
     if (!res || !res.ok) return null;
     return await res.json().catch(() => null);
   } catch {
@@ -2819,6 +2970,28 @@ export function formatTelUrl(rawNumber?: string): string {
     cleaned = '+' + cleaned;
   }
   return `tel:${cleaned || '+923331113177'}`;
+}
+
+/**
+ * Resolve the external map link used by "Directions" buttons.
+ *
+ * The value is dashboard-editable, so it is treated as untrusted: only `http`
+ * and `https` are accepted. A `javascript:` or `data:` URL stored by a
+ * compromised or careless editor would otherwise become a stored-XSS vector the
+ * moment an admin clicked through their own site. An unparseable or blank value
+ * falls back to the last-known-good default rather than rendering a dead link.
+ */
+export function formatMapDirectionsUrl(rawUrl?: string): string {
+  const fallback: string = defaultContactInfo.mapDirectionsUrl || 'https://maps.google.com/?q=Faisal+Hills+Taxila';
+  if (!rawUrl || !rawUrl.trim()) return fallback;
+
+  try {
+    const parsed = new URL(rawUrl.trim());
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return fallback;
+    return parsed.toString();
+  } catch {
+    return fallback;
+  }
 }
 
 // -------------------------------------------------------------
@@ -3929,15 +4102,14 @@ export async function saveHomepageCMS(cmsData: HomepageCMSData, token?: string):
 // -------------------------------------------------------------
 // Granular User Role & Module Permissions
 // -------------------------------------------------------------
+// The permission vocabulary used to be duplicated here as a hand-written
+// 7-entry list. It had drifted from the server: it still offered
+// `manage_homepage_cms`, which the server no longer accepts, and omitted the 15
+// other capabilities, so the picker could neither grant nor display them. The
+// canonical list lives in `lib/permissions.ts`, which mirrors
+// `App\Support\PermissionRegistry`.
 
-export type UserPermissionKey =
-  | 'manage_leads'
-  | 'manage_plots'
-  | 'manage_blogs'
-  | 'manage_gallery'
-  | 'manage_homepage_cms'
-  | 'manage_seo'
-  | 'manage_users';
+export type { UserPermissionKey, PermissionDescriptor } from '@/lib/permissions';
 
 export interface DashboardUserItem {
   id: number | string;
@@ -3949,16 +4121,6 @@ export interface DashboardUserItem {
   createdAt?: string;
   lastLogin?: string;
 }
-
-export const ALL_DASHBOARD_PERMISSIONS: { key: UserPermissionKey; label: string; description: string; desc: string }[] = [
-  { key: 'manage_leads', label: 'Manage Leads & Inquiries', description: 'View, filter, export and update customer booking leads', desc: 'View, filter, export and update customer booking leads' },
-  { key: 'manage_plots', label: 'Manage Plots & Inventory', description: 'Add, update prices, and edit plot listings and blocks', desc: 'Add, update prices, and edit plot listings and blocks' },
-  { key: 'manage_blogs', label: 'Manage Blog Posts', description: 'Create, edit, and publish SEO blog articles', desc: 'Create, edit, and publish SEO blog articles' },
-  { key: 'manage_gallery', label: 'Photo Gallery Management', description: 'Upload and manage on-site development photos', desc: 'Upload and manage on-site development photos' },
-  { key: 'manage_homepage_cms', label: 'Homepage CMS & Visual Content', description: 'Edit all 24 homepage sections, texts, cards, and images', desc: 'Edit all 24 homepage sections, texts, cards, and images' },
-  { key: 'manage_seo', label: 'SEO & Verification Settings', description: 'Manage metadata, social links, and official contact details', desc: 'Manage metadata, social links, and official contact details' },
-  { key: 'manage_users', label: 'User & Permission Management', description: 'Create new users and assign role permissions (Superadmin only)', desc: 'Create new users and assign role permissions (Superadmin only)' }
-];
 
 // -------------------------------------------------------------
 // Blocks Page CMS Interfaces & Full Defaults
@@ -4611,6 +4773,13 @@ export interface PrimeBlockCMSData {
     driveTimesNote: string;
     locationPageLinkText: string;
     locationPageLinkHref: string;
+    /**
+     * Embedded map shown in the Prime Block location section.
+     *
+     * Added because the section previously rendered a hardcoded iframe URL that
+     * no dashboard screen could change.
+     */
+    googleMapIframeUrl: string;
   };
   plotSizesSection?: {
     heading: string;
@@ -4783,7 +4952,8 @@ export const initialPrimeBlockCMS: PrimeBlockCMSData = {
     bullet4: 'Margalla Avenue, the M-1 Motorway corridor and New Islamabad International Airport',
     driveTimesNote: 'Drive times quoted online vary widely, so we publish only times our team has measured, with the date and time of day. Full directions are on our',
     locationPageLinkText: 'Faisal Hills location',
-    locationPageLinkHref: '/faisal-hills-location'
+    locationPageLinkHref: '/faisal-hills-location',
+    googleMapIframeUrl: 'https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed'
   },
   plotSizesSection: {
     heading: 'Plot Sizes in Prime Block',
@@ -5118,7 +5288,10 @@ export function mergePrimeBlockCMS(incoming: any): PrimeBlockCMSData {
       bullet2: cleanVerifyText(incLoc.bullet2 || initialPrimeBlockCMS.location.bullet2),
       bullet3: cleanVerifyText(incLoc.bullet3 || initialPrimeBlockCMS.location.bullet3),
       bullet4: cleanVerifyText(incLoc.bullet4 || initialPrimeBlockCMS.location.bullet4),
-      driveTimesNote: cleanVerifyText(incLoc.driveTimesNote || initialPrimeBlockCMS.location.driveTimesNote)
+      driveTimesNote: cleanVerifyText(incLoc.driveTimesNote || initialPrimeBlockCMS.location.driveTimesNote),
+      locationPageLinkText: cleanVerifyText(incLoc.locationPageLinkText || initialPrimeBlockCMS.location.locationPageLinkText),
+      locationPageLinkHref: cleanVerifyText(incLoc.locationPageLinkHref || initialPrimeBlockCMS.location.locationPageLinkHref),
+      googleMapIframeUrl: cleanVerifyText(incLoc.googleMapIframeUrl || initialPrimeBlockCMS.location.googleMapIframeUrl)
     },
     plotSizesSection: {
       ...initialPrimeBlockCMS.plotSizesSection!,
@@ -8273,6 +8446,3493 @@ export async function savePaymentPlanCMS(cmsData: PaymentPlanCMSData, token?: st
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS EXECUTIVE BLOCK DEDICATED CMS SYSTEM
+// =========================================================
+
+export interface ExecutiveBlockPlotItem {
+  id: string;
+  plotNumber: string;
+  blockName: string;
+  category: string;
+  size: string;
+  dimensions: string;
+  facing: string;
+  priceFormatted: string;
+  downPayment: string;
+  status: string;
+  badge: string;
+  image: string;
+  features: string[];
+}
+
+export interface ExecutiveBlockAmenityItem {
+  id: string;
+  tag: string;
+  title: string;
+  image: string;
+  iconType: string;
+}
+
+export interface ExecutiveBlockWhyInvestItem {
+  title: string;
+  desc: string;
+}
+
+export interface ExecutiveBlockTransferStep {
+  point: string;
+  tag: string;
+  title: string;
+  points: string[];
+  badge: string;
+}
+
+export interface ExecutiveBlockFaqItem {
+  q: string;
+  a: string;
+}
+
+export interface ExecutiveBlockCMSData {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    bgImage: string;
+    badge1: string;
+    badge2: string;
+    badge3: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph: string;
+    expandedParagraph: string;
+    photoUrl: string;
+    photoAlt: string;
+    photoTag: string;
+    photoCaption: string;
+  };
+  location: {
+    h2: string;
+    leadParagraph: string;
+    expandedParagraph1: string;
+    expandedParagraph2: string;
+    googleMapEmbedUrl: string;
+  };
+  masterPlan: {
+    h2: string;
+    leadParagraph: string;
+    mapImageUrl: string;
+    mapPdfUrl: string;
+    downloadButtonText: string;
+    exploreSocietyMapUrl: string;
+    exploreSocietyMapText: string;
+  };
+  plotsForSale: {
+    h2: string;
+    leadParagraph: string;
+    plots: ExecutiveBlockPlotItem[];
+  };
+  resaleDesk: {
+    tag: string;
+    heading: string;
+    paragraph: string;
+    buttonText: string;
+    whatsappMessage: string;
+  };
+  facilities: {
+    h2: string;
+    leadParagraph: string;
+    items: ExecutiveBlockAmenityItem[];
+  };
+  whyInvest: {
+    h2: string;
+    leadParagraph: string;
+    reasons: ExecutiveBlockWhyInvestItem[];
+  };
+  developmentStatus: {
+    h2: string;
+    leadParagraph: string;
+    expandedParagraph1: string;
+    expandedParagraph2: string;
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+    dronePhotoUrl: string;
+    dronePhotoAlt: string;
+    possessionBadge: string;
+    droneTag: string;
+    droneHeading: string;
+    droneDesc: string;
+  };
+  transferProcess: {
+    h2: string;
+    leadParagraph: string;
+    steps: ExecutiveBlockTransferStep[];
+    bannerHeading: string;
+    bannerSubtext: string;
+    bannerButtonText: string;
+    bannerWhatsapp: string;
+  };
+  faqs: {
+    sectionTag: string;
+    h2: string;
+    items: ExecutiveBlockFaqItem[];
+  };
+  scheduleTour: {
+    tag: string;
+    h3: string;
+    leadParagraph: string;
+    thankYouHeading: string;
+    thankYouMessage: string;
+    buttonText: string;
+  };
+}
+
+export const initialExecutiveBlockCMS: ExecutiveBlockCMSData = {
+  hero: {
+    eyebrow: "PRESTIGIOUS GATEWAY SECTOR WITH FAISAL JEWEL & GRAND BOULEVARDS",
+    title: "Executive Block",
+    subtitle: "Faisal Hills Executive Block is the society's premier gateway sector located directly at the Main N-5 GT Road entrance. Featuring 225ft grand boulevards, Roots International School, Civic Center, and the iconic 27-storey Faisal Jewel high-rise.",
+    bgImage: "/images/faisal-hills-drone-view.webp",
+    badge1: "Immediate Possession",
+    badge2: "Roots School Operational",
+    badge3: "Faisal Jewel 27-Storey"
+  },
+  overview: {
+    h1: "Faisal Hills Executive Block Overview",
+    leadParagraph: "Faisal Hills Executive Block is the prestigious flagship sector developed by Faisal Town Group & Zedem International. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project.",
+    expandedParagraph: "Home to the iconic 27-storey [Faisal Jewel Tower](/blocks/faisal-jewel-islamabad), Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities.",
+    photoUrl: "/images/faisal-hills-arc-gate.webp",
+    photoAlt: "Faisal Hills Executive Block Monument Entrance Arc Gate",
+    photoTag: "Grand Monument Gateway",
+    photoCaption: "Main GT Road N-5 Entrance"
+  },
+  location: {
+    h2: "Faisal Hills Executive Block Location & Map",
+    leadParagraph: "Executive Block enjoys an unmatched strategic advantage by fronting directly on the National Highway (GT Road N-5). It is situated directly adjacent to Taxila, Multi Gardens B-17, and Islamabad Zone 2.",
+    expandedParagraph1: "With immediate access to both Islamabad and Rawalpindi via the N-5 corridor and the upcoming direct M-1 Motorway link, Executive Block ensures effortless daily commuting for residents, business professionals, and overseas investors.",
+    expandedParagraph2: "Surrounded by the scenic Margalla Hills backdrop, the sector delivers both urban commercial vibrancy and tranquil residential ambiance.",
+    googleMapEmbedUrl: "https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+  },
+  masterPlan: {
+    h2: "Faisal Hills Executive Block Master Plan",
+    leadParagraph: "The master plan of Executive Block is engineered as an integrated self-sustaining community where commercial zones, schools, and parks sit harmoniously beside luxury residential streets.",
+    mapImageUrl: "/images/faisal-hills-executive-map.webp",
+    mapPdfUrl: "/images/faisal-hills-executive-map.webp",
+    downloadButtonText: "Download Master Plan",
+    exploreSocietyMapUrl: "/master-plan",
+    exploreSocietyMapText: "Explore Society Map"
+  },
+  plotsForSale: {
+    h2: "Executive Block Plots for Sale — Direct Booking & Verified Files",
+    leadParagraph: "Explore available residential plots and commercial plazas in Executive Block with transparent pricing, zero dealer markup, and immediate allotment file verification.",
+    plots: [
+      {
+        id: "exec-plot-5m-1",
+        plotNumber: "EX-104",
+        blockName: "Executive Block",
+        category: "Residential",
+        size: "5 Marla",
+        dimensions: "25 × 50",
+        facing: "Park Facing",
+        priceFormatted: "PKR 75.0 Lac",
+        downPayment: "PKR 15.0 Lac",
+        status: "Available",
+        badge: "Near Roots School",
+        image: "/images/faisal-hills-executive-sector.webp",
+        features: ["Walking Distance to Roots School", "100% Level Ready to Build", "Possession Ready"]
+      },
+      {
+        id: "exec-plot-8m-1",
+        plotNumber: "EX-215",
+        blockName: "Executive Block",
+        category: "Residential",
+        size: "8 Marla",
+        dimensions: "30 × 60",
+        facing: "Main Boulevard 225ft",
+        priceFormatted: "PKR 1.10 Crore",
+        downPayment: "PKR 22.0 Lac",
+        status: "Hot Deal",
+        badge: "Boulevard Front",
+        image: "/images/faisal-hills-arc-gate.webp",
+        features: ["Wide 225ft Boulevard Front", "Prime Commercial Walkability", "Immediate Allotment"]
+      },
+      {
+        id: "exec-plot-10m-1",
+        plotNumber: "EX-320",
+        blockName: "Executive Block",
+        category: "Residential",
+        size: "10 Marla",
+        dimensions: "35 × 70",
+        facing: "Corner + Green Belt",
+        priceFormatted: "PKR 1.35 Crore",
+        downPayment: "PKR 27.0 Lac",
+        status: "Ready to Build",
+        badge: "Corner Plot",
+        image: "/images/faisal-hills-glow-park.webp",
+        features: ["Double Corner Extra Land", "Lush Park View", "Active Street Construction"]
+      },
+      {
+        id: "exec-plot-1k-1",
+        plotNumber: "EX-450",
+        blockName: "Executive Block",
+        category: "Residential",
+        size: "1 Kanal",
+        dimensions: "50 × 90",
+        facing: "Margalla Hill View",
+        priceFormatted: "PKR 2.10 Crore",
+        downPayment: "PKR 42.0 Lac",
+        status: "Signature Plot",
+        badge: "VIP Enclave",
+        image: "/images/faisal-jewel-building.webp",
+        features: ["Top-Tier Margalla Panorama", "Private Cul-de-Sac Street", "Gated VIP Security"]
+      },
+      {
+        id: "exec-plot-com-1",
+        plotNumber: "EX-COM-05",
+        blockName: "Executive Block",
+        category: "Commercial",
+        size: "4 Marla Plaza",
+        dimensions: "30 × 30",
+        facing: "Civic Hub Boulevard",
+        priceFormatted: "PKR 2.80 Crore",
+        downPayment: "PKR 56.0 Lac",
+        status: "High ROI",
+        badge: "Commercial Core",
+        image: "/images/faisal-jewel-building.webp",
+        features: ["Ground + 5 Approved Height", "Direct GT Road Entrance", "High Footfall Core"]
+      },
+      {
+        id: "exec-plot-com-2",
+        plotNumber: "EX-COM-12",
+        blockName: "Executive Block",
+        category: "Commercial",
+        size: "5.33 Marla Plaza",
+        dimensions: "40 × 30",
+        facing: "Main Boulevard Axis",
+        priceFormatted: "PKR 3.65 Crore",
+        downPayment: "PKR 73.0 Lac",
+        status: "Prime Frontage",
+        badge: "Faisal Jewel Axis",
+        image: "/images/faisal-hills-drone-view.webp",
+        features: ["Facing Faisal Jewel Tower", "Dedicated Customer Parking", "Ideal for Brand / Bank"]
+      },
+      {
+        id: "exec-plot-com-3",
+        plotNumber: "EX-COM-18",
+        blockName: "Executive Block",
+        category: "Commercial",
+        size: "6 Marla Corner",
+        dimensions: "35 × 40",
+        facing: "Double Boulevard Corner",
+        priceFormatted: "PKR 4.20 Crore",
+        downPayment: "PKR 84.0 Lac",
+        status: "Corner Hub",
+        badge: "Double Corner",
+        image: "/images/faisal-hills-site-header.webp",
+        features: ["Double Main Boulevard Frontage", "High Rental Yield", "Approved Commercial Design"]
+      },
+      {
+        id: "exec-plot-com-4",
+        plotNumber: "EX-COM-28",
+        blockName: "Executive Block",
+        category: "Commercial",
+        size: "8 Marla Corporate",
+        dimensions: "40 × 45",
+        facing: "Entrance Junction",
+        priceFormatted: "PKR 5.50 Crore",
+        downPayment: "PKR 1.10 Crore",
+        status: "Corporate File",
+        badge: "Flagship Site",
+        image: "/images/faisal-hills-executive-sector.webp",
+        features: ["Multi-Storey Corporate Approval", "Maximum GT Road Visibility", "Direct Site Office Access"]
+      }
+    ]
+  },
+  resaleDesk: {
+    tag: "Owner Resale & Liquidation Desk",
+    heading: "Want to Sell or Assess Your Executive Block Plot / File?",
+    paragraph: "Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.",
+    buttonText: "List Your Plot File",
+    whatsappMessage: "Hello! I want to list or sell my plot in Faisal Hills Executive Block."
+  },
+  facilities: {
+    h2: "Facilities and Amenities in Executive Block",
+    leadParagraph: "Executive Block is planned with world-class facilities and modern municipal infrastructure:",
+    items: [
+      {
+        id: "civic-hub",
+        tag: "Sector Core",
+        title: "Civic Hub & Monument Gateway",
+        image: "/images/faisal-hills-arc-gate.webp",
+        iconType: "Building2"
+      },
+      {
+        id: "roots-school",
+        tag: "Operational",
+        title: "Roots International School Campus",
+        image: "/images/roots-international-school-faisal-hills.webp",
+        iconType: "GraduationCap"
+      },
+      {
+        id: "faisal-jewel",
+        tag: "27-Storey Icon",
+        title: "Faisal Jewel Tower",
+        image: "/images/faisal-jewel-building.webp",
+        iconType: "Landmark"
+      },
+      {
+        id: "mosques",
+        tag: "Spiritual Center",
+        title: "Jamia Masjid Fatima Tuz Zahra",
+        image: "/images/faisal-hills-jamia-mosque.webp",
+        iconType: "Building"
+      },
+      {
+        id: "community-parks",
+        tag: "Lush Greenery",
+        title: "Executive Parks & Jogging Tracks",
+        image: "/images/faisal-hills-glow-park.webp",
+        iconType: "Trees"
+      },
+      {
+        id: "sports-arena",
+        tag: "Active Sports",
+        title: "Sports Arena & Cricket Ground",
+        image: "/images/faisal-hills-sports-arena.webp",
+        iconType: "Activity"
+      },
+      {
+        id: "fuel-station",
+        tag: "24/7 Utility",
+        title: "Boulevard Fuel Station",
+        image: "/images/hills-walk-commercial-aerial.webp",
+        iconType: "Fuel"
+      },
+      {
+        id: "gated-security",
+        tag: "VIP Enclave",
+        title: "Gated 24/7 Security & CCTV",
+        image: "/images/faisal-hills-executive-sector.webp",
+        iconType: "ShieldCheck"
+      }
+    ]
+  },
+  whyInvest: {
+    h2: "Why Invest in Faisal Hills Executive Block",
+    leadParagraph: "Why buyers and overseas Pakistanis rank Executive Block as the flagship sector:",
+    reasons: [
+      { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
+      { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
+      { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
+      { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
+      { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
+      { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
+    ]
+  },
+  developmentStatus: {
+    h2: "Executive Block Development Status",
+    leadParagraph: "Development in Executive Block is 100% operational with possession fully delivered. Roads, underground electricity, sewer lines, water supply, and street lighting are fully functional.",
+    expandedParagraph1: "Roots International School is actively educating students on-site. The structural framework of the 27-storey Faisal Jewel Tower is at an advanced completion stage.",
+    expandedParagraph2: "Families are actively residing in constructed luxury houses, while high-profile commercial plazas along the main boulevard are operating brand retail outlets.",
+    stat1Value: "95%+",
+    stat1Label: "Roads Carpeted",
+    stat2Value: "100%",
+    stat2Label: "Underground Grid",
+    stat3Value: "Possession",
+    stat3Label: "Ready to Build",
+    dronePhotoUrl: "/images/faisal-hills-drone-view.webp",
+    dronePhotoAlt: "Faisal Hills Executive Block On-Ground Development Status & Aerial View",
+    possessionBadge: "Possession Delivered",
+    droneTag: "Verified Aerial Drone Survey",
+    droneHeading: "Executive Sector On-Ground Progress",
+    droneDesc: "Wide carpeted boulevards, complete utilities, and active on-ground villa construction."
+  },
+  transferProcess: {
+    h2: "Faisal Hills Executive Block Transfer Process",
+    leadParagraph: "Follow these 4 essential points to complete official plot transfer directly at Zedem International:",
+    steps: [
+      {
+        point: '01',
+        tag: 'Step 1: Identity',
+        title: 'CNIC / NICOP Copies',
+        points: [
+          'Two verified photocopies of buyer CNIC / NICOP',
+          'One photocopy of Next-of-Kin (Nominee) CNIC',
+          'Passport copies for Overseas Pakistani buyers'
+        ],
+        badge: 'Attested Copies Required'
+      },
+      {
+        point: '02',
+        tag: 'Step 2: Photos',
+        title: 'Passport Photographs',
+        points: [
+          'Two recent passport-size color photographs',
+          'Clear blue background',
+          'Applicant name written on back'
+        ],
+        badge: 'Recent Photographs'
+      },
+      {
+        point: '03',
+        tag: 'Step 3: Payment',
+        title: 'Pay Order / Bank Draft',
+        points: [
+          'Pay Order in favour of "Zedem International"',
+          'Transfer fee receipt from society counter',
+          'Direct online wire verification for NRPs'
+        ],
+        badge: 'Official Bank Draft'
+      },
+      {
+        point: '04',
+        tag: 'Step 4: Transfer',
+        title: 'Allotment Letter Transfer',
+        points: [
+          'Official transfer execution at head office counter',
+          'Immediate biometric record verification',
+          'New registered owner allotment letter handover'
+        ],
+        badge: 'Official Allotment Handover'
+      }
+    ],
+    bannerHeading: "Need Assistance with Plot Transfer & File Verification?",
+    bannerSubtext: "Our dedicated transfer advisory desk verifies society records and guides you step-by-step.",
+    bannerButtonText: "Contact Transfer Desk",
+    bannerWhatsapp: "Hi, I need official assistance with plot transfer in Faisal Hills Executive Block."
+  },
+  faqs: {
+    sectionTag: "FAQ'S",
+    h2: "Frequently Asked Questions (FAQS)",
+    items: [
+      {
+        q: 'Where is Executive Block located within Faisal Hills?',
+        a: 'Executive Block is located at the flagship front entrance of Faisal Hills, directly on Main GT Road (N-5) Taxila / Islamabad Zone 2, home to the iconic Grand Arc Gate and Faisal Jewel Tower.'
+      },
+      {
+        q: 'Is Faisal Hills Executive Block RDA approved and possession ready?',
+        a: 'Yes. Faisal Hills Executive Block has full NOC approval from the Rawalpindi Development Authority (RDA). Possession is fully delivered and families are actively constructing luxury villas and commercial plazas.'
+      },
+      {
+        q: 'What plot sizes are available in Executive Block?',
+        a: 'Executive Block features 5 Marla, 8 Marla, 10 Marla, and 1 Kanal residential plots, alongside prime 4 Marla, 5.33 Marla, and corporate commercial plots.'
+      },
+      {
+        q: 'Is Roots International School operational in Executive Block?',
+        a: 'Yes. Roots International School Campus is 100% operational on-site and actively educating students with world-class facilities.'
+      },
+      {
+        q: 'How can I buy or transfer a plot in Executive Block?',
+        a: 'Transfers are executed officially at the Zedem International Head Office located right at the Faisal Hills entrance with full document verification and zero dealer markup.'
+      }
+    ]
+  },
+  scheduleTour: {
+    tag: "Direct Developer Facilitation Desk",
+    h3: "Schedule an On-Site Executive Block Tour",
+    leadParagraph: "Leave your contact details to receive verified plot listings, latest market rates, and official allotment files directly on WhatsApp.",
+    thankYouHeading: "Inquiry Received!",
+    thankYouMessage: "Thank you. Our Executive Block property specialist will contact you with available plot files.",
+    buttonText: "Submit Inquiry Request"
+  }
+};
+
+export function mergeExecutiveBlockCMS(incoming: any): ExecutiveBlockCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialExecutiveBlockCMS;
+
+  const incHero = incoming.hero || {};
+  const incOverview = incoming.overview || {};
+  const incLocation = incoming.location || {};
+  const incMaster = incoming.masterPlan || {};
+  const incPlots = incoming.plotsForSale || {};
+  const incResale = incoming.resaleDesk || {};
+  const incFacilities = incoming.facilities || {};
+  const incWhy = incoming.whyInvest || {};
+  const incDev = incoming.developmentStatus || {};
+  const incTransfer = incoming.transferProcess || {};
+  const incFaqs = incoming.faqs || {};
+  const incTour = incoming.scheduleTour || {};
+
+  return {
+    hero: {
+      eyebrow: cleanVerifyText(incHero.eyebrow || initialExecutiveBlockCMS.hero.eyebrow),
+      title: cleanVerifyText(incHero.title || initialExecutiveBlockCMS.hero.title),
+      subtitle: cleanVerifyText(incHero.subtitle || initialExecutiveBlockCMS.hero.subtitle),
+      bgImage: cleanVerifyText(incHero.bgImage || initialExecutiveBlockCMS.hero.bgImage),
+      badge1: cleanVerifyText(incHero.badge1 || initialExecutiveBlockCMS.hero.badge1),
+      badge2: cleanVerifyText(incHero.badge2 || initialExecutiveBlockCMS.hero.badge2),
+      badge3: cleanVerifyText(incHero.badge3 || initialExecutiveBlockCMS.hero.badge3)
+    },
+    overview: {
+      h1: cleanVerifyText(incOverview.h1 || initialExecutiveBlockCMS.overview.h1),
+      leadParagraph: cleanVerifyText(incOverview.leadParagraph || initialExecutiveBlockCMS.overview.leadParagraph),
+      expandedParagraph: cleanVerifyText(incOverview.expandedParagraph || initialExecutiveBlockCMS.overview.expandedParagraph),
+      photoUrl: cleanVerifyText(incOverview.photoUrl || initialExecutiveBlockCMS.overview.photoUrl),
+      photoAlt: cleanVerifyText(incOverview.photoAlt || initialExecutiveBlockCMS.overview.photoAlt),
+      photoTag: cleanVerifyText(incOverview.photoTag || initialExecutiveBlockCMS.overview.photoTag),
+      photoCaption: cleanVerifyText(incOverview.photoCaption || initialExecutiveBlockCMS.overview.photoCaption)
+    },
+    location: {
+      h2: cleanVerifyText(incLocation.h2 || initialExecutiveBlockCMS.location.h2),
+      leadParagraph: cleanVerifyText(incLocation.leadParagraph || initialExecutiveBlockCMS.location.leadParagraph),
+      expandedParagraph1: cleanVerifyText(incLocation.expandedParagraph1 || initialExecutiveBlockCMS.location.expandedParagraph1),
+      expandedParagraph2: cleanVerifyText(incLocation.expandedParagraph2 || initialExecutiveBlockCMS.location.expandedParagraph2),
+      googleMapEmbedUrl: cleanVerifyText(incLocation.googleMapEmbedUrl || initialExecutiveBlockCMS.location.googleMapEmbedUrl)
+    },
+    masterPlan: {
+      h2: cleanVerifyText(incMaster.h2 || initialExecutiveBlockCMS.masterPlan.h2),
+      leadParagraph: cleanVerifyText(incMaster.leadParagraph || initialExecutiveBlockCMS.masterPlan.leadParagraph),
+      mapImageUrl: cleanVerifyText(incMaster.mapImageUrl || initialExecutiveBlockCMS.masterPlan.mapImageUrl),
+      mapPdfUrl: cleanVerifyText(incMaster.mapPdfUrl || initialExecutiveBlockCMS.masterPlan.mapPdfUrl),
+      downloadButtonText: cleanVerifyText(incMaster.downloadButtonText || initialExecutiveBlockCMS.masterPlan.downloadButtonText),
+      exploreSocietyMapUrl: cleanVerifyText(incMaster.exploreSocietyMapUrl || initialExecutiveBlockCMS.masterPlan.exploreSocietyMapUrl),
+      exploreSocietyMapText: cleanVerifyText(incMaster.exploreSocietyMapText || initialExecutiveBlockCMS.masterPlan.exploreSocietyMapText)
+    },
+    plotsForSale: {
+      h2: cleanVerifyText(incPlots.h2 || initialExecutiveBlockCMS.plotsForSale.h2),
+      leadParagraph: cleanVerifyText(incPlots.leadParagraph || initialExecutiveBlockCMS.plotsForSale.leadParagraph),
+      plots: Array.isArray(incPlots.plots) && incPlots.plots.length > 0
+        ? incPlots.plots.map((p: any, idx: number) => ({
+            id: cleanVerifyText(p.id || `exec-plot-${idx}`),
+            plotNumber: cleanVerifyText(p.plotNumber || `EX-${idx + 100}`),
+            blockName: cleanVerifyText(p.blockName || 'Executive Block'),
+            category: cleanVerifyText(p.category || 'Residential'),
+            size: cleanVerifyText(p.size || '5 Marla'),
+            dimensions: cleanVerifyText(p.dimensions || '25 × 50'),
+            facing: cleanVerifyText(p.facing || 'Boulevard Facing'),
+            priceFormatted: cleanVerifyText(p.priceFormatted || 'Contact for Price'),
+            downPayment: cleanVerifyText(p.downPayment || 'Contact for Plan'),
+            status: cleanVerifyText(p.status || 'Available'),
+            badge: cleanVerifyText(p.badge || 'Verified File'),
+            image: cleanVerifyText(p.image || '/images/faisal-hills-executive-sector.webp'),
+            features: Array.isArray(p.features) ? p.features.map((f: string) => cleanVerifyText(f)) : []
+          }))
+        : initialExecutiveBlockCMS.plotsForSale.plots
+    },
+    resaleDesk: {
+      tag: cleanVerifyText(incResale.tag || initialExecutiveBlockCMS.resaleDesk.tag),
+      heading: cleanVerifyText(incResale.heading || initialExecutiveBlockCMS.resaleDesk.heading),
+      paragraph: cleanVerifyText(incResale.paragraph || initialExecutiveBlockCMS.resaleDesk.paragraph),
+      buttonText: cleanVerifyText(incResale.buttonText || initialExecutiveBlockCMS.resaleDesk.buttonText),
+      whatsappMessage: cleanVerifyText(incResale.whatsappMessage || initialExecutiveBlockCMS.resaleDesk.whatsappMessage)
+    },
+    facilities: {
+      h2: cleanVerifyText(incFacilities.h2 || initialExecutiveBlockCMS.facilities.h2),
+      leadParagraph: cleanVerifyText(incFacilities.leadParagraph || initialExecutiveBlockCMS.facilities.leadParagraph),
+      items: Array.isArray(incFacilities.items) && incFacilities.items.length > 0
+        ? incFacilities.items.map((it: any, idx: number) => ({
+            id: cleanVerifyText(it.id || `fac-${idx}`),
+            tag: cleanVerifyText(it.tag || 'Sector Facility'),
+            title: cleanVerifyText(it.title || ''),
+            image: cleanVerifyText(it.image || '/images/faisal-hills-executive-sector.webp'),
+            iconType: cleanVerifyText(it.iconType || 'Building2')
+          }))
+        : initialExecutiveBlockCMS.facilities.items
+    },
+    whyInvest: {
+      h2: cleanVerifyText(incWhy.h2 || initialExecutiveBlockCMS.whyInvest.h2),
+      leadParagraph: cleanVerifyText(incWhy.leadParagraph || initialExecutiveBlockCMS.whyInvest.leadParagraph),
+      reasons: Array.isArray(incWhy.reasons) && incWhy.reasons.length > 0
+        ? incWhy.reasons.map((r: any) => ({
+            title: cleanVerifyText(r.title || ''),
+            desc: cleanVerifyText(r.desc || '')
+          }))
+        : initialExecutiveBlockCMS.whyInvest.reasons
+    },
+    developmentStatus: {
+      h2: cleanVerifyText(incDev.h2 || initialExecutiveBlockCMS.developmentStatus.h2),
+      leadParagraph: cleanVerifyText(incDev.leadParagraph || initialExecutiveBlockCMS.developmentStatus.leadParagraph),
+      expandedParagraph1: cleanVerifyText(incDev.expandedParagraph1 || initialExecutiveBlockCMS.developmentStatus.expandedParagraph1),
+      expandedParagraph2: cleanVerifyText(incDev.expandedParagraph2 || initialExecutiveBlockCMS.developmentStatus.expandedParagraph2),
+      stat1Value: cleanVerifyText(incDev.stat1Value || initialExecutiveBlockCMS.developmentStatus.stat1Value),
+      stat1Label: cleanVerifyText(incDev.stat1Label || initialExecutiveBlockCMS.developmentStatus.stat1Label),
+      stat2Value: cleanVerifyText(incDev.stat2Value || initialExecutiveBlockCMS.developmentStatus.stat2Value),
+      stat2Label: cleanVerifyText(incDev.stat2Label || initialExecutiveBlockCMS.developmentStatus.stat2Label),
+      stat3Value: cleanVerifyText(incDev.stat3Value || initialExecutiveBlockCMS.developmentStatus.stat3Value),
+      stat3Label: cleanVerifyText(incDev.stat3Label || initialExecutiveBlockCMS.developmentStatus.stat3Label),
+      dronePhotoUrl: cleanVerifyText(incDev.dronePhotoUrl || initialExecutiveBlockCMS.developmentStatus.dronePhotoUrl),
+      dronePhotoAlt: cleanVerifyText(incDev.dronePhotoAlt || initialExecutiveBlockCMS.developmentStatus.dronePhotoAlt),
+      possessionBadge: cleanVerifyText(incDev.possessionBadge || initialExecutiveBlockCMS.developmentStatus.possessionBadge),
+      droneTag: cleanVerifyText(incDev.droneTag || initialExecutiveBlockCMS.developmentStatus.droneTag),
+      droneHeading: cleanVerifyText(incDev.droneHeading || initialExecutiveBlockCMS.developmentStatus.droneHeading),
+      droneDesc: cleanVerifyText(incDev.droneDesc || initialExecutiveBlockCMS.developmentStatus.droneDesc)
+    },
+    transferProcess: {
+      h2: cleanVerifyText(incTransfer.h2 || initialExecutiveBlockCMS.transferProcess.h2),
+      leadParagraph: cleanVerifyText(incTransfer.leadParagraph || initialExecutiveBlockCMS.transferProcess.leadParagraph),
+      steps: Array.isArray(incTransfer.steps) && incTransfer.steps.length > 0
+        ? incTransfer.steps.map((s: any, idx: number) => ({
+            point: cleanVerifyText(s.point || `0${idx + 1}`),
+            tag: cleanVerifyText(s.tag || `Step ${idx + 1}`),
+            title: cleanVerifyText(s.title || ''),
+            points: Array.isArray(s.points) ? s.points.map((p: string) => cleanVerifyText(p)) : [],
+            badge: cleanVerifyText(s.badge || 'Verified Step')
+          }))
+        : initialExecutiveBlockCMS.transferProcess.steps,
+      bannerHeading: cleanVerifyText(incTransfer.bannerHeading || initialExecutiveBlockCMS.transferProcess.bannerHeading),
+      bannerSubtext: cleanVerifyText(incTransfer.bannerSubtext || initialExecutiveBlockCMS.transferProcess.bannerSubtext),
+      bannerButtonText: cleanVerifyText(incTransfer.bannerButtonText || initialExecutiveBlockCMS.transferProcess.bannerButtonText),
+      bannerWhatsapp: cleanVerifyText(incTransfer.bannerWhatsapp || initialExecutiveBlockCMS.transferProcess.bannerWhatsapp)
+    },
+    faqs: {
+      sectionTag: cleanVerifyText(incFaqs.sectionTag || initialExecutiveBlockCMS.faqs.sectionTag),
+      h2: cleanVerifyText(incFaqs.h2 || initialExecutiveBlockCMS.faqs.h2),
+      items: Array.isArray(incFaqs.items) && incFaqs.items.length > 0
+        ? incFaqs.items.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialExecutiveBlockCMS.faqs.items
+    },
+    scheduleTour: {
+      tag: cleanVerifyText(incTour.tag || initialExecutiveBlockCMS.scheduleTour.tag),
+      h3: cleanVerifyText(incTour.h3 || initialExecutiveBlockCMS.scheduleTour.h3),
+      leadParagraph: cleanVerifyText(incTour.leadParagraph || initialExecutiveBlockCMS.scheduleTour.leadParagraph),
+      thankYouHeading: cleanVerifyText(incTour.thankYouHeading || initialExecutiveBlockCMS.scheduleTour.thankYouHeading),
+      thankYouMessage: cleanVerifyText(incTour.thankYouMessage || initialExecutiveBlockCMS.scheduleTour.thankYouMessage),
+      buttonText: cleanVerifyText(incTour.buttonText || initialExecutiveBlockCMS.scheduleTour.buttonText)
+    }
+  };
+}
+
+export async function fetchExecutiveBlockCMS(): Promise<ExecutiveBlockCMSData> {
+  let localData: ExecutiveBlockCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_executive_block_cms');
+      if (localStr) localData = mergeExecutiveBlockCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<ExecutiveBlockCMSData>('faisal_executive_block_cms');
+  if (remote) {
+    const merged = localData ? mergeExecutiveBlockCMS({ ...remote, ...localData }) : mergeExecutiveBlockCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_executive_block_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialExecutiveBlockCMS;
+}
+
+export async function saveExecutiveBlockCMS(cmsData: ExecutiveBlockCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_executive_block_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_executive_block_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_executive_block_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS BLOCK B-1 EXTENSION DEDICATED CMS SYSTEM
+// =========================================================
+
+export interface B1ExtPriceRow {
+  size: string;
+  dimensions: string;
+  sqYards: string;
+  category: string;
+  priceRange: string;
+  possession: string;
+  highlight: string;
+}
+
+export interface B1ExtDriveTimeItem {
+  destination: string;
+  time: string;
+  distance: string;
+  note: string;
+}
+
+export interface B1ExtAmenityItem {
+  title: string;
+  desc: string;
+  category: string;
+  iconType: string;
+}
+
+export interface B1ExtWhyInvestItem {
+  title: string;
+  desc: string;
+}
+
+export interface B1ExtTransferStep {
+  point: string;
+  tag: string;
+  title: string;
+  points: string[];
+  badge: string;
+}
+
+export interface B1ExtFaqItem {
+  q: string;
+  a: string;
+}
+
+export interface BlockB1ExtensionCMSData {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    bgImage: string;
+    badge1: string;
+    badge2: string;
+    badge3: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph: string;
+    expandedParagraph1: string;
+    expandedParagraph2: string;
+    photoUrl: string;
+    photoAlt: string;
+    photoTag: string;
+    photoCaption: string;
+  };
+  location: {
+    h2: string;
+    leadParagraph: string;
+    expandedParagraph: string;
+    googleMapEmbedUrl: string;
+    driveTimes: B1ExtDriveTimeItem[];
+  };
+  masterPlan: {
+    h2: string;
+    leadParagraph: string;
+    mapImageUrl: string;
+    mapPdfUrl: string;
+    downloadButtonText: string;
+    exploreSocietyMapUrl: string;
+    exploreSocietyMapText: string;
+  };
+  priceSchedule: {
+    h2: string;
+    leadParagraph: string;
+    rows: B1ExtPriceRow[];
+  };
+  amenities: {
+    h2: string;
+    leadParagraph: string;
+    items: B1ExtAmenityItem[];
+  };
+  whyInvest: {
+    h2: string;
+    leadParagraph: string;
+    reasons: B1ExtWhyInvestItem[];
+  };
+  developmentStatus: {
+    h2: string;
+    leadParagraph: string;
+    expandedParagraph: string;
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+    dronePhotoUrl: string;
+    dronePhotoAlt: string;
+    possessionBadge: string;
+    droneTag: string;
+    droneHeading: string;
+    droneDesc: string;
+  };
+  transferProcess: {
+    h2: string;
+    leadParagraph: string;
+    steps: B1ExtTransferStep[];
+    bannerHeading: string;
+    bannerSubtext: string;
+    bannerButtonText: string;
+    bannerWhatsapp: string;
+  };
+  faqs: {
+    sectionTag: string;
+    h2: string;
+    items: B1ExtFaqItem[];
+  };
+  scheduleTour: {
+    tag: string;
+    h3: string;
+    leadParagraph: string;
+    thankYouHeading: string;
+    thankYouMessage: string;
+    buttonText: string;
+  };
+}
+
+export const initialBlockB1ExtensionCMS: BlockB1ExtensionCMSData = {
+  hero: {
+    eyebrow: "FAST DEVELOPING MODERN SECTOR WITH HIGH CAPITAL GROWTH",
+    title: "Block B-1 Extension",
+    subtitle: "Block B-1 Extension in Faisal Hills offers affordable entry pricing with rapid on-ground infrastructure progress, wide boulevards, and scenic Margalla surroundings.",
+    bgImage: "/images/faisal-hills-aerial-panoramic.webp",
+    badge1: "100% RDA Approved",
+    badge2: "Rapid Construction Pace",
+    badge3: "Scenic Margalla Views"
+  },
+  overview: {
+    h1: "Faisal Hills Block B-1 Extension Overview",
+    leadParagraph: "Faisal Hills Block B-1 Extension is a purposefully planned modern residential enclave situated right next to the prestigious Block B. Designed to cater to smart investors and aspiring homebuilders, B-1 Extension offers an optimal balance of premium town-planning and budget-friendly entry prices.",
+    expandedParagraph1: "Surrounded by scenic Margalla views, the sector features wide 40ft to 60ft carpeted streets, planned educational institutes, dedicated commercial corridors, and neighborhood parks.",
+    expandedParagraph2: "With direct internal connections to Block B and swift access to the Main GT Road, Block B-1 Extension represents one of the highest capital appreciation opportunities in the entire society.",
+    photoUrl: "/images/faisal-hills-aerial-panoramic.webp",
+    photoAlt: "Faisal Hills Block B-1 Extension Aerial Overview",
+    photoTag: "Modern Residential Extension",
+    photoCaption: "Rapid Infrastructure Development"
+  },
+  location: {
+    h2: "Block B-1 Extension Location & Strategic Connectivity",
+    leadParagraph: "Nestled adjacent to Block B, B-1 Extension benefits from seamless internal connectivity and direct road access to the Main GT Road N-5, Multi Gardens B-17, and the upcoming M-1 Motorway Interchange.",
+    expandedParagraph: "Residents enjoy a tranquil residential pocket tucked away from heavy transit noise while remaining within 5 to 15 minutes of major commercial, educational, and transit hubs across Taxila and Islamabad.",
+    googleMapEmbedUrl: "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed",
+    driveTimes: [
+      { destination: 'Taxila City & Museum', time: '5 mins', distance: '3.2 km', note: 'Direct GT Road N-5 corridor' },
+      { destination: 'Multi Gardens B-17 Islamabad', time: '6 mins', distance: '4.8 km', note: 'Direct sector-to-sector connection' },
+      { destination: 'UET Taxila & HITEC University', time: '8 mins', distance: '6.5 km', note: 'Short commute for faculty & students' },
+      { destination: 'Block B Central Sports Complex', time: '3 mins', distance: '1.5 km', note: 'Direct internal avenue connection' },
+      { destination: 'M-1 Motorway Toll Plaza', time: '12 mins', distance: '11 km', note: 'Quick inter-provincial transit' },
+      { destination: 'New Islamabad International Airport', time: '25 mins', distance: '28 km', note: 'Direct motorway / expressway link' }
+    ]
+  },
+  masterPlan: {
+    h2: "Block B-1 Extension Master Plan & Sector Layout",
+    leadParagraph: "The master plan of Block B-1 Extension features a symmetrical grid layout engineered for maximum cross-ventilation, smooth traffic flow, and effortless walking distance to sector parks and commercial markets.",
+    mapImageUrl: "/images/faisal-hills-executive-map.webp",
+    mapPdfUrl: "/images/faisal-hills-executive-map.webp",
+    downloadButtonText: "Download Master Plan",
+    exploreSocietyMapUrl: "/master-plan",
+    exploreSocietyMapText: "Explore Society Map"
+  },
+  priceSchedule: {
+    h2: "Plot Sizes & Price Matrix in Block B-1 Extension",
+    leadParagraph: "Explore current verified market price ranges for residential and commercial plots in Block B-1 Extension:",
+    rows: [
+      {
+        size: '5 Marla',
+        dimensions: '25 × 50',
+        sqYards: '139 Sq. Yds',
+        category: 'Residential',
+        priceRange: 'PKR 38 Lacs – 48 Lacs',
+        possession: 'Early Possession Phase',
+        highlight: 'Lowest entry price point in society with maximum capital appreciation upside.'
+      },
+      {
+        size: '8 Marla',
+        dimensions: '30 × 60',
+        sqYards: '200 Sq. Yds',
+        category: 'Residential',
+        priceRange: 'PKR 58 Lacs – 72 Lacs',
+        possession: 'Development in Progress',
+        highlight: 'Ideal family-size plot cut balancing generous indoor layout and affordability.'
+      },
+      {
+        size: '10 Marla',
+        dimensions: '35 × 70',
+        sqYards: '272 Sq. Yds',
+        category: 'Residential',
+        priceRange: 'PKR 75 Lacs – 95 Lacs',
+        possession: 'Development in Progress',
+        highlight: 'Executive single & double unit luxury villa cut with high elevation Margalla view.'
+      },
+      {
+        size: 'Commercial (Avenue)',
+        dimensions: 'Standard Sector Cuts',
+        sqYards: 'Varies',
+        category: 'Commercial',
+        priceRange: 'PKR 1.2 Crore – 2.5 Crore',
+        possession: 'Commercial Phase',
+        highlight: 'Commercial plots situated on wide internal sector boulevards for retail & plazas.'
+      }
+    ]
+  },
+  amenities: {
+    h2: "Amenities & Modern Infrastructure in B-1 Extension",
+    leadParagraph: "Block B-1 Extension is planned with complete underground civic utilities and lifestyle facilities:",
+    items: [
+      {
+        title: '100% Underground Electrification',
+        desc: 'Uninterrupted power grid with underground cabling, high-capacity transformers, and modern street lighting.',
+        category: 'Utilities',
+        iconType: 'Zap'
+      },
+      {
+        title: 'Clean Water Filtration Plant',
+        desc: 'Dedicated high-capacity RO filtration plants delivering 24/7 clean potable drinking water.',
+        category: 'Utilities',
+        iconType: 'Droplets'
+      },
+      {
+        title: 'Gated Security & 24/7 CCTV',
+        desc: 'Round-the-clock physical security patrols, smart RFID entry gates, and society-wide surveillance.',
+        category: 'Security',
+        iconType: 'ShieldCheck'
+      },
+      {
+        title: 'Dedicated Sector Jamia Mosque',
+        desc: 'Beautiful modern architecture Jamia mosque reservations within walking distance of all plot streets.',
+        category: 'Community',
+        iconType: 'Landmark'
+      },
+      {
+        title: 'Lush Sector Parks & Playgrounds',
+        desc: 'Family parks, landscaped green belts, children play areas, and tree-lined jogging paths.',
+        category: 'Recreation',
+        iconType: 'Trees'
+      },
+      {
+        title: 'Modern Sewerage & Drainage',
+        desc: 'Engineered underground storm water drainage and wide-diameter sewage piping networks.',
+        category: 'Infrastructure',
+        iconType: 'Activity'
+      },
+      {
+        title: 'Commercial Sector Markets',
+        desc: 'Convenient neighborhood retail plazas for grocery, daily essentials, pharmacies, and cafes.',
+        category: 'Commercial',
+        iconType: 'ShoppingBag'
+      },
+      {
+        title: 'School & Healthcare Reservations',
+        desc: 'Designated plots for premier private schooling branches and medical clinic facilities.',
+        category: 'Civic',
+        iconType: 'GraduationCap'
+      }
+    ]
+  },
+  whyInvest: {
+    h2: "Why Invest in Faisal Hills Block B-1 Extension",
+    leadParagraph: "Key reasons why seasoned investors and genuine buyers choose Block B-1 Extension:",
+    reasons: [
+      { title: "Highest ROI Potential", desc: "Lower entry acquisition costs provide significantly higher percentage capital appreciation as possession approaches." },
+      { title: "Proximity to Block B Sports Arena", desc: "Enjoy immediate walking access to the mega sports complex, cricket ground, and club facilities of Block B." },
+      { title: "100% RDA Approved Titles", desc: "Safe, legally sanctioned layout plan giving peace of mind to local and overseas buyers." },
+      { title: "Fast-Paced Earthwork & Roadworks", desc: "Active machinery on-ground completing road leveling, boundary walls, and sewerage piping." },
+      { title: "Scenic Margalla Elevation", desc: "Higher topographical elevation offering cool mountain breezes and panoramic hill views." },
+      { title: "Official Developer Transfers", desc: "Transfers handled transparently at Zedem International Head Office with zero dealer file risk." }
+    ]
+  },
+  developmentStatus: {
+    h2: "Block B-1 Extension On-Ground Development Status",
+    leadParagraph: "Heavy earthmoving machinery, road rollers, and engineering teams are actively operating on-site in Block B-1 Extension to expedite possession delivery.",
+    expandedParagraph: "Sewerage pipeline laying is in advanced stages, road cuts have been demarcated, and underground utility conduits are being installed in coordination with the central society engineering desk.",
+    stat1Value: "85%+",
+    stat1Label: "Earthwork Complete",
+    stat2Value: "100%",
+    stat2Label: "Sewer Line Network",
+    stat3Value: "On Track",
+    stat3Label: "Possession Delivery",
+    dronePhotoUrl: "/images/faisal-hills-drone-view.webp",
+    dronePhotoAlt: "Faisal Hills Block B-1 Extension Machinery on Site",
+    possessionBadge: "Active Development",
+    droneTag: "On-Ground Progress Survey",
+    droneHeading: "B-1 Extension Machinery & Grading",
+    droneDesc: "Continuous grading, heavy machinery deployment, and underground utility installation on site."
+  },
+  transferProcess: {
+    h2: "Block B-1 Extension Allotment & Transfer Process",
+    leadParagraph: "Follow these 4 essential points to complete official plot transfer directly at Zedem International:",
+    steps: [
+      {
+        point: '01',
+        tag: 'Step 1: Identity Verification',
+        title: 'CNIC / NICOP Photocopies',
+        points: [
+          'Two attested photocopies of buyer CNIC / NICOP',
+          'One photocopy of Nominee (Next-of-Kin) CNIC',
+          'Passport copies for Overseas Pakistani buyers'
+        ],
+        badge: 'Attested Copies Required'
+      },
+      {
+        point: '02',
+        tag: 'Step 2: Photography',
+        title: 'Passport Photographs',
+        points: [
+          'Two recent passport-size color photographs',
+          'Clear blue background',
+          'Applicant name written on back of photos'
+        ],
+        badge: 'Recent Photographs'
+      },
+      {
+        point: '03',
+        tag: 'Step 3: Payment Draft',
+        title: 'Pay Order / Society Draft',
+        points: [
+          'Pay Order in favour of "Zedem International"',
+          'Official transfer fee receipt from society counter',
+          'Direct online wire confirmation for NRP investors'
+        ],
+        badge: 'Official Bank Draft'
+      },
+      {
+        point: '04',
+        tag: 'Step 4: Letter Handover',
+        title: 'Official Allotment Transfer',
+        points: [
+          'Official biometric verification at transfer counter',
+          'Immediate signature validation on society ledger',
+          'Official registered allotment transfer letter handover'
+        ],
+        badge: 'Official Allotment Handover'
+      }
+    ],
+    bannerHeading: "Need Help with Block B-1 Extension File Verification?",
+    bannerSubtext: "Our dedicated transfer advisory desk verifies society records, payment dues, and guides you step-by-step.",
+    bannerButtonText: "Contact Advisory Desk",
+    bannerWhatsapp: "Hi, I need official assistance with plot transfer in Faisal Hills Block B-1 Extension."
+  },
+  faqs: {
+    sectionTag: "FAQ'S",
+    h2: "Frequently Asked Questions (FAQS)",
+    items: [
+      {
+        q: 'Where is Block B-1 Extension located within Faisal Hills?',
+        a: 'Block B-1 Extension is situated immediately adjacent to Block B, featuring seamless internal connectivity to the central sports complex and direct access routes toward GT Road N-5 and M-1 Motorway.'
+      },
+      {
+        q: 'What plot sizes are available in Block B-1 Extension?',
+        a: 'Block B-1 Extension features 5 Marla (25x50), 8 Marla (30x60), and 10 Marla (35x70) residential plots, along with commercial plots located on main avenues.'
+      },
+      {
+        q: 'Is Block B-1 Extension RDA approved?',
+        a: 'Yes, Faisal Hills in its entirety — including Block B-1 Extension — holds complete NOC approval from the Rawalpindi Development Authority (RDA).'
+      },
+      {
+        q: 'When will possession be granted in Block B-1 Extension?',
+        a: 'Development work including earthwork, road carpeting, and sewerage network is rapidly progressing on-site. Possession is being handed over in phases as sector infrastructure completes.'
+      },
+      {
+        q: 'How can I buy or transfer a plot in Block B-1 Extension?',
+        a: 'Transfers are executed officially at the Zedem International Head Office located at the Faisal Hills entrance with full document verification and transparent procedures.'
+      }
+    ]
+  },
+  scheduleTour: {
+    tag: "Direct Developer Facilitation Desk",
+    h3: "Schedule an On-Site Block B-1 Extension Tour",
+    leadParagraph: "Leave your contact details to receive verified plot listings, latest price quotations, and official allotment files directly on WhatsApp.",
+    thankYouHeading: "Inquiry Received!",
+    thankYouMessage: "Thank you. Our Block B-1 Extension specialist will contact you with available plot files.",
+    buttonText: "Submit Inquiry Request"
+  }
+};
+
+export function mergeBlockB1ExtensionCMS(incoming: any): BlockB1ExtensionCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialBlockB1ExtensionCMS;
+
+  const incHero = incoming.hero || {};
+  const incOverview = incoming.overview || {};
+  const incLocation = incoming.location || {};
+  const incMaster = incoming.masterPlan || {};
+  const incPrice = incoming.priceSchedule || {};
+  const incAmenities = incoming.amenities || {};
+  const incWhy = incoming.whyInvest || {};
+  const incDev = incoming.developmentStatus || {};
+  const incTransfer = incoming.transferProcess || {};
+  const incFaqs = incoming.faqs || {};
+  const incTour = incoming.scheduleTour || {};
+
+  return {
+    hero: {
+      eyebrow: cleanVerifyText(incHero.eyebrow || initialBlockB1ExtensionCMS.hero.eyebrow),
+      title: cleanVerifyText(incHero.title || initialBlockB1ExtensionCMS.hero.title),
+      subtitle: cleanVerifyText(incHero.subtitle || initialBlockB1ExtensionCMS.hero.subtitle),
+      bgImage: cleanVerifyText(incHero.bgImage || initialBlockB1ExtensionCMS.hero.bgImage),
+      badge1: cleanVerifyText(incHero.badge1 || initialBlockB1ExtensionCMS.hero.badge1),
+      badge2: cleanVerifyText(incHero.badge2 || initialBlockB1ExtensionCMS.hero.badge2),
+      badge3: cleanVerifyText(incHero.badge3 || initialBlockB1ExtensionCMS.hero.badge3)
+    },
+    overview: {
+      h1: cleanVerifyText(incOverview.h1 || initialBlockB1ExtensionCMS.overview.h1),
+      leadParagraph: cleanVerifyText(incOverview.leadParagraph || initialBlockB1ExtensionCMS.overview.leadParagraph),
+      expandedParagraph1: cleanVerifyText(incOverview.expandedParagraph1 || initialBlockB1ExtensionCMS.overview.expandedParagraph1),
+      expandedParagraph2: cleanVerifyText(incOverview.expandedParagraph2 || initialBlockB1ExtensionCMS.overview.expandedParagraph2),
+      photoUrl: cleanVerifyText(incOverview.photoUrl || initialBlockB1ExtensionCMS.overview.photoUrl),
+      photoAlt: cleanVerifyText(incOverview.photoAlt || initialBlockB1ExtensionCMS.overview.photoAlt),
+      photoTag: cleanVerifyText(incOverview.photoTag || initialBlockB1ExtensionCMS.overview.photoTag),
+      photoCaption: cleanVerifyText(incOverview.photoCaption || initialBlockB1ExtensionCMS.overview.photoCaption)
+    },
+    location: {
+      h2: cleanVerifyText(incLocation.h2 || initialBlockB1ExtensionCMS.location.h2),
+      leadParagraph: cleanVerifyText(incLocation.leadParagraph || initialBlockB1ExtensionCMS.location.leadParagraph),
+      expandedParagraph: cleanVerifyText(incLocation.expandedParagraph || initialBlockB1ExtensionCMS.location.expandedParagraph),
+      googleMapEmbedUrl: cleanVerifyText(incLocation.googleMapEmbedUrl || initialBlockB1ExtensionCMS.location.googleMapEmbedUrl),
+      driveTimes: Array.isArray(incLocation.driveTimes) && incLocation.driveTimes.length > 0
+        ? incLocation.driveTimes.map((d: any) => ({
+            destination: cleanVerifyText(d.destination || ''),
+            time: cleanVerifyText(d.time || ''),
+            distance: cleanVerifyText(d.distance || ''),
+            note: cleanVerifyText(d.note || '')
+          }))
+        : initialBlockB1ExtensionCMS.location.driveTimes
+    },
+    masterPlan: {
+      h2: cleanVerifyText(incMaster.h2 || initialBlockB1ExtensionCMS.masterPlan.h2),
+      leadParagraph: cleanVerifyText(incMaster.leadParagraph || initialBlockB1ExtensionCMS.masterPlan.leadParagraph),
+      mapImageUrl: cleanVerifyText(incMaster.mapImageUrl || initialBlockB1ExtensionCMS.masterPlan.mapImageUrl),
+      mapPdfUrl: cleanVerifyText(incMaster.mapPdfUrl || initialBlockB1ExtensionCMS.masterPlan.mapPdfUrl),
+      downloadButtonText: cleanVerifyText(incMaster.downloadButtonText || initialBlockB1ExtensionCMS.masterPlan.downloadButtonText),
+      exploreSocietyMapUrl: cleanVerifyText(incMaster.exploreSocietyMapUrl || initialBlockB1ExtensionCMS.masterPlan.exploreSocietyMapUrl),
+      exploreSocietyMapText: cleanVerifyText(incMaster.exploreSocietyMapText || initialBlockB1ExtensionCMS.masterPlan.exploreSocietyMapText)
+    },
+    priceSchedule: {
+      h2: cleanVerifyText(incPrice.h2 || initialBlockB1ExtensionCMS.priceSchedule.h2),
+      leadParagraph: cleanVerifyText(incPrice.leadParagraph || initialBlockB1ExtensionCMS.priceSchedule.leadParagraph),
+      rows: Array.isArray(incPrice.rows) && incPrice.rows.length > 0
+        ? incPrice.rows.map((r: any) => ({
+            size: cleanVerifyText(r.size || ''),
+            dimensions: cleanVerifyText(r.dimensions || ''),
+            sqYards: cleanVerifyText(r.sqYards || ''),
+            category: cleanVerifyText(r.category || 'Residential'),
+            priceRange: cleanVerifyText(r.priceRange || ''),
+            possession: cleanVerifyText(r.possession || ''),
+            highlight: cleanVerifyText(r.highlight || '')
+          }))
+        : initialBlockB1ExtensionCMS.priceSchedule.rows
+    },
+    amenities: {
+      h2: cleanVerifyText(incAmenities.h2 || initialBlockB1ExtensionCMS.amenities.h2),
+      leadParagraph: cleanVerifyText(incAmenities.leadParagraph || initialBlockB1ExtensionCMS.amenities.leadParagraph),
+      items: Array.isArray(incAmenities.items) && incAmenities.items.length > 0
+        ? incAmenities.items.map((it: any) => ({
+            title: cleanVerifyText(it.title || ''),
+            desc: cleanVerifyText(it.desc || ''),
+            category: cleanVerifyText(it.category || 'Utilities'),
+            iconType: cleanVerifyText(it.iconType || 'Zap')
+          }))
+        : initialBlockB1ExtensionCMS.amenities.items
+    },
+    whyInvest: {
+      h2: cleanVerifyText(incWhy.h2 || initialBlockB1ExtensionCMS.whyInvest.h2),
+      leadParagraph: cleanVerifyText(incWhy.leadParagraph || initialBlockB1ExtensionCMS.whyInvest.leadParagraph),
+      reasons: Array.isArray(incWhy.reasons) && incWhy.reasons.length > 0
+        ? incWhy.reasons.map((r: any) => ({
+            title: cleanVerifyText(r.title || ''),
+            desc: cleanVerifyText(r.desc || '')
+          }))
+        : initialBlockB1ExtensionCMS.whyInvest.reasons
+    },
+    developmentStatus: {
+      h2: cleanVerifyText(incDev.h2 || initialBlockB1ExtensionCMS.developmentStatus.h2),
+      leadParagraph: cleanVerifyText(incDev.leadParagraph || initialBlockB1ExtensionCMS.developmentStatus.leadParagraph),
+      expandedParagraph: cleanVerifyText(incDev.expandedParagraph || initialBlockB1ExtensionCMS.developmentStatus.expandedParagraph),
+      stat1Value: cleanVerifyText(incDev.stat1Value || initialBlockB1ExtensionCMS.developmentStatus.stat1Value),
+      stat1Label: cleanVerifyText(incDev.stat1Label || initialBlockB1ExtensionCMS.developmentStatus.stat1Label),
+      stat2Value: cleanVerifyText(incDev.stat2Value || initialBlockB1ExtensionCMS.developmentStatus.stat2Value),
+      stat2Label: cleanVerifyText(incDev.stat2Label || initialBlockB1ExtensionCMS.developmentStatus.stat2Label),
+      stat3Value: cleanVerifyText(incDev.stat3Value || initialBlockB1ExtensionCMS.developmentStatus.stat3Value),
+      stat3Label: cleanVerifyText(incDev.stat3Label || initialBlockB1ExtensionCMS.developmentStatus.stat3Label),
+      dronePhotoUrl: cleanVerifyText(incDev.dronePhotoUrl || initialBlockB1ExtensionCMS.developmentStatus.dronePhotoUrl),
+      dronePhotoAlt: cleanVerifyText(incDev.dronePhotoAlt || initialBlockB1ExtensionCMS.developmentStatus.dronePhotoAlt),
+      possessionBadge: cleanVerifyText(incDev.possessionBadge || initialBlockB1ExtensionCMS.developmentStatus.possessionBadge),
+      droneTag: cleanVerifyText(incDev.droneTag || initialBlockB1ExtensionCMS.developmentStatus.droneTag),
+      droneHeading: cleanVerifyText(incDev.droneHeading || initialBlockB1ExtensionCMS.developmentStatus.droneHeading),
+      droneDesc: cleanVerifyText(incDev.droneDesc || initialBlockB1ExtensionCMS.developmentStatus.droneDesc)
+    },
+    transferProcess: {
+      h2: cleanVerifyText(incTransfer.h2 || initialBlockB1ExtensionCMS.transferProcess.h2),
+      leadParagraph: cleanVerifyText(incTransfer.leadParagraph || initialBlockB1ExtensionCMS.transferProcess.leadParagraph),
+      steps: Array.isArray(incTransfer.steps) && incTransfer.steps.length > 0
+        ? incTransfer.steps.map((s: any, idx: number) => ({
+            point: cleanVerifyText(s.point || `0${idx + 1}`),
+            tag: cleanVerifyText(s.tag || `Step ${idx + 1}`),
+            title: cleanVerifyText(s.title || ''),
+            points: Array.isArray(s.points) ? s.points.map((p: string) => cleanVerifyText(p)) : [],
+            badge: cleanVerifyText(s.badge || 'Verified Step')
+          }))
+        : initialBlockB1ExtensionCMS.transferProcess.steps,
+      bannerHeading: cleanVerifyText(incTransfer.bannerHeading || initialBlockB1ExtensionCMS.transferProcess.bannerHeading),
+      bannerSubtext: cleanVerifyText(incTransfer.bannerSubtext || initialBlockB1ExtensionCMS.transferProcess.bannerSubtext),
+      bannerButtonText: cleanVerifyText(incTransfer.bannerButtonText || initialBlockB1ExtensionCMS.transferProcess.bannerButtonText),
+      bannerWhatsapp: cleanVerifyText(incTransfer.bannerWhatsapp || initialBlockB1ExtensionCMS.transferProcess.bannerWhatsapp)
+    },
+    faqs: {
+      sectionTag: cleanVerifyText(incFaqs.sectionTag || initialBlockB1ExtensionCMS.faqs.sectionTag),
+      h2: cleanVerifyText(incFaqs.h2 || initialBlockB1ExtensionCMS.faqs.h2),
+      items: Array.isArray(incFaqs.items) && incFaqs.items.length > 0
+        ? incFaqs.items.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialBlockB1ExtensionCMS.faqs.items
+    },
+    scheduleTour: {
+      tag: cleanVerifyText(incTour.tag || initialBlockB1ExtensionCMS.scheduleTour.tag),
+      h3: cleanVerifyText(incTour.h3 || initialBlockB1ExtensionCMS.scheduleTour.h3),
+      leadParagraph: cleanVerifyText(incTour.leadParagraph || initialBlockB1ExtensionCMS.scheduleTour.leadParagraph),
+      thankYouHeading: cleanVerifyText(incTour.thankYouHeading || initialBlockB1ExtensionCMS.scheduleTour.thankYouHeading),
+      thankYouMessage: cleanVerifyText(incTour.thankYouMessage || initialBlockB1ExtensionCMS.scheduleTour.thankYouMessage),
+      buttonText: cleanVerifyText(incTour.buttonText || initialBlockB1ExtensionCMS.scheduleTour.buttonText)
+    }
+  };
+}
+
+export async function fetchBlockB1ExtensionCMS(): Promise<BlockB1ExtensionCMSData> {
+  let localData: BlockB1ExtensionCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_block_b1_ext_cms');
+      if (localStr) localData = mergeBlockB1ExtensionCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<BlockB1ExtensionCMSData>('faisal_block_b1_ext_cms');
+  if (remote) {
+    const merged = localData ? mergeBlockB1ExtensionCMS({ ...remote, ...localData }) : mergeBlockB1ExtensionCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_block_b1_ext_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialBlockB1ExtensionCMS;
+}
+
+export async function saveBlockB1ExtensionCMS(cmsData: BlockB1ExtensionCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_block_b1_ext_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_block_b1_ext_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_block_b1_ext_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS BLOCK C DEDICATED CMS SYSTEM
+// =========================================================
+
+export interface BlockCPriceRow {
+  size: string;
+  dimensions: string;
+  sqYards: string;
+  sqFeet: string;
+  category: 'Residential' | 'Commercial';
+  priceRange: string;
+  possession: string;
+  highlight: string;
+}
+
+export interface BlockCCMSData {
+  verificationHeader: {
+    reviewerName: string;
+    reviewerRole: string;
+    pricesVerifiedDate: string;
+    possessionConfirmedDate: string;
+    siteCheckedDate: string;
+    badgeText: string;
+  };
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    bgImage: string;
+    badge1: string;
+    badge2: string;
+    badge3: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph1: string;
+    leadParagraph2: string;
+    photoUrl: string;
+    photoAlt: string;
+    photoTag: string;
+    photoCaption: string;
+    quickFacts: {
+      position: string;
+      residentialSizes: string;
+      plotCount: string;
+      possession: string;
+      howYouBuy: string;
+      legalStatus: string;
+      hillsWalkAccess: string;
+      motorwayConnectivity: string;
+    };
+    ctaStripText: string;
+    ctaWhatsapp: string;
+    ctaCall: string;
+  };
+  location: {
+    heading: string;
+    leadParagraph: string;
+    boundaryNote: string;
+    travelTimes: {
+      destination: string;
+      distance: string;
+      time: string;
+      note: string;
+    }[];
+    googleMapIframeUrl: string;
+  };
+  masterPlan: {
+    heading: string;
+    subline: string;
+    description: string;
+    mapImage: string;
+    pdfDownloadUrl: string;
+    downloadButtonText: string;
+  };
+  plotSizesSection: {
+    heading: string;
+    subline: string;
+    tableRows: {
+      dimensions: string;
+      sqFeet: string;
+      sqYards: string;
+      soldAs: string;
+      status: string;
+    }[];
+    analysisNote: string;
+  };
+  priceScheduleSection: {
+    heading: string;
+    subline: string;
+    disclaimerNote: string;
+    tableRows: BlockCPriceRow[];
+    rateComparisonNote: string;
+  };
+  possessionAndInfra: {
+    heading: string;
+    lead: string;
+    tableRows: {
+      item: string;
+      status: string;
+    }[];
+    statusNote: string;
+  };
+  hillsWalkSection: {
+    heading: string;
+    tag: string;
+    leadParagraph: string;
+    features: string[];
+    buttonText: string;
+    buttonLink: string;
+    bannerImage: string;
+  };
+  whoSuitsSection: {
+    heading: string;
+    suitsProfile: string;
+    reasons: { title: string; desc: string }[];
+  };
+  transferProcess: {
+    heading: string;
+    leadParagraph: string;
+    steps: {
+      point: string;
+      tag: string;
+      title: string;
+      points: string[];
+      badge: string;
+    }[];
+    requiredDocuments: string[];
+  };
+  faqsSection: {
+    heading: string;
+    subline: string;
+    faqs: { q: string; a: string }[];
+  };
+  closingSiteVisitSection: {
+    heading: string;
+    intro: string;
+    sellingPrompt: string;
+    whatsappNumber: string;
+    phoneNumber: string;
+    officeAddress: string;
+    formTitle: string;
+    formSubtitle: string;
+    formButtonText: string;
+    reviewedByNote: string;
+  };
+}
+
+export const initialBlockCCMS: BlockCCMSData = {
+  verificationHeader: {
+    reviewerName: "Senior Sector Verification Desk",
+    reviewerRole: "Faisal Hills On-Ground Advisory",
+    pricesVerifiedDate: "October 2026",
+    possessionConfirmedDate: "Completed Sectors",
+    siteCheckedDate: "October 2026",
+    badgeText: "100% RDA Approved & Possession Granted"
+  },
+  hero: {
+    eyebrow: "GATEWAY TO M-1 MOTORWAY & HOME TO HILLS WALK COMMERCIAL",
+    title: "Block C",
+    subtitle: "Faisal Hills Block C offers direct future M-1 Motorway interchange connectivity, the European-style Hills Walk dining and shopping promenade, and immediate possession residential plots.",
+    bgImage: "/images/hills-walk-commercial-aerial.webp",
+    badge1: "Immediate Possession",
+    badge2: "Hills Walk Commercial Hub",
+    badge3: "M-1 Interchange Direct Access"
+  },
+  overview: {
+    h1: "Faisal Hills Block C: Possession, Plot Prices & Hills Walk Hub",
+    leadParagraph1: "Block C is one of the most commercially prominent and high-velocity sectors in Faisal Hills Islamabad. Strategically located directly on the route to the upcoming dedicated M-1 Motorway Interchange, Block C connects high-density residential living with the society’s premier commercial promenade — Hills Walk.",
+    leadParagraph2: "Featuring 5 Marla, 8 Marla, 10 Marla, 14 Marla, and 1 Kanal residential plots alongside vibrant multi-storey commercial plazas, Block C is possession-ready with active on-ground villa construction and operational utilities.",
+    photoUrl: "/images/hills-walk-commercial-aerial.webp",
+    photoAlt: "Faisal Hills Block C & Hills Walk Aerial Survey",
+    photoTag: "M-1 Motorway Gateway",
+    photoCaption: "Hills Walk Promenade & Block C Avenues",
+    quickFacts: {
+      position: "Western Sector connecting Block B and future M-1 Motorway Interchange",
+      residentialSizes: "5, 8, 10, 14 Marla and 1 Kanal standard plots",
+      plotCount: "Approx. 8,350 demarcated residential & commercial plots",
+      possession: "Granted & Available across fully developed sub-sectors",
+      howYouBuy: "Cash settlement on verified resale file transfer at Zedem office",
+      legalStatus: "100% RDA Approved under society NOC sanction",
+      hillsWalkAccess: "Direct walking frontage to Hills Walk Commercial Boulevard",
+      motorwayConnectivity: "Direct 2-minute connection to proposed M-1 Interchange"
+    },
+    ctaStripText: "Looking to buy, sell or evaluate a plot in Block C?",
+    ctaWhatsapp: "+92 333 1113177",
+    ctaCall: "+92 333 1113177"
+  },
+  location: {
+    heading: "Block C Location, Boundaries & Road Access",
+    leadParagraph: "Block C occupies a prime geographical corridor on the western flank of Faisal Hills. It is bordered by Block B to the east and the M-1 Motorway alignment to the west.",
+    boundaryNote: "With wide 150ft and 100ft arterial avenues feeding directly from the 225ft Main Boulevard, transit across the entire scheme is fast and congestion-free.",
+    travelTimes: [
+      { destination: "Hills Walk Commercial Promenade", distance: "0 km", time: "Walking Distance", note: "Located right inside Block C" },
+      { destination: "Executive Block & Main GT Road Entrance", distance: "2.8 km", time: "4 mins", note: "Via 225ft Main Boulevard" },
+      { destination: "Block B Sports Complex & Cricket Ground", distance: "1.2 km", time: "2 mins", note: "Direct sector avenue link" },
+      { destination: "M-1 Motorway Interchange (Proposed)", distance: "1.5 km", time: "2 mins", note: "Direct exclusive access route" },
+      { destination: "Multi Gardens B-17 Islamabad", distance: "4.5 km", time: "6 mins", note: "Adjacent sector connectivity" },
+      { destination: "New Islamabad International Airport", distance: "25 km", time: "22 mins", note: "Via M-1 Motorway / CPEC corridor" }
+    ],
+    googleMapIframeUrl: "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+  },
+  masterPlan: {
+    heading: "Block C Master Plan & Road Network",
+    subline: "Engineered with wide avenues, lush central green belts, and dedicated commercial avenues.",
+    description: "The layout of Block C is designed around a grid of 40ft, 50ft, 60ft residential streets, anchored by 100ft sector boulevards and 150ft connecting expressways. Central park reservations and sector Jamia mosques are located within 3 minutes walk of every plot.",
+    mapImage: "/images/faisal-hills-executive-map.webp",
+    pdfDownloadUrl: "/images/faisal-hills-executive-map.webp",
+    downloadButtonText: "Download High-Res PDF Map"
+  },
+  plotSizesSection: {
+    heading: "Standard Ground Dimensions in Block C",
+    subline: "Official ground cuttings and area conversions for Block C plots:",
+    tableRows: [
+      { dimensions: "25 × 50", sqFeet: "1,125 Sq. Ft", sqYards: "139 Sq. Yds", soldAs: "5.55 Marla (5 Marla)", status: "High Demand" },
+      { dimensions: "30 × 60", sqFeet: "1,800 Sq. Ft", sqYards: "200 Sq. Yds", soldAs: "8 Marla", status: "Balanced Cut" },
+      { dimensions: "35 × 70", sqFeet: "2,250 Sq. Ft", sqYards: "272 Sq. Yds", soldAs: "10.89 Marla (10 Marla)", status: "Family Standard" },
+      { dimensions: "40 × 80", sqFeet: "3,200 Sq. Ft", sqYards: "356 Sq. Yds", soldAs: "14.22 Marla (14 Marla)", status: "Limited Executive" },
+      { dimensions: "50 × 90", sqFeet: "4,500 Sq. Ft", sqYards: "500 Sq. Yds", soldAs: "1 Kanal", status: "Boulevard Facing" }
+    ],
+    analysisNote: "All dimensions are measured in official Zedem International society standards (1 Marla = 225 sq. ft / 25 sq. yds)."
+  },
+  priceScheduleSection: {
+    heading: "Block C Verified Market Price Schedule",
+    subline: "Current asking rates based on October 2026 on-ground transactions:",
+    disclaimerNote: "Prices vary based on plot location, corner positions, park facing, and proximity to Hills Walk Promenade.",
+    tableRows: [
+      {
+        size: "5 Marla",
+        dimensions: "25 × 50",
+        sqYards: "139 Sq. Yds",
+        sqFeet: "1,125 Sq. Ft",
+        category: "Residential",
+        priceRange: "PKR 48 Lacs – 58 Lacs",
+        possession: "Possession Ready",
+        highlight: "Highest transaction velocity; perfect compact entry cut near Hills Walk."
+      },
+      {
+        size: "8 Marla",
+        dimensions: "30 × 60",
+        sqYards: "200 Sq. Yds",
+        sqFeet: "1,800 Sq. Ft",
+        category: "Residential",
+        priceRange: "PKR 75 Lacs – 90 Lacs",
+        possession: "Possession Ready",
+        highlight: "Balanced family layout offering wide frontage and generous parking space."
+      },
+      {
+        size: "10 Marla",
+        dimensions: "35 × 70",
+        sqYards: "272 Sq. Yds",
+        sqFeet: "2,250 Sq. Ft",
+        category: "Residential",
+        priceRange: "PKR 1.15 Cr – 1.40 Cr",
+        possession: "Possession Ready",
+        highlight: "Most popular executive family home dimension across main developed avenues."
+      },
+      {
+        size: "14 Marla",
+        dimensions: "40 × 80",
+        sqYards: "356 Sq. Yds",
+        sqFeet: "3,200 Sq. Ft",
+        category: "Residential",
+        priceRange: "PKR 1.60 Cr – 1.95 Cr",
+        possession: "Possession Ready",
+        highlight: "Spacious luxury villa cut with high elevation and scenic Margalla backdrops."
+      },
+      {
+        size: "1 Kanal",
+        dimensions: "50 × 90",
+        sqYards: "500 Sq. Yds",
+        sqFeet: "4,500 Sq. Ft",
+        category: "Residential",
+        priceRange: "PKR 2.20 Cr – 2.85 Cr",
+        possession: "Possession Ready",
+        highlight: "Signature luxury estate plots located on wide 80ft and 100ft boulevards."
+      }
+    ],
+    rateComparisonNote: "Block C plot prices reflect high capital appreciation momentum due to possession delivery and active retail openings in Hills Walk."
+  },
+  possessionAndInfra: {
+    heading: "On-Ground Development Status & Utilities",
+    lead: "Infrastructure in Block C is at an advanced state of completion with full underground civil works.",
+    tableRows: [
+      { item: "Main Roads & Street Paving", status: "100% Carpeted" },
+      { item: "Underground Electrification Grid", status: "Installed & Operational" },
+      { item: "Sui Gas & Water Supply Network", status: "Complete to Plot Demarcations" },
+      { item: "Sewerage & Storm Water Drainage", status: "Engineered & Functional" },
+      { item: "Sector Jamia Mosque", status: "Operational for Daily Prayers" },
+      { item: "Hills Walk Commercial Avenue", status: "Active Construction & Handover" }
+    ],
+    statusNote: "Possession letters are officially issued by Zedem International upon clearance of all file dues and NDC issuance."
+  },
+  hillsWalkSection: {
+    heading: "Hills Walk Commercial Promenade in Block C",
+    tag: "Commercial Epicenter",
+    leadParagraph: "Hills Walk is the signature open-air European style commercial and dining promenade situated centrally inside Block C. Designed to serve over 50,000 residents, it hosts brand flagship stores, coffee bistros, rooftop dining, and high-yield commercial plazas.",
+    features: [
+      "Open-air pedestrian-friendly paved walkways",
+      "Designated multi-storey plaza plots (Ground + 4 to 6 storeys)",
+      "High daily footfall from M-1 Motorway transit",
+      "Massive commercial rental yields and capital appreciation"
+    ],
+    buttonText: "Explore Hills Walk Commercial",
+    buttonLink: "/blocks/hills-walk",
+    bannerImage: "/images/hills-walk-commercial-aerial.webp"
+  },
+  whoSuitsSection: {
+    heading: "Why Invest in Faisal Hills Block C",
+    suitsProfile: "Block C is the ideal choice for families planning immediate home construction and investors targeting commercial growth linked to Hills Walk.",
+    reasons: [
+      { title: "Direct M-1 Motorway Advantage", desc: "Shortest travel distance to the upcoming motorway interchange, making daily commutes to Islamabad / Rawalpindi effortless." },
+      { title: "Immediate Possession & Building", desc: "Start building your home immediately without waiting years for earthwork or basic utilities." },
+      { title: "Hills Walk Lifestyle Frontage", desc: "Enjoy world-class dining, cafes, and shopping right at your doorstep." },
+      { title: "High Resale Liquidity", desc: "Block C is among the most traded sectors with high buyer demand from local and overseas Pakistanis." }
+    ]
+  },
+  transferProcess: {
+    heading: "Block C Allotment & Transfer Process",
+    leadParagraph: "Transfers are conducted securely at the Zedem International Head Office through official biometric verification:",
+    steps: [
+      {
+        point: "01",
+        tag: "Step 1: Verification",
+        title: "File & NDC Verification",
+        points: ["Check genuine allotment record at Zedem office", "Obtain No Demand Certificate (NDC) confirming clear dues", "Verify seller identity against society ledger"],
+        badge: "Zero Risk Verification"
+      },
+      {
+        point: "02",
+        tag: "Step 2: Documentation",
+        title: "CNIC & Photographs",
+        points: ["Two attested CNIC copies of buyer", "One CNIC copy of Next of Kin (Nominee)", "Two recent passport size color photos"],
+        badge: "Official Documentation"
+      },
+      {
+        point: "03",
+        tag: "Step 3: Pay Order",
+        title: "Official Transfer Fee",
+        points: ["Bank Pay Order in favour of 'Zedem International'", "Official society receipt issuance", "Clear stamp duty as per government regulations"],
+        badge: "Bank Draft"
+      },
+      {
+        point: "04",
+        tag: "Step 4: Allotment",
+        title: "Transfer Handover",
+        points: ["Biometric verification of both parties", "New registered Allotment Letter handover to buyer", "Immediate possession application eligibility"],
+        badge: "Allotment Handover"
+      }
+    ],
+    requiredDocuments: [
+      "Original Allotment / Transfer Letter",
+      "Valid CNIC / NICOP copies of Buyer and Seller",
+      "Nominee CNIC copy",
+      "Passport size photographs on blue background",
+      "NDC clearance certificate from Zedem Head Office"
+    ]
+  },
+  faqsSection: {
+    heading: "Frequently Asked Questions — Block C",
+    subline: "Official verified answers to the most common Block C inquiries:",
+    faqs: [
+      {
+        q: "Where is Block C located in Faisal Hills?",
+        a: "Block C is situated on the western side of Faisal Hills, connecting Block B to the upcoming M-1 Motorway Interchange route and hosting the iconic Hills Walk commercial promenade."
+      },
+      {
+        q: "Is possession available in Block C?",
+        a: "Yes. Possession is granted across developed streets in Block C. Numerous houses are already constructed and families are residing comfortably."
+      },
+      {
+        q: "What plot sizes are available in Block C?",
+        a: "Block C offers 5 Marla (25x50), 8 Marla (30x60), 10 Marla (35x70), 14 Marla (40x80), and 1 Kanal (50x90) residential plots, alongside prime commercial plots in Hills Walk."
+      },
+      {
+        q: "What is Hills Walk in Block C?",
+        a: "Hills Walk is the central commercial and retail promenade within Block C featuring pedestrian avenues, shopping arcades, cafes, and multi-storey commercial plazas."
+      },
+      {
+        q: "How does Block C connect to the M-1 Motorway?",
+        a: "Block C sits adjacent to the proposed dedicated Faisal Hills M-1 Motorway Interchange, providing direct motorway access without passing through the main GT Road."
+      }
+    ]
+  },
+  closingSiteVisitSection: {
+    heading: "Block C Plots for Sale: Check Live Inventory",
+    intro: "Contact our Senior Verification Desk to receive verified plot numbers, latest market rates, and schedule an on-ground site visit.",
+    sellingPrompt: "Selling your plot in Block C? Get an official valuation and connect with verified buyers today.",
+    whatsappNumber: "+92 333 1113177",
+    phoneNumber: "+92 333 1113177",
+    officeAddress: "Faisal Hills Main Entrance Boulevard, GT Road Taxila / Rawalpindi",
+    formTitle: "Inquire About Block C Plots",
+    formSubtitle: "Leave your details to receive verified inventory, location maps, and transfer guidance.",
+    formButtonText: "SUBMIT BLOCK C INQUIRY",
+    reviewedByNote: "Verified by Faisal Hills Property Verification Desk. Market rates and availability updated regularly based on recorded transactions at Zedem International."
+  }
+};
+
+export function mergeBlockCCMS(incoming: any): BlockCCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialBlockCCMS;
+
+  const incVer = incoming.verificationHeader || {};
+  const incHero = incoming.hero || {};
+  const incOver = incoming.overview || {};
+  const incLoc = incoming.location || {};
+  const incMap = incoming.masterPlan || {};
+  const incSizes = incoming.plotSizesSection || {};
+  const incPrice = incoming.priceScheduleSection || {};
+  const incInfra = incoming.possessionAndInfra || {};
+  const incHills = incoming.hillsWalkSection || {};
+  const incWho = incoming.whoSuitsSection || {};
+  const incTransfer = incoming.transferProcess || {};
+  const incFaqs = incoming.faqsSection || {};
+  const incClose = incoming.closingSiteVisitSection || {};
+
+  return {
+    verificationHeader: {
+      reviewerName: cleanVerifyText(incVer.reviewerName || initialBlockCCMS.verificationHeader.reviewerName),
+      reviewerRole: cleanVerifyText(incVer.reviewerRole || initialBlockCCMS.verificationHeader.reviewerRole),
+      pricesVerifiedDate: cleanVerifyText(incVer.pricesVerifiedDate || initialBlockCCMS.verificationHeader.pricesVerifiedDate),
+      possessionConfirmedDate: cleanVerifyText(incVer.possessionConfirmedDate || initialBlockCCMS.verificationHeader.possessionConfirmedDate),
+      siteCheckedDate: cleanVerifyText(incVer.siteCheckedDate || initialBlockCCMS.verificationHeader.siteCheckedDate),
+      badgeText: cleanVerifyText(incVer.badgeText || initialBlockCCMS.verificationHeader.badgeText)
+    },
+    hero: {
+      eyebrow: cleanVerifyText(incHero.eyebrow || initialBlockCCMS.hero.eyebrow),
+      title: cleanVerifyText(incHero.title || initialBlockCCMS.hero.title),
+      subtitle: cleanVerifyText(incHero.subtitle || initialBlockCCMS.hero.subtitle),
+      bgImage: cleanVerifyText(incHero.bgImage || initialBlockCCMS.hero.bgImage),
+      badge1: cleanVerifyText(incHero.badge1 || initialBlockCCMS.hero.badge1),
+      badge2: cleanVerifyText(incHero.badge2 || initialBlockCCMS.hero.badge2),
+      badge3: cleanVerifyText(incHero.badge3 || initialBlockCCMS.hero.badge3)
+    },
+    overview: {
+      h1: cleanVerifyText(incOver.h1 || initialBlockCCMS.overview.h1),
+      leadParagraph1: cleanVerifyText(incOver.leadParagraph1 || initialBlockCCMS.overview.leadParagraph1),
+      leadParagraph2: cleanVerifyText(incOver.leadParagraph2 || initialBlockCCMS.overview.leadParagraph2),
+      photoUrl: cleanVerifyText(incOver.photoUrl || initialBlockCCMS.overview.photoUrl),
+      photoAlt: cleanVerifyText(incOver.photoAlt || initialBlockCCMS.overview.photoAlt),
+      photoTag: cleanVerifyText(incOver.photoTag || initialBlockCCMS.overview.photoTag),
+      photoCaption: cleanVerifyText(incOver.photoCaption || initialBlockCCMS.overview.photoCaption),
+      quickFacts: {
+        position: cleanVerifyText(incOver.quickFacts?.position || initialBlockCCMS.overview.quickFacts.position),
+        residentialSizes: cleanVerifyText(incOver.quickFacts?.residentialSizes || initialBlockCCMS.overview.quickFacts.residentialSizes),
+        plotCount: cleanVerifyText(incOver.quickFacts?.plotCount || initialBlockCCMS.overview.quickFacts.plotCount),
+        possession: cleanVerifyText(incOver.quickFacts?.possession || initialBlockCCMS.overview.quickFacts.possession),
+        howYouBuy: cleanVerifyText(incOver.quickFacts?.howYouBuy || initialBlockCCMS.overview.quickFacts.howYouBuy),
+        legalStatus: cleanVerifyText(incOver.quickFacts?.legalStatus || initialBlockCCMS.overview.quickFacts.legalStatus),
+        hillsWalkAccess: cleanVerifyText(incOver.quickFacts?.hillsWalkAccess || initialBlockCCMS.overview.quickFacts.hillsWalkAccess),
+        motorwayConnectivity: cleanVerifyText(incOver.quickFacts?.motorwayConnectivity || initialBlockCCMS.overview.quickFacts.motorwayConnectivity)
+      },
+      ctaStripText: cleanVerifyText(incOver.ctaStripText || initialBlockCCMS.overview.ctaStripText),
+      ctaWhatsapp: cleanVerifyText(incOver.ctaWhatsapp || initialBlockCCMS.overview.ctaWhatsapp),
+      ctaCall: cleanVerifyText(incOver.ctaCall || initialBlockCCMS.overview.ctaCall)
+    },
+    location: {
+      heading: cleanVerifyText(incLoc.heading || initialBlockCCMS.location.heading),
+      leadParagraph: cleanVerifyText(incLoc.leadParagraph || initialBlockCCMS.location.leadParagraph),
+      boundaryNote: cleanVerifyText(incLoc.boundaryNote || initialBlockCCMS.location.boundaryNote),
+      travelTimes: Array.isArray(incLoc.travelTimes) && incLoc.travelTimes.length > 0
+        ? incLoc.travelTimes.map((t: any) => ({
+            destination: cleanVerifyText(t.destination || ''),
+            distance: cleanVerifyText(t.distance || ''),
+            time: cleanVerifyText(t.time || ''),
+            note: cleanVerifyText(t.note || '')
+          }))
+        : initialBlockCCMS.location.travelTimes,
+      googleMapIframeUrl: cleanVerifyText(incLoc.googleMapIframeUrl || initialBlockCCMS.location.googleMapIframeUrl)
+    },
+    masterPlan: {
+      heading: cleanVerifyText(incMap.heading || initialBlockCCMS.masterPlan.heading),
+      subline: cleanVerifyText(incMap.subline || initialBlockCCMS.masterPlan.subline),
+      description: cleanVerifyText(incMap.description || initialBlockCCMS.masterPlan.description),
+      mapImage: cleanVerifyText(incMap.mapImage || initialBlockCCMS.masterPlan.mapImage),
+      pdfDownloadUrl: cleanVerifyText(incMap.pdfDownloadUrl || initialBlockCCMS.masterPlan.pdfDownloadUrl),
+      downloadButtonText: cleanVerifyText(incMap.downloadButtonText || initialBlockCCMS.masterPlan.downloadButtonText)
+    },
+    plotSizesSection: {
+      heading: cleanVerifyText(incSizes.heading || initialBlockCCMS.plotSizesSection.heading),
+      subline: cleanVerifyText(incSizes.subline || initialBlockCCMS.plotSizesSection.subline),
+      tableRows: Array.isArray(incSizes.tableRows) && incSizes.tableRows.length > 0
+        ? incSizes.tableRows.map((r: any) => ({
+            dimensions: cleanVerifyText(r.dimensions || ''),
+            sqFeet: cleanVerifyText(r.sqFeet || ''),
+            sqYards: cleanVerifyText(r.sqYards || ''),
+            soldAs: cleanVerifyText(r.soldAs || ''),
+            status: cleanVerifyText(r.status || '')
+          }))
+        : initialBlockCCMS.plotSizesSection.tableRows,
+      analysisNote: cleanVerifyText(incSizes.analysisNote || initialBlockCCMS.plotSizesSection.analysisNote)
+    },
+    priceScheduleSection: {
+      heading: cleanVerifyText(incPrice.heading || initialBlockCCMS.priceScheduleSection.heading),
+      subline: cleanVerifyText(incPrice.subline || initialBlockCCMS.priceScheduleSection.subline),
+      disclaimerNote: cleanVerifyText(incPrice.disclaimerNote || initialBlockCCMS.priceScheduleSection.disclaimerNote),
+      tableRows: Array.isArray(incPrice.tableRows) && incPrice.tableRows.length > 0
+        ? incPrice.tableRows.map((r: any) => ({
+            size: cleanVerifyText(r.size || ''),
+            dimensions: cleanVerifyText(r.dimensions || ''),
+            sqYards: cleanVerifyText(r.sqYards || ''),
+            sqFeet: cleanVerifyText(r.sqFeet || ''),
+            category: r.category || 'Residential',
+            priceRange: cleanVerifyText(r.priceRange || ''),
+            possession: cleanVerifyText(r.possession || ''),
+            highlight: cleanVerifyText(r.highlight || '')
+          }))
+        : initialBlockCCMS.priceScheduleSection.tableRows,
+      rateComparisonNote: cleanVerifyText(incPrice.rateComparisonNote || initialBlockCCMS.priceScheduleSection.rateComparisonNote)
+    },
+    possessionAndInfra: {
+      heading: cleanVerifyText(incInfra.heading || initialBlockCCMS.possessionAndInfra.heading),
+      lead: cleanVerifyText(incInfra.lead || initialBlockCCMS.possessionAndInfra.lead),
+      tableRows: Array.isArray(incInfra.tableRows) && incInfra.tableRows.length > 0
+        ? incInfra.tableRows.map((r: any) => ({
+            item: cleanVerifyText(r.item || ''),
+            status: cleanVerifyText(r.status || '')
+          }))
+        : initialBlockCCMS.possessionAndInfra.tableRows,
+      statusNote: cleanVerifyText(incInfra.statusNote || initialBlockCCMS.possessionAndInfra.statusNote)
+    },
+    hillsWalkSection: {
+      heading: cleanVerifyText(incHills.heading || initialBlockCCMS.hillsWalkSection.heading),
+      tag: cleanVerifyText(incHills.tag || initialBlockCCMS.hillsWalkSection.tag),
+      leadParagraph: cleanVerifyText(incHills.leadParagraph || initialBlockCCMS.hillsWalkSection.leadParagraph),
+      features: Array.isArray(incHills.features) && incHills.features.length > 0
+        ? incHills.features.map((f: string) => cleanVerifyText(f))
+        : initialBlockCCMS.hillsWalkSection.features,
+      buttonText: cleanVerifyText(incHills.buttonText || initialBlockCCMS.hillsWalkSection.buttonText),
+      buttonLink: cleanVerifyText(incHills.buttonLink || initialBlockCCMS.hillsWalkSection.buttonLink),
+      bannerImage: cleanVerifyText(incHills.bannerImage || initialBlockCCMS.hillsWalkSection.bannerImage)
+    },
+    whoSuitsSection: {
+      heading: cleanVerifyText(incWho.heading || initialBlockCCMS.whoSuitsSection.heading),
+      suitsProfile: cleanVerifyText(incWho.suitsProfile || initialBlockCCMS.whoSuitsSection.suitsProfile),
+      reasons: Array.isArray(incWho.reasons) && incWho.reasons.length > 0
+        ? incWho.reasons.map((r: any) => ({
+            title: cleanVerifyText(r.title || ''),
+            desc: cleanVerifyText(r.desc || '')
+          }))
+        : initialBlockCCMS.whoSuitsSection.reasons
+    },
+    transferProcess: {
+      heading: cleanVerifyText(incTransfer.heading || initialBlockCCMS.transferProcess.heading),
+      leadParagraph: cleanVerifyText(incTransfer.leadParagraph || initialBlockCCMS.transferProcess.leadParagraph),
+      steps: Array.isArray(incTransfer.steps) && incTransfer.steps.length > 0
+        ? incTransfer.steps.map((s: any, idx: number) => ({
+            point: cleanVerifyText(s.point || `0${idx + 1}`),
+            tag: cleanVerifyText(s.tag || `Step ${idx + 1}`),
+            title: cleanVerifyText(s.title || ''),
+            points: Array.isArray(s.points) ? s.points.map((p: string) => cleanVerifyText(p)) : [],
+            badge: cleanVerifyText(s.badge || 'Verified Step')
+          }))
+        : initialBlockCCMS.transferProcess.steps,
+      requiredDocuments: Array.isArray(incTransfer.requiredDocuments) && incTransfer.requiredDocuments.length > 0
+        ? incTransfer.requiredDocuments.map((d: string) => cleanVerifyText(d))
+        : initialBlockCCMS.transferProcess.requiredDocuments
+    },
+    faqsSection: {
+      heading: cleanVerifyText(incFaqs.heading || initialBlockCCMS.faqsSection.heading),
+      subline: cleanVerifyText(incFaqs.subline || initialBlockCCMS.faqsSection.subline),
+      faqs: Array.isArray(incFaqs.faqs) && incFaqs.faqs.length > 0
+        ? incFaqs.faqs.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialBlockCCMS.faqsSection.faqs
+    },
+    closingSiteVisitSection: {
+      heading: cleanVerifyText(incClose.heading || initialBlockCCMS.closingSiteVisitSection.heading),
+      intro: cleanVerifyText(incClose.intro || initialBlockCCMS.closingSiteVisitSection.intro),
+      sellingPrompt: cleanVerifyText(incClose.sellingPrompt || initialBlockCCMS.closingSiteVisitSection.sellingPrompt),
+      whatsappNumber: cleanVerifyText(incClose.whatsappNumber || initialBlockCCMS.closingSiteVisitSection.whatsappNumber),
+      phoneNumber: cleanVerifyText(incClose.phoneNumber || initialBlockCCMS.closingSiteVisitSection.phoneNumber),
+      officeAddress: cleanVerifyText(incClose.officeAddress || initialBlockCCMS.closingSiteVisitSection.officeAddress),
+      formTitle: cleanVerifyText(incClose.formTitle || initialBlockCCMS.closingSiteVisitSection.formTitle),
+      formSubtitle: cleanVerifyText(incClose.formSubtitle || initialBlockCCMS.closingSiteVisitSection.formSubtitle),
+      formButtonText: cleanVerifyText(incClose.formButtonText || initialBlockCCMS.closingSiteVisitSection.formButtonText),
+      reviewedByNote: cleanVerifyText(incClose.reviewedByNote || initialBlockCCMS.closingSiteVisitSection.reviewedByNote)
+    }
+  };
+}
+
+export async function fetchBlockCCMS(): Promise<BlockCCMSData> {
+  let localData: BlockCCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_block_c_cms');
+      if (localStr) localData = mergeBlockCCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<BlockCCMSData>('faisal_block_c_cms');
+  if (remote) {
+    const merged = localData ? mergeBlockCCMS({ ...remote, ...localData }) : mergeBlockCCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_block_c_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialBlockCCMS;
+}
+
+export async function saveBlockCCMS(cmsData: BlockCCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_block_c_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_block_c_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_block_c_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS HILLS WALK COMMERCIAL CMS SYSTEM
+// =========================================================
+
+export interface HillsWalkPriceRow {
+  size: string;
+  dimensions: string;
+  sqYards: string;
+  sqFeet: string;
+  category: 'Commercial';
+  priceRange: string;
+  approval: string;
+  highlight: string;
+}
+
+export interface HillsWalkCMSData {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    bgImage: string;
+    badge1: string;
+    badge2: string;
+    badge3: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph: string;
+    conceptDetails: string;
+    photoUrl: string;
+    photoAlt: string;
+    photoTag: string;
+    photoCaption: string;
+    quickFacts: {
+      totalArea: string;
+      commercialCuttings: string;
+      buildingHeight: string;
+      footfallTarget: string;
+      parkingCapacity: string;
+      possessionStatus: string;
+    };
+  };
+  location: {
+    heading: string;
+    leadParagraph: string;
+    accessibilityNotes: string;
+    googleMapEmbedUrl: string;
+    driveTimes: { destination: string; distance: string; time: string; note: string }[];
+  };
+  masterPlan: {
+    heading: string;
+    description: string;
+    mapImageUrl: string;
+    mapPdfUrl: string;
+    downloadButtonText: string;
+  };
+  priceSchedule: {
+    heading: string;
+    leadParagraph: string;
+    rows: HillsWalkPriceRow[];
+  };
+  amenities: {
+    heading: string;
+    leadParagraph: string;
+    items: { title: string; desc: string; category: string; iconType: string }[];
+  };
+  investmentRoi: {
+    heading: string;
+    leadParagraph: string;
+    projectedYield: string;
+    capitalGrowthRate: string;
+    commercialAdvantage: string;
+    keyPoints: { title: string; desc: string }[];
+  };
+  developmentStatus: {
+    heading: string;
+    leadParagraph: string;
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+    dronePhotoUrl: string;
+    droneHeading: string;
+    droneDesc: string;
+  };
+  faqs: {
+    heading: string;
+    items: { q: string; a: string }[];
+  };
+  inquirySection: {
+    tag: string;
+    heading: string;
+    leadParagraph: string;
+    whatsappNumber: string;
+    phoneNumber: string;
+    buttonText: string;
+  };
+}
+
+export const initialHillsWalkCMS: HillsWalkCMSData = {
+  hero: {
+    eyebrow: "PREMIER EUROPEAN-STYLE OPEN-AIR COMMERCIAL PROMENADE",
+    title: "Hills Walk Commercial Hub",
+    subtitle: "Hills Walk is the signature commercial boulevard in Faisal Hills, offering ground+5 approved commercial plaza plots, pedestrian cafe streets, brand flagships, and exceptional rental yields.",
+    bgImage: "/images/hills-walk-commercial-aerial.webp",
+    badge1: "100% RDA Approved",
+    badge2: "Ground + 5 Approved Height",
+    badge3: "M-1 Gateway Access"
+  },
+  overview: {
+    h1: "Hills Walk Commercial: The High-Street Dining & Retail Capital",
+    leadParagraph: "Hills Walk is envisioned as a world-class outdoor retail and culinary promenade located centrally in Faisal Hills. Inspired by modern European shopping streets, it features broad pedestrian-only plazas, landscaped greenery, alfresco cafe seating, and high-density commercial developments.",
+    conceptDetails: "Designed to serve an estimated resident population exceeding 100,000 across Faisal Hills, B-17, and Taxila, Hills Walk offers the highest footfall density and commercial rental yields in the entire zone.",
+    photoUrl: "/images/hills-walk-commercial-aerial.webp",
+    photoAlt: "Hills Walk Commercial Promenade Aerial Overview",
+    photoTag: "High-Street Promenade",
+    photoCaption: "Flagship Retail & Dining Promenade",
+    quickFacts: {
+      totalArea: "Over 50 Acres Central Promenade Axis",
+      commercialCuttings: "4 Marla, 5.8 Marla, 8 Marla & Grand Arcades",
+      buildingHeight: "Ground + 4 to Ground + 6 Storeys Approved",
+      footfallTarget: "50,000+ Daily Visitors & Residents",
+      parkingCapacity: "2,000+ Dedicated Multi-Bay Parking Slots",
+      possessionStatus: "Commercial Development & Building Phase"
+    }
+  },
+  location: {
+    heading: "Hills Walk Location & Multi-Corridor Connectivity",
+    leadParagraph: "Situated at the direct intersection of Block C and the central 150ft boulevard, Hills Walk enjoys instant access from the upcoming dedicated M-1 Motorway Interchange and the Main GT Road N-5.",
+    accessibilityNotes: "Its central position ensures that every resident within Faisal Hills can reach Hills Walk within 3 to 7 minutes via wide signal-free avenues.",
+    googleMapEmbedUrl: "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed",
+    driveTimes: [
+      { destination: "Faisal Hills Main Entrance (GT Road)", distance: "2.8 km", time: "4 mins", note: "Via 225ft Boulevard" },
+      { destination: "M-1 Motorway Dedicated Interchange", distance: "1.2 km", time: "2 mins", note: "Direct sector connection" },
+      { destination: "Executive Block & Faisal Jewel", distance: "2.5 km", time: "4 mins", note: "Main arterial drive" },
+      { destination: "Multi Gardens B-17 Commercial Center", distance: "4.5 km", time: "6 mins", note: "Direct link road" },
+      { destination: "New Islamabad Airport Cargo & Terminal", distance: "25 km", time: "22 mins", note: "Via M-1 Motorway" }
+    ]
+  },
+  masterPlan: {
+    heading: "Hills Walk Master Layout & Commercial Avenue Grid",
+    description: "The master plan separates high-speed vehicular parking from serene pedestrian dining arcades, guaranteeing a comfortable and luxurious shopping experience.",
+    mapImageUrl: "/images/faisal-hills-executive-map.webp",
+    mapPdfUrl: "/images/faisal-hills-executive-map.webp",
+    downloadButtonText: "Download Commercial Layout PDF"
+  },
+  priceSchedule: {
+    heading: "Hills Walk Commercial Plot Price Schedule",
+    leadParagraph: "Verified market rates for commercial plaza cuttings in Hills Walk:",
+    rows: [
+      {
+        size: "4 Marla Commercial Plaza",
+        dimensions: "30 × 30",
+        sqYards: "100 Sq. Yds",
+        sqFeet: "900 Sq. Ft",
+        category: "Commercial",
+        priceRange: "PKR 2.20 Cr – 2.80 Cr",
+        approval: "Ground + 4 Storey",
+        highlight: "Prime promenade frontage ideal for retail cafes, fashion boutiques, and specialty clinics."
+      },
+      {
+        size: "5.8 Marla Boulevard Commercial",
+        dimensions: "40 × 40",
+        sqYards: "145 Sq. Yds",
+        sqFeet: "1,305 Sq. Ft",
+        category: "Commercial",
+        priceRange: "PKR 3.50 Cr – 4.80 Cr",
+        approval: "Ground + 5 Storey",
+        highlight: "High footfall avenue corner plot designed for corporate banking hubs, pharmacies, and brand flagship outlets."
+      },
+      {
+        size: "8 Marla Luxury Commercial Arcade",
+        dimensions: "45 × 40",
+        sqYards: "200 Sq. Yds",
+        sqFeet: "1,800 Sq. Ft",
+        category: "Commercial",
+        priceRange: "PKR 5.20 Cr – 6.90 Cr",
+        approval: "Ground + 6 Storey",
+        highlight: "Flagship multi-brand department store and rooftop restaurant plot with panoramic Margalla views."
+      }
+    ]
+  },
+  amenities: {
+    heading: "World-Class Infrastructure & Anchor Features",
+    leadParagraph: "Engineered to international commercial standards with state-of-the-art utilities:",
+    items: [
+      { title: "Broad Pedestrian Walkways", desc: "Italian cobble-style pedestrian paths, tree-shaded benches, and fountain plazas.", category: "Atmosphere", iconType: "Compass" },
+      { title: "24/7 Dedicated Power Grid", desc: "Dual-source underground electrical infrastructure ensuring zero load shedding.", category: "Utility", iconType: "Zap" },
+      { title: "High-Capacity Multi-Level Parking", desc: "Organized surface and underground parking bays accommodating 2,000+ vehicles.", category: "Civic", iconType: "Car" },
+      { title: "Rooftop Dining & Skyline Cafes", desc: "Approved building bylaws for open-air rooftop culinary terraces facing Margalla.", category: "Hospitality", iconType: "Utensils" },
+      { title: "Smart Surveillance & Security", desc: "Automated license-plate recognition (ANPR) and 24/7 centralized command room monitoring.", category: "Security", iconType: "ShieldCheck" },
+      { title: "Dedicated Fire & Emergency Axis", desc: "Engineered emergency access lanes and underground fire hydrants throughout.", category: "Safety", iconType: "Activity" }
+    ]
+  },
+  investmentRoi: {
+    heading: "Investment Case & Projected Rental Returns",
+    leadParagraph: "Why commercial plazas in Hills Walk deliver superior long-term yields compared to standard retail markets:",
+    projectedYield: "9% – 12% Annual Rental Yield",
+    capitalGrowthRate: "25%+ Annual Capital Appreciation",
+    commercialAdvantage: "First-mover advantage before the official opening of the direct M-1 Motorway Interchange.",
+    keyPoints: [
+      { title: "Unmatched High-Street Demand", desc: "Brand franchises and national bank chains actively seeking flagship locations in northern Islamabad." },
+      { title: "High-Density Captive Audience", desc: "Over 50,000 residential plots surrounding Hills Walk guarantee continuous foot traffic." },
+      { title: "Flexible Construction Bylaws", desc: "Approved Ground + 5 storeys maximize usable leasable square footage per square yard." }
+    ]
+  },
+  developmentStatus: {
+    heading: "On-Ground Construction Progress",
+    leadParagraph: "Road paving, central medians, and underground infrastructure are fully laid out. Several private commercial plazas have already commenced construction.",
+    stat1Value: "95%+",
+    stat1Label: "Road Infrastructure",
+    stat2Value: "100%",
+    stat2Label: "Underground Utilities",
+    stat3Value: "Active",
+    stat3Label: "Plaza Construction",
+    dronePhotoUrl: "/images/hills-walk-commercial-aerial.webp",
+    droneHeading: "Hills Walk Live Progress",
+    droneDesc: "Asphalt carpeting, street lighting, and initial commercial arcade structures on-site."
+  },
+  faqs: {
+    heading: "Frequently Asked Questions — Hills Walk",
+    items: [
+      { q: "What is Hills Walk in Faisal Hills?", a: "Hills Walk is the flagship European-style commercial, dining, and retail promenade located centrally in Block C of Faisal Hills Islamabad." },
+      { q: "What commercial plot sizes are available in Hills Walk?", a: "Available cuttings include 4 Marla (30x30), 5.8 Marla (40x40), and 8 Marla (45x40) commercial plots approved for multi-storey plaza construction." },
+      { q: "What building height is approved in Hills Walk?", a: "Building regulations permit Ground + 4 to Ground + 6 storeys depending on boulevard width and plot location." },
+      { q: "Can I buy a plot on installments in Hills Walk?", a: "Commercial plots in Hills Walk are primarily traded on cash resale or structured developer settlements. Contact our sales desk for current booking options." }
+    ]
+  },
+  inquirySection: {
+    tag: "Commercial Advisory Desk",
+    heading: "Secure Your Commercial Plaza Plot in Hills Walk",
+    leadParagraph: "Inquire today for verified plot availability, architectural bylaws, and projected lease rates.",
+    whatsappNumber: "+92 333 1113177",
+    phoneNumber: "+92 333 1113177",
+    buttonText: "CONTACT COMMERCIAL DESK"
+  }
+};
+
+export function mergeHillsWalkCMS(incoming: any): HillsWalkCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialHillsWalkCMS;
+
+  const incHero = incoming.hero || {};
+  const incOver = incoming.overview || {};
+  const incLoc = incoming.location || {};
+  const incMap = incoming.masterPlan || {};
+  const incPrice = incoming.priceSchedule || {};
+  const incAmenities = incoming.amenities || {};
+  const incRoi = incoming.investmentRoi || {};
+  const incDev = incoming.developmentStatus || {};
+  const incFaqs = incoming.faqs || {};
+  const incInq = incoming.inquirySection || {};
+
+  return {
+    hero: {
+      eyebrow: cleanVerifyText(incHero.eyebrow || initialHillsWalkCMS.hero.eyebrow),
+      title: cleanVerifyText(incHero.title || initialHillsWalkCMS.hero.title),
+      subtitle: cleanVerifyText(incHero.subtitle || initialHillsWalkCMS.hero.subtitle),
+      bgImage: cleanVerifyText(incHero.bgImage || initialHillsWalkCMS.hero.bgImage),
+      badge1: cleanVerifyText(incHero.badge1 || initialHillsWalkCMS.hero.badge1),
+      badge2: cleanVerifyText(incHero.badge2 || initialHillsWalkCMS.hero.badge2),
+      badge3: cleanVerifyText(incHero.badge3 || initialHillsWalkCMS.hero.badge3)
+    },
+    overview: {
+      h1: cleanVerifyText(incOver.h1 || initialHillsWalkCMS.overview.h1),
+      leadParagraph: cleanVerifyText(incOver.leadParagraph || initialHillsWalkCMS.overview.leadParagraph),
+      conceptDetails: cleanVerifyText(incOver.conceptDetails || initialHillsWalkCMS.overview.conceptDetails),
+      photoUrl: cleanVerifyText(incOver.photoUrl || initialHillsWalkCMS.overview.photoUrl),
+      photoAlt: cleanVerifyText(incOver.photoAlt || initialHillsWalkCMS.overview.photoAlt),
+      photoTag: cleanVerifyText(incOver.photoTag || initialHillsWalkCMS.overview.photoTag),
+      photoCaption: cleanVerifyText(incOver.photoCaption || initialHillsWalkCMS.overview.photoCaption),
+      quickFacts: {
+        totalArea: cleanVerifyText(incOver.quickFacts?.totalArea || initialHillsWalkCMS.overview.quickFacts.totalArea),
+        commercialCuttings: cleanVerifyText(incOver.quickFacts?.commercialCuttings || initialHillsWalkCMS.overview.quickFacts.commercialCuttings),
+        buildingHeight: cleanVerifyText(incOver.quickFacts?.buildingHeight || initialHillsWalkCMS.overview.quickFacts.buildingHeight),
+        footfallTarget: cleanVerifyText(incOver.quickFacts?.footfallTarget || initialHillsWalkCMS.overview.quickFacts.footfallTarget),
+        parkingCapacity: cleanVerifyText(incOver.quickFacts?.parkingCapacity || initialHillsWalkCMS.overview.quickFacts.parkingCapacity),
+        possessionStatus: cleanVerifyText(incOver.quickFacts?.possessionStatus || initialHillsWalkCMS.overview.quickFacts.possessionStatus)
+      }
+    },
+    location: {
+      heading: cleanVerifyText(incLoc.heading || initialHillsWalkCMS.location.heading),
+      leadParagraph: cleanVerifyText(incLoc.leadParagraph || initialHillsWalkCMS.location.leadParagraph),
+      accessibilityNotes: cleanVerifyText(incLoc.accessibilityNotes || initialHillsWalkCMS.location.accessibilityNotes),
+      googleMapEmbedUrl: cleanVerifyText(incLoc.googleMapEmbedUrl || initialHillsWalkCMS.location.googleMapEmbedUrl),
+      driveTimes: Array.isArray(incLoc.driveTimes) && incLoc.driveTimes.length > 0
+        ? incLoc.driveTimes.map((d: any) => ({
+            destination: cleanVerifyText(d.destination || ''),
+            distance: cleanVerifyText(d.distance || ''),
+            time: cleanVerifyText(d.time || ''),
+            note: cleanVerifyText(d.note || '')
+          }))
+        : initialHillsWalkCMS.location.driveTimes
+    },
+    masterPlan: {
+      heading: cleanVerifyText(incMap.heading || initialHillsWalkCMS.masterPlan.heading),
+      description: cleanVerifyText(incMap.description || initialHillsWalkCMS.masterPlan.description),
+      mapImageUrl: cleanVerifyText(incMap.mapImageUrl || initialHillsWalkCMS.masterPlan.mapImageUrl),
+      mapPdfUrl: cleanVerifyText(incMap.mapPdfUrl || initialHillsWalkCMS.masterPlan.mapPdfUrl),
+      downloadButtonText: cleanVerifyText(incMap.downloadButtonText || initialHillsWalkCMS.masterPlan.downloadButtonText)
+    },
+    priceSchedule: {
+      heading: cleanVerifyText(incPrice.heading || initialHillsWalkCMS.priceSchedule.heading),
+      leadParagraph: cleanVerifyText(incPrice.leadParagraph || initialHillsWalkCMS.priceSchedule.leadParagraph),
+      rows: Array.isArray(incPrice.rows) && incPrice.rows.length > 0
+        ? incPrice.rows.map((r: any) => ({
+            size: cleanVerifyText(r.size || ''),
+            dimensions: cleanVerifyText(r.dimensions || ''),
+            sqYards: cleanVerifyText(r.sqYards || ''),
+            sqFeet: cleanVerifyText(r.sqFeet || ''),
+            category: 'Commercial',
+            priceRange: cleanVerifyText(r.priceRange || ''),
+            approval: cleanVerifyText(r.approval || ''),
+            highlight: cleanVerifyText(r.highlight || '')
+          }))
+        : initialHillsWalkCMS.priceSchedule.rows
+    },
+    amenities: {
+      heading: cleanVerifyText(incAmenities.heading || initialHillsWalkCMS.amenities.heading),
+      leadParagraph: cleanVerifyText(incAmenities.leadParagraph || initialHillsWalkCMS.amenities.leadParagraph),
+      items: Array.isArray(incAmenities.items) && incAmenities.items.length > 0
+        ? incAmenities.items.map((it: any) => ({
+            title: cleanVerifyText(it.title || ''),
+            desc: cleanVerifyText(it.desc || ''),
+            category: cleanVerifyText(it.category || 'Atmosphere'),
+            iconType: cleanVerifyText(it.iconType || 'Sparkles')
+          }))
+        : initialHillsWalkCMS.amenities.items
+    },
+    investmentRoi: {
+      heading: cleanVerifyText(incRoi.heading || initialHillsWalkCMS.investmentRoi.heading),
+      leadParagraph: cleanVerifyText(incRoi.leadParagraph || initialHillsWalkCMS.investmentRoi.leadParagraph),
+      projectedYield: cleanVerifyText(incRoi.projectedYield || initialHillsWalkCMS.investmentRoi.projectedYield),
+      capitalGrowthRate: cleanVerifyText(incRoi.capitalGrowthRate || initialHillsWalkCMS.investmentRoi.capitalGrowthRate),
+      commercialAdvantage: cleanVerifyText(incRoi.commercialAdvantage || initialHillsWalkCMS.investmentRoi.commercialAdvantage),
+      keyPoints: Array.isArray(incRoi.keyPoints) && incRoi.keyPoints.length > 0
+        ? incRoi.keyPoints.map((k: any) => ({
+            title: cleanVerifyText(k.title || ''),
+            desc: cleanVerifyText(k.desc || '')
+          }))
+        : initialHillsWalkCMS.investmentRoi.keyPoints
+    },
+    developmentStatus: {
+      heading: cleanVerifyText(incDev.heading || initialHillsWalkCMS.developmentStatus.heading),
+      leadParagraph: cleanVerifyText(incDev.leadParagraph || initialHillsWalkCMS.developmentStatus.leadParagraph),
+      stat1Value: cleanVerifyText(incDev.stat1Value || initialHillsWalkCMS.developmentStatus.stat1Value),
+      stat1Label: cleanVerifyText(incDev.stat1Label || initialHillsWalkCMS.developmentStatus.stat1Label),
+      stat2Value: cleanVerifyText(incDev.stat2Value || initialHillsWalkCMS.developmentStatus.stat2Value),
+      stat2Label: cleanVerifyText(incDev.stat2Label || initialHillsWalkCMS.developmentStatus.stat2Label),
+      stat3Value: cleanVerifyText(incDev.stat3Value || initialHillsWalkCMS.developmentStatus.stat3Value),
+      stat3Label: cleanVerifyText(incDev.stat3Label || initialHillsWalkCMS.developmentStatus.stat3Label),
+      dronePhotoUrl: cleanVerifyText(incDev.dronePhotoUrl || initialHillsWalkCMS.developmentStatus.dronePhotoUrl),
+      droneHeading: cleanVerifyText(incDev.droneHeading || initialHillsWalkCMS.developmentStatus.droneHeading),
+      droneDesc: cleanVerifyText(incDev.droneDesc || initialHillsWalkCMS.developmentStatus.droneDesc)
+    },
+    faqs: {
+      heading: cleanVerifyText(incFaqs.heading || initialHillsWalkCMS.faqs.heading),
+      items: Array.isArray(incFaqs.items) && incFaqs.items.length > 0
+        ? incFaqs.items.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialHillsWalkCMS.faqs.items
+    },
+    inquirySection: {
+      tag: cleanVerifyText(incInq.tag || initialHillsWalkCMS.inquirySection.tag),
+      heading: cleanVerifyText(incInq.heading || initialHillsWalkCMS.inquirySection.heading),
+      leadParagraph: cleanVerifyText(incInq.leadParagraph || initialHillsWalkCMS.inquirySection.leadParagraph),
+      whatsappNumber: cleanVerifyText(incInq.whatsappNumber || initialHillsWalkCMS.inquirySection.whatsappNumber),
+      phoneNumber: cleanVerifyText(incInq.phoneNumber || initialHillsWalkCMS.inquirySection.phoneNumber),
+      buttonText: cleanVerifyText(incInq.buttonText || initialHillsWalkCMS.inquirySection.buttonText)
+    }
+  };
+}
+
+export async function fetchHillsWalkCMS(): Promise<HillsWalkCMSData> {
+  let localData: HillsWalkCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_hills_walk_cms');
+      if (localStr) localData = mergeHillsWalkCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<HillsWalkCMSData>('faisal_hills_walk_cms');
+  if (remote) {
+    const merged = localData ? mergeHillsWalkCMS({ ...remote, ...localData }) : mergeHillsWalkCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_hills_walk_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialHillsWalkCMS;
+}
+
+export async function saveHillsWalkCMS(cmsData: HillsWalkCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_hills_walk_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_hills_walk_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_hills_walk_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS FAISAL JEWEL SKYSCRAPER CMS SYSTEM
+// =========================================================
+
+export interface JewelUnitItem {
+  id: string;
+  unitNumber: string;
+  category: 'Commercial Plot / Showroom' | 'Commercial Shop' | 'Food Court' | 'Corporate Office' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | '4-Star Hotel Suite';
+  floorLevel: string;
+  dimensions: string;
+  areaSqFt: number;
+  priceFormatted: string;
+  downPaymentFormatted: string;
+  quarterlyInstallmentFormatted: string;
+  status: 'Available' | 'Hot Investment' | 'Fast Selling' | 'Limited Units';
+  facing: string;
+  features: string[];
+  description: string;
+  image: string;
+}
+
+export interface FaisalJewelCMSData {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    bgImage: string;
+    badge1: string;
+    badge2: string;
+    badge3: string;
+  };
+  overview: {
+    h1: string;
+    leadParagraph: string;
+    expandedDetails: string;
+    photoUrl: string;
+    photoAlt: string;
+    photoTag: string;
+    photoCaption: string;
+    specs: {
+      totalFloors: string;
+      buildingHeight: string;
+      projectType: string;
+      location: string;
+      developer: string;
+      completionTarget: string;
+    };
+  };
+  floorDistribution: {
+    heading: string;
+    leadParagraph: string;
+    floors: {
+      levelRange: string;
+      category: string;
+      title: string;
+      description: string;
+      highlights: string[];
+      iconType: string;
+    }[];
+  };
+  unitsInventory: {
+    heading: string;
+    leadParagraph: string;
+    units: JewelUnitItem[];
+  };
+  hotelAndAmenities: {
+    heading: string;
+    leadParagraph: string;
+    items: {
+      title: string;
+      desc: string;
+      category: string;
+      iconType: string;
+    }[];
+  };
+  paymentPlan: {
+    heading: string;
+    leadParagraph: string;
+    installmentsDuration: string;
+    downPaymentPercentage: string;
+    quarterlyCount: string;
+    discountNote: string;
+    samplePlans: {
+      category: string;
+      sizeSqFt: string;
+      totalPrice: string;
+      downPayment: string;
+      quarterlyInstallment: string;
+      onPossession: string;
+    }[];
+  };
+  constructionProgress: {
+    heading: string;
+    leadParagraph: string;
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+    dronePhotoUrl: string;
+    droneHeading: string;
+    droneDesc: string;
+  };
+  faqs: {
+    heading: string;
+    items: { q: string; a: string }[];
+  };
+  /**
+   * Embedded map for the Faisal Jewel location section.
+   *
+   * Added because the section previously rendered a hardcoded Google embed URL
+   * that no dashboard screen could change.
+   */
+  googleMapEmbedUrl: string;
+  inquirySection: {
+    tag: string;
+    heading: string;
+    leadParagraph: string;
+    whatsappNumber: string;
+    phoneNumber: string;
+    buttonText: string;
+  };
+}
+
+export const initialFaisalJewelCMS: FaisalJewelCMSData = {
+  hero: {
+    eyebrow: "27-STOREY ICONIC SKYSCRAPER & LUXURY HOTEL LANDMARK",
+    title: "Faisal Jewel Islamabad",
+    subtitle: "Faisal Jewel is a 27-storey architectural masterpiece in Executive Block, featuring luxury residential apartments, international 4-star hotel suites, corporate offices, and a world-class shopping mall.",
+    bgImage: "/images/faisal-jewel-building.webp",
+    badge1: "27 Storeys Tall",
+    badge2: "4-Star Hotel Suites",
+    badge3: "Executive Block GT Road Entrance"
+  },
+  overview: {
+    h1: "Faisal Jewel: 27-Storey Luxury High-Rise & Mall",
+    leadParagraph: "Faisal Jewel is the flagship skyscraper development by Faisal Town Group & Zedem International. Soaring 27 storeys high at the prestigious main entrance of Faisal Hills on GT Road (N-5), it stands as the tallest and most luxurious mixed-use landmark in the entire Rawalpindi-Taxila region.",
+    expandedDetails: "Combining world-class shopping arcades, corporate business headquarters, branded 4-star hotel suites, and panoramic residential penthouses facing the Margalla Hills, Faisal Jewel offers an unmatched investment opportunity with proven capital growth.",
+    photoUrl: "/images/faisal-jewel-building.webp",
+    photoAlt: "Faisal Jewel 27-Storey Architectural Tower View",
+    photoTag: "27-Storey Masterpiece",
+    photoCaption: "Flagship Luxury Highrise Landmark",
+    specs: {
+      totalFloors: "27 Storeys + 3 Basements",
+      buildingHeight: "Over 350 Feet",
+      projectType: "Mega Mixed-Use (Mall, Hotel, Offices, Apartments)",
+      location: "Executive Block, Main GT Road N-5 Entrance",
+      developer: "Zedem International & Faisal Town Group",
+      completionTarget: "Under Fast-Track Structural Execution"
+    }
+  },
+  floorDistribution: {
+    heading: "27-Storey Vertical Floor Distribution",
+    leadParagraph: "Architecturally zoned into specialized commercial, hospitality, and residential tiers:",
+    floors: [
+      {
+        levelRange: "Basements B1 – B3",
+        category: "Parking & Logistics",
+        title: "Dedicated Multi-Level Basement Parking",
+        description: "3 underground basement levels with intelligent valet management and capacity for 1,500+ vehicles.",
+        highlights: ["Automated parking sensors", "EV charging stations", "24/7 security surveillance"],
+        iconType: "Car"
+      },
+      {
+        levelRange: "Lower Ground – 3rd Floor",
+        category: "Mega Shopping Mall",
+        title: "International Retail Mega Mall & Food Court",
+        description: "Centrally air-conditioned retail floors hosting world-class fashion brands, gold souk, and international food court.",
+        highlights: ["Central atrium escalators", "Hypermarket anchor", "Panoramic glass elevators"],
+        iconType: "ShoppingBag"
+      },
+      {
+        levelRange: "4th Floor – 7th Floor",
+        category: "Corporate Hub",
+        title: "Executive Corporate Offices & Business Suites",
+        description: "Smart corporate workspaces with fiber connectivity, conference boardrooms, and executive reception lounges.",
+        highlights: ["High-speed fiber internet", "Meeting rooms", "Dedicated corporate elevators"],
+        iconType: "Building2"
+      },
+      {
+        levelRange: "8th Floor – 14th Floor",
+        category: "4-Star Hospitality",
+        title: "International 4-Star Branded Hotel Suites",
+        description: "Fully serviced hotel suites managed by premier hospitality operators with guaranteed rental management.",
+        highlights: ["24/7 concierge & room service", "Executive lounge", "High rental dividend yield"],
+        iconType: "Hotel"
+      },
+      {
+        levelRange: "15th Floor – 24th Floor",
+        category: "Luxury Living",
+        title: "1, 2 & 3 Bedroom Signature Apartments",
+        description: "Ultra-luxury residential suites with floor-to-ceiling glass windows and panoramic Margalla Hills vistas.",
+        highlights: ["Margalla view balconies", "Imported Italian fittings", "Smart home automation"],
+        iconType: "Home"
+      },
+      {
+        levelRange: "25th Floor – 27th Floor",
+        category: "Sky Penthouses",
+        title: "Presidential Sky Penthouses & Rooftop Club",
+        description: "Exclusive duplex penthouses with private sky terraces, rooftop infinity pool, and sky restaurant.",
+        highlights: ["Private rooftop plunge pool", "360-degree hill panorama", "VIP private lift access"],
+        iconType: "Sparkles"
+      }
+    ]
+  },
+  unitsInventory: {
+    heading: "Available Commercial, Office & Residential Units",
+    leadParagraph: "Explore customizable unit inventory across all levels with official launch prices:",
+    units: [
+      {
+        id: "fj-com-showroom-01",
+        unitNumber: "FJ-COM-G01",
+        category: "Commercial Plot / Showroom",
+        floorLevel: "Ground Floor Grand Boulevard",
+        dimensions: "35 x 42",
+        areaSqFt: 1470,
+        priceFormatted: "PKR 5.88 Crore",
+        downPaymentFormatted: "PKR 1.17 Crore (20%)",
+        quarterlyInstallmentFormatted: "PKR 35.2 Lacs (12 Qtrs)",
+        status: "Hot Investment",
+        facing: "Main Boulevard 225ft & Arc Gate Facing",
+        features: ["Double Height Ceilings", "Direct Boulevard Entrance", "Highest Footfall Visibility", "Ideal for Bank / Auto Showroom / Flagship Brand"],
+        description: "Prime street-level double-height commercial showroom plot commanding immediate exposure from the Main GT Road Arc Gate.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-mall-shop-102",
+        unitNumber: "FJ-M-102",
+        category: "Commercial Shop",
+        floorLevel: "1st Floor Mega Fashion Arcade",
+        dimensions: "18 x 25",
+        areaSqFt: 450,
+        priceFormatted: "PKR 1.80 Crore",
+        downPaymentFormatted: "PKR 36.0 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 10.8 Lacs (12 Qtrs)",
+        status: "Fast Selling",
+        facing: "Central Atrium Glass Lift Facing",
+        features: ["Clear Glass Frontage", "Heavy Retail Circulation", "Fully Air Conditioned", "High Capital Appreciation"],
+        description: "Atrium-facing luxury retail shop designed for apparel brands, footwear chains, and specialty fragrance boutiques.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-food-court-05",
+        unitNumber: "FJ-FC-05",
+        category: "Food Court",
+        floorLevel: "3rd Floor International Dining Deck",
+        dimensions: "16 x 20",
+        areaSqFt: 320,
+        priceFormatted: "PKR 1.44 Crore",
+        downPaymentFormatted: "PKR 28.8 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 8.6 Lacs (12 Qtrs)",
+        status: "Limited Units",
+        facing: "Food Court Main Seating Deck & Margalla Terrace",
+        features: ["Dedicated Kitchen Gas / Exhaust Duct", "Shared 500-Seater Dining Hall", "Outdoor Terrace Seating", "High Turnover Footfall"],
+        description: "Turnkey food court outlet designed for fast food franchises, continental cafes, and live culinary stations.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-corp-off-501",
+        unitNumber: "FJ-CO-501",
+        category: "Corporate Office",
+        floorLevel: "5th Floor Corporate Executive Suite",
+        dimensions: "24 x 35",
+        areaSqFt: 840,
+        priceFormatted: "PKR 1.68 Crore",
+        downPaymentFormatted: "PKR 33.6 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 10.0 Lacs (12 Qtrs)",
+        status: "Available",
+        facing: "GT Road Panoramic Cityline",
+        features: ["High-Speed Elevators", "Dedicated Corporate Lobby", "High Rental Demand", "Modern Glass Facade"],
+        description: "Executive office suite tailored for multinational firms, fintech headquarters, software houses, and legal consultancies.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-apt-1bed-1604",
+        unitNumber: "FJ-A-1604",
+        category: "1-Bed Apartment",
+        floorLevel: "16th Floor Executive Sky Residence",
+        dimensions: "22 x 32",
+        areaSqFt: 704,
+        priceFormatted: "PKR 1.26 Crore",
+        downPaymentFormatted: "PKR 25.2 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 7.5 Lacs (12 Qtrs)",
+        status: "Fast Selling",
+        facing: "Margalla Hills View",
+        features: ["Scenic Hill View Balcony", "Open Concept American Kitchen", "Dedicated Covered Parking", "Smart Access Locks"],
+        description: "Elegant 1-bedroom luxury apartment with modern kitchen, spacious en-suite bath, and balcony facing Margalla.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-apt-2bed-1908",
+        unitNumber: "FJ-A-1908",
+        category: "2-Bed Apartment",
+        floorLevel: "19th Floor Panorama Residence",
+        dimensions: "32 x 40",
+        areaSqFt: 1280,
+        priceFormatted: "PKR 2.30 Crore",
+        downPaymentFormatted: "PKR 46.0 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 13.8 Lacs (12 Qtrs)",
+        status: "Hot Investment",
+        facing: "Corner Double Facing (Margalla Hills + Boulevard)",
+        features: ["Corner Panoramic Balcony", "Maid Room / Store", "Imported Tile Flooring", "Central Air Conditioning Pre-installed"],
+        description: "Spacious 2-bedroom corner luxury apartment with double balcony and expansive living hall.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-hotel-suite-1102",
+        unitNumber: "FJ-HT-1102",
+        category: "4-Star Hotel Suite",
+        floorLevel: "11th Floor Royal Hospitality Tier",
+        dimensions: "20 x 28",
+        areaSqFt: 560,
+        priceFormatted: "PKR 1.40 Crore",
+        downPaymentFormatted: "PKR 28.0 Lacs (20%)",
+        quarterlyInstallmentFormatted: "PKR 8.4 Lacs (12 Qtrs)",
+        status: "Limited Units",
+        facing: "Boulevard & Civic Monument View",
+        features: ["Fully Furnished Hotel Spec", "Hands-Free Rental Pool", "Free Annual Stays for Owner", "Professional Hotel Operator Management"],
+        description: "Fully furnished 4-star hotel suite generating monthly passive rental dividend under centralized management.",
+        image: "/images/faisal-jewel-building.webp"
+      },
+      {
+        id: "fj-penthouse-2601",
+        unitNumber: "FJ-PH-2601",
+        category: "3-Bed Penthouse",
+        floorLevel: "26th Floor Presidential Penthouse Suite",
+        dimensions: "45 x 65",
+        areaSqFt: 2925,
+        priceFormatted: "PKR 5.85 Crore",
+        downPaymentFormatted: "PKR 1.17 Crore (20%)",
+        quarterlyInstallmentFormatted: "PKR 35.1 Lacs (12 Qtrs)",
+        status: "Limited Units",
+        facing: "360-Degree Panoramic View (Margalla + GT Road + Hills)",
+        features: ["Private Sky Terrace Garden", "Duplex Double Height Living", "Private Lift Key Access", "Jacuzzi & Luxury Master Suite"],
+        description: "Crown jewel presidential penthouse offering 360-degree vistas, private sky deck, and bespoke interior architecture.",
+        image: "/images/faisal-jewel-building.webp"
+      }
+    ]
+  },
+  hotelAndAmenities: {
+    heading: "5-Star Lifestyle Amenities & Tower Facilities",
+    leadParagraph: "Faisal Jewel integrates unmatched luxury amenities for residents, guests, and businesses:",
+    items: [
+      { title: "Rooftop Infinity Swimming Pool", desc: "Heated infinity pool overlooking the Margalla Hills on the 27th floor.", category: "Wellness", iconType: "Waves" },
+      { title: "State-of-the-Art Fitness Club", desc: "Fully equipped gymnasium with sauna, steam bath, and personal training suites.", category: "Health", iconType: "Activity" },
+      { title: "High-Speed Elevators & Cargo Lifts", desc: "12 imported Schindler high-speed elevators with smart destination dispatching.", category: "Engineering", iconType: "Zap" },
+      { title: "Central Air-Conditioning & HVAC", desc: "VRF energy-efficient central cooling and heating systems throughout.", category: "Climate", iconType: "Sparkles" },
+      { title: "24/7 Security & Fire Suppression", desc: "Automated smoke detectors, pressurized emergency fire staircases, and 24/7 CCTV.", category: "Safety", iconType: "ShieldCheck" },
+      { title: "Valet Parking & Car Concierge", desc: "Multi-level subterranean basement parking with dedicated valet service.", category: "Convenience", iconType: "Car" }
+    ]
+  },
+  paymentPlan: {
+    heading: "Flexible 4-Year Installment Plan",
+    leadParagraph: "Book your luxury apartment, showroom, corporate office, or hotel suite on 16 quarterly installments:",
+    installmentsDuration: "4 Years (16 Quarterly Installments)",
+    downPaymentPercentage: "20% Booking Amount",
+    quarterlyCount: "16 Quarterly Installments (70%)",
+    discountNote: "10% Special Discount available on 100% full upfront cash payment.",
+    samplePlans: [
+      { category: "1-Bed Luxury Apartment", sizeSqFt: "700 Sq. Ft", totalPrice: "PKR 1.26 Crore", downPayment: "PKR 25.2 Lacs", quarterlyInstallment: "PKR 5.5 Lacs", onPossession: "PKR 12.6 Lacs" },
+      { category: "2-Bed Luxury Apartment", sizeSqFt: "1,280 Sq. Ft", totalPrice: "PKR 2.30 Crore", downPayment: "PKR 46.0 Lacs", quarterlyInstallment: "PKR 10.0 Lacs", onPossession: "PKR 23.0 Lacs" },
+      { category: "Commercial Shop (Mall)", sizeSqFt: "450 Sq. Ft", totalPrice: "PKR 1.80 Crore", downPayment: "PKR 36.0 Lacs", quarterlyInstallment: "PKR 7.8 Lacs", onPossession: "PKR 18.0 Lacs" },
+      { category: "Executive Corporate Office", sizeSqFt: "840 Sq. Ft", totalPrice: "PKR 1.68 Crore", downPayment: "PKR 33.6 Lacs", quarterlyInstallment: "PKR 7.3 Lacs", onPossession: "PKR 16.8 Lacs" },
+      { category: "4-Star Serviced Hotel Suite", sizeSqFt: "560 Sq. Ft", totalPrice: "PKR 1.40 Crore", downPayment: "PKR 28.0 Lacs", quarterlyInstallment: "PKR 6.1 Lacs", onPossession: "PKR 14.0 Lacs" }
+    ]
+  },
+  constructionProgress: {
+    heading: "On-Ground Structural Construction Progress",
+    leadParagraph: "Heavy excavation, piling works, and subterranean basement casting are executing at rapid speed under supervision of international structural consultants.",
+    stat1Value: "3 Basements",
+    stat1Label: "Structure Casted",
+    stat2Value: "100%",
+    stat2Label: "Deep Piling Complete",
+    stat3Value: "On Schedule",
+    stat3Label: "Tower Handover Target",
+    dronePhotoUrl: "/images/faisal-jewel-building.webp",
+    droneHeading: "Faisal Jewel Live Site Progress",
+    droneDesc: "Continuous concrete pouring, tower cranes in active operation at Executive Block entrance."
+  },
+  faqs: {
+    heading: "Frequently Asked Questions — Faisal Jewel",
+    items: [
+      { q: "Where is Faisal Jewel located?", a: "Faisal Jewel is situated directly at the Main GT Road entrance within the Executive Block of Faisal Hills Islamabad." },
+      { q: "How many floors does Faisal Jewel have?", a: "Faisal Jewel features 27 storeys above ground and 3 underground basement parking levels." },
+      { q: "What types of properties can I buy in Faisal Jewel?", a: "You can purchase commercial shops, food court outlets, corporate offices, 1, 2, and 3-bed apartments, 4-star hotel suites, and rooftop sky penthouses." },
+      { q: "What is the payment schedule for Faisal Jewel?", a: "Bookings start with a 20% down payment, followed by 16 quarterly installments spread across 4 years." },
+      { q: "Is Faisal Jewel approved by the RDA?", a: "Yes. Faisal Jewel is fully sanctioned under the official RDA approved master layout of Faisal Hills." }
+    ]
+  },
+  googleMapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s",
+  inquirySection: {
+    tag: "VIP Booking Advisory",
+    heading: "Book Your Luxury Suite in Faisal Jewel",
+    leadParagraph: "Leave your contact details to receive full floor plans, unit availability, and customized payment schedules directly on WhatsApp.",
+    whatsappNumber: "+92 333 1113177",
+    phoneNumber: "+92 333 1113177",
+    buttonText: "REQUEST VIP BROCHURE"
+  }
+};
+
+export function mergeFaisalJewelCMS(incoming: any): FaisalJewelCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialFaisalJewelCMS;
+
+  const incHero = incoming.hero || {};
+  const incOver = incoming.overview || {};
+  const incFloors = incoming.floorDistribution || {};
+  const incUnits = incoming.unitsInventory || {};
+  const incHotel = incoming.hotelAndAmenities || {};
+  const incPay = incoming.paymentPlan || {};
+  const incDev = incoming.constructionProgress || {};
+  const incFaqs = incoming.faqs || {};
+  const incInq = incoming.inquirySection || {};
+
+  return {
+    hero: {
+      eyebrow: cleanVerifyText(incHero.eyebrow || initialFaisalJewelCMS.hero.eyebrow),
+      title: cleanVerifyText(incHero.title || initialFaisalJewelCMS.hero.title),
+      subtitle: cleanVerifyText(incHero.subtitle || initialFaisalJewelCMS.hero.subtitle),
+      bgImage: cleanVerifyText(incHero.bgImage || initialFaisalJewelCMS.hero.bgImage),
+      badge1: cleanVerifyText(incHero.badge1 || initialFaisalJewelCMS.hero.badge1),
+      badge2: cleanVerifyText(incHero.badge2 || initialFaisalJewelCMS.hero.badge2),
+      badge3: cleanVerifyText(incHero.badge3 || initialFaisalJewelCMS.hero.badge3)
+    },
+    overview: {
+      h1: cleanVerifyText(incOver.h1 || initialFaisalJewelCMS.overview.h1),
+      leadParagraph: cleanVerifyText(incOver.leadParagraph || initialFaisalJewelCMS.overview.leadParagraph),
+      expandedDetails: cleanVerifyText(incOver.expandedDetails || initialFaisalJewelCMS.overview.expandedDetails),
+      photoUrl: cleanVerifyText(incOver.photoUrl || initialFaisalJewelCMS.overview.photoUrl),
+      photoAlt: cleanVerifyText(incOver.photoAlt || initialFaisalJewelCMS.overview.photoAlt),
+      photoTag: cleanVerifyText(incOver.photoTag || initialFaisalJewelCMS.overview.photoTag),
+      photoCaption: cleanVerifyText(incOver.photoCaption || initialFaisalJewelCMS.overview.photoCaption),
+      specs: {
+        totalFloors: cleanVerifyText(incOver.specs?.totalFloors || initialFaisalJewelCMS.overview.specs.totalFloors),
+        buildingHeight: cleanVerifyText(incOver.specs?.buildingHeight || initialFaisalJewelCMS.overview.specs.buildingHeight),
+        projectType: cleanVerifyText(incOver.specs?.projectType || initialFaisalJewelCMS.overview.specs.projectType),
+        location: cleanVerifyText(incOver.specs?.location || initialFaisalJewelCMS.overview.specs.location),
+        developer: cleanVerifyText(incOver.specs?.developer || initialFaisalJewelCMS.overview.specs.developer),
+        completionTarget: cleanVerifyText(incOver.specs?.completionTarget || initialFaisalJewelCMS.overview.specs.completionTarget)
+      }
+    },
+    floorDistribution: {
+      heading: cleanVerifyText(incFloors.heading || initialFaisalJewelCMS.floorDistribution.heading),
+      leadParagraph: cleanVerifyText(incFloors.leadParagraph || initialFaisalJewelCMS.floorDistribution.leadParagraph),
+      floors: Array.isArray(incFloors.floors) && incFloors.floors.length > 0
+        ? incFloors.floors.map((f: any) => ({
+            levelRange: cleanVerifyText(f.levelRange || ''),
+            category: cleanVerifyText(f.category || ''),
+            title: cleanVerifyText(f.title || ''),
+            description: cleanVerifyText(f.description || ''),
+            highlights: Array.isArray(f.highlights) ? f.highlights.map((h: string) => cleanVerifyText(h)) : [],
+            iconType: cleanVerifyText(f.iconType || 'Building2')
+          }))
+        : initialFaisalJewelCMS.floorDistribution.floors
+    },
+    unitsInventory: {
+      heading: cleanVerifyText(incUnits.heading || initialFaisalJewelCMS.unitsInventory.heading),
+      leadParagraph: cleanVerifyText(incUnits.leadParagraph || initialFaisalJewelCMS.unitsInventory.leadParagraph),
+      units: Array.isArray(incUnits.units) && incUnits.units.length > 0
+        ? incUnits.units.map((u: any, idx: number) => ({
+            id: cleanVerifyText(u.id || `fj-unit-${idx}`),
+            unitNumber: cleanVerifyText(u.unitNumber || `FJ-${idx + 101}`),
+            category: u.category || '1-Bed Apartment',
+            floorLevel: cleanVerifyText(u.floorLevel || ''),
+            dimensions: cleanVerifyText(u.dimensions || ''),
+            areaSqFt: typeof u.areaSqFt === 'number' ? u.areaSqFt : (parseInt(u.areaSqFt) || 500),
+            priceFormatted: cleanVerifyText(u.priceFormatted || ''),
+            downPaymentFormatted: cleanVerifyText(u.downPaymentFormatted || ''),
+            quarterlyInstallmentFormatted: cleanVerifyText(u.quarterlyInstallmentFormatted || ''),
+            status: u.status || 'Available',
+            facing: cleanVerifyText(u.facing || ''),
+            features: Array.isArray(u.features) ? u.features.map((f: string) => cleanVerifyText(f)) : [],
+            description: cleanVerifyText(u.description || ''),
+            image: cleanVerifyText(u.image || '/images/faisal-jewel-building.webp')
+          }))
+        : initialFaisalJewelCMS.unitsInventory.units
+    },
+    hotelAndAmenities: {
+      heading: cleanVerifyText(incHotel.heading || initialFaisalJewelCMS.hotelAndAmenities.heading),
+      leadParagraph: cleanVerifyText(incHotel.leadParagraph || initialFaisalJewelCMS.hotelAndAmenities.leadParagraph),
+      items: Array.isArray(incHotel.items) && incHotel.items.length > 0
+        ? incHotel.items.map((it: any) => ({
+            title: cleanVerifyText(it.title || ''),
+            desc: cleanVerifyText(it.desc || ''),
+            category: cleanVerifyText(it.category || 'Wellness'),
+            iconType: cleanVerifyText(it.iconType || 'Sparkles')
+          }))
+        : initialFaisalJewelCMS.hotelAndAmenities.items
+    },
+    paymentPlan: {
+      heading: cleanVerifyText(incPay.heading || initialFaisalJewelCMS.paymentPlan.heading),
+      leadParagraph: cleanVerifyText(incPay.leadParagraph || initialFaisalJewelCMS.paymentPlan.leadParagraph),
+      installmentsDuration: cleanVerifyText(incPay.installmentsDuration || initialFaisalJewelCMS.paymentPlan.installmentsDuration),
+      downPaymentPercentage: cleanVerifyText(incPay.downPaymentPercentage || initialFaisalJewelCMS.paymentPlan.downPaymentPercentage),
+      quarterlyCount: cleanVerifyText(incPay.quarterlyCount || initialFaisalJewelCMS.paymentPlan.quarterlyCount),
+      discountNote: cleanVerifyText(incPay.discountNote || initialFaisalJewelCMS.paymentPlan.discountNote),
+      samplePlans: Array.isArray(incPay.samplePlans) && incPay.samplePlans.length > 0
+        ? incPay.samplePlans.map((sp: any) => ({
+            category: cleanVerifyText(sp.category || ''),
+            sizeSqFt: cleanVerifyText(sp.sizeSqFt || ''),
+            totalPrice: cleanVerifyText(sp.totalPrice || ''),
+            downPayment: cleanVerifyText(sp.downPayment || ''),
+            quarterlyInstallment: cleanVerifyText(sp.quarterlyInstallment || ''),
+            onPossession: cleanVerifyText(sp.onPossession || '')
+          }))
+        : initialFaisalJewelCMS.paymentPlan.samplePlans
+    },
+    constructionProgress: {
+      heading: cleanVerifyText(incDev.heading || initialFaisalJewelCMS.constructionProgress.heading),
+      leadParagraph: cleanVerifyText(incDev.leadParagraph || initialFaisalJewelCMS.constructionProgress.leadParagraph),
+      stat1Value: cleanVerifyText(incDev.stat1Value || initialFaisalJewelCMS.constructionProgress.stat1Value),
+      stat1Label: cleanVerifyText(incDev.stat1Label || initialFaisalJewelCMS.constructionProgress.stat1Label),
+      stat2Value: cleanVerifyText(incDev.stat2Value || initialFaisalJewelCMS.constructionProgress.stat2Value),
+      stat2Label: cleanVerifyText(incDev.stat2Label || initialFaisalJewelCMS.constructionProgress.stat2Label),
+      stat3Value: cleanVerifyText(incDev.stat3Value || initialFaisalJewelCMS.constructionProgress.stat3Value),
+      stat3Label: cleanVerifyText(incDev.stat3Label || initialFaisalJewelCMS.constructionProgress.stat3Label),
+      dronePhotoUrl: cleanVerifyText(incDev.dronePhotoUrl || initialFaisalJewelCMS.constructionProgress.dronePhotoUrl),
+      droneHeading: cleanVerifyText(incDev.droneHeading || initialFaisalJewelCMS.constructionProgress.droneHeading),
+      droneDesc: cleanVerifyText(incDev.droneDesc || initialFaisalJewelCMS.constructionProgress.droneDesc)
+    },
+    faqs: {
+      heading: cleanVerifyText(incFaqs.heading || initialFaisalJewelCMS.faqs.heading),
+      items: Array.isArray(incFaqs.items) && incFaqs.items.length > 0
+        ? incFaqs.items.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialFaisalJewelCMS.faqs.items
+    },
+    googleMapEmbedUrl: cleanVerifyText(incoming.googleMapEmbedUrl || initialFaisalJewelCMS.googleMapEmbedUrl),
+    inquirySection: {
+      tag: cleanVerifyText(incInq.tag || initialFaisalJewelCMS.inquirySection.tag),
+      heading: cleanVerifyText(incInq.heading || initialFaisalJewelCMS.inquirySection.heading),
+      leadParagraph: cleanVerifyText(incInq.leadParagraph || initialFaisalJewelCMS.inquirySection.leadParagraph),
+      whatsappNumber: cleanVerifyText(incInq.whatsappNumber || initialFaisalJewelCMS.inquirySection.whatsappNumber),
+      phoneNumber: cleanVerifyText(incInq.phoneNumber || initialFaisalJewelCMS.inquirySection.phoneNumber),
+      buttonText: cleanVerifyText(incInq.buttonText || initialFaisalJewelCMS.inquirySection.buttonText)
+    }
+  };
+}
+
+export async function fetchFaisalJewelCMS(): Promise<FaisalJewelCMSData> {
+  let localData: FaisalJewelCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_jewel_cms');
+      if (localStr) localData = mergeFaisalJewelCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<FaisalJewelCMSData>('faisal_jewel_cms');
+  if (remote) {
+    const merged = localData ? mergeFaisalJewelCMS({ ...remote, ...localData }) : mergeFaisalJewelCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_jewel_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialFaisalJewelCMS;
+}
+
+export async function saveFaisalJewelCMS(cmsData: FaisalJewelCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_jewel_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_jewel_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_jewel_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =========================================================
+// FAISAL HILLS MASTER PLAN CMS SYSTEM
+// =========================================================
+
+export interface MasterPlanCuttingRow {
+  category: string;
+  dimensions: string;
+  area: string;
+  availability: string;
+}
+
+export interface MasterPlanBoulevardRow {
+  name: string;
+  width: string;
+  purpose: string;
+  connectivity: string;
+}
+
+export interface MasterPlanCMSData {
+  header: {
+    tag: string;
+    h1: string;
+    leadParagraph: string;
+    pdfDownloadUrl: string;
+    downloadButtonText: string;
+  };
+  viewer: {
+    mapImageUrl: string;
+    highResImageUrl: string;
+    viewerHeightDesktop: string;
+    caption: string;
+  };
+  sectorDimensionsTable: {
+    heading: string;
+    subline: string;
+    paymentPlanLinkText: string;
+    paymentPlanLinkUrl: string;
+    rows: MasterPlanCuttingRow[];
+    footnote: string;
+  };
+  boulevardsSection: {
+    heading: string;
+    leadParagraph: string;
+    rows: MasterPlanBoulevardRow[];
+  };
+  landmarksAndAvenues: {
+    heading: string;
+    leadParagraph: string;
+    landmarks: {
+      name: string;
+      block: string;
+      description: string;
+      iconType: string;
+    }[];
+  };
+  advisoryFootnote: {
+    verificationTag: string;
+    verificationText: string;
+    nocStatusText: string;
+    disclaimerText: string;
+  };
+  faqs: {
+    heading: string;
+    items: { q: string; a: string }[];
+  };
+}
+
+export const initialMasterPlanCMS: MasterPlanCMSData = {
+  header: {
+    tag: "Society Navigation & Master Layout",
+    h1: "Faisal Hills Master Plan Map",
+    leadParagraph: "Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.",
+    pdfDownloadUrl: "/images/faisal-hills-executive-map.webp",
+    downloadButtonText: "Download High-Res PDF Map"
+  },
+  viewer: {
+    mapImageUrl: "/images/faisal-hills-executive-map.webp",
+    highResImageUrl: "/images/faisal-hills-executive-map.webp",
+    viewerHeightDesktop: "750px",
+    caption: "Official RDA-Sanctioned Town Planning Master Plan of Faisal Hills Islamabad"
+  },
+  sectorDimensionsTable: {
+    heading: "Master Plan Sector Layout & Standard Plot Cuttings",
+    subline: "Official ground cuttings and area conversions across all society blocks:",
+    paymentPlanLinkText: "Payment Plan Matrix",
+    paymentPlanLinkUrl: "/faisal-hills-payment-plan",
+    rows: [
+      {
+        category: "5.55 Marla (5 Marla)",
+        dimensions: "25 × 50 ft",
+        area: "138.89 sq. yd (1,250 sq. ft)",
+        availability: "Prime Block developer instalments & mature sectors resale"
+      },
+      {
+        category: "8 Marla",
+        dimensions: "30 × 60 ft",
+        area: "200 sq. yd (1,800 sq. ft)",
+        availability: "10 quarterly instalments available in Prime Block"
+      },
+      {
+        category: "10.89 Marla (10 Marla)",
+        dimensions: "35 × 70 ft",
+        area: "272.22 sq. yd (2,450 sq. ft)",
+        availability: "Family plot standard across Executive, A, B, C & D blocks"
+      },
+      {
+        category: "14.22 Marla (14 Marla)",
+        dimensions: "40 × 80 ft",
+        area: "355.55 sq. yd (3,200 sq. ft)",
+        availability: "Available in Blocks A, B & D (resale settlement)"
+      },
+      {
+        category: "1 Kanal",
+        dimensions: "50 × 90 ft",
+        area: "500 sq. yd (4,500 sq. ft)",
+        availability: "Prime mountain view avenues & 10 quarterly instalments"
+      },
+      {
+        category: "2 Kanal",
+        dimensions: "75 × 120 ft",
+        area: "1,000 sq. yd (9,000 sq. ft)",
+        availability: "Estate tier residential cuttings in Block A & Prime Block"
+      }
+    ],
+    footnote: "All plot dimensions and areas are measured in strict accordance with the Zedem International master plan (1 Marla = 225 sq. ft)."
+  },
+  boulevardsSection: {
+    heading: "Grand Boulevards & Internal Road Network",
+    leadParagraph: "The traffic engineering grid is planned to eliminate bottlenecks and connect every sector directly to the GT Road and M-1 Motorway:",
+    rows: [
+      {
+        name: "Main Grand Boulevard",
+        width: "225 Feet",
+        purpose: "Primary Arterial Corridor",
+        connectivity: "Connects Main GT Road Arc Gate with Executive, A, B and Prime Blocks"
+      },
+      {
+        name: "Central Sector Expressways",
+        width: "150 Feet",
+        purpose: "Inter-Sector Transit",
+        connectivity: "Direct transit route between Block C, Hills Walk and M-1 Interchange"
+      },
+      {
+        name: "Commercial Promenade Avenues",
+        width: "100 Feet",
+        purpose: "Commercial High-Streets",
+        connectivity: "Civic center commercial avenues and sports complex access"
+      },
+      {
+        name: "Residential Sector Streets",
+        width: "40 – 60 Feet",
+        purpose: "Local Neighborhood Traffic",
+        connectivity: "Paved wide internal streets ensuring comfortable two-way vehicular flow"
+      }
+    ]
+  },
+  landmarksAndAvenues: {
+    heading: "Prominent Society Landmarks on the Master Plan",
+    leadParagraph: "Key iconic destinations and civic amenities demarcated on the master map:",
+    landmarks: [
+      { name: "Main GT Road Monument Arc Gate", block: "Executive Block", description: "Grand 225ft entrance monument on National Highway N-5.", iconType: "Landmark" },
+      { name: "Faisal Jewel 27-Storey Tower", block: "Executive Block", description: "Iconic mixed-use skyscraper, hotel and shopping mall.", iconType: "Building2" },
+      { name: "Roots International School Campus", block: "Executive Block", description: "Operational premier education campus.", iconType: "GraduationCap" },
+      { name: "Central Sports Arena & Complex", block: "Block B", description: "Cricket ground, tennis courts, and sports academy.", iconType: "Activity" },
+      { name: "Hills Walk Commercial Promenade", block: "Block C", description: "European-style retail and dining boulevard.", iconType: "ShoppingBag" },
+      { name: "Glow Park & Botanical Forest", block: "Central Scheme", description: "Family recreation and illuminated theme park.", iconType: "Trees" }
+    ]
+  },
+  advisoryFootnote: {
+    verificationTag: "Official Master Plan Advisory",
+    verificationText: "Layout plans and road demarcation verified on-site by Faisal Hills Estate Verification Desk.",
+    nocStatusText: "100% Sanctioned by Rawalpindi Development Authority (RDA).",
+    disclaimerText: "Plot cuttings, road widths, and amenity demarcations reflect the latest approved master planning revisions from Zedem International."
+  },
+  faqs: {
+    heading: "Frequently Asked Questions — Master Plan",
+    items: [
+      { q: "Where can I download the high-resolution Faisal Hills master plan?", a: "You can download the full high-resolution PDF master plan directly from the download button above or visit the sales office." },
+      { q: "What is the width of the main boulevard in Faisal Hills?", a: "The main entrance boulevard is 225 feet wide, and internal sector expressways are 150 and 100 feet wide." },
+      { q: "How many blocks are in the Faisal Hills master plan?", a: "The scheme comprises Executive Block, Block A, Block B, Block B-1 Extension, Block C, Block D, and Prime Block." },
+      { q: "Where is the proposed M-1 Motorway interchange located?", a: "The dedicated M-1 Motorway Interchange route connects directly on the western boundary of Block C." }
+    ]
+  }
+};
+
+export function mergeMasterPlanCMS(incoming: any): MasterPlanCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialMasterPlanCMS;
+
+  const incHead = incoming.header || {};
+  const incView = incoming.viewer || {};
+  const incTable = incoming.sectorDimensionsTable || {};
+  const incBoul = incoming.boulevardsSection || {};
+  const incLand = incoming.landmarksAndAvenues || {};
+  const incAdv = incoming.advisoryFootnote || {};
+  const incFaqs = incoming.faqs || {};
+
+  return {
+    header: {
+      tag: cleanVerifyText(incHead.tag || initialMasterPlanCMS.header.tag),
+      h1: cleanVerifyText(incHead.h1 || initialMasterPlanCMS.header.h1),
+      leadParagraph: cleanVerifyText(incHead.leadParagraph || initialMasterPlanCMS.header.leadParagraph),
+      pdfDownloadUrl: cleanVerifyText(incHead.pdfDownloadUrl || initialMasterPlanCMS.header.pdfDownloadUrl),
+      downloadButtonText: cleanVerifyText(incHead.downloadButtonText || initialMasterPlanCMS.header.downloadButtonText)
+    },
+    viewer: {
+      mapImageUrl: cleanVerifyText(incView.mapImageUrl || initialMasterPlanCMS.viewer.mapImageUrl),
+      highResImageUrl: cleanVerifyText(incView.highResImageUrl || initialMasterPlanCMS.viewer.highResImageUrl),
+      viewerHeightDesktop: cleanVerifyText(incView.viewerHeightDesktop || initialMasterPlanCMS.viewer.viewerHeightDesktop),
+      caption: cleanVerifyText(incView.caption || initialMasterPlanCMS.viewer.caption)
+    },
+    sectorDimensionsTable: {
+      heading: cleanVerifyText(incTable.heading || initialMasterPlanCMS.sectorDimensionsTable.heading),
+      subline: cleanVerifyText(incTable.subline || initialMasterPlanCMS.sectorDimensionsTable.subline),
+      paymentPlanLinkText: cleanVerifyText(incTable.paymentPlanLinkText || initialMasterPlanCMS.sectorDimensionsTable.paymentPlanLinkText),
+      paymentPlanLinkUrl: cleanVerifyText(incTable.paymentPlanLinkUrl || initialMasterPlanCMS.sectorDimensionsTable.paymentPlanLinkUrl),
+      rows: Array.isArray(incTable.rows) && incTable.rows.length > 0
+        ? incTable.rows.map((r: any) => ({
+            category: cleanVerifyText(r.category || ''),
+            dimensions: cleanVerifyText(r.dimensions || ''),
+            area: cleanVerifyText(r.area || ''),
+            availability: cleanVerifyText(r.availability || '')
+          }))
+        : initialMasterPlanCMS.sectorDimensionsTable.rows,
+      footnote: cleanVerifyText(incTable.footnote || initialMasterPlanCMS.sectorDimensionsTable.footnote)
+    },
+    boulevardsSection: {
+      heading: cleanVerifyText(incBoul.heading || initialMasterPlanCMS.boulevardsSection.heading),
+      leadParagraph: cleanVerifyText(incBoul.leadParagraph || initialMasterPlanCMS.boulevardsSection.leadParagraph),
+      rows: Array.isArray(incBoul.rows) && incBoul.rows.length > 0
+        ? incBoul.rows.map((b: any) => ({
+            name: cleanVerifyText(b.name || ''),
+            width: cleanVerifyText(b.width || ''),
+            purpose: cleanVerifyText(b.purpose || ''),
+            connectivity: cleanVerifyText(b.connectivity || '')
+          }))
+        : initialMasterPlanCMS.boulevardsSection.rows
+    },
+    landmarksAndAvenues: {
+      heading: cleanVerifyText(incLand.heading || initialMasterPlanCMS.landmarksAndAvenues.heading),
+      leadParagraph: cleanVerifyText(incLand.leadParagraph || initialMasterPlanCMS.landmarksAndAvenues.leadParagraph),
+      landmarks: Array.isArray(incLand.landmarks) && incLand.landmarks.length > 0
+        ? incLand.landmarks.map((l: any) => ({
+            name: cleanVerifyText(l.name || ''),
+            block: cleanVerifyText(l.block || ''),
+            description: cleanVerifyText(l.description || ''),
+            iconType: cleanVerifyText(l.iconType || 'Landmark')
+          }))
+        : initialMasterPlanCMS.landmarksAndAvenues.landmarks
+    },
+    advisoryFootnote: {
+      verificationTag: cleanVerifyText(incAdv.verificationTag || initialMasterPlanCMS.advisoryFootnote.verificationTag),
+      verificationText: cleanVerifyText(incAdv.verificationText || initialMasterPlanCMS.advisoryFootnote.verificationText),
+      nocStatusText: cleanVerifyText(incAdv.nocStatusText || initialMasterPlanCMS.advisoryFootnote.nocStatusText),
+      disclaimerText: cleanVerifyText(incAdv.disclaimerText || initialMasterPlanCMS.advisoryFootnote.disclaimerText)
+    },
+    faqs: {
+      heading: cleanVerifyText(incFaqs.heading || initialMasterPlanCMS.faqs.heading),
+      items: Array.isArray(incFaqs.items) && incFaqs.items.length > 0
+        ? incFaqs.items.map((f: any) => ({
+            q: cleanVerifyText(f.q || f.question || ''),
+            a: cleanVerifyText(f.a || f.answer || '')
+          }))
+        : initialMasterPlanCMS.faqs.items
+    }
+  };
+}
+
+export async function fetchMasterPlanCMS(): Promise<MasterPlanCMSData> {
+  let localData: MasterPlanCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_master_plan_cms');
+      if (localStr) localData = mergeMasterPlanCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<MasterPlanCMSData>('faisal_master_plan_cms');
+  if (remote) {
+    const merged = localData ? mergeMasterPlanCMS({ ...remote, ...localData }) : mergeMasterPlanCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_master_plan_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialMasterPlanCMS;
+}
+
+export async function saveMasterPlanCMS(cmsData: MasterPlanCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_master_plan_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_master_plan_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_master_plan_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+      },
+      body: JSON.stringify(cmsData)
+    });
+    return !!res && res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================================
+// FAISAL HILLS NOC & RDA APPROVAL CMS TYPES & HELPERS
+// ============================================================================
+
+export interface NocBlockStatusItem {
+  id?: string;
+  blockName: string;
+  status: string;
+  description: string;
+  approved: boolean;
+}
+
+export interface NocStatusCMSData {
+  hero: {
+    tag: string;
+    h1: string;
+    description: string;
+    bgImage: string;
+  };
+  summaryCard: {
+    tag: string;
+    heading: string;
+    leadText: string;
+    lopNumber: string;
+    lopDescription: string;
+    detailedText: string;
+  };
+  blocksNocList: NocBlockStatusItem[];
+  buyerAdvisory: {
+    title: string;
+    note: string;
+  };
+  verificationForm: {
+    tag: string;
+    heading: string;
+    description: string;
+    whatsappNumber: string;
+    hotline: string;
+  };
+  faqs: Array<{ q: string; a: string }>;
+  meta: {
+    title: string;
+    description: string;
+  };
+}
+
+export const initialNocStatusCMS: NocStatusCMSData = {
+  hero: {
+    tag: "RDA NOC Approved Society",
+    h1: "Faisal Hills NOC Status",
+    description: "Legally secure, RDA approved, and clear title layouts. Discover the official regulatory status, approved LOP details, and verify your plot authorization.",
+    bgImage: "/images/faisal-hills-site-header.webp"
+  },
+  summaryCard: {
+    tag: "Official Authorization",
+    heading: "RDA NOC & LOP Approval",
+    leadText: "Faisal Hills is a fully approved housing society under the regulatory jurisdiction of the Rawalpindi Development Authority (RDA). The project holds a valid No Objection Certificate (NOC) and layout plan (LOP) approvals covering its master plan.",
+    lopNumber: "RDA/MP&TE/F-PH-L-I/240",
+    lopDescription: "The approved layout plan spans thousands of Kanals, ensuring that the road width, green belts, school zones, commercial reserves, and residential areas are benchmarked against official standards.",
+    detailedText: "Having a clear RDA NOC status is a critical legal guarantee for plot buyers. It ensures that ownership transfers, utility connections (gas, electricity, water reservoirs), and home construction permits can be processed smoothly without regulatory delays."
+  },
+  blocksNocList: [
+    {
+      id: "noc-exec",
+      blockName: "Executive Block",
+      status: "100% Approved",
+      description: "100% RDA approved LOP, possession ready commercial & residential zones.",
+      approved: true
+    },
+    {
+      id: "noc-ab",
+      blockName: "Block A & B",
+      status: "Fully Approved & Cleared",
+      description: "Fully developed and cleared. Hundreds of houses completed and occupied.",
+      approved: true
+    },
+    {
+      id: "noc-cd",
+      blockName: "Block C & D",
+      status: "Approved Boundaries",
+      description: "Approved boundaries with active development, gas pipe networks and utilities.",
+      approved: true
+    },
+    {
+      id: "noc-prime",
+      blockName: "Prime Block & Golf Block",
+      status: "Integrated Master Plan",
+      description: "Gated layouts and eco-green areas fully integrated into approved master plans.",
+      approved: true
+    }
+  ],
+  buyerAdvisory: {
+    title: "Attention Buyers & Investors",
+    note: "Always verify that the specific plot number you are buying corresponds exactly to the approved layout map coordinates to prevent overlapping issues or land adjustments during demarcation."
+  },
+  verificationForm: {
+    tag: "Plot Verification",
+    heading: "Verify Your Plot Status",
+    description: "Enter your plot number and block name to check its legal verification status, demarcation, and development timeline.",
+    whatsappNumber: "923331113177",
+    hotline: "+92 333 1113177"
+  },
+  faqs: [
+    {
+      q: "Is Faisal Hills legally approved by RDA?",
+      a: "Yes, Faisal Hills is fully approved by the Rawalpindi Development Authority (RDA) under approved layout plan reference RDA/MP&TE/F-PH-L-I/240."
+    },
+    {
+      q: "Can I get immediate registry and possession in approved blocks?",
+      a: "Yes, in developed sectors such as Executive Block and Block A, plots are possession-ready and registries/transfers are handled directly through Zedem International's official transfer office."
+    },
+    {
+      q: "Are utilities (gas, electricity, water) sanctioned under the NOC?",
+      a: "Yes, electricity infrastructure, dedicated underground water supply lines, and Sui Northern Gas Pipelines Limited (SNGPL) pipeline networks are part of the sanctioned societal blueprint."
+    }
+  ],
+  meta: {
+    title: "Faisal Hills NOC Status & RDA Approval Details | Official Portal",
+    description: "Verify Faisal Hills RDA NOC status, official layout plan approval number RDA/MP&TE/F-PH-L-I/240, and check plot allotment validation."
+  }
+};
+
+export function mergeNocStatusCMS(incoming: any): NocStatusCMSData {
+  if (!incoming || typeof incoming !== 'object') return initialNocStatusCMS;
+  return {
+    hero: {
+      tag: incoming.hero?.tag || initialNocStatusCMS.hero.tag,
+      h1: incoming.hero?.h1 || initialNocStatusCMS.hero.h1,
+      description: incoming.hero?.description || initialNocStatusCMS.hero.description,
+      bgImage: incoming.hero?.bgImage || initialNocStatusCMS.hero.bgImage
+    },
+    summaryCard: {
+      tag: incoming.summaryCard?.tag || initialNocStatusCMS.summaryCard.tag,
+      heading: incoming.summaryCard?.heading || initialNocStatusCMS.summaryCard.heading,
+      leadText: incoming.summaryCard?.leadText || initialNocStatusCMS.summaryCard.leadText,
+      lopNumber: incoming.summaryCard?.lopNumber || initialNocStatusCMS.summaryCard.lopNumber,
+      lopDescription: incoming.summaryCard?.lopDescription || initialNocStatusCMS.summaryCard.lopDescription,
+      detailedText: incoming.summaryCard?.detailedText || initialNocStatusCMS.summaryCard.detailedText
+    },
+    blocksNocList: Array.isArray(incoming.blocksNocList) && incoming.blocksNocList.length > 0
+      ? incoming.blocksNocList.map((item: any) => ({
+          id: item.id || `noc-${Math.random().toString(36).substring(2, 7)}`,
+          blockName: item.blockName || '',
+          status: item.status || 'Approved',
+          description: item.description || '',
+          approved: item.approved !== false
+        }))
+      : initialNocStatusCMS.blocksNocList,
+    buyerAdvisory: {
+      title: incoming.buyerAdvisory?.title || initialNocStatusCMS.buyerAdvisory.title,
+      note: incoming.buyerAdvisory?.note || initialNocStatusCMS.buyerAdvisory.note
+    },
+    verificationForm: {
+      tag: incoming.verificationForm?.tag || initialNocStatusCMS.verificationForm.tag,
+      heading: incoming.verificationForm?.heading || initialNocStatusCMS.verificationForm.heading,
+      description: incoming.verificationForm?.description || initialNocStatusCMS.verificationForm.description,
+      whatsappNumber: incoming.verificationForm?.whatsappNumber || initialNocStatusCMS.verificationForm.whatsappNumber,
+      hotline: incoming.verificationForm?.hotline || initialNocStatusCMS.verificationForm.hotline
+    },
+    faqs: Array.isArray(incoming.faqs) && incoming.faqs.length > 0
+      ? incoming.faqs.map((f: any) => ({
+          q: f.q || f.question || '',
+          a: f.a || f.answer || ''
+        }))
+      : initialNocStatusCMS.faqs,
+    meta: {
+      title: incoming.meta?.title || initialNocStatusCMS.meta.title,
+      description: incoming.meta?.description || initialNocStatusCMS.meta.description
+    }
+  };
+}
+
+export async function fetchNocStatusCMS(): Promise<NocStatusCMSData> {
+  let localData: NocStatusCMSData | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const localStr = localStorage.getItem('faisal_noc_status_cms');
+      if (localStr) localData = mergeNocStatusCMS(JSON.parse(localStr));
+    } catch {}
+  }
+
+  const remote = await fetchSettingByKey<NocStatusCMSData>('faisal_noc_status_cms');
+  if (remote) {
+    const merged = localData ? mergeNocStatusCMS({ ...remote, ...localData }) : mergeNocStatusCMS(remote);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_noc_status_cms', JSON.stringify(merged));
+      } catch {}
+    }
+    return merged;
+  }
+
+  if (localData) return localData;
+  return initialNocStatusCMS;
+}
+
+export async function saveNocStatusCMS(cmsData: NocStatusCMSData, token?: string): Promise<boolean> {
+  const activeToken = token || (typeof window !== 'undefined' ? (sessionStorage.getItem('faisal_admin_token') || localStorage.getItem('faisal_admin_token') || '') : '');
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('faisal_noc_status_cms', JSON.stringify(cmsData));
+      window.dispatchEvent(new Event('faisal_noc_status_cms_updated'));
+      window.dispatchEvent(new Event('storage'));
+    } catch {}
+  }
+
+  try {
+    const res = await safeFetch(`${getApiUrl()}/settings/faisal_noc_status_cms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
       },
       body: JSON.stringify(cmsData)
     });

@@ -15,9 +15,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { CommercialPlotsExplorer } from '@/components/commercial/CommercialPlotsExplorer';
 import { CommercialAboutSection } from '@/components/commercial/CommercialAboutSection';
 
-import { fetchSeo, fetchSettings } from '@/data/faisalHillsData';
+import { fetchSeo, fetchSettings, formatWhatsAppUrl } from '@/data/faisalHillsData';
 import { JsonLd, generateBreadcrumbSchema, generateFaqSchema } from '@/components/seo/JsonLd';
-
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://faisalhillsislamabadfh.com';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -215,6 +214,13 @@ export default async function FaisalHillsCommercialPage() {
 
   const settings: Record<string, any> = await fetchSettings().catch(() => ({}));
   const heroBg: string = settings?.commercial_hero_image || settings?.commercial_page_hero || "/images/commercial/flagship-store.webp";
+
+  // This page is an async server component, so it reads the same `social_links`
+  // setting the client hook uses rather than calling a hook. Hooks are not
+  // available here.
+  const socialLinks = (settings?.social_links || {}) as Record<string, any>;
+  const contactInfo = (settings?.contact_info || {}) as Record<string, any>;
+  const whatsappNumber: string = socialLinks.whatsapp || contactInfo.salesHotline || '';
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -697,7 +703,7 @@ export default async function FaisalHillsCommercialPage() {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 relative z-10">
               <a
-                href="https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20want%20to%20consult%20with%20a%20specialist%20about%20commercial%20plots."
+                href={formatWhatsAppUrl(whatsappNumber, "Hi Faisal Hills Commercial Desk, I want to consult with a specialist about commercial plots.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3.5 bg-white text-[#7b002c] hover:bg-slate-100 font-bold text-xs uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"

@@ -1,15 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, FileText, BadgeCheck, AlertCircle } from 'lucide-react';
-import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
+import React, { useState, useEffect } from 'react';
+import { ShieldCheck, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, FileText, BadgeCheck, AlertCircle, HelpCircle } from 'lucide-react';
+import {
+  submitLead,
+  formatLeadDateTime,
+  NocStatusCMSData,
+  initialNocStatusCMS,
+  fetchNocStatusCMS
+} from '@/data/faisalHillsData';
+import FaqAccordion from '@/components/ui/FaqAccordion';
 
 export default function FHNocStatusPage() {
+  const [cms, setCms] = useState<NocStatusCMSData>(initialNocStatusCMS);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [block, setBlock] = useState('Executive Block');
   const [plotNo, setPlotNo] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    fetchNocStatusCMS().then((data) => {
+      if (data) setCms(data);
+    });
+
+    const handleUpdate = () => {
+      fetchNocStatusCMS().then((data) => {
+        if (data) setCms(data);
+      });
+    };
+
+    window.addEventListener('faisal_noc_status_cms_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('faisal_noc_status_cms_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,11 +71,12 @@ export default function FHNocStatusPage() {
       setSubmitted(true);
 
       // 3. Redirect to WhatsApp
+      const waNumber = cms.verificationForm.whatsappNumber || '923331113177';
       const waText = encodeURIComponent(
         `Hello Faisal Hills Team!\n\nI want to verify the NOC and allotment status for my plot.\nName: ${name}\nPhone: ${phone}\nBlock: ${block}\nPlot Number: ${plotNo}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+        window.open(`https://wa.me/${waNumber}?text=${waText}`, '_blank');
         setName('');
         setPhone('');
         setPlotNo('');
@@ -68,7 +96,7 @@ export default function FHNocStatusPage() {
       <section className="relative text-white overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-20 border-b border-slate-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/faisal-hills-site-header.webp')` }}
+          style={{ backgroundImage: `url('${cms.hero.bgImage || '/images/faisal-hills-site-header.webp'}')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-slate-950/80" />
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#7b002c]/20 rounded-full blur-[140px] pointer-events-none" />
@@ -77,16 +105,16 @@ export default function FHNocStatusPage() {
           <div className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span className="text-xs text-white tracking-widest font-bold font-mono uppercase">
-              RDA NOC Approved Society
+              {cms.hero.tag || "RDA NOC Approved Society"}
             </span>
           </div>
 
           <div className="max-w-4xl space-y-3">
             <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white leading-tight">
-              Faisal Hills NOC Status
+              {cms.hero.h1 || "Faisal Hills NOC Status"}
             </h1>
             <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl font-sans">
-              Legally secure, RDA approved, and clear title layouts. Discover the official regulatory status, approved LOP details, and verify your plot authorization.
+              {cms.hero.description}
             </p>
           </div>
         </div>
@@ -105,84 +133,83 @@ export default function FHNocStatusPage() {
                 <BadgeCheck className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[10px] text-[#7b002c] font-bold uppercase tracking-widest block">Official Authorization</span>
-                <h2 className="font-serif text-2xl font-bold text-slate-900">RDA NOC & LOP Approval</h2>
+                <span className="text-[10px] text-[#7b002c] font-bold uppercase tracking-widest block">
+                  {cms.summaryCard.tag}
+                </span>
+                <h2 className="font-serif text-2xl font-bold text-slate-900">
+                  {cms.summaryCard.heading}
+                </h2>
               </div>
             </div>
 
             <div className="space-y-4 text-slate-700 text-sm leading-relaxed font-sans">
-              <p>
-                Faisal Hills is a fully approved housing society under the regulatory jurisdiction of the <strong>Rawalpindi Development Authority (RDA)</strong>. The project holds a valid No Objection Certificate (NOC) and layout plan (LOP) approvals covering its master plan.
-              </p>
+              <p>{cms.summaryCard.leadText}</p>
               <div className="bg-[#fff8f6] border-l-4 border-[#7b002c] p-5 rounded-r-xl space-y-2">
                 <span className="text-xs font-bold text-[#7b002c] uppercase tracking-wider block">Official Layout Plan Number</span>
                 <code className="text-sm font-mono font-bold text-slate-900 bg-white border border-slate-200 px-3 py-1 rounded inline-block">
-                  RDA/MP&TE/F-PH-L-I/240
+                  {cms.summaryCard.lopNumber}
                 </code>
                 <p className="text-[11px] text-slate-500 leading-normal pt-1">
-                  The approved layout plan spans thousands of Kanals, ensuring that the road width, green belts, school zones, commercial reserves, and residential areas are benchmarked against official standards.
+                  {cms.summaryCard.lopDescription}
                 </p>
               </div>
-              <p>
-                Having a clear RDA NOC status is a critical legal guarantee for plot buyers. It ensures that ownership transfers, utility connections (gas, electricity, water reservoirs), and home construction permits can be processed smoothly without regulatory delays.
-              </p>
+              <p>{cms.summaryCard.detailedText}</p>
             </div>
           </div>
 
           {/* Block-wise NOC Status List */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-6">
             <h3 className="font-serif text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
-              Sector & Block Regulatory Allotments
+              Sector &amp; Block Regulatory Allotments
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
-              <div className="p-4 bg-slate-50 border border-slate-150 rounded-lg flex gap-3 items-start">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-slate-800">Executive Block</h4>
-                  <p className="text-slate-600 mt-1">100% RDA approved LOP, possession ready commercial & residential zones.</p>
+              {cms.blocksNocList.map((item, idx) => (
+                <div key={item.id || idx} className="p-4 bg-slate-50 border border-slate-150 rounded-lg flex gap-3 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-slate-800">{item.blockName}</h4>
+                    <span className="text-[10px] font-semibold text-emerald-700 block">{item.status}</span>
+                    <p className="text-slate-600 mt-1">{item.description}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-150 rounded-lg flex gap-3 items-start">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-slate-800">Block A & B</h4>
-                  <p className="text-slate-600 mt-1">Fully developed and cleared. Hundreds of houses completed and occupied.</p>
-                </div>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-150 rounded-lg flex gap-3 items-start">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-slate-800">Block C & D</h4>
-                  <p className="text-slate-600 mt-1">Approved boundaries with active development, gas pipe networks and utilities.</p>
-                </div>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-150 rounded-lg flex gap-3 items-start">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-slate-800">Prime Block & Golf Block</h4>
-                  <p className="text-slate-600 mt-1">Gated layouts and eco-green areas fully integrated into approved master plans.</p>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="flex gap-3 bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-800">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
-              <p className="leading-relaxed">
-                <strong>Attention Buyers:</strong> Always verify that the specific plot number you are buying corresponds exactly to the approved layout map coordinates to prevent overlapping issues or land adjustments during demarcation.
-              </p>
-            </div>
+            {cms.buyerAdvisory && (
+              <div className="flex gap-3 bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-800">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+                <p className="leading-relaxed">
+                  <strong>{cms.buyerAdvisory.title}:</strong> {cms.buyerAdvisory.note}
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* FAQs Accordion */}
+          {cms.faqs && cms.faqs.length > 0 && (
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-4">
+              <h3 className="font-serif text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-[#7b002c]" />
+                <span>NOC &amp; Regulatory FAQs</span>
+              </h3>
+              <FaqAccordion items={cms.faqs} />
+            </div>
+          )}
 
         </div>
 
         {/* Right Column: Lead Form */}
         <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-md space-y-6">
           <div className="space-y-2 border-b border-slate-100 pb-4">
-            <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-widest block">Plot Verification</span>
-            <h3 className="font-serif text-xl font-bold text-slate-900">Verify Your Plot Status</h3>
+            <span className="text-[10px] font-bold text-[#7b002c] uppercase tracking-widest block">
+              {cms.verificationForm.tag}
+            </span>
+            <h3 className="font-serif text-xl font-bold text-slate-900">
+              {cms.verificationForm.heading}
+            </h3>
             <p className="text-xs text-slate-500 leading-relaxed font-sans">
-              Enter your plot number and block name to check its legal verification status, demarcation, and development timeline.
+              {cms.verificationForm.description}
             </p>
           </div>
 
@@ -225,7 +252,8 @@ export default function FHNocStatusPage() {
                 <option value="Block B Extension">Block B Extension</option>
                 <option value="Block C">Block C</option>
                 <option value="Block D">Block D</option>
-                <option value="Golf Block / Gandahara">Golf Block / Gandahara</option>
+                <option value="Hills Walk Commercial">Hills Walk Commercial</option>
+                <option value="Faisal Jewel">Faisal Jewel</option>
               </select>
             </div>
 
@@ -255,7 +283,7 @@ export default function FHNocStatusPage() {
             <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block">Or Chat Directly</span>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <a
-                href="https://wa.me/923331113177"
+                href={`https://wa.me/${cms.verificationForm.whatsappNumber || '923331113177'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
@@ -264,7 +292,7 @@ export default function FHNocStatusPage() {
                 <span>WhatsApp</span>
               </a>
               <a
-                href="tel:+923331113177"
+                href={`tel:${(cms.verificationForm.hotline || '+92 333 1113177').replace(/[^0-9+]/g, '')}`}
                 className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-slate-600" />

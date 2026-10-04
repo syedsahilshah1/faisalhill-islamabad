@@ -12,8 +12,11 @@ import {
 import { blocksData, submitLead, fetchSettingByKey, formatWhatsAppUrl, formatTelUrl, defaultSocialLinks, defaultContactInfo, SocialLinksData, ContactInfoData } from '@/data/faisalHillsData';
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 export default function ContactClient() {
+
+  const { whatsappUrl, telUrl, directionsUrl } = useContactChannels();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isHeroSeeMoreOpen, setIsHeroSeeMoreOpen] = useState(false);
@@ -309,7 +312,7 @@ export default function ContactClient() {
           </a>
 
           <a
-            href="https://wa.me/923331113177?text=Hi%20Faisal%20Hills,%20I%20need%20plot%20details."
+            href={whatsappUrl("Hi Faisal Hills, I need plot details.")}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-emerald-500 transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
@@ -345,13 +348,13 @@ export default function ContactClient() {
             <div>
               <span className="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Official Email</span>
               <strong className="text-xs sm:text-base font-serif font-bold text-slate-900 group-hover:text-amber-600 transition-colors block truncate">
-                info@faisalhillsislamabadfh.com
+                {contact.email || 'info@faisalhillsislamabadfh.com'}
               </strong>
             </div>
           </a>
 
           <a
-            href="https://maps.google.com"
+            href={directionsUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-purple-500 transition-all flex flex-col justify-between h-36 sm:h-44 group cursor-pointer"
@@ -899,7 +902,7 @@ export default function ContactClient() {
             </a>
 
             <a
-              href="mailto:info@faisalhillsislamabadfh.com"
+            href={`mailto:${contact.email || 'info@faisalhillsislamabadfh.com'}`}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 sm:px-6 sm:py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md transition-all hover:scale-105 cursor-pointer"
             >
               <Mail className="w-3.5 h-3.5" />

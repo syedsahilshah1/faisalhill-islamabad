@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import { MapPin, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, Clock, Navigation, AlertCircle } from 'lucide-react';
 import { submitLead, formatLeadDateTime } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 export default function FHLocationPage() {
+
+  const { whatsappUrl, telUrl, directionsUrl } = useContactChannels();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [visitDate, setVisitDate] = useState('');
@@ -47,7 +50,7 @@ export default function FHLocationPage() {
         `Hello Faisal Hills Team!\n\nI want to schedule a Free Site Visit.\nName: ${name}\nPhone: ${phone}\nPreferred Date: ${visitDate}`
       );
       setTimeout(() => {
-        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+        window.open(whatsappUrl(waText, undefined, true), '_blank');
         setName('');
         setPhone('');
         setVisitDate('');
@@ -168,7 +171,7 @@ export default function FHLocationPage() {
               />
               <div className="absolute inset-0 bg-slate-900/10 flex items-center justify-center">
                 <a
-                  href="https://maps.google.com/?q=Faisal+Hills+Taxila"
+                  href={directionsUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-5 py-2.5 bg-[#7b002c] text-white text-xs font-bold uppercase rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#9e1245] transition-colors"
@@ -242,7 +245,7 @@ export default function FHLocationPage() {
             <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block">Or Contact Directly</span>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <a
-                href="https://wa.me/923331113177"
+                href={whatsappUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
@@ -251,7 +254,7 @@ export default function FHLocationPage() {
                 <span>WhatsApp</span>
               </a>
               <a
-                href="tel:+923331113177"
+                href={telUrl()}
                 className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-[10px] font-bold tracking-wider rounded-lg flex items-center justify-center gap-1.5 uppercase transition-colors"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-slate-600" />

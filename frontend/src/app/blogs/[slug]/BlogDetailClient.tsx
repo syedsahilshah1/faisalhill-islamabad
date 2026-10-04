@@ -8,6 +8,7 @@ import {
   HelpCircle, ChevronDown, CheckCircle, Mail, Phone, BookOpen
 } from 'lucide-react';
 import { submitLead, BlogItem, formatLeadDateTime } from '@/data/faisalHillsData';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface BlogDetailClientProps {
   blog: BlogItem;
@@ -30,6 +31,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
   const [sidebarPhone, setSidebarPhone] = useState('');
   const [sidebarEmail, setSidebarEmail] = useState('');
   const [sidebarSubmitted, setSidebarSubmitted] = useState(false);
+  const { whatsappUrl } = useContactChannels();
 
   // Handle consultation form submit
   const handleConsultationSubmit = async (e: React.FormEvent) => {
@@ -62,11 +64,10 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
 
       setConsultSubmitted(true);
 
-      const waText = encodeURIComponent(
-        `Hello Faisal Hills Team!\n\nI am requesting a Free Consultation.\nName: ${consultName}\nPhone: ${consultPhone}\nLocation: ${consultLocation}\nArticle: ${blog.title}`
-      );
+      const waText =
+        `Hello Faisal Hills Team!\n\nI am requesting a Free Consultation.\nName: ${consultName}\nPhone: ${consultPhone}\nLocation: ${consultLocation}\nArticle: ${blog.title}`;
       setTimeout(() => {
-        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+        window.open(whatsappUrl(waText), '_blank');
         setConsultName('');
         setConsultPhone('');
         setConsultLocation('');
@@ -110,11 +111,10 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
 
       setSidebarSubmitted(true);
 
-      const waText = encodeURIComponent(
-        `Hello Faisal Hills Team!\n\nI want to send you a message:\nName: ${sidebarName}\nPhone: ${sidebarPhone}\nEmail: ${sidebarEmail}\nArticle: ${blog.title}`
-      );
+      const waText =
+        `Hello Faisal Hills Team!\n\nI want to send you a message:\nName: ${sidebarName}\nPhone: ${sidebarPhone}\nEmail: ${sidebarEmail}\nArticle: ${blog.title}`;
       setTimeout(() => {
-        window.open(`https://wa.me/923331113177?text=${waText}`, '_blank');
+        window.open(whatsappUrl(waText), '_blank');
         setSidebarName('');
         setSidebarPhone('');
         setSidebarEmail('');

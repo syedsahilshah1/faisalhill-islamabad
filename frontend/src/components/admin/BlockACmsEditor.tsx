@@ -42,167 +42,27 @@ import {
   Link2
 } from 'lucide-react';
 
-const compressImageFile = (
-  file: File,
-  maxWidth = 1920,
-  quality = 0.85
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    if (file.size > 10 * 1024 * 1024) {
-      reject(new Error('File exceeds 10MB limit'));
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
+import ImageUploader, { type ImageUploaderProps } from './ImageUploader';
 
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
+// Derived from the uploader's own props rather than restated, so a capability
+// added to `ImageUploader` (alt text, folder, aspect ratio) is immediately
+// usable here. The previous hand-written subset silently omitted them, which is
+// why alt text could not be passed through this wrapper.
+interface ImageUploadFieldProps extends Omit<ImageUploaderProps, 'token'> {}
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          resolve(e.target?.result as string);
-          return;
-        }
-
-        ctx.drawImage(img, 0, 0, width, height);
-        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        const dataUrl = canvas.toDataURL(mimeType, quality);
-        resolve(dataUrl);
-      };
-      img.onerror = () => resolve(e.target?.result as string);
-      img.src = e.target?.result as string;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-};
-
-interface ImageUploadFieldProps {
-  label: string;
-  value: string;
-  onChange: (url: string) => void;
-  helper?: string;
-  placeholder?: string;
-}
-
-const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
-  label,
-  value,
-  onChange,
-  helper = 'PNG, JPG, WebP up to 10MB (auto compressed)',
-  placeholder = '/images/faisal-hills-jamia-mosque.webp or https://...'
-}) => {
-  const [uploading, setUploading] = useState(false);
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const dataUrl = await compressImageFile(file, 1920, 0.85);
-      if (dataUrl) {
-        onChange(dataUrl);
-      }
-    } catch (err) {
-      console.error('Failed to process image:', err);
-    } finally {
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-          {label}
-        </label>
-        <button
-          type="button"
-          onClick={() => setShowUrlInput(!showUrlInput)}
-          className="text-[11px] text-[#7b002c] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
-        >
-          <Link2 className="w-3 h-3" />
-          <span>{showUrlInput ? 'Hide URL Input' : 'Paste Image URL'}</span>
-        </button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="relative w-28 h-20 bg-slate-900 rounded-xl border border-slate-200 shadow-inner shrink-0 group">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform rounded-xl"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-[10px] gap-1">
-              <Camera className="w-4 h-4" />
-              <span>No image</span>
-            </div>
-          )}
-          {value && (
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="absolute top-1 right-1 p-1 bg-black/70 hover:bg-red-600 text-white rounded-md transition-colors"
-              title="Remove image"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex-1 space-y-2 w-full">
-          <div className="flex items-center gap-2">
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFile}
-              className="hidden"
-              id={`img-upload-blocka-${label.replace(/\s+/g, '-').toLowerCase()}`}
-            />
-            <label
-              htmlFor={`img-upload-blocka-${label.replace(/\s+/g, '-').toLowerCase()}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer transition-all shadow-sm active:scale-95"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>{uploading ? 'Processing 10MB Image...' : 'Upload Image (PC / Mobile)'}</span>
-            </label>
-            {value && (
-              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Image set
-              </span>
-            )}
-          </div>
-          <p className="text-[11px] text-slate-500">{helper}</p>
-
-          {showUrlInput && (
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#7b002c]"
-            />
-          )}
-        </div>
-      </div>
-    </div>
+/**
+ * Builds the shared uploader with this editor's bearer token already bound.
+ *
+ * The wrapper is created per render rather than declared at module scope so the
+ * token does not have to be threaded through every call site, and so an editor
+ * without a token still renders instead of referencing an out-of-scope name.
+ */
+const createImageUploadField = (token?: string | null) => {
+  const Field: React.FC<ImageUploadFieldProps> = (props) => (
+    <ImageUploader {...props} token={token || undefined} />
   );
+
+  return Field;
 };
 
 interface BlockACmsEditorProps {
@@ -295,6 +155,8 @@ export default function BlockACmsEditor({
       setBlockACms(initialBlockACMS);
     }
   };
+
+  const ImageUploadField = createImageUploadField(token);
 
   return (
     <div className="space-y-6">
@@ -657,23 +519,16 @@ export default function BlockACmsEditor({
                   overview: { ...blockACms.overview, image: url }
                 })
               }
+              alt={blockACms.overview.imageAlt}
+              onAltChange={(imageAlt) =>
+                setBlockACms({
+                  ...blockACms,
+                  overview: { ...blockACms.overview, imageAlt }
+                })
+              }
               helper="Recommended: Grand Jamia Mosque or residential streetscape photograph"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Image ALT Tag</label>
-                <input
-                  type="text"
-                  value={blockACms.overview.imageAlt}
-                  onChange={(e) =>
-                    setBlockACms({
-                      ...blockACms,
-                      overview: { ...blockACms.overview, imageAlt: e.target.value }
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white border rounded-xl text-xs"
-                />
-              </div>
               <div>
                 <label className="block text-[11px] font-bold text-slate-600 mb-1">Image Tag</label>
                 <input

@@ -59,7 +59,12 @@ import {
   faisalJewelResidentialPlan,
   faisalJewelCommercialPlans,
   blocksData,
-  BlockInfo
+  BlockInfo,
+  FaisalJewelCMSData,
+  initialFaisalJewelCMS,
+  fetchFaisalJewelCMS,
+  mergeFaisalJewelCMS,
+  formatWhatsAppUrl
 } from '@/data/faisalHillsData';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -316,6 +321,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
   const [selectedCalcUnit, setSelectedCalcUnit] = useState<'Commercial Shop' | '1-Bed Apartment' | '2-Bed Apartment' | '3-Bed Penthouse' | 'Hotel Suite'>('Commercial Shop');
   const [formData, setFormData] = useState({ name: '', phone: '', unit: 'Commercial Shop', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [cms, setCms] = useState<FaisalJewelCMSData>(initialFaisalJewelCMS);
 
   // Sync block data from props or localStorage
   useEffect(() => {
@@ -323,6 +329,10 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
   }, [block]);
 
   useEffect(() => {
+    fetchFaisalJewelCMS().then((fjData) => {
+      if (fjData) setCms(mergeFaisalJewelCMS(fjData));
+    });
+
     const syncLocal = () => {
       if (typeof window !== 'undefined') {
         try {
@@ -332,14 +342,24 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             setCurrentBlock(prev => ({ ...(prev || {}), ...jewelStored } as BlockInfo));
           }
         } catch (e) {}
+        try {
+          const local = localStorage.getItem('faisal_jewel_cms');
+          if (local) setCms(mergeFaisalJewelCMS(JSON.parse(local)));
+        } catch (e) {}
       }
     };
     syncLocal();
     window.addEventListener('faisal_blocks_updated', syncLocal);
-    return () => window.removeEventListener('faisal_blocks_updated', syncLocal);
+    window.addEventListener('faisal_jewel_cms_updated', syncLocal);
+    window.addEventListener('storage', syncLocal);
+    return () => {
+      window.removeEventListener('faisal_blocks_updated', syncLocal);
+      window.removeEventListener('faisal_jewel_cms_updated', syncLocal);
+      window.removeEventListener('storage', syncLocal);
+    };
   }, []);
 
-  const showcaseImage = currentBlock?.heroImage || '/faisal-jewel-building.webp';
+  const showcaseImage = cms.overview.photoUrl || currentBlock?.heroImage || '/faisal-jewel-building.webp';
   const masterPlanImg = currentBlock?.masterPlanImage || '/faisal-jewel-architectural-sketch.webp';
 
   // Landmark auto-scroll refs and handlers
@@ -378,34 +398,50 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
     return defaultFaisalHillsBlocks.filter((b) => b.id !== 'faisal-jewels' && b.id !== 'faisal-jewel-islamabad' && b.href !== '/blocks/faisal-jewel-islamabad');
   }, []);
 
+  const allJewelUnits = useMemo(() => {
+    if (cms.unitsInventory?.units && cms.unitsInventory.units.length > 0) return cms.unitsInventory.units;
+    return defaultJewelUnits;
+  }, [cms.unitsInventory?.units]);
+
   const filteredUnits = useMemo(() => {
-    if (selectedCategoryFilter === 'all') return defaultJewelUnits;
-    return defaultJewelUnits.filter((u) => {
+    if (selectedCategoryFilter === 'all') return allJewelUnits;
+    return allJewelUnits.filter((u: JewelUnitItem) => {
       if (selectedCategoryFilter === 'commercial') return u.category.includes('Shop') || u.category.includes('Showroom') || u.category.includes('Food');
       if (selectedCategoryFilter === 'apartments') return u.category.includes('Apartment') || u.category.includes('Penthouse');
       if (selectedCategoryFilter === 'hotel') return u.category.includes('Hotel');
       return true;
     });
-  }, [selectedCategoryFilter]);
+  }, [allJewelUnits, selectedCategoryFilter]);
 
-  const jewelFaqs = [
-    {
-      q: 'What is Faisal Jewel Islamabad?',
-      a: 'Faisal Jewel Islamabad is a landmark 27-story mixed-use skyscraper in Faisal Hills. It features 6 commercial shopping mall floors (350+ shops), 18 residential apartment floors (250+ units), a 4-star boutique hotel, rooftop infinity pool, and 3 basement parking levels for 1,000+ cars.'
-    },
-    {
-      q: 'Where is Faisal Jewel located?',
-      a: 'Faisal Jewel is situated at the main grand entrance of Faisal Hills on GT Road (N-5), directly at the crossroads of Margalla Avenue and the M-1 Motorway Interchange. It is 30 minutes from Islamabad Airport and Blue Area.'
-    },
-    {
-      q: 'What is the payment plan for Faisal Jewel?',
-      a: 'Faisal Jewel offers an easy 4-year installment plan (16 quarterly installments) with 20–25% down payment at booking. Possession is targeted for Q4 2027.'
-    },
-    {
-      q: 'What amenities are included in Faisal Jewel?',
-      a: 'Amenities include a panoramic rooftop infinity pool, sky gym & fitness club, 6-floor retail mall, fine dining restaurants, 3-level basement parking with EV chargers, 24/7 biometric security, high-speed capsule elevators, and uninterrupted power backup.'
-    }
-  ];
+  const activeLandmarks = useMemo(() => {
+    return jewelLandmarks;
+  }, []);
+
+  const jewelFaqs = useMemo(() => {
+    if (cms.faqs.items && cms.faqs.items.length > 0) return cms.faqs.items;
+    return [
+      {
+        q: 'What is Faisal Jewel Islamabad?',
+        a: 'Faisal Jewel Islamabad is a landmark 27-story mixed-use skyscraper in Faisal Hills. It features 6 commercial shopping mall floors (350+ shops), 18 residential apartment floors (250+ units), a 4-star boutique hotel, rooftop infinity pool, and 3 basement parking levels for 1,000+ cars.'
+      },
+      {
+        q: 'Where is Faisal Jewel located?',
+        a: 'Faisal Jewel is situated at the main grand entrance of Faisal Hills on GT Road (N-5), directly at the crossroads of Margalla Avenue and the M-1 Motorway Interchange. It is 30 minutes from Islamabad Airport and Blue Area.'
+      },
+      {
+        q: 'What is the payment plan for Faisal Jewel?',
+        a: 'Faisal Jewel offers a flexible 4-year quarterly installment plan (16 installments) with a 20% down payment, 10% confirmation in 30 days, and 10% on possession.'
+      },
+      {
+        q: 'What are the expected rental yields and capital appreciation for Faisal Jewel?',
+        a: 'With its prime GT Road frontage and 4-star serviced hotel management, Faisal Jewel projects 10-14% annual rental yields for commercial shops and hotel suites, with 40%+ projected capital growth by handover.'
+      },
+      {
+        q: 'Is Faisal Jewel approved by the Rawalpindi Development Authority (RDA)?',
+        a: 'Yes, Faisal Jewel is fully sanctioned and approved under the Rawalpindi Development Authority (RDA) building bylaws with sanctioned multi-story highrise construction permits.'
+      }
+    ];
+  }, [cms.faqs.items]);
 
   const calcDetails = {
     'Commercial Shop': {
@@ -591,7 +627,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
           <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
             <iframe
               title="Faisal Jewel Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              src={cms.googleMapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s"}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -650,7 +686,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
           onTouchEnd={() => setIsLandmarksHovered(false)}
           className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-1 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0"
         >
-          {jewelLandmarks.map((item) => (
+          {activeLandmarks.map((item: any) => (
             <div
               key={item.id}
               className="w-[240px] min-[420px]:w-[270px] sm:w-[290px] shrink-0 snap-start bg-slate-50 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group"
@@ -944,7 +980,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
 
           {/* Units Cards Grid: 2 per row on mobile */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-            {filteredUnits.map((unit, idx) => (
+            {filteredUnits.map((unit: JewelUnitItem, idx: number) => (
               <ScrollReveal key={unit.id} direction="up" delay={(idx % 3) * 80}>
                 <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
@@ -983,7 +1019,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                       </div>
 
                       <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
-                        {Array.isArray(unit.features) && unit.features.slice(0, 3).map((feat, fIdx) => (
+                        {Array.isArray(unit.features) && unit.features.slice(0, 3).map((feat: string, fIdx: number) => (
                           <span
                             key={fIdx}
                             className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"
@@ -1015,9 +1051,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                       </button>
 
                       <a
-                        href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                          `Hi! I am interested in booking Faisal Jewel Unit #${unit.unitNumber} (${unit.category} - ${unit.priceFormatted}). Please share verification & installment details.`
-                        )}`}
+                        href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, (`Hi! I am interested in booking Faisal Jewel Unit #${unit.unitNumber} (${unit.category} - ${unit.priceFormatted}). Please share verification & installment details.`))}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
@@ -1044,7 +1078,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             </div>
 
             <a
-              href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20book%20a%20commercial%20shop%20or%20luxury%20apartment%20in%20Faisal%20Jewel%20Islamabad."
+              href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, "Hello! I want to book a commercial shop or luxury apartment in Faisal Jewel Islamabad.")}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
@@ -1274,9 +1308,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                     <span>View Available {selectedCalcUnit} Units</span>
                   </a>
                   <a
-                    href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                      `Hello! I am interested in booking a ${selectedCalcUnit} in Faisal Jewel Islamabad.`
-                    )}`}
+                    href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, (`Hello! I am interested in booking a ${selectedCalcUnit} in Faisal Jewel Islamabad.`))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3 px-5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
@@ -1389,7 +1421,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
 
               <div className="pt-2">
                 <a
-                  href="https://wa.me/923331113177?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20unit%20in%20Faisal%20Jewel%20Islamabad."
+                  href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, "I am interested in verifying and booking a unit in Faisal Jewel Islamabad.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"

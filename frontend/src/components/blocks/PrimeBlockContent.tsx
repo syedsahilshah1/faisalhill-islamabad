@@ -58,6 +58,7 @@ import TextReveal from '@/components/ui/TextReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 import FormattedText from '@/components/ui/FormattedText';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface PrimePriceRow {
   size: string;
@@ -408,6 +409,8 @@ const defaultPrimeSellingPlots = [
 ];
 
 export default function PrimeBlockContent() {
+
+  const { whatsappUrl, telUrl } = useContactChannels();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isPaymentPlanLightboxOpen, setIsPaymentPlanLightboxOpen] = useState(false);
@@ -691,7 +694,7 @@ export default function PrimeBlockContent() {
               <div className="relative w-full h-full min-h-[380px] lg:min-h-full rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100 flex-1">
                 <iframe
                   title="Prime Block Exact Location Google Map"
-                  src="https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  src={cms.location?.googleMapIframeUrl || "https://maps.google.com/maps?q=Faisal+Hills+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -740,7 +743,7 @@ export default function PrimeBlockContent() {
               <span>Download Master Map PDF</span>
             </button>
             <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20would%20like%20to%20request%20the%20official%20Prime%20Block%20Zoning%20Map."
+              href={whatsappUrl("Hi, I would like to request the official Prime Block Zoning Map.")}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 border border-slate-300 transition-all cursor-pointer"
@@ -1312,7 +1315,7 @@ export default function PrimeBlockContent() {
                         </Link>
 
                         <a
-                          href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in buying Prime Block ${displayTitle} (${plot.size} - ${plot.priceFormatted}). Please share file details.`)}`}
+                          href={whatsappUrl((`Hi, I am interested in buying Prime Block ${displayTitle} (${plot.size} - ${plot.priceFormatted}). Please share file details.`))}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
@@ -1353,7 +1356,7 @@ export default function PrimeBlockContent() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
             <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20want%20to%20sell%20my%20plot%2Ffile%20in%20Faisal%20Hills%20Prime%20Block.%20Please%20provide%20market%20valuation."
+              href={whatsappUrl("Hi, I want to sell my plot/file in Faisal Hills Prime Block. Please provide market valuation.")}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg hover:scale-105"
@@ -1362,7 +1365,7 @@ export default function PrimeBlockContent() {
               <span>WhatsApp Resale Desk</span>
             </a>
             <a
-              href="tel:+923331113177"
+              href={telUrl()}
               className="w-full sm:w-auto px-5 py-3 bg-white/10 hover:bg-white text-white hover:text-[#7b002c] rounded-2xl text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20 transition flex items-center justify-center gap-2"
             >
               <span>Direct Call Support</span>
@@ -1893,7 +1896,7 @@ export default function PrimeBlockContent() {
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <a
-                href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20official%20assistance%20with%20booking%20a%20plot%20in%20Faisal%20Hills%20Prime%20Block."
+                href={whatsappUrl("Hi, I need official assistance with booking a plot in Faisal Hills Prime Block.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105 cursor-pointer"

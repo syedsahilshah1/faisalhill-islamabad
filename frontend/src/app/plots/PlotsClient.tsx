@@ -39,11 +39,17 @@ import {
   fetchPlots
 } from '@/data/faisalHillsData';
 import { getStandardDimensionsForSize } from '@/utils/plotSeriesEngine';
+import { useDebouncedValue } from '@/lib/useDebounce';
 import LeadModal from '@/components/ui/LeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { useContactChannels } from '@/lib/useContactChannels';
 
-function PlotSearchContent() {
+function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
   const searchParams = useSearchParams();
+  // Contact channels come from social_links / contact_info so a
+  // number changed in the dashboard updates every link on this page.
+  const { whatsappUrl, telUrl } = useContactChannels();
+
   const querySize = searchParams.get('size');
   const queryCategory = searchParams.get('category');
   const queryBlock = searchParams.get('block');
@@ -61,8 +67,8 @@ function PlotSearchContent() {
   const [activePlotForModal, setActivePlotForModal] = useState<PlotItem | null>(null);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
-  const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
-  const [isLoadingPlots, setIsLoadingPlots] = useState(true);
+  const [allPlots, setAllPlots] = useState<PlotItem[]>(initialPlots ?? []);
+  const [isLoadingPlots, setIsLoadingPlots] = useState(!initialPlots);
 
   // Sync with URL query parameters when navigating from other pages
   useEffect(() => {
@@ -74,15 +80,20 @@ function PlotSearchContent() {
   }, [querySize, queryCategory, queryBlock, queryQ, queryStatus]);
 
   useEffect(() => {
-    fetchPlots()
-      .then((data) => {
-        setAllPlots(data || []);
-        setIsLoadingPlots(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoadingPlots(false);
-      });
+    // When the server component already supplied the inventory, the page is
+    // rendered from the prerendered HTML and the initial mount needs no request
+    // at all. Only a client-side navigation into this route has to fetch.
+    if (!initialPlots) {
+      fetchPlots()
+        .then((data) => {
+          setAllPlots(data || []);
+          setIsLoadingPlots(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoadingPlots(false);
+        });
+    }
 
     const handlePlotsSync = () => {
       fetchPlots().then((data) => {
@@ -92,10 +103,18 @@ function PlotSearchContent() {
 
     window.addEventListener('faisal_plots_updated', handlePlotsSync);
     return () => window.removeEventListener('faisal_plots_updated', handlePlotsSync);
-  }, []);
+  }, [initialPlots]);
+
+  // This pass runs six filter chains plus a sort over every plot, and re-renders
+  // a card per row. It previously ran on every keystroke; now it runs once per
+  // pause, while the input itself stays bound to the raw term so typing is
+  // immediate.
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 200);
 
   // Filtered & Sorted Plots
   const filteredPlots = useMemo(() => {
+    const trimmedQuery = debouncedSearchQuery.trim();
+
     return allPlots
       .filter((plot) => {
         // Block filter
@@ -135,8 +154,8 @@ function PlotSearchContent() {
         }
 
         // Search query
-        if (searchQuery.trim() !== '') {
-          const q = searchQuery.toLowerCase();
+        if (trimmedQuery !== '') {
+          const q = trimmedQuery.toLowerCase();
           const matches =
             (plot.plotNumber && plot.plotNumber.toLowerCase().includes(q)) ||
             (plot.blockName && plot.blockName.toLowerCase().includes(q)) ||
@@ -157,7 +176,7 @@ function PlotSearchContent() {
         if (sortBy === 'name-asc') return (a.plotNumber || '').localeCompare(b.plotNumber || '');
         return 0; // featured default
       });
-  }, [allPlots, selectedBlock, selectedCategory, selectedSize, selectedStatus, searchQuery, sortBy]);
+  }, [allPlots, selectedBlock, selectedCategory, selectedSize, selectedStatus, debouncedSearchQuery, sortBy]);
 
   const resetFilters = () => {
     setSelectedBlock('all');
@@ -463,7 +482,7 @@ function PlotSearchContent() {
                     </button>
 
                     <a
-                      href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20interested%20in%20plot%20${plot.plotNumber}%20(${plot.size}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details.`}
+                      href={whatsappUrl("Hi Faisal Hills Desk, I am interested in plot ${plot.plotNumber} (${plot.size} in ${plot.blockName}, Price: ${plot.priceFormatted}). Please share complete details.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-2.5 px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
@@ -712,7 +731,7 @@ function PlotSearchContent() {
                 </button>
 
                 <a
-                  href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Desk,%20I%20am%20interested%20in%20reserving/booking%20plot%20${activePlotForModal.plotNumber}%20(${activePlotForModal.size}%20in%20${activePlotForModal.blockName}).%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
+                  href={whatsappUrl("Hi Faisal Hills Desk, I am interested in reserving/booking plot ${activePlotForModal.plotNumber} (${activePlotForModal.size} in ${activePlotForModal.blockName}). Please guide me on the booking procedure.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
@@ -737,7 +756,7 @@ function PlotSearchContent() {
   );
 }
 
-export default function PlotsClient() {
+export default function PlotsClient({ initialPlots }: { initialPlots?: PlotItem[] }) {
   return (
     <Suspense
       fallback={
@@ -746,7 +765,7 @@ export default function PlotsClient() {
         </div>
       }
     >
-      <PlotSearchContent />
+      <PlotSearchContent initialPlots={initialPlots} />
     </Suspense>
   );
 }

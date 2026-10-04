@@ -1,7 +1,21 @@
 import Link from 'next/link';
-import { Building2, ArrowLeft, Home, MapPin, Search, Compass, PhoneCall, MessageSquare } from 'lucide-react';
+import { Building2, ArrowLeft, Home, MapPin, Search, Compass, MessageSquare } from 'lucide-react';
+import { fetchSettings, formatWhatsAppUrl } from '@/data/faisalHillsData';
 
-export default function NotFound() {
+/**
+ * The 404 page is a Server Component, so it reads the contact settings directly
+ * rather than through the `useContactChannels()` client hook. Calling that hook
+ * here made the bundler substitute a stub for the hook module, and the 404
+ * boundary is shared across the whole app router — which surfaced as
+ * `TypeError: n is not a function` while prerendering every `/plots/[id]` page.
+ */
+export default async function NotFound() {
+  const settings: Record<string, any> = await fetchSettings().catch(() => ({}));
+
+  const socialLinks = (settings?.social_links || {}) as Record<string, any>;
+  const contactInfo = (settings?.contact_info || {}) as Record<string, any>;
+  const whatsappNumber: string = socialLinks.whatsapp || contactInfo.salesHotline || '';
+
   const popularBlocks = [
     { name: 'Executive Block', href: '/blocks/executive-block' },
     { name: 'Prime Block', href: '/blocks/prime-block' },
@@ -80,13 +94,13 @@ export default function NotFound() {
           <p className="text-[11px] text-slate-500">
             Need urgent help finding a specific sector?{' '}
             <a
-              href="https://wa.me/923331113177?text=Hi%2C%20I%20got%20a%20404%20error%20and%20need%20help%20finding%20information%20on%20Faisal%20Hills."
+              href={formatWhatsAppUrl(whatsappNumber, "Hi, I got a 404 error and need help finding information on Faisal Hills.")}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1"
             >
               <MessageSquare className="w-3 h-3" />
-              Chat on WhatsApp (+92 333 1113177)
+              Chat on WhatsApp{whatsappNumber ? ` (${whatsappNumber})` : ''}
             </a>
           </p>
         </div>

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\GalleryItem;
+use App\Support\MediaStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class GalleryController extends Controller
 {
+    public function __construct(private readonly MediaStorage $media) {}
+
     public function index()
     {
         $items = Cache::remember('fh_gallery_all', 3600, function () {
@@ -39,6 +42,33 @@ class GalleryController extends Controller
         Cache::forget('fh_gallery_all');
 
         return response()->json($item, 201);
+    }
+
+    /**
+     * Store an image file and return its URL.
+     *
+     * This route was registered in `routes/api.php` pointing at an `upload`
+     * method that did not exist, so every POST to it failed with a 500. The
+     * gallery editor is the one place that genuinely needs to send bytes rather
+     * than a reference, which is why it keeps its own endpoint rather than
+     * sharing the generic media route.
+     */
+    public function upload(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => [
+                'required',
+                'file',
+                'image',
+                'mimetypes:'.implode(',', array_keys(MediaStorage::ALLOWED_MIME_TYPES)),
+                'max:'.MediaStorage::MAX_KILOBYTES,
+            ],
+        ]);
+
+        return response()->json([
+            'message' => 'Image uploaded successfully.',
+            'url' => $this->media->storeImage($validated['image'], 'gallery'),
+        ], 201);
     }
 
     public function destroy(string $id)

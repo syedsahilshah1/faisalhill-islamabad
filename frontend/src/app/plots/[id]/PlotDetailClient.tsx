@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import LeadModal from '@/components/ui/LeadModal';
 import MasterPlanViewer from '@/components/map/MasterPlanViewer';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 interface PlotDetailClientProps {
   plotId: string;
@@ -35,6 +36,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
   const [isLoading, setIsLoading] = useState(true);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const { whatsappUrl } = useContactChannels();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -120,9 +122,8 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
     }
   };
 
-  const whatsappMessage = encodeURIComponent(
-    `Hello, I am interested in Plot #${currentPlot.plotNumber || ''} (${currentPlot.size || ''}, ${currentPlot.blockName || 'Faisal Hills'}) priced at ${currentPlot.priceFormatted || 'market rate'}. Please share official allotment documents and payment details.`
-  );
+  const whatsappMessage =
+    `Hello, I am interested in Plot #${currentPlot.plotNumber || ''} (${currentPlot.size || ''}, ${currentPlot.blockName || 'Faisal Hills'}) priced at ${currentPlot.priceFormatted || 'market rate'}. Please share official allotment documents and payment details.`;
 
   return (
     <div className="bg-slate-50 min-h-screen text-slate-900 pt-24 sm:pt-28 lg:pt-32 pb-20 font-sans">
@@ -396,7 +397,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
 
               {/* WhatsApp Direct Action Button */}
               <a
-                href={`https://wa.me/923331113177?text=${whatsappMessage}`}
+                href={whatsappUrl(whatsappMessage)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold tracking-wider uppercase transition-all duration-300 hover:scale-102 active:scale-98 shadow-md cursor-pointer flex items-center justify-center gap-2"

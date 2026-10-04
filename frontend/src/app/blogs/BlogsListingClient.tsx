@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Calendar, User, Clock, ArrowRight, BookOpen } from 'lucide-react';
 import { fetchBlogs, BlogItem } from '@/data/faisalHillsData';
+import { useDebouncedValue } from '@/lib/useDebounce';
 
 const CATEGORIES = ['All', 'Market Update', 'Development Update', 'Investment Guide', 'Project Launch'];
 
@@ -44,18 +45,27 @@ export default function BlogsListingClient({ initialBlogs = [] }: BlogsListingCl
     };
   }, []);
 
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch = 
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      blog.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (blog.keywords && blog.keywords.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = 
-      selectedCategory === 'All' || 
-      blog.category.toLowerCase() === selectedCategory.toLowerCase();
+  // The input keeps the raw term so typing stays responsive; only the filter and
+  // its re-render are deferred. Hoisting the lowercase query out of the
+  // predicate also stops three `toLowerCase()` calls per article per keystroke.
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 200);
 
-    return matchesSearch && matchesCategory;
-  });
+  const filteredBlogs = useMemo(() => {
+    const query = debouncedSearchQuery.trim().toLowerCase();
+    const category = selectedCategory.toLowerCase();
+
+    return blogs.filter((blog) => {
+      const matchesSearch =
+        query === '' ||
+        blog.title.toLowerCase().includes(query) ||
+        blog.summary.toLowerCase().includes(query) ||
+        (blog.keywords && blog.keywords.toLowerCase().includes(query));
+
+      const matchesCategory = selectedCategory === 'All' || blog.category.toLowerCase() === category;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [blogs, debouncedSearchQuery, selectedCategory]);
 
   return (
     <div className="bg-[#fff8f6] min-h-screen pb-16 font-sans">

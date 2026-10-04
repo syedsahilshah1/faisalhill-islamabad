@@ -6,7 +6,11 @@
     "dev": "node --max-old-space-size=8192 node_modules/next/dist/bin/next dev",
     "build": "node --max-old-space-size=8192 node_modules/next/dist/bin/next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -17,14 +21,21 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.17.19",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "archiver": "^8.0.0",
     "autoprefixer": "^10.4.20",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
     "postcss": "^8.5.2",
     "sharp": "^0.35.4",
     "tailwindcss": "^3.4.17",
+    "ts-jest": "^29.4.14",
     "typescript": "^5.7.3"
   }
 }

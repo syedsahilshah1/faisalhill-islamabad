@@ -12,6 +12,7 @@ interface MasterPlanViewerProps {
   onDownloadClick?: () => void;
   heightClass?: string;
   initialZoom?: number;
+  imageSrc?: string;
 }
 
 const MAP_ASPECT_RATIO = 9900 / 6300; // 1.571428
@@ -19,7 +20,8 @@ const MAP_ASPECT_RATIO = 9900 / 6300; // 1.571428
 export default function MasterPlanViewer({ 
   onDownloadClick,
   heightClass = 'h-[320px] sm:h-[420px] lg:h-[480px]',
-  initialZoom = 1
+  initialZoom = 1,
+  imageSrc = '/images/faisal-hills-master-plan-map.webp'
 }: MasterPlanViewerProps) {
   const [zoomLevel, setZoomLevel] = useState<number>(initialZoom);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -33,8 +35,6 @@ export default function MasterPlanViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartDistRef = useRef<number | null>(null);
   const touchStartZoomRef = useRef<number>(1);
-
-  const imageSrc = '/images/faisal-hills-master-plan-map.webp';
 
   // Measure container dimensions
   const updateDimensions = useCallback(() => {

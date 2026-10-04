@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
+import { useDebouncedValue } from '@/lib/useDebounce';
 import { 
   Bold, Italic, Underline, List, ListOrdered, AlignLeft, AlignCenter, 
   AlignRight, Link, Image as ImageIcon, Trash2, Camera, Upload, 
@@ -152,11 +153,21 @@ export default function RichTextEditor({
     }
   };
 
-  const filteredPhotos = galleryPhotos.filter(p => 
-    !galleryFilter || 
-    p.title.toLowerCase().includes(galleryFilter.toLowerCase()) || 
-    (p.category && p.category.toLowerCase().includes(galleryFilter.toLowerCase()))
-  );
+  // The media-picker filter runs over the whole gallery and re-renders the
+  // picker grid on every keystroke, so it is deferred and lowercased once. The
+  // text input below stays bound to `galleryFilter`, so typing is immediate.
+  const debouncedGalleryFilter = useDebouncedValue(galleryFilter, 200);
+
+  const filteredPhotos = useMemo(() => {
+    const query = debouncedGalleryFilter.trim().toLowerCase();
+
+    if (query === '') return galleryPhotos;
+
+    return galleryPhotos.filter(p =>
+      p.title.toLowerCase().includes(query) ||
+      (p.category && p.category.toLowerCase().includes(query))
+    );
+  }, [galleryPhotos, debouncedGalleryFilter]);
 
   if (!isMounted) {
     return <div className="h-56 bg-slate-50 border border-slate-200 rounded-2xl animate-pulse" />;

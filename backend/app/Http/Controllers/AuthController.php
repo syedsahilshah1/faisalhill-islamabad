@@ -83,13 +83,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role ?? 'admin',
-                    'status' => $user->status ?? 'active',
-                ],
+                // `permissions` must be included here: the dashboard gates its
+                // tabs on this field, and without it the client sees an empty
+                // set and cannot tell what the account may actually do.
+                'user' => $user->toDashboardArray(),
                 'message' => 'Successfully logged in'
             ]);
         } catch (\Throwable $e) {
@@ -122,15 +119,13 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         $user = $request->user();
+
         return response()->json([
             'success' => true,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role ?? 'admin',
-                'status' => $user->status ?? 'active',
-            ]
+            // Re-resolved from the database on every session restore, so a
+            // permission change takes effect on the next page load rather than
+            // at the next login.
+            'user' => $user->toDashboardArray(),
         ]);
     }
 

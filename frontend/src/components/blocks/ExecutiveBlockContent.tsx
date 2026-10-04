@@ -3,13 +3,16 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import {
-  plotInventoryData,
   PlotItem,
   fetchPlots,
   formatPlotPrice,
   BlockInfo,
   blocksData,
-  fetchBlock
+  fetchBlock,
+  ExecutiveBlockCMSData,
+  initialExecutiveBlockCMS,
+  fetchExecutiveBlockCMS,
+  mergeExecutiveBlockCMS
 } from '@/data/faisalHillsData';
 import FormattedText from '@/components/ui/FormattedText';
 import {
@@ -49,188 +52,7 @@ import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
-
-const defaultExecutiveSellingPlots = [
-  {
-    id: 'exec-plot-5m-1',
-    plotNumber: 'EX-104',
-    blockName: 'Executive Block',
-    category: 'Residential',
-    size: '5 Marla',
-    dimensions: '25 × 50',
-    facing: 'Park Facing',
-    priceFormatted: 'PKR 75.0 Lac',
-    downPayment: 'PKR 15.0 Lac',
-    status: 'Available',
-    badge: 'Near Roots School',
-    image: '/images/faisal-hills-executive-sector.webp',
-    features: ['Walking Distance to Roots School', '100% Level Ready to Build', 'Possession Ready']
-  },
-  {
-    id: 'exec-plot-8m-1',
-    plotNumber: 'EX-215',
-    blockName: 'Executive Block',
-    category: 'Residential',
-    size: '8 Marla',
-    dimensions: '30 × 60',
-    facing: 'Main Boulevard 225ft',
-    priceFormatted: 'PKR 1.10 Crore',
-    downPayment: 'PKR 22.0 Lac',
-    status: 'Hot Deal',
-    badge: 'Boulevard Front',
-    image: '/images/faisal-hills-arc-gate.webp',
-    features: ['Wide 225ft Boulevard Front', 'Prime Commercial Walkability', 'Immediate Allotment']
-  },
-  {
-    id: 'exec-plot-10m-1',
-    plotNumber: 'EX-320',
-    blockName: 'Executive Block',
-    category: 'Residential',
-    size: '10 Marla',
-    dimensions: '35 × 70',
-    facing: 'Corner + Green Belt',
-    priceFormatted: 'PKR 1.35 Crore',
-    downPayment: 'PKR 27.0 Lac',
-    status: 'Ready to Build',
-    badge: 'Corner Plot',
-    image: '/images/faisal-hills-glow-park.webp',
-    features: ['Double Corner Extra Land', 'Lush Park View', 'Active Street Construction']
-  },
-  {
-    id: 'exec-plot-1k-1',
-    plotNumber: 'EX-450',
-    blockName: 'Executive Block',
-    category: 'Residential',
-    size: '1 Kanal',
-    dimensions: '50 × 90',
-    facing: 'Margalla Hill View',
-    priceFormatted: 'PKR 2.10 Crore',
-    downPayment: 'PKR 42.0 Lac',
-    status: 'Signature Plot',
-    badge: 'VIP Enclave',
-    image: '/images/faisal-jewel-building.webp',
-    features: ['Top-Tier Margalla Panorama', 'Private Cul-de-Sac Street', 'Gated VIP Security']
-  },
-  {
-    id: 'exec-plot-com-1',
-    plotNumber: 'EX-COM-05',
-    blockName: 'Executive Block',
-    category: 'Commercial',
-    size: '4 Marla Plaza',
-    dimensions: '30 × 30',
-    facing: 'Civic Hub Boulevard',
-    priceFormatted: 'PKR 2.80 Crore',
-    downPayment: 'PKR 56.0 Lac',
-    status: 'High ROI',
-    badge: 'Commercial Core',
-    image: '/images/faisal-jewel-building.webp',
-    features: ['Ground + 5 Approved Height', 'Direct GT Road Entrance', 'High Footfall Core']
-  },
-  {
-    id: 'exec-plot-com-2',
-    plotNumber: 'EX-COM-12',
-    blockName: 'Executive Block',
-    category: 'Commercial',
-    size: '5.33 Marla Plaza',
-    dimensions: '40 × 30',
-    facing: 'Main Boulevard Axis',
-    priceFormatted: 'PKR 3.65 Crore',
-    downPayment: 'PKR 73.0 Lac',
-    status: 'Prime Frontage',
-    badge: 'Faisal Jewel Axis',
-    image: '/images/faisal-hills-drone-view.webp',
-    features: ['Facing Faisal Jewel Tower', 'Dedicated Customer Parking', 'Ideal for Brand / Bank']
-  },
-  {
-    id: 'exec-plot-com-3',
-    plotNumber: 'EX-COM-18',
-    blockName: 'Executive Block',
-    category: 'Commercial',
-    size: '6 Marla Corner',
-    dimensions: '35 × 40',
-    facing: 'Double Boulevard Corner',
-    priceFormatted: 'PKR 4.20 Crore',
-    downPayment: 'PKR 84.0 Lac',
-    status: 'Corner Hub',
-    badge: 'Double Corner',
-    image: '/images/faisal-hills-site-header.webp',
-    features: ['Double Main Boulevard Frontage', 'High Rental Yield', 'Approved Commercial Design']
-  },
-  {
-    id: 'exec-plot-com-4',
-    plotNumber: 'EX-COM-28',
-    blockName: 'Executive Block',
-    category: 'Commercial',
-    size: '8 Marla Corporate',
-    dimensions: '40 × 45',
-    facing: 'Entrance Junction',
-    priceFormatted: 'PKR 5.50 Crore',
-    downPayment: 'PKR 1.10 Crore',
-    status: 'Corporate File',
-    badge: 'Flagship Site',
-    image: '/images/faisal-hills-executive-sector.webp',
-    features: ['Multi-Storey Corporate Approval', 'Maximum GT Road Visibility', 'Direct Site Office Access']
-  }
-];
-
-const executiveAmenities = [
-  {
-    id: 'civic-hub',
-    tag: 'Sector Core',
-    title: 'Civic Hub & Monument Gateway',
-    image: '/images/faisal-hills-arc-gate.webp',
-    icon: Building2
-  },
-  {
-    id: 'roots-school',
-    tag: 'Operational',
-    title: 'Roots International School Campus',
-    image: '/images/roots-international-school-faisal-hills.webp',
-    icon: GraduationCap
-  },
-  {
-    id: 'faisal-jewel',
-    tag: '27-Storey Icon',
-    title: 'Faisal Jewel Tower',
-    image: '/images/faisal-jewel-building.webp',
-    icon: Landmark
-  },
-  {
-    id: 'mosques',
-    tag: 'Spiritual Center',
-    title: 'Jamia Masjid Fatima Tuz Zahra',
-    image: '/images/faisal-hills-jamia-mosque.webp',
-    icon: Building
-  },
-  {
-    id: 'community-parks',
-    tag: 'Lush Greenery',
-    title: 'Executive Parks & Jogging Tracks',
-    image: '/images/faisal-hills-glow-park.webp',
-    icon: Trees
-  },
-  {
-    id: 'sports-arena',
-    tag: 'Active Sports',
-    title: 'Sports Arena & Cricket Ground',
-    image: '/images/faisal-hills-sports-arena.webp',
-    icon: Activity
-  },
-  {
-    id: 'fuel-station',
-    tag: '24/7 Utility',
-    title: 'Boulevard Fuel Station',
-    image: '/images/hills-walk-commercial-aerial.webp',
-    icon: FuelIcon
-  },
-  {
-    id: 'gated-security',
-    tag: 'VIP Enclave',
-    title: 'Gated 24/7 Security & CCTV',
-    image: '/images/faisal-hills-executive-sector.webp',
-    icon: ShieldCheck
-  }
-];
+import { useContactChannels } from '@/lib/useContactChannels';
 
 function FuelIcon(props: any) {
   return (
@@ -240,35 +62,27 @@ function FuelIcon(props: any) {
   );
 }
 
-const executiveFaqs = [
-  {
-    q: 'Where is Executive Block located within Faisal Hills?',
-    a: 'Executive Block is located at the flagship front entrance of Faisal Hills, directly on Main GT Road (N-5) Taxila / Islamabad Zone 2, home to the iconic Grand Arc Gate and Faisal Jewel Tower.'
-  },
-  {
-    q: 'Is Faisal Hills Executive Block RDA approved and possession ready?',
-    a: 'Yes. Faisal Hills Executive Block has full NOC approval from the Rawalpindi Development Authority (RDA). Possession is fully delivered and families are actively constructing luxury villas and commercial plazas.'
-  },
-  {
-    q: 'What plot sizes are available in Executive Block?',
-    a: 'Executive Block features 5 Marla, 8 Marla, 10 Marla, and 1 Kanal residential plots, alongside prime 4 Marla, 5.33 Marla, and corporate commercial plots.'
-  },
-  {
-    q: 'Is Roots International School operational in Executive Block?',
-    a: 'Yes. Roots International School Campus is 100% operational on-site and actively educating students with world-class facilities.'
-  },
-  {
-    q: 'How can I buy or transfer a plot in Executive Block?',
-    a: 'Transfers are executed officially at the Zedem International Head Office located right at the Faisal Hills entrance with full document verification and zero dealer markup.'
+const getAmenityIcon = (iconType: string) => {
+  switch (iconType) {
+    case 'GraduationCap': return GraduationCap;
+    case 'Landmark': return Landmark;
+    case 'Building': return Building;
+    case 'Trees': return Trees;
+    case 'Activity': return Activity;
+    case 'Fuel': return FuelIcon;
+    case 'ShieldCheck': return ShieldCheck;
+    default: return Building2;
   }
-];
+};
 
 export default function ExecutiveBlockContent() {
+
+  const { whatsappUrl, telUrl } = useContactChannels();
+  const [cms, setCms] = useState<ExecutiveBlockCMSData>(initialExecutiveBlockCMS);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [isLocationExpanded, setIsLocationExpanded] = useState(false);
-  const [isMasterPlanExpanded, setIsMasterPlanExpanded] = useState(false);
   const [isDevStatusExpanded, setIsDevStatusExpanded] = useState(false);
   const [activeWhyInvestOption, setActiveWhyInvestOption] = useState<number | null>(0);
   const [plotCategoryFilter, setPlotCategoryFilter] = useState<'all' | 'residential' | 'commercial'>('all');
@@ -276,6 +90,26 @@ export default function ExecutiveBlockContent() {
   // Dynamic live plot inventory sync
   const [allPlots, setAllPlots] = useState<PlotItem[]>([]);
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(() => blocksData.find(b => b.slug === 'executive-block') || null);
+
+  // Load CMS data & live sync
+  useEffect(() => {
+    fetchExecutiveBlockCMS().then(data => {
+      if (data) setCms(mergeExecutiveBlockCMS(data));
+    });
+
+    const handleCmsSync = () => {
+      fetchExecutiveBlockCMS().then(data => {
+        if (data) setCms(mergeExecutiveBlockCMS(data));
+      });
+    };
+
+    window.addEventListener('faisal_executive_block_cms_updated', handleCmsSync);
+    window.addEventListener('storage', handleCmsSync);
+    return () => {
+      window.removeEventListener('faisal_executive_block_cms_updated', handleCmsSync);
+      window.removeEventListener('storage', handleCmsSync);
+    };
+  }, []);
 
   useEffect(() => {
     fetchPlots().then(data => setAllPlots(data)).catch(console.error);
@@ -342,7 +176,7 @@ export default function ExecutiveBlockContent() {
     }
   };
 
-  // Process and normalize executive plots
+  // Process and normalize executive plots (combines CMS plots + live database plots)
   const executivePlots = useMemo(() => {
     const liveBlockPlots = allPlots.filter(
       p => p.blockSlug === 'executive-block' || p.blockName?.toLowerCase().includes('executive') || p.plotNumber?.toUpperCase().startsWith('EX-')
@@ -365,14 +199,15 @@ export default function ExecutiveBlockContent() {
     }));
 
     const combined: any[] = [...liveMapped];
-    defaultExecutiveSellingPlots.forEach(defPlot => {
+    const cmsPlots = cms?.plotsForSale?.plots || initialExecutiveBlockCMS.plotsForSale.plots;
+    cmsPlots.forEach(defPlot => {
       if (!combined.some(c => c.id === defPlot.id || c.plotNumber.toUpperCase() === defPlot.plotNumber.toUpperCase())) {
         combined.push(defPlot);
       }
     });
 
-    return combined.slice(0, 8);
-  }, [allPlots]);
+    return combined.slice(0, 12);
+  }, [allPlots, cms]);
 
   // Exclude Executive Block from other blocks showcase
   const otherBlocks = useMemo(() => {
@@ -405,20 +240,20 @@ export default function ExecutiveBlockContent() {
               <div className="space-y-3">
                 <TextReveal
                   as="h1"
-                  text="Faisal Hills Executive Block Overview"
+                  text={cms.overview.h1 || "Faisal Hills Executive Block Overview"}
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
                 />
                 <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
                   <p>
-                    <FormattedText text={blockInfo?.description || "Faisal Hills Executive Block is the prestigious flagship sector developed by Faisal Town Group & Zedem International. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project."} />
+                    <FormattedText text={cms.overview.leadParagraph || blockInfo?.description || "Faisal Hills Executive Block is the prestigious flagship sector developed by Faisal Town Group & Zedem International. Positioned right at the society’s grand entrance on Main GT Road (N-5), Executive Block serves as the primary civic and commercial epicenter of the entire project."} />
                   </p>
 
                   {isOverviewExpanded && (
                     <div className="space-y-3 animate-fadeIn">
                       <p>
-                        <FormattedText text={blockInfo?.locationDetails || "Home to the iconic 27-storey [Faisal Jewel Tower](/blocks/faisal-jewel-islamabad), Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities."} />
+                        <FormattedText text={cms.overview.expandedParagraph || blockInfo?.locationDetails || "Home to the iconic 27-storey [Faisal Jewel Tower](/blocks/faisal-jewel-islamabad), Faisal Mansion, and the fully operational Roots International School Campus, Executive Block seamlessly combines luxury residential living with high-density commercial investment opportunities."} />
                       </p>
                     </div>
                   )}
@@ -440,17 +275,17 @@ export default function ExecutiveBlockContent() {
             <ScrollReveal direction="right" delay={100} className="w-full h-full flex flex-col flex-1">
               <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                 <img
-                  src={blockInfo?.heroImage || "/images/faisal-hills-arc-gate.webp"}
-                  alt={blockInfo?.heroImageAlt || "Faisal Hills Executive Block Monument Entrance Arc Gate"}
+                  src={cms.overview.photoUrl || blockInfo?.heroImage || "/images/faisal-hills-arc-gate.webp"}
+                  alt={cms.overview.photoAlt || blockInfo?.heroImageAlt || "Faisal Hills Executive Block Monument Entrance Arc Gate"}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
                 <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
-                    Grand Monument Gateway
+                    {cms.overview.photoTag || "Grand Monument Gateway"}
                   </span>
                   <h3 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
-                    Main GT Road N-5 Entrance
+                    {cms.overview.photoCaption || "Main GT Road N-5 Entrance"}
                   </h3>
                 </div>
               </div>
@@ -472,23 +307,23 @@ export default function ExecutiveBlockContent() {
               <div className="space-y-3">
                 <TextReveal
                   as="h2"
-                  text="Faisal Hills Executive Block Location & Map"
+                  text={cms.location.h2 || "Faisal Hills Executive Block Location & Map"}
                   className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                   staggerDelay={65}
                   direction="left"
                 />
                 <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
                   <p>
-                    Executive Block enjoys an unmatched strategic advantage by fronting directly on the National Highway (GT Road N-5). It is situated directly adjacent to Taxila, Multi Gardens B-17, and Islamabad Zone 2.
+                    <FormattedText text={cms.location.leadParagraph || "Executive Block enjoys an unmatched strategic advantage by fronting directly on the National Highway (GT Road N-5). It is situated directly adjacent to Taxila, Multi Gardens B-17, and Islamabad Zone 2."} />
                   </p>
 
                   {isLocationExpanded && (
                     <div className="space-y-3 animate-fadeIn">
                       <p>
-                        With immediate access to both Islamabad and Rawalpindi via the N-5 corridor and the upcoming direct M-1 Motorway link, Executive Block ensures effortless daily commuting for residents, business professionals, and overseas investors.
+                        <FormattedText text={cms.location.expandedParagraph1 || "With immediate access to both Islamabad and Rawalpindi via the N-5 corridor and the upcoming direct M-1 Motorway link, Executive Block ensures effortless daily commuting for residents, business professionals, and overseas investors."} />
                       </p>
                       <p>
-                        Surrounded by the scenic Margalla Hills backdrop, the sector delivers both urban commercial vibrancy and tranquil residential ambiance.
+                        <FormattedText text={cms.location.expandedParagraph2 || "Surrounded by the scenic Margalla Hills backdrop, the sector delivers both urban commercial vibrancy and tranquil residential ambiance."} />
                       </p>
                     </div>
                   )}
@@ -510,7 +345,7 @@ export default function ExecutiveBlockContent() {
             <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
               <iframe
                 title="Faisal Hills Executive Block Exact Location Google Map"
-                src="https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                src={cms.location.googleMapEmbedUrl || "https://maps.google.com/maps?q=Faisal+Hills+Executive+Block+GT+Road+Taxila&t=&z=14&ie=UTF8&iwloc=&output=embed"}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -533,7 +368,7 @@ export default function ExecutiveBlockContent() {
         {/* Mobile View: Title First */}
         <div className="block lg:hidden space-y-2">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
-            Faisal Hills Executive Block Master Plan
+            {cms.masterPlan.h2 || "Faisal Hills Executive Block Master Plan"}
           </h2>
         </div>
 
@@ -547,7 +382,7 @@ export default function ExecutiveBlockContent() {
                 className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[380px] p-2"
               >
                 <img
-                  src="/images/faisal-hills-executive-map.webp"
+                  src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-executive-map.webp"}
                   alt="Faisal Hills Executive Block Master Plan Map"
                   className="w-full h-auto max-h-[500px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
                 />
@@ -570,7 +405,7 @@ export default function ExecutiveBlockContent() {
                 <div className="hidden lg:block space-y-2">
                   <TextReveal
                     as="h2"
-                    text="Faisal Hills Executive Block Master Plan"
+                    text={cms.masterPlan.h2 || "Faisal Hills Executive Block Master Plan"}
                     className="font-serif text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                     staggerDelay={70}
                     direction="left"
@@ -578,7 +413,7 @@ export default function ExecutiveBlockContent() {
                 </div>
 
                 <p className="hidden lg:block text-slate-600 text-sm leading-relaxed">
-                  The master plan of Executive Block is engineered as an integrated self-sustaining community where commercial zones, schools, and parks sit harmoniously beside luxury residential streets.
+                  <FormattedText text={cms.masterPlan.leadParagraph || "The master plan of Executive Block is engineered as an integrated self-sustaining community where commercial zones, schools, and parks sit harmoniously beside luxury residential streets."} />
                 </p>
 
                 {/* Action Buttons */}
@@ -589,14 +424,14 @@ export default function ExecutiveBlockContent() {
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Download Master Plan</span>
+                    <span>{cms.masterPlan.downloadButtonText || "Download Master Plan"}</span>
                   </button>
                   <Link
-                    href="/master-plan"
+                    href={cms.masterPlan.exploreSocietyMapUrl || "/master-plan"}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold uppercase tracking-wider rounded-xl border border-slate-300 transition-all active:scale-95"
                   >
                     <Compass className="w-4 h-4 text-[#7b002c]" />
-                    <span>Explore Society Map</span>
+                    <span>{cms.masterPlan.exploreSocietyMapText || "Explore Society Map"}</span>
                   </Link>
                 </div>
               </div>
@@ -615,13 +450,13 @@ export default function ExecutiveBlockContent() {
             <div className="space-y-2">
               <TextReveal
                 as="h2"
-                text="Executive Block Plots for Sale — Direct Booking & Verified Files"
+                text={cms.plotsForSale.h2 || "Executive Block Plots for Sale — Direct Booking & Verified Files"}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-                Explore available residential plots and commercial plazas in Executive Block with transparent pricing, zero dealer markup, and immediate allotment file verification.
+                <FormattedText text={cms.plotsForSale.leadParagraph || "Explore available residential plots and commercial plazas in Executive Block with transparent pricing, zero dealer markup, and immediate allotment file verification."} />
               </p>
             </div>
 
@@ -743,7 +578,7 @@ export default function ExecutiveBlockContent() {
                       </Link>
 
                       <a
-                        href={`https://wa.me/923331113177?text=${encodeURIComponent(`Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification details.`)}`}
+                        href={whatsappUrl((`Hi, I am interested in buying Executive Block Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification details.`))}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-1.5 sm:px-2 py-1 sm:py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shadow-sm text-center"
@@ -763,23 +598,23 @@ export default function ExecutiveBlockContent() {
           <div className="space-y-2 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-rose-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Owner Resale & Liquidation Desk</span>
+              <span>{cms.resaleDesk.tag || "Owner Resale & Liquidation Desk"}</span>
             </div>
             <h3 className="font-serif font-bold text-xl sm:text-2xl text-white">
-              Want to Sell or Assess Your Executive Block Plot / File?
+              {cms.resaleDesk.heading || "Want to Sell or Assess Your Executive Block Plot / File?"}
             </h3>
             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl font-sans">
-              Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas.
+              <FormattedText text={cms.resaleDesk.paragraph || "Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas."} />
             </p>
           </div>
 
           <a
-            href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20plot%20in%20Faisal%20Hills%20Executive%20Block."
+            href={whatsappUrl((cms.resaleDesk.whatsappMessage || "Hello! I want to list or sell my plot in Faisal Hills Executive Block."))}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center justify-center gap-2 active:scale-95"
           >
-            <span>List Your Plot File</span>
+            <span>{cms.resaleDesk.buttonText || "List Your Plot File"}</span>
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
@@ -794,13 +629,13 @@ export default function ExecutiveBlockContent() {
             <div className="space-y-1.5">
               <TextReveal
                 as="h2"
-                text="Facilities and Amenities in Executive Block"
+                text={cms.facilities.h2 || "Facilities and Amenities in Executive Block"}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                 staggerDelay={60}
                 direction="left"
               />
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Executive Block is planned with world-class facilities and modern municipal infrastructure:
+                <FormattedText text={cms.facilities.leadParagraph || "Executive Block is planned with world-class facilities and modern municipal infrastructure:"} />
               </p>
             </div>
 
@@ -835,10 +670,10 @@ export default function ExecutiveBlockContent() {
           onMouseLeave={() => setIsAmenitiesAutoScrolling(true)}
           className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
         >
-          {executiveAmenities.map((item, idx) => {
-            const IconComponent = item.icon;
+          {cms.facilities.items.map((item, idx) => {
+            const IconComponent = getAmenityIcon(item.iconType);
             return (
-              <div key={item.id} className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
+              <div key={item.id || idx} className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
                 <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
                   <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full">
                     <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
@@ -875,27 +710,20 @@ export default function ExecutiveBlockContent() {
             <div className="space-y-2">
               <TextReveal
                 as="h2"
-                text="Why Invest in Faisal Hills Executive Block"
+                text={cms.whyInvest.h2 || "Why Invest in Faisal Hills Executive Block"}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-sm">
-                Why buyers and overseas Pakistanis rank Executive Block as the flagship sector:
+                <FormattedText text={cms.whyInvest.leadParagraph || "Why buyers and overseas Pakistanis rank Executive Block as the flagship sector:"} />
               </p>
             </div>
           </ScrollReveal>
 
           {/* Mobile View: Compact Interactive Options List */}
           <div className="block sm:hidden space-y-2.5">
-            {[
-              { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
-              { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
-              { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
-              { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
-              { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
-              { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
-            ].map((item, idx) => {
+            {cms.whyInvest.reasons.map((item, idx) => {
               const isSelected = activeWhyInvestOption === idx;
               return (
                 <div
@@ -925,7 +753,7 @@ export default function ExecutiveBlockContent() {
 
                   {isSelected && (
                     <div className="px-3.5 pb-3.5 pt-0 text-xs text-slate-600 leading-relaxed font-sans border-t border-rose-100/80 mt-1 pt-2 animate-fadeIn">
-                      {item.desc}
+                      <FormattedText text={item.desc} />
                     </div>
                   )}
                 </div>
@@ -935,19 +763,14 @@ export default function ExecutiveBlockContent() {
 
           {/* Desktop View: 6-Card Grid */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-            {[
-              { title: "Strategic GT Road Access", desc: "Direct N-5 frontage with rapid proximity to Rawalpindi, Taxila, and Wah." },
-              { title: "RDA Approved Society", desc: "Sanctioned legal status providing full buyer protection and clear titles." },
-              { title: "Civic & Commercial Anchor", desc: "Commercial hub supporting both residential value and commercial rental yields." },
-              { title: "Visible Active Development", desc: "Active on-ground construction rather than mere renderings and speculative promises." },
-              { title: "Family-Friendly Living", desc: "Roots School, Jamia mosques, and community parks already fully functioning." },
-              { title: "Long Term Capital Growth", desc: "High appreciation velocity as Faisal Jewel and surrounding plazas near full completion." }
-            ].map((item, idx) => (
+            {cms.whyInvest.reasons.map((item, idx) => (
               <ScrollReveal key={idx} direction="up" delay={(idx % 3) * 60}>
                 <div className="p-5 bg-slate-50/70 rounded-2xl border border-slate-200/80 space-y-2 hover:border-[#7b002c]/40 hover:bg-white transition-all hover:scale-[1.02] h-full shadow-2xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <strong className="text-slate-900 block font-bold text-sm">{item.title}</strong>
-                  <span className="text-slate-600 leading-relaxed block">{item.desc}</span>
+                  <span className="text-slate-600 leading-relaxed block">
+                    <FormattedText text={item.desc} />
+                  </span>
                 </div>
               </ScrollReveal>
             ))}
@@ -965,7 +788,7 @@ export default function ExecutiveBlockContent() {
                   <div className="space-y-2">
                     <TextReveal
                       as="h2"
-                      text="Executive Block Development Status"
+                      text={cms.developmentStatus.h2 || "Executive Block Development Status"}
                       className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                       staggerDelay={65}
                       direction="left"
@@ -973,42 +796,42 @@ export default function ExecutiveBlockContent() {
                   </div>
 
                   <p className="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
-                    Development in Executive Block is 100% operational with possession fully delivered. Roads, underground electricity, sewer lines, water supply, and street lighting are fully functional.
+                    <FormattedText text={cms.developmentStatus.leadParagraph || "Development in Executive Block is 100% operational with possession fully delivered. Roads, underground electricity, sewer lines, water supply, and street lighting are fully functional."} />
                   </p>
 
                   {isDevStatusExpanded && (
                     <div className="space-y-4 animate-fadeIn">
                       <p>
-                        Roots International School is actively educating students on-site. The structural framework of the 27-storey Faisal Jewel Tower is at an advanced completion stage.
+                        <FormattedText text={cms.developmentStatus.expandedParagraph1 || "Roots International School is actively educating students on-site. The structural framework of the 27-storey Faisal Jewel Tower is at an advanced completion stage."} />
                       </p>
                       <p>
-                        Families are actively residing in constructed luxury houses, while high-profile commercial plazas along the main boulevard are operating brand retail outlets.
+                        <FormattedText text={cms.developmentStatus.expandedParagraph2 || "Families are actively residing in constructed luxury houses, while high-profile commercial plazas along the main boulevard are operating brand retail outlets."} />
                       </p>
                     </div>
                   )}
 
-                    <button
-                      type="button"
-                      onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
-                      className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
-                    >
-                      {isDevStatusExpanded ? 'See less' : 'See more'}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
+                    className="text-[#7b002c] hover:text-[#9e1245] font-semibold underline underline-offset-4 cursor-pointer text-xs sm:text-sm transition-colors inline-block pt-1"
+                  >
+                    {isDevStatusExpanded ? 'See less' : 'See more'}
+                  </button>
+                </div>
 
                 {/* Quick Status Metrics */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-slate-100">
                   <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">95%+</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Roads Carpeted</span>
+                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">{cms.developmentStatus.stat1Value || "95%+"}</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">{cms.developmentStatus.stat1Label || "Roads Carpeted"}</span>
                   </div>
                   <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">100%</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Underground Grid</span>
+                    <span className="text-base sm:text-2xl font-serif font-bold text-[#7b002c] block">{cms.developmentStatus.stat2Value || "100%"}</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">{cms.developmentStatus.stat2Label || "Underground Grid"}</span>
                   </div>
                   <div className="p-3 sm:p-4 bg-slate-50 hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 text-center space-y-1 shadow-2xs transition-all">
-                    <span className="text-base sm:text-2xl font-serif font-bold text-emerald-700 block">Possession</span>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">Ready to Build</span>
+                    <span className="text-base sm:text-2xl font-serif font-bold text-emerald-700 block">{cms.developmentStatus.stat3Value || "Possession"}</span>
+                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-slate-600 block leading-tight">{cms.developmentStatus.stat3Label || "Ready to Build"}</span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -1019,8 +842,8 @@ export default function ExecutiveBlockContent() {
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
                 <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
                   <img
-                    src="/images/faisal-hills-drone-view.webp"
-                    alt="Faisal Hills Executive Block On-Ground Development Status & Aerial View"
+                    src={cms.developmentStatus.dronePhotoUrl || "/images/faisal-hills-drone-view.webp"}
+                    alt={cms.developmentStatus.dronePhotoAlt || "Faisal Hills Executive Block On-Ground Development Status & Aerial View"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
@@ -1028,19 +851,19 @@ export default function ExecutiveBlockContent() {
                   <div className="absolute top-4 right-4">
                     <span className="px-3 py-1 bg-emerald-600/90 text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md flex items-center gap-1.5 backdrop-blur-xs border border-emerald-400/30">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Possession Delivered</span>
+                      <span>{cms.developmentStatus.possessionBadge || "Possession Delivered"}</span>
                     </span>
                   </div>
 
                   <div className="absolute bottom-5 left-5 right-5 text-white space-y-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 bg-rose-950/70 px-2.5 py-0.5 rounded-full border border-rose-800/70 inline-block backdrop-blur-xs">
-                      Verified Aerial Drone Survey
+                      {cms.developmentStatus.droneTag || "Verified Aerial Drone Survey"}
                     </span>
                     <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md text-white">
-                      Executive Sector On-Ground Progress
+                      {cms.developmentStatus.droneHeading || "Executive Sector On-Ground Progress"}
                     </h4>
                     <p className="text-xs text-slate-300">
-                      Wide carpeted boulevards, complete utilities, and active on-ground villa construction.
+                      <FormattedText text={cms.developmentStatus.droneDesc || "Wide carpeted boulevards, complete utilities, and active on-ground villa construction."} />
                     </p>
                   </div>
                 </div>
@@ -1056,65 +879,20 @@ export default function ExecutiveBlockContent() {
             <div className="space-y-2">
               <TextReveal
                 as="h2"
-                text="Faisal Hills Executive Block Transfer Process"
+                text={cms.transferProcess.h2 || "Faisal Hills Executive Block Transfer Process"}
                 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight"
                 staggerDelay={65}
                 direction="left"
               />
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
-                Follow these 4 essential points to complete official plot transfer directly at Zedem International:
+                <FormattedText text={cms.transferProcess.leadParagraph || "Follow these 4 essential points to complete official plot transfer directly at Zedem International:"} />
               </p>
             </div>
           </ScrollReveal>
 
           {/* Points Timeline / Roadmap Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
-            {[
-              {
-                point: '01',
-                tag: 'Step 1: Identity',
-                title: 'CNIC / NICOP Copies',
-                points: [
-                  'Two verified photocopies of buyer CNIC / NICOP',
-                  'One photocopy of Next-of-Kin (Nominee) CNIC',
-                  'Passport copies for Overseas Pakistani buyers'
-                ],
-                badge: 'Attested Copies Required'
-              },
-              {
-                point: '02',
-                tag: 'Step 2: Photos',
-                title: 'Passport Photographs',
-                points: [
-                  'Two recent passport-size color photographs',
-                  'Clear blue background',
-                  'Applicant name written on back'
-                ],
-                badge: 'Recent Photographs'
-              },
-              {
-                point: '03',
-                tag: 'Step 3: Payment',
-                title: 'Pay Order / Bank Draft',
-                points: [
-                  'Pay Order in favour of "Zedem International"',
-                  'Transfer fee receipt from society counter',
-                  'Direct online wire verification for NRPs'
-                ],
-                badge: 'Official Bank Draft'
-              },
-              {
-                point: '04',
-                tag: 'Step 4: Transfer',
-                title: 'Allotment Letter Transfer',
-                points: [
-                  'Official transfer execution at head office counter',
-                  'Immediate biometric record verification',
-                  'New registered owner allotment letter handover'
-                ],
-                badge: 'Official Allotment Handover'
-              }
-            ].map((item, idx) => (
+            {cms.transferProcess.steps.map((item, idx) => (
               <ScrollReveal key={idx} direction="up" delay={idx * 70}>
                 <div className="bg-slate-50 hover:bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 hover:border-[#7b002c]/50 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between h-full space-y-4 relative overflow-hidden">
 
@@ -1159,18 +937,22 @@ export default function ExecutiveBlockContent() {
           {/* Transfer Desk Banner */}
           <div className="p-5 bg-gradient-to-r from-slate-900 via-[#4a081a] to-slate-950 rounded-2xl text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md border border-white/10">
             <div className="space-y-1 text-center sm:text-left">
-              <h4 className="font-serif font-bold text-base sm:text-lg text-white">Need Assistance with Plot Transfer & File Verification?</h4>
-              <p className="text-xs text-rose-100/80 font-sans">Our dedicated transfer advisory desk verifies society records and guides you step-by-step.</p>
+              <h4 className="font-serif font-bold text-base sm:text-lg text-white">
+                {cms.transferProcess.bannerHeading || "Need Assistance with Plot Transfer & File Verification?"}
+              </h4>
+              <p className="text-xs text-rose-100/80 font-sans">
+                <FormattedText text={cms.transferProcess.bannerSubtext || "Our dedicated transfer advisory desk verifies society records and guides you step-by-step."} />
+              </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <a
-                href="https://wa.me/923331113177?text=Hi%2C%20I%20need%20official%20assistance%20with%20plot%20transfer%20in%20Faisal%20Hills%20Executive%20Block."
+                href={whatsappUrl((cms.transferProcess.bannerWhatsapp || "Hi, I need official assistance with plot transfer in Faisal Hills Executive Block."))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow hover:scale-105"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Contact Transfer Desk</span>
+                <span>{cms.transferProcess.bannerButtonText || "Contact Transfer Desk"}</span>
               </a>
             </div>
           </div>
@@ -1216,15 +998,17 @@ export default function ExecutiveBlockContent() {
 
           {/* Left Column: Sticky FAQ'S Title */}
           <div className="lg:col-span-4 space-y-3 lg:sticky lg:top-24 self-start">
-            <span className="label-caps text-[#7b002c] font-bold block mb-1 text-xs uppercase tracking-widest">FAQ&apos;S</span>
+            <span className="label-caps text-[#7b002c] font-bold block mb-1 text-xs uppercase tracking-widest">
+              {cms.faqs.sectionTag || "FAQ'S"}
+            </span>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#7b002c] tracking-tight leading-[1.15] uppercase">
-              Frequently Asked Questions (FAQS)
+              {cms.faqs.h2 || "Frequently Asked Questions (FAQS)"}
             </h2>
           </div>
 
           {/* Right Column: Clean Horizontal Separated Accordion */}
           <div className="lg:col-span-8 space-y-0 border-t border-slate-900/80">
-            {executiveFaqs.map((faq, index) => {
+            {cms.faqs.items.map((faq, index) => {
               const isOpen = openFaq === index;
               return (
                 <ScrollReveal key={index} direction="up" delay={(index % 4) * 60}>
@@ -1244,7 +1028,7 @@ export default function ExecutiveBlockContent() {
 
                     {isOpen && (
                       <div className="pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans pr-6 animate-fadeIn">
-                        {faq.a}
+                        <FormattedText text={faq.a} />
                       </div>
                     )}
                   </div>
@@ -1262,13 +1046,13 @@ export default function ExecutiveBlockContent() {
       <section className="bg-gradient-to-r from-slate-950 via-[#500a1d] to-slate-950 p-8 sm:p-12 rounded-3xl text-white shadow-2xl relative overflow-hidden border border-white/10">
         <div className="max-w-3xl mx-auto text-center space-y-3 relative z-10">
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-rose-300 bg-white/10 px-3.5 py-1 rounded-full border border-white/15 inline-block backdrop-blur-xs">
-            Direct Developer Facilitation Desk
+            {cms.scheduleTour.tag || "Direct Developer Facilitation Desk"}
           </span>
           <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white">
-            Schedule an On-Site Executive Block Tour
+            {cms.scheduleTour.h3 || "Schedule an On-Site Executive Block Tour"}
           </h3>
           <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-sans">
-            Leave your contact details to receive verified plot listings, latest market rates, and official allotment files directly on WhatsApp.
+            <FormattedText text={cms.scheduleTour.leadParagraph || "Leave your contact details to receive verified plot listings, latest market rates, and official allotment files directly on WhatsApp."} />
           </p>
         </div>
 
@@ -1277,9 +1061,15 @@ export default function ExecutiveBlockContent() {
             <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto">
               <Check className="w-6 h-6" />
             </div>
-            <h4 className="font-serif font-bold text-xl text-white">Inquiry Received!</h4>
+            <h4 className="font-serif font-bold text-xl text-white">
+              {cms.scheduleTour.thankYouHeading || "Inquiry Received!"}
+            </h4>
             <p className="text-xs text-rose-100 max-w-md mx-auto font-sans">
-              Thank you, <strong>{leadName}</strong>. Our Executive Block property specialist will contact you on <strong>{leadPhone}</strong> with available plot files.
+              {cms.scheduleTour.thankYouMessage ? (
+                <FormattedText text={cms.scheduleTour.thankYouMessage.replace('{name}', leadName).replace('{phone}', leadPhone)} />
+              ) : (
+                <>Thank you, <strong>{leadName}</strong>. Our Executive Block property specialist will contact you on <strong>{leadPhone}</strong> with available plot files.</>
+              )}
             </p>
           </div>
         ) : (
@@ -1335,7 +1125,7 @@ export default function ExecutiveBlockContent() {
                   className="w-full py-3 bg-white hover:bg-rose-50 text-[#7b002c] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-xl flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Submit Inquiry Request</span>
+                  <span>{cms.scheduleTour.buttonText || "Submit Inquiry Request"}</span>
                 </button>
               </div>
             </div>
@@ -1348,8 +1138,8 @@ export default function ExecutiveBlockContent() {
         isOpen={isMapModalOpen}
         onClose={() => setIsMapModalOpen(false)}
         blockName="Executive Block"
-        mapImageUrl="/images/faisal-hills-executive-map.webp"
-        mapPdfUrl="/images/faisal-hills-executive-map.webp"
+        mapImageUrl={cms.masterPlan.mapImageUrl || "/images/faisal-hills-executive-map.webp"}
+        mapPdfUrl={cms.masterPlan.mapPdfUrl || "/images/faisal-hills-executive-map.webp"}
       />
 
     </div>

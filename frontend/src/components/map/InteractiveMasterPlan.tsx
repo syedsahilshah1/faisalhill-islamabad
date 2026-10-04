@@ -6,6 +6,7 @@ import {
   Eye, MessageSquare, ShieldCheck, Filter, ArrowRight, Star, FileText
 } from 'lucide-react';
 import { blocksData, fetchPlots, plotInventoryData, PlotItem } from '@/data/faisalHillsData';
+import { useDebouncedValue } from '@/lib/useDebounce';
 import LeadModal from '../ui/LeadModal';
 import MapDownloadModal from '../ui/MapDownloadModal';
 
@@ -111,14 +112,19 @@ export default function InteractiveMasterPlan({
     return () => window.removeEventListener('faisal_plots_updated', handleSync);
   }, []);
 
+  // The search box stays bound to the raw term so typing feels immediate, while
+  // the filter pass waits for a pause. Without this the whole plot list is
+  // re-filtered and re-rendered on every character typed.
+  const debouncedSearchPlotNumber = useDebouncedValue(searchPlotNumber, 200);
+
   // Filter plots based on block filter and plot search query
   const filteredPlots = useMemo(() => {
     return plots.filter(plot => {
       const matchesBlock = selectedBlockFilter === 'all' || plot.blockSlug === selectedBlockFilter;
-      const matchesNumber = searchPlotNumber === '' || (plot.plotNumber && plot.plotNumber.toLowerCase().includes(searchPlotNumber.toLowerCase()));
+      const matchesNumber = debouncedSearchPlotNumber === '' || (plot.plotNumber && plot.plotNumber.toLowerCase().includes(debouncedSearchPlotNumber.toLowerCase()));
       return matchesBlock && matchesNumber;
     });
-  }, [plots, selectedBlockFilter, searchPlotNumber]);
+  }, [plots, selectedBlockFilter, debouncedSearchPlotNumber]);
 
   // Filter hotspots based on block filter
   const filteredHotspots = useMemo(() => {

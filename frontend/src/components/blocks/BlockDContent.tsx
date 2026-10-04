@@ -54,10 +54,12 @@ import FaqAccordion from '@/components/ui/FaqAccordion';
 import ExpandingProjectsShowcase, { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
 import FormattedText from '@/components/ui/FormattedText';
 import { DynamicPlotSeriesExplorer } from '../plots/DynamicPlotSeriesExplorer';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 export default function BlockDContent() {
   // Live CMS State
   const [cms, setCms] = useState<BlockDCMSData>(initialBlockDCMS);
+  const { directionsUrl } = useContactChannels();
 
   // Plot Filters & Interactive States
   const [selectedSizeFilter, setSelectedSizeFilter] = useState<string>('All');
@@ -388,7 +390,7 @@ export default function BlockDContent() {
                 <span className="text-xs font-bold text-slate-900">Block D Live Location Map</span>
               </div>
               <a
-                href="https://maps.google.com/?q=Faisal+Hills+Taxila"
+                href={directionsUrl(cms.location?.googleMapIframeUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[11px] font-semibold text-[#7b002c] hover:text-[#9e1245] inline-flex items-center gap-1"

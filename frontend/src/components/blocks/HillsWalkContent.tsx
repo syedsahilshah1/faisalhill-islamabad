@@ -50,8 +50,14 @@ import {
 import LeadModal from '@/components/ui/LeadModal';
 import {
   PlotItem,
-  fetchPlots
+  fetchPlots,
+  HillsWalkCMSData,
+  initialHillsWalkCMS,
+  fetchHillsWalkCMS,
+  mergeHillsWalkCMS,
+  formatWhatsAppUrl
 } from '@/data/faisalHillsData';
+import FormattedText from '@/components/ui/FormattedText';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TextReveal from '@/components/ui/TextReveal';
@@ -333,8 +339,13 @@ export default function HillsWalkContent() {
   const [selectedCalcSize, setSelectedCalcSize] = useState<'4 Marla' | '5.8 Marla' | '8 Marla' | '10 Marla'>('4 Marla');
   const [formData, setFormData] = useState({ name: '', phone: '', size: '4 Marla Commercial', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [cms, setCms] = useState<HillsWalkCMSData>(initialHillsWalkCMS);
 
   useEffect(() => {
+    fetchHillsWalkCMS().then((hwData) => {
+      if (hwData) setCms(mergeHillsWalkCMS(hwData));
+    });
+
     fetchPlots()
       .then((data) => {
         const filtered = data.filter((p) => p.blockSlug === 'hills-walk' || (p.blockName && p.blockName.toLowerCase().includes('hills walk')));
@@ -343,6 +354,26 @@ export default function HillsWalkContent() {
         }
       })
       .catch(console.error);
+
+    const handleSync = () => {
+      try {
+        const local = localStorage.getItem('faisal_hills_walk_cms');
+        if (local) setCms(mergeHillsWalkCMS(JSON.parse(local)));
+      } catch {}
+      fetchPlots()
+        .then((data) => {
+          const filtered = data.filter((p) => p.blockSlug === 'hills-walk' || (p.blockName && p.blockName.toLowerCase().includes('hills walk')));
+          if (filtered.length > 0) setAllPlots(filtered);
+        })
+        .catch(console.error);
+    };
+
+    window.addEventListener('faisal_hills_walk_cms_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('faisal_hills_walk_cms_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
   const otherBlocks = useMemo(() => {
@@ -354,45 +385,76 @@ export default function HillsWalkContent() {
     return allPlots.filter((p) => p.size.toLowerCase().includes(selectedSizeFilter.toLowerCase()));
   }, [allPlots, selectedSizeFilter]);
 
+  const priceRows = useMemo(() => {
+    return (cms.priceSchedule.rows && cms.priceSchedule.rows.length > 0)
+      ? cms.priceSchedule.rows
+      : hillsWalkPriceSchedule;
+  }, [cms.priceSchedule.rows]);
+
+  const travelTimes = useMemo(() => {
+    return (cms.location?.driveTimes && cms.location.driveTimes.length > 0)
+      ? cms.location.driveTimes
+      : hillsWalkTravelTimes;
+  }, [cms.location?.driveTimes]);
+
+  const whyInvestReasons = useMemo(() => {
+    return (cms.investmentRoi?.keyPoints && cms.investmentRoi.keyPoints.length > 0)
+      ? cms.investmentRoi.keyPoints
+      : [
+          { title: 'Unmatched High-Street Demand', desc: 'Brand franchises and national bank chains actively seeking flagship locations in northern Islamabad.' },
+          { title: 'High-Density Captive Audience', desc: 'Over 50,000 residential plots surrounding Hills Walk guarantee continuous foot traffic.' },
+          { title: 'Flexible Construction Bylaws', desc: 'Approved Ground + 5 storeys maximize usable leasable square footage per square yard.' }
+        ];
+  }, [cms.investmentRoi?.keyPoints]);
+
+  const faqItems = useMemo(() => {
+    return (cms.faqs.items && cms.faqs.items.length > 0)
+      ? cms.faqs.items
+      : hillsWalkFaqs;
+  }, [cms.faqs.items]);
+
   const filteredAmenities = useMemo(() => {
     if (selectedAmenityCategory === 'All') return hillsWalkAmenities;
     return hillsWalkAmenities.filter((a) => a.category === selectedAmenityCategory);
   }, [selectedAmenityCategory]);
 
-  const calcDetails = {
-    '4 Marla': {
-      price: 'PKR 2.20 Cr – 2.80 Cr',
-      rental: 'PKR 1.8 Lacs – 2.4 Lacs / month',
-      yield: '11.5% Projected Yield',
-      dimensions: '30 × 30 (100 Sq. Yds)',
-      floors: 'Ground + 4 Storey Approval',
-      suitability: 'Boutique retail, cafes, fashion showrooms & medical clinics.'
-    },
-    '5.8 Marla': {
-      price: 'PKR 3.50 Cr – 4.80 Cr',
-      rental: 'PKR 3.2 Lacs – 4.2 Lacs / month',
-      yield: '12.2% Projected Yield',
-      dimensions: '40 × 40 (145 Sq. Yds)',
-      floors: 'Ground + 5 Storey Approval',
-      suitability: 'Corporate banking hubs, brand flagships, pharmacies & multi-floor arcades.'
-    },
-    '8 Marla': {
-      price: 'PKR 5.20 Cr – 6.90 Cr',
-      rental: 'PKR 4.8 Lacs – 6.5 Lacs / month',
-      yield: '13.0% Projected Yield',
-      dimensions: '45 × 40 (200 Sq. Yds)',
-      floors: 'Ground + 6 Storey Approval',
-      suitability: 'Flagship commercial arcade overlooking amphitheater & alfresco dining.'
-    },
-    '10 Marla': {
-      price: 'PKR 7.80 Cr – 9.50 Cr',
-      rental: 'PKR 7.5 Lacs – 9.8 Lacs / month',
-      yield: '14.2% Projected Yield',
-      dimensions: '50 × 45 (250 Sq. Yds)',
-      floors: 'High-Rise Commercial Approval',
-      suitability: 'Corporate multi-storey headquarters, boutique hotel suites & banking towers.'
-    }
-  }[selectedCalcSize];
+  const calcDetails = useMemo(() => {
+    const defaultCalcs: Record<string, { price: string; rental: string; yield: string; dimensions: string; floors: string; suitability: string }> = {
+      '4 Marla': {
+        price: 'PKR 2.20 Cr – 2.80 Cr',
+        rental: 'PKR 1.8 Lacs – 2.4 Lacs / month',
+        yield: '11.5% Projected Yield',
+        dimensions: '30 × 30 (100 Sq. Yds)',
+        floors: 'Ground + 4 Storey Approval',
+        suitability: 'Boutique retail, cafes, fashion showrooms & medical clinics.'
+      },
+      '5.8 Marla': {
+        price: 'PKR 3.50 Cr – 4.80 Cr',
+        rental: 'PKR 3.2 Lacs – 4.2 Lacs / month',
+        yield: '12.2% Projected Yield',
+        dimensions: '40 × 40 (145 Sq. Yds)',
+        floors: 'Ground + 5 Storey Approval',
+        suitability: 'Corporate banking hubs, brand flagships, pharmacies & multi-floor arcades.'
+      },
+      '8 Marla': {
+        price: 'PKR 5.20 Cr – 6.90 Cr',
+        rental: 'PKR 4.8 Lacs – 6.5 Lacs / month',
+        yield: '13.0% Projected Yield',
+        dimensions: '45 × 40 (200 Sq. Yds)',
+        floors: 'Ground + 6 Storey Approval',
+        suitability: 'Flagship commercial arcade overlooking amphitheater & alfresco dining.'
+      },
+      '10 Marla': {
+        price: 'PKR 7.80 Cr – 9.50 Cr',
+        rental: 'PKR 7.5 Lacs – 9.8 Lacs / month',
+        yield: '14.2% Projected Yield',
+        dimensions: '50 × 45 (250 Sq. Yds)',
+        floors: 'High-Rise Commercial Approval',
+        suitability: 'Corporate multi-storey headquarters, boutique hotel suites & banking towers.'
+      }
+    };
+    return defaultCalcs[selectedCalcSize] || defaultCalcs['4 Marla'];
+  }, [selectedCalcSize]);
 
   const handleSubmitLead = (e: React.FormEvent) => {
     e.preventDefault();
@@ -410,28 +472,28 @@ export default function HillsWalkContent() {
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
           <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Commercial Plaza Cuts</span>
           <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-[#7b002c]">
-            <CountUpNumber end={450} suffix="+" duration={1800} />
+            {cms.overview?.quickFacts?.commercialCuttings || '450+ Plots'}
           </div>
           <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">4, 5.8, 8 & 10 Marla arcade plots</span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
           <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">RDA Approved NOC</span>
           <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-emerald-700">
-            <CountUpNumber end={100} suffix="%" duration={1800} />
+            {cms.hero?.badge1 || '100% RDA Approved'}
           </div>
           <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">Fully sanctioned commercial layout</span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
           <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Projected Rental Yield</span>
           <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
-            <CountUpNumber end={12} prefix="+" suffix="%+" duration={2000} />
+            {cms.investmentRoi?.projectedYield || '9% – 12% Annual Yield'}
           </div>
           <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">High demand from 35,000+ residents</span>
         </div>
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
           <span className="text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider block">Promenade Width</span>
           <div className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
-            <CountUpNumber end={80} suffix="ft+" duration={1800} />
+            {cms.hero?.badge2 || '80ft+ Wide Promenade'}
           </div>
           <span className="text-[11px] sm:text-xs text-slate-500 font-sans block">European cobblestone boulevard</span>
         </div>
@@ -449,7 +511,7 @@ export default function HillsWalkContent() {
               <div className="space-y-4">
                 <TextReveal
                   as="h1"
-                  text="Faisal Hills Walk Commercial Promenade Overview"
+                  text={cms.overview.h1 || "Faisal Hills Walk Commercial Promenade Overview"}
                   className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight"
                   staggerDelay={65}
                   direction="left"
@@ -535,7 +597,10 @@ export default function HillsWalkContent() {
           <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[560px] rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
             <iframe
               title="Faisal Hills Walk Commercial Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
+              // Reads the dashboard-editable field the CMS already carries. This
+              // was a hardcoded iframe URL, so editing the map in the Hills Walk
+              // editor had no effect on the public page.
+              src={cms.location?.googleMapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13269.456075191247!2d72.7845308!3d33.7275817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfa196120894bb%3A0xe541ca62c4c8d5a8!2sFaisal%20Hills%2C%20Taxila%2C%20Rawalpindi!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -564,7 +629,7 @@ export default function HillsWalkContent() {
         </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {hillsWalkTravelTimes.map((dest, idx) => (
+          {travelTimes.map((dest: any, idx: number) => (
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs hover:border-[#7b002c]/40 hover:shadow-md transition-all space-y-2.5 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between gap-2">
@@ -702,7 +767,7 @@ export default function HillsWalkContent() {
 
           {/* Mobile View: Clean Responsive Price Cards */}
           <div className="block sm:hidden space-y-3">
-            {hillsWalkPriceSchedule.map((row, idx) => (
+            {priceRows.map((row, idx) => (
               <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -761,7 +826,7 @@ export default function HillsWalkContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-slate-700">
-                  {hillsWalkPriceSchedule.map((row, idx) => (
+                  {priceRows.map((row, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
                       <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2 whitespace-nowrap">
                         <span className="w-2 h-2 rounded-full bg-[#7b002c]" />
@@ -905,9 +970,7 @@ export default function HillsWalkContent() {
                       </button>
 
                       <a
-                        href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                          `Hi! I am interested in booking Hills Walk Commercial Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`
-                        )}`}
+                        href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, (`Hi! I am interested in booking Hills Walk Commercial Plot #${plot.plotNumber} (${plot.size} - ${plot.priceFormatted}). Please share verification & transfer details.`))}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-2 py-1.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-[11px] font-bold rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 shadow-sm text-center"
@@ -934,7 +997,7 @@ export default function HillsWalkContent() {
             </div>
 
             <a
-              href="https://wa.me/923331113177?text=Hello!%20I%20want%20to%20list%20or%20sell%20my%20commercial%20plot%20in%20Faisal%20Hills%20Walk."
+              href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, "Hello! I want to list or sell my commercial plot in Faisal Hills Walk.")}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white hover:bg-rose-50 text-[#7b002c] text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg shrink-0 flex items-center gap-2"
@@ -1003,7 +1066,7 @@ export default function HillsWalkContent() {
                     <p className="text-xs text-slate-600 leading-relaxed font-sans">{amenity.description}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-200/80">
-                    {amenity.features.map((f, fIdx) => (
+                    {Array.isArray(amenity.features) && amenity.features.map((f: string, fIdx: number) => (
                       <span key={fIdx} className="text-[11px] text-slate-700 flex items-center gap-1 font-sans">
                         <Check className="w-3 h-3 text-emerald-600 shrink-0" />
                         <span className="truncate">{f}</span>
@@ -1167,9 +1230,7 @@ export default function HillsWalkContent() {
                     <span>View Available {selectedCalcSize} Plots</span>
                   </a>
                   <a
-                    href={`https://wa.me/923331113177?text=${encodeURIComponent(
-                      `Hello! I am interested in verified ${selectedCalcSize} commercial plots listed for sale in Faisal Hills Walk.`
-                    )}`}
+                    href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, (`Hello! I am interested in verified ${selectedCalcSize} commercial plots listed for sale in Faisal Hills Walk.`))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3 px-5 bg-[#7b002c] hover:bg-[#9e1245] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
@@ -1282,7 +1343,7 @@ export default function HillsWalkContent() {
 
               <div className="pt-2">
                 <a
-                  href="https://wa.me/923331113177?text=I%20am%20interested%20in%20verifying%20and%20booking%20a%20commercial%20plaza%20plot%20in%20Faisal%20Hills%20Walk."
+                  href={formatWhatsAppUrl(cms.inquirySection?.whatsappNumber, "I am interested in verifying and booking a commercial plaza plot in Faisal Hills Walk.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg hover:scale-[1.02] cursor-pointer"
@@ -1314,7 +1375,7 @@ export default function HillsWalkContent() {
           </div>
 
           <div className="space-y-3">
-            {hillsWalkFaqs.map((faq, idx) => (
+            {faqItems.map((faq: any, idx: number) => (
               <div
                 key={idx}
                 className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all shadow-xs"
@@ -1324,7 +1385,7 @@ export default function HillsWalkContent() {
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-serif font-bold text-slate-900 text-sm sm:text-base hover:text-[#7b002c] transition-colors cursor-pointer"
                 >
-                  <span>{faq.q}</span>
+                  <span>{faq.q || faq.question}</span>
                   <ChevronDown
                     className={`w-5 h-5 text-[#7b002c] shrink-0 transition-transform duration-300 ${
                       openFaq === idx ? 'rotate-180' : ''
@@ -1333,7 +1394,7 @@ export default function HillsWalkContent() {
                 </button>
                 {openFaq === idx && (
                   <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-600 font-sans leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
-                    {faq.a}
+                    {faq.a || faq.answer}
                   </div>
                 )}
               </div>

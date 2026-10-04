@@ -15,7 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active_user' => \App\Http\Middleware\EnsureUserIsActive::class,
             'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+            'can' => \App\Http\Middleware\RequirePermission::class,
+            'setting.permission' => \App\Http\Middleware\RequireSettingPermission::class,
+            'cache.headers' => \App\Http\Middleware\CacheResponseHeaders::class,
         ]);
+
+        // Public GET responses get ETag + Cache-Control + stale-while-revalidate
+        // so repeat visits and ISR revalidations are answered without touching
+        // the controllers. Applied last so it sees the final response.
+        $middleware->api(append: [\App\Http\Middleware\CacheResponseHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

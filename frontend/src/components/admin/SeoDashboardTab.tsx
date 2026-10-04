@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useDebouncedValue } from '@/lib/useDebounce';
 import { 
   Globe, Save, Search, Share2, Code, FileText, CheckCircle2, 
   AlertCircle, ExternalLink, Link2, Plus, Edit, Trash2, 
@@ -307,11 +308,22 @@ export default function SeoDashboardTab({
     }
   };
 
-  const filteredRedirects = redirects.filter(r => 
-    r.source_url.toLowerCase().includes(redirectSearch.toLowerCase()) ||
-    r.destination_url.toLowerCase().includes(redirectSearch.toLowerCase()) ||
-    (r.notes && r.notes.toLowerCase().includes(redirectSearch.toLowerCase()))
-  );
+  // Deferred so a long redirect list is filtered once per pause rather than
+  // once per keystroke, and so the query is lowercased once instead of three
+  // times per row.
+  const debouncedRedirectSearch = useDebouncedValue(redirectSearch, 200);
+
+  const filteredRedirects = useMemo(() => {
+    const query = debouncedRedirectSearch.trim().toLowerCase();
+
+    if (query === '') return redirects;
+
+    return redirects.filter(r =>
+      r.source_url.toLowerCase().includes(query) ||
+      r.destination_url.toLowerCase().includes(query) ||
+      (r.notes && r.notes.toLowerCase().includes(query))
+    );
+  }, [redirects, debouncedRedirectSearch]);
 
   return (
     <div className="space-y-8 font-sans">

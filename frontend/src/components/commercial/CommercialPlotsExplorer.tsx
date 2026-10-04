@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { fetchPlots, PlotItem, formatPlotPrice } from '@/data/faisalHillsData';
+import { useDebouncedValue } from '@/lib/useDebounce';
 import {
   Building2,
   MapPin,
@@ -32,6 +33,7 @@ import {
   Percent,
   Check
 } from 'lucide-react';
+import { useContactChannels } from '@/lib/useContactChannels';
 
 export interface CommercialPlotDetail {
   id: string;
@@ -548,6 +550,10 @@ export const COMMERCIAL_PLOTS_INVENTORY: CommercialPlotDetail[] = [
 
 export const CommercialPlotsExplorer: React.FC = () => {
   const [selectedBlock, setSelectedBlock] = useState<string>('all');
+  // Contact channels come from social_links / contact_info so a
+  // number changed in the dashboard updates every link on this page.
+  const { whatsappUrl, telUrl } = useContactChannels();
+
   const [selectedSize, setSelectedSize] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -627,8 +633,14 @@ export const CommercialPlotsExplorer: React.FC = () => {
     return () => window.removeEventListener('faisal_plots_updated', syncPlots);
   }, []);
 
+  // Deferred so the filter-plus-sort pass over the merged commercial inventory
+  // runs once per pause rather than once per character.
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 200);
+
   // Filtered & Sorted Plots
   const filteredPlots = useMemo(() => {
+    const trimmedQuery = debouncedSearchQuery.trim();
+
     return liveCommercialPlots.filter((plot) => {
       // Block filter
       if (selectedBlock !== 'all' && plot.blockSlug !== selectedBlock) {
@@ -648,8 +660,8 @@ export const CommercialPlotsExplorer: React.FC = () => {
         if (selectedStatus === 'hot-deal' && !plot.badge?.toLowerCase().includes('deal') && !plot.badge?.toLowerCase().includes('top') && !plot.badge?.toLowerCase().includes('mega')) return false;
       }
       // Search query
-      if (searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase();
+      if (trimmedQuery !== '') {
+        const q = trimmedQuery.toLowerCase();
         const matches =
           plot.plotNumber.toLowerCase().includes(q) ||
           plot.title.toLowerCase().includes(q) ||
@@ -668,7 +680,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
       if (sortBy === 'size-desc') return b.sizeMarla - a.sizeMarla;
       return 0; // featured default order
     });
-  }, [liveCommercialPlots, selectedBlock, selectedSize, selectedStatus, searchQuery, sortBy]);
+  }, [liveCommercialPlots, selectedBlock, selectedSize, selectedStatus, debouncedSearchQuery, sortBy]);
 
   const handleOpenModal = (plot: CommercialPlotDetail) => {
     setSelectedPlotModal(plot);
@@ -977,7 +989,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
                     </button>
 
                     <a
-                      href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20am%20interested%20in%20commercial%20plot%20${plot.plotNumber}%20(${plot.sizeLabel}%20in%20${plot.blockName},%20Price:%20${plot.priceFormatted}).%20Please%20share%20complete%20details%20and%20payment%20plan.`}
+                      href={whatsappUrl("Hi Faisal Hills Commercial Desk, I am interested in commercial plot ${plot.plotNumber} (${plot.sizeLabel} in ${plot.blockName}, Price: ${plot.priceFormatted}). Please share complete details and payment plan.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-1.5 sm:py-2.5 px-2 sm:px-3 bg-[#7b002c] hover:bg-[#9e1245] text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all cursor-pointer"
@@ -1275,7 +1287,7 @@ export const CommercialPlotsExplorer: React.FC = () => {
                 </button>
 
                 <a
-                  href={`https://wa.me/923331113177?text=Hi%20Faisal%20Hills%20Commercial%20Desk,%20I%20want%20to%20reserve/book%20commercial%20plot%20${selectedPlotModal.plotNumber}%20(${selectedPlotModal.sizeLabel}%20in%20${selectedPlotModal.blockName}).%20Please%20guide%20me%20on%20the%20booking%20procedure.`}
+                  href={whatsappUrl("Hi Faisal Hills Commercial Desk, I want to reserve/book commercial plot ${selectedPlotModal.plotNumber} (${selectedPlotModal.sizeLabel} in ${selectedPlotModal.blockName}). Please guide me on the booking procedure.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"

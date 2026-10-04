@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class RedirectController extends Controller
 {
+    private const CACHE_ACTIVE = 'fh_redirects_active';
+
+    private const CACHE_ACTIVE_TTL = 300;
+
     /**
      * Get all redirects (for admin management)
      */
@@ -18,10 +23,19 @@ class RedirectController extends Controller
 
     /**
      * Get only active redirects (public fast endpoint for Next.js middleware)
+     *
+     * This endpoint sits in front of every single page request, so it is served
+     * from cache. Without the cache each page view costs a query plus the
+     * hydration cost of deserialising the result.
      */
     public function active()
     {
-        $redirects = Redirect::where('is_active', true)->select(['source_url', 'destination_url', 'status_code'])->get();
+        $redirects = Cache::remember(self::CACHE_ACTIVE, self::CACHE_ACTIVE_TTL, function () {
+            return Redirect::where('is_active', true)
+                ->select(['source_url', 'destination_url', 'status_code'])
+                ->get();
+        });
+
         return response()->json($redirects);
     }
 
@@ -45,6 +59,8 @@ class RedirectController extends Controller
         if (!isset($validated['is_active'])) $validated['is_active'] = true;
 
         $redirect = Redirect::create($validated);
+
+        $this->flushActiveCache();
 
         return response()->json([
             'message' => 'Redirect created successfully',
@@ -72,6 +88,8 @@ class RedirectController extends Controller
 
         $redirect->update($validated);
 
+        $this->flushActiveCache();
+
         return response()->json([
             'message' => 'Redirect updated successfully',
             'redirect' => $redirect
@@ -80,19 +98,24 @@ class RedirectController extends Controller
 
     /**
      * Increment hit counter when a redirect is triggered
+     *
+     * Uses a single atomic UPDATE rather than read-then-write. The old shape
+     * cost a SELECT plus an UPDATE on a code path the Next.js middleware hits
+     * once per matched redirect, which made the counter a write-amplification
+     * point under traffic.
      */
     public function incrementHit(Request $request)
     {
         $request->validate(['source_url' => 'required|string']);
         $source = '/' . ltrim($request->source_url, '/');
-        
-        $redirect = Redirect::where('source_url', $source)->first();
-        if ($redirect) {
-            $redirect->increment('hits');
-            return response()->json(['success' => true, 'hits' => $redirect->hits]);
+
+        $affected = Redirect::where('source_url', $source)->increment('hits');
+
+        if ($affected === 0) {
+            return response()->json(['success' => false], 404);
         }
-        
-        return response()->json(['success' => false], 404);
+
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -103,8 +126,15 @@ class RedirectController extends Controller
         $redirect = Redirect::findOrFail($id);
         $redirect->delete();
 
+        $this->flushActiveCache();
+
         return response()->json([
             'message' => 'Redirect deleted successfully'
         ]);
+    }
+
+    private function flushActiveCache(): void
+    {
+        Cache::forget(self::CACHE_ACTIVE);
     }
 }

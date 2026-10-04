@@ -3,17 +3,21 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 
-interface FAQItem {
-  question: string;
-  answer: string;
+export interface FAQItem {
+  question?: string;
+  answer?: string;
+  q?: string;
+  a?: string;
 }
 
 interface FaqAccordionProps {
-  faqs: FAQItem[];
+  faqs?: (FAQItem | { q: string; a: string } | { question: string; answer: string })[];
+  items?: (FAQItem | { q: string; a: string } | { question: string; answer: string })[];
   blockName?: string;
 }
 
-export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAccordionProps) {
+export default function FaqAccordion({ faqs, items, blockName = 'Faisal Hills' }: FaqAccordionProps) {
+  const faqList = faqs || items || [];
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleIndex = (idx: number) => {
@@ -22,8 +26,10 @@ export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAc
 
   return (
     <div className="space-y-3 max-w-4xl w-full mx-auto">
-      {faqs.map((faq, idx) => {
+      {faqList.map((faq, idx) => {
         const isOpen = openIndex === idx;
+        const qText = (faq as any).question || (faq as any).q || '';
+        const aText = (faq as any).answer || (faq as any).a || '';
         return (
           <div
             key={idx}
@@ -48,7 +54,7 @@ export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAc
                     isOpen ? 'text-[#7b002c]' : 'text-slate-800'
                   }`}
                 >
-                  {faq.question}
+                  {qText}
                 </span>
               </div>
               <div
@@ -69,7 +75,7 @@ export default function FaqAccordion({ faqs, blockName = 'Faisal Hills' }: FaqAc
               }`}
             >
               <div className="p-5 pl-14 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans bg-slate-50/50">
-                {faq.answer}
+                {aText}
               </div>
             </div>
           </div>
