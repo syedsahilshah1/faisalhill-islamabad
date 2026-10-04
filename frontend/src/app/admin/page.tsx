@@ -1,9 +1,15 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboardRedirect() {
-  redirect('/ubaid/admin/login');
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/ubaid/admin/login');
+  }, [router]);
+
   return null;
 }
 

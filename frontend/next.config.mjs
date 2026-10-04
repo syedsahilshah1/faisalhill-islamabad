@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
+const isVercel = Boolean(process.env.VERCEL);
+
 const nextConfig = {
-  output: process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : 'export',
+  output: isVercel
+    ? undefined
+    : (process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : 'export'),
   trailingSlash: true,
   reactStrictMode: true,
   images: {
