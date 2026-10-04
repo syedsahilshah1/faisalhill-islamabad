@@ -1386,6 +1386,8 @@ export interface LeadItem {
   id: string;
   name: string;
   phone: string;
+  /** Captured from the enquiry form; optional because phone-only leads exist. */
+  email?: string;
   interest: string;
   message?: string;
   submittedAt: string;
@@ -1898,11 +1900,12 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
   }
 }
 
-export async function submitLead(lead: { name: string; phone: string; interest?: string; message?: string }): Promise<any> {
+export async function submitLead(lead: { name: string; phone: string; email?: string; interest?: string; message?: string }): Promise<any> {
   const localLead: LeadItem = {
     id: `lead-${Date.now()}`,
     name: lead.name,
     phone: lead.phone,
+    email: lead.email,
     interest: lead.interest || 'General Inquiry',
     message: lead.message,
     submittedAt: formatLeadDateTime()
@@ -1913,8 +1916,7 @@ export async function submitLead(lead: { name: string; phone: string; interest?:
       const existing = JSON.parse(localStorage.getItem('faisal_leads_data') || '[]');
       const isDuplicate = existing.some((item: any) =>
         item.name === localLead.name && item.phone === localLead.phone && (item.message === localLead.message || item.interest === localLead.interest)
-      );
-      if (!isDuplicate) {
+      );      if (!isDuplicate) {
         localStorage.setItem('faisal_leads_data', JSON.stringify([localLead, ...existing]));
         window.dispatchEvent(new Event('faisal_leads_updated'));
       }
@@ -1929,7 +1931,29 @@ export async function submitLead(lead: { name: string; phone: string; interest?:
     },
     body: JSON.stringify(lead),
   });
-  if (!res.ok) throw new Error('Failed to submit lead');
+
+  if (!res.ok) {
+    // Surface *why* the server refused instead of a bare "failed".
+    //
+    // The lead endpoint fails for very different reasons — a 422 for a malformed
+    // address, a 429 once the rate limiter trips, a 500 when the database schema
+    // is behind the code — and a single generic message sends the visitor to
+    // retry something that will never succeed while telling the developer
+    // nothing. Laravel's `message` and its field-keyed `errors` map are written
+    // for end users, so they are safe to pass through; anything unrecognised
+    // falls back to the status code.
+    const body = await res.json().catch(() => null);
+    const fieldErrors = body?.errors
+      ? Object.values(body.errors).flat().filter((e): e is string => typeof e === 'string')
+      : [];
+
+    throw new Error(
+      fieldErrors[0] ||
+      (typeof body?.message === 'string' && body.message) ||
+      `Submission failed (HTTP ${res.status}).`
+    );
+  }
+
   return await res.json();
 }
 

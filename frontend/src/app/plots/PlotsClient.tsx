@@ -41,6 +41,7 @@ import {
 import { getStandardDimensionsForSize } from '@/utils/plotSeriesEngine';
 import { useDebouncedValue } from '@/lib/useDebounce';
 import LeadModal from '@/components/ui/LeadModal';
+import QuickLeadModal from '@/components/ui/QuickLeadModal';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { useContactChannels } from '@/lib/useContactChannels';
 
@@ -66,6 +67,7 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
 
   const [activePlotForModal, setActivePlotForModal] = useState<PlotItem | null>(null);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [isQuickLeadOpen, setIsQuickLeadOpen] = useState(false);
 
   const [allPlots, setAllPlots] = useState<PlotItem[]>(initialPlots ?? []);
   const [isLoadingPlots, setIsLoadingPlots] = useState(!initialPlots);
@@ -196,7 +198,7 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-16 space-y-8">
-      {/* 1. TITLE & STATS HEADER */}
+      {/* 1. TITLE HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-[#7b002c] text-xs font-bold uppercase tracking-wider">
@@ -211,22 +213,30 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
           </p>
         </div>
 
-        {/* Quick Stats Pill */}
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm shrink-0">
-          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
-            <span className="block text-base font-bold text-[#7b002c]">{allPlots.length}+</span>
-            <span className="text-[10px] text-slate-500 font-semibold uppercase">Live Listings</span>
-          </div>
-          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
-            <span className="block text-base font-bold text-emerald-600">RDA NOC</span>
-            <span className="text-[10px] text-slate-500 font-semibold uppercase">100% Approved</span>
-          </div>
-          <div className="px-4 py-2 bg-slate-50 rounded-xl text-center">
-            <span className="block text-base font-bold text-slate-900">Direct</span>
-            <span className="text-[10px] text-slate-500 font-semibold uppercase">Transfer</span>
-          </div>
-        </div>
+        {/*
+          Replaces the static stats pill that used to sit here (live listing
+          count, RDA NOC status, direct transfer). Those were three fixed claims
+          that never changed. The button opens the enquiry form, which creates a
+          lead in the dashboard and emails the sales desk — so this space now
+          captures demand instead of restating claims.
+        */}
+        <button
+          type="button"
+          onClick={() => setIsQuickLeadOpen(true)}
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold uppercase tracking-wider rounded-2xl shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Ask About a Plot</span>
+        </button>
       </div>
+
+      <QuickLeadModal
+        isOpen={isQuickLeadOpen}
+        onClose={() => setIsQuickLeadOpen(false)}
+        defaultInterest="Plot Inventory Enquiry"
+        title="Ask About a Plot"
+        subtitle="Tell us the block and size you want. Our sales desk replies with verified rates, payment plans and current availability."
+      />
 
       {/* 2. UNIFIED MODERN FILTER BAR */}
       <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">

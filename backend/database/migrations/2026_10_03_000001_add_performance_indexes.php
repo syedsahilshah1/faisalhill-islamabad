@@ -111,7 +111,7 @@ return new class extends Migration
 
                     Plot::withoutTimestamps(fn () => Plot::query()
                         ->whereKey($plot->getKey())
-                        ->update(['search_index' => $this->buildSearchIndex($plot)]));
+                        ->update(['search_index' => $this->buildPlotSearchIndex($plot)]));
                 }
             });
     }

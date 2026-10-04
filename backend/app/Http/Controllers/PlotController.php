@@ -16,6 +16,15 @@ class PlotController extends Controller
 
     private const CACHE_ALL_TTL = 300;
 
+    /**
+     * Largest value this controller will hand to the cache.
+     *
+     * Deliberately well under a 1 MiB `max_allowed_packet` so the INSERT has room
+     * for its own envelope. The database cache driver writes the whole serialised
+     * value in one statement, so a larger payload is simply not cached.
+     */
+    private const CACHE_MAX_PAYLOAD_BYTES = 512 * 1024;
+
     /** Filtered permutations are short lived and bounded in number. */
     private const CACHE_QUERY_PREFIX = 'fh_plots_q_';
 
@@ -49,10 +58,15 @@ class PlotController extends Controller
         $registry = $this->registry();
 
         if ($registry->register($cacheKey)) {
-            $cached = Cache::get($cacheKey);
+            try {
+                $cached = Cache::get($cacheKey);
 
-            if ($cached !== null) {
-                return $this->respond($cached);
+                if ($cached !== null) {
+                    return $this->respond($cached);
+                }
+            } catch (\Throwable $e) {
+                // Fall through to the query rather than failing the request.
+                report($e);
             }
         }
 
@@ -67,7 +81,16 @@ class PlotController extends Controller
             ->ordered()
             ->get();
 
-        Cache::put($cacheKey, $plots, self::CACHE_QUERY_TTL);
+        try {
+            // Guarded for the same reason as the read: an oversized result must
+            // cost a query, never a 500. A broad filter can match nearly the whole
+            // inventory and hit the same packet ceiling as the unfiltered list.
+            if (strlen(serialize($plots)) <= self::CACHE_MAX_PAYLOAD_BYTES) {
+                Cache::put($cacheKey, $plots, self::CACHE_QUERY_TTL);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         // `limit` is applied after caching so one cached entry serves every
         // page size for the same filter combination.
@@ -131,11 +154,51 @@ class PlotController extends Controller
     }
 
     /**
+     * Read-through cache that cannot fail the request.
+     *
+     * The database cache driver writes the entire serialised value as a single
+     * INSERT, so any payload larger than the server's `max_allowed_packet` makes
+     * the write fail. MariaDB on this host is capped at exactly 1 MiB and the
+     * full inventory serialises to roughly 820 KB, so the margin disappeared as
+     * soon as a few plots were added: `/api/plots` began returning 500 for every
+     * visitor even though the underlying query was healthy and fast.
+     *
+     * Caching here is a latency optimisation, never a correctness requirement, so
+     * every read and write is guarded. An oversized or unwritable value is simply
+     * not cached, which costs one indexed query and returns the same data.
+     */
+    private function cacheRemember(string $key, int $ttl, callable $callback)
+    {
+        try {
+            $hit = Cache::get($key);
+
+            if ($hit !== null) {
+                return $hit;
+            }
+        } catch (\Throwable $e) {
+            // A cache read failure must not stop the data being served.
+            report($e);
+        }
+
+        $value = $callback();
+
+        try {
+            if (strlen(serialize($value)) <= self::CACHE_MAX_PAYLOAD_BYTES) {
+                Cache::put($key, $value, $ttl);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return $value;
+    }
+
+    /**
      * @return \Illuminate\Support\Collection<int, Plot>
      */
     private function allPlots()
     {
-        return Cache::remember(self::CACHE_ALL, self::CACHE_ALL_TTL, function () {
+        return $this->cacheRemember(self::CACHE_ALL, self::CACHE_ALL_TTL, function () {
             return Plot::query()->ordered()->get();
         });
     }

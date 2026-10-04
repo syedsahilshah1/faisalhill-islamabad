@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Lead extends Model
 {
     protected $fillable = [
-        'name', 'phone', 'interest', 'message', 'submitted_at'
+        'name', 'phone', 'email', 'interest', 'message', 'submitted_at'
     ];
 }

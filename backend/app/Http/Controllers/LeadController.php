@@ -29,7 +29,7 @@ class LeadController extends Controller
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:100',
-            'email' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
             'interest' => 'nullable|string|max:255',
             'message' => 'nullable|string',
         ]);
@@ -40,6 +40,10 @@ class LeadController extends Controller
         $lead = Lead::create([
             'name' => $name,
             'phone' => $phone,
+            // Persisted rather than only validated: the dashboard and the
+            // notification email both read it, and an enquiry that arrived by
+            // email would otherwise have no address on file to reply to.
+            'email' => $validated['email'] ?? null,
             'interest' => $validated['interest'] ?? 'General Inquiry',
             'message' => $validated['message'] ?? '',
             'submitted_at' => now()->format('d M Y, h:i A'),
@@ -60,15 +64,7 @@ class LeadController extends Controller
                 }
 
                 $subject = "🔔 New Lead Inquiry: " . $lead->name . " (" . $lead->interest . ")";
-                $emailBody = "🔔 New Lead Inquiry Received on Faisal Hills Portal\n\n"
-                    . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                    . "👤 Name: " . $lead->name . "\n"
-                    . "📞 Phone / Contact: " . $lead->phone . "\n"
-                    . "📌 Interest: " . $lead->interest . "\n"
-                    . "💬 Message: " . ($lead->message ?: 'No additional message') . "\n"
-                    . "⏰ Date/Time: " . now()->format('d M Y, h:i A') . "\n"
-                    . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                    . "Login to your admin panel to view all inquiries.";
+                $emailBody = $this->buildNotificationBody($lead);
 
                 Mail::raw($emailBody, function ($message) use ($superAdmins, $subject) {
                     $message->to($superAdmins)
@@ -84,6 +80,31 @@ class LeadController extends Controller
             'lead' => $lead,
             'message' => 'Inquiry submitted successfully!'
         ], 201);
+    }
+
+    /**
+     * Body of the "new lead" notification sent to the super admins.
+     *
+     * Extracted from `store()` because it is the only place the notification's
+     * contents are decided, and it was previously unreachable from a test:
+     * `MailFake::raw()` is a deliberate no-op, so `Mail::fake()` records nothing
+     * and `Mail::assertSent()` cannot observe this message at all. With the body
+     * built by a method, its contents can be asserted directly.
+     */
+    public function buildNotificationBody(Lead $lead): string
+    {
+        return "🔔 New Lead Inquiry Received on Faisal Hills Portal\n\n"
+            . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            . "👤 Name: " . $lead->name . "\n"
+            . "📞 Phone / Contact: " . $lead->phone . "\n"
+            // Only printed when supplied, so a phone-only enquiry does not
+            // produce a blank line in the notification.
+            . ($lead->email ? "✉️ Email: " . $lead->email . "\n" : "")
+            . "📌 Interest: " . $lead->interest . "\n"
+            . "💬 Message: " . ($lead->message ?: 'No additional message') . "\n"
+            . "⏰ Date/Time: " . now()->format('d M Y, h:i A') . "\n"
+            . "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+            . "Login to your admin panel to view all inquiries.";
     }
 
     public function destroy(int $id)

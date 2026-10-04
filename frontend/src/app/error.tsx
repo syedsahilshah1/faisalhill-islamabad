@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { RefreshCw, ArrowLeft } from 'lucide-react';
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export default function Error({
   error,
@@ -15,8 +17,21 @@ export default function Error({
     console.error(error);
   }, [error]);
 
+  useIsomorphicLayoutEffect(() => {
+    document.body.setAttribute('data-page-error', 'true');
+    window.dispatchEvent(new CustomEvent('page-error-state', { detail: { hasError: true } }));
+
+    return () => {
+      document.body.removeAttribute('data-page-error');
+      window.dispatchEvent(new CustomEvent('page-error-state', { detail: { hasError: false } }));
+    };
+  }, []);
+
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4 bg-slate-50">
+    <div
+      data-error-boundary="true"
+      className="min-h-[70vh] flex items-center justify-center px-4 pt-24 pb-12 sm:pt-28 bg-slate-50"
+    >
       <div className="bg-white p-8 sm:p-12 rounded-xl border border-slate-200 shadow-xl text-center max-w-md w-full space-y-6">
         <div className="w-16 h-16 bg-slate-100 text-[#7b002c] rounded-full flex items-center justify-center mx-auto shadow-inner">
           <RefreshCw className="w-8 h-8 text-[#7b002c]" />

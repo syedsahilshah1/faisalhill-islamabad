@@ -35,10 +35,29 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
 import { defaultFaisalHillsBlocks } from '@/components/ui/ExpandingProjectsShowcase';
+import QuickLeadModal from '@/components/ui/QuickLeadModal';
 import { useContactChannels } from '@/lib/useContactChannels';
 
-const getBlockUrl = (blockName: string): string => {
-  const b = (blockName || '').toLowerCase();
+/**
+ * Cards shown on the unfiltered homepage view.
+ *
+ * The full inventory page is the place to browse everything; the homepage only
+ * needs enough to look like a populated development.
+ */
+const DEFAULT_PLOT_PREVIEW = 6;
+
+/**
+ * Pseudo-tabs appended after the real blocks.
+ *
+ * These are cross-cutting views rather than blocks, so they cannot be derived
+ * from the inventory the way block tabs are.
+ */
+const HOMEPAGE_PLOT_CATEGORY_TABS = [
+  { label: 'Commercial Units', id: 'commercial' },
+  { label: 'Luxury Flats', id: 'apartments' }
+] as const;
+
+const getBlockUrl = (blockName: string): string => {  const b = (blockName || '').toLowerCase();
   if (b.includes('executive')) return '/blocks/executive-block';
   if (b.includes('prime')) return '/blocks/prime-block';
   if (b.includes('gandhara') || b.includes('gandahara')) return '/blocks/gandahara-block';
@@ -63,6 +82,7 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isMapDownloadModalOpen, setIsMapDownloadModalOpen] = useState(false);
   const [isPaymentPlanLightboxOpen, setIsPaymentPlanLightboxOpen] = useState(false);
+  const [isHeroLeadOpen, setIsHeroLeadOpen] = useState(false);
   const [isPaymentPlanDownloadOpen, setIsPaymentPlanDownloadOpen] = useState(false);
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const [isWhyChooseExpanded, setIsWhyChooseExpanded] = useState(false);
@@ -227,12 +247,71 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
   const [blogs, setBlogs] = useState<BlogItem[]>(initialBlogsData);
   const [activePlotTab, setActivePlotTab] = useState<string>('all');
 
-  const displayedPlots = useMemo(() => {
+  /**
+ * Block filter tabs, derived from the inventory that was actually loaded.
+ *
+ * These used to be a hardcoded list of four blocks. Any plot in a block that was
+ * not on it — Block C, Block D, Faisal Jewels, or any block added later — could
+ * not be reached from the homepage at all, so a plot uploaded to one of those
+ * blocks was invisible there while showing perfectly on its own block page.
+ * Deriving the tabs means a new block shows up as soon as it has a plot.
+ */
+const homepagePlotTabs = useMemo(() => {
+  const tabs: { label: string; id: string }[] = [{ label: 'All Inventory', id: 'all' }];
+  const seen = new Set<string>();
+
+  for (const plot of plots.length > 0 ? plots : plotInventoryData) {
+    const slug = (plot.blockSlug || '').trim();
+
+    if (!slug || seen.has(slug)) continue;
+
+    seen.add(slug);
+    tabs.push({ label: (plot.blockName || slug).trim(), id: slug });
+  }
+
+  tabs.push(...HOMEPAGE_PLOT_CATEGORY_TABS);
+
+  return tabs;
+}, [plots]);
+
+const displayedPlots = useMemo(() => {
     const list = plots.length > 0 ? plots : plotInventoryData;
-    if (activePlotTab === 'all') return list.slice(0, 6);
-    if (activePlotTab === 'commercial') return list.filter(p => p.category === 'Commercial' || p.propertyType === 'Commercial').slice(0, 6);
-    if (activePlotTab === 'apartments') return list.filter(p => p.category === 'Apartment').slice(0, 6);
-    return list.filter(p => p.blockSlug === activePlotTab).slice(0, 6);
+
+    // A block tab that no longer exists in the data (block deleted, or a stale
+    // selection held across a reload) would otherwise render an empty grid with
+    // no way back, so fall through to the full list instead.
+    const knownTab =
+      activePlotTab === 'all' ||
+      activePlotTab === 'commercial' ||
+      activePlotTab === 'apartments' ||
+      homepagePlotTabs.some((t) => t.id === activePlotTab);
+
+    if (!knownTab) return list.slice(0, DEFAULT_PLOT_PREVIEW);
+
+    if (activePlotTab === 'all') return list.slice(0, DEFAULT_PLOT_PREVIEW);
+    if (activePlotTab === 'commercial') return list.filter(p => p.category === 'Commercial' || p.propertyType === 'Commercial');
+    if (activePlotTab === 'apartments') return list.filter(p => p.category === 'Apartment');
+    return list.filter(p => p.blockSlug === activePlotTab);
+  }, [plots, activePlotTab, homepagePlotTabs]);
+
+  /**
+   * How many matching plots the active tab holds.
+   *
+   * The grid used to cap every tab at six cards. On the default view that is a
+   * reasonable showcase, but it also applied to a block the visitor had
+   * explicitly chosen — so selecting a block with nine plots silently hid three,
+   * including any just uploaded. Only the unfiltered view is capped now; a
+   * selected tab always shows everything it matches, and this count lets the
+   * page say so honestly.
+   */
+  const totalMatchingPlots = useMemo(() => {
+    const list = plots.length > 0 ? plots : plotInventoryData;
+
+    if (activePlotTab === 'commercial') return list.filter(p => p.category === 'Commercial' || p.propertyType === 'Commercial').length;
+    if (activePlotTab === 'apartments') return list.filter(p => p.category === 'Apartment').length;
+    if (activePlotTab === 'all') return list.length;
+
+    return list.filter(p => p.blockSlug === activePlotTab).length;
   }, [plots, activePlotTab]);
 
   useEffect(() => {
@@ -463,6 +542,23 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
 
                 {/* Action Buttons */}
                 <div className="flex items-center flex-wrap gap-2 justify-center">
+                  {/*
+                    Opens the enquiry form rather than linking away. The hero
+                    filter is the first thing a visitor interacts with, so this is
+                    where an undecided buyer is most likely to want to talk to
+                    sales instead of running a search. The hero filter selections
+                    are forwarded as the lead's interest, so the sales desk can
+                    see what the visitor was actually looking at.
+                  */}
+                  <button
+                    type="button"
+                    onClick={() => setIsHeroLeadOpen(true)}
+                    className="px-3 py-1 rounded-full bg-[#7b002c] text-white hover:bg-[#9e1245] text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-white shrink-0" />
+                    <span>Contact</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setIsPaymentPlanLightboxOpen(true)}
@@ -490,6 +586,26 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
         </div>
 
       </section>
+
+      {/*
+        Enquiry form behind the hero's Contact button. Placed as a sibling of the
+        hero rather than inside it because the hero is `overflow-hidden` with a
+        fixed viewport height, which would clip a fixed-position dialog.
+
+        The hero filter selections are forwarded as the lead's interest, so sales
+        can see what the visitor was searching for when they chose Contact.
+      */}
+      <QuickLeadModal
+        isOpen={isHeroLeadOpen}
+        onClose={() => setIsHeroLeadOpen(false)}
+        title="Talk to Our Sales Desk"
+        subtitle="Send your requirement and our sales desk will reply with verified rates, payment plans and current availability."
+        defaultInterest={
+          heroBlock === 'all'
+            ? 'Homepage Enquiry'
+            : `Homepage Enquiry (${heroBlock}${heroSize !== 'all' ? `, ${heroSize}` : ''})`
+        }
+      />
 
       {/* ========================================================= */}
       {/* SECTION 2 — STATS BAND BAR                                */}
@@ -1246,15 +1362,7 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
 
           {/* Block / Category Filter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-            {[
-              { label: 'All Inventory', id: 'all' },
-              { label: 'Executive Block', id: 'executive-block' },
-              { label: 'Block A', id: 'block-a' },
-              { label: 'Block B', id: 'block-b' },
-              { label: 'Prime Block', id: 'prime-block' },
-              { label: 'Commercial Units', id: 'commercial' },
-              { label: 'Luxury Flats', id: 'apartments' }
-            ].map((tab) => (
+            {homepagePlotTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActivePlotTab(tab.id)}
@@ -1269,6 +1377,18 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
           </div>
 
           {/* Plot Grid */}
+          {activePlotTab === 'all' && totalMatchingPlots > displayedPlots.length && (
+            <p className="text-xs text-slate-500 font-medium text-center">
+              Showing {displayedPlots.length} of {totalMatchingPlots} plots.{' '}
+              <Link
+                href="/plots"
+                className="text-[#7b002c] font-bold hover:underline"
+              >
+                View the full inventory
+              </Link>
+            </p>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {displayedPlots.map((plot) => (
               <div
@@ -1278,6 +1398,25 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
                 {/* Top Image & Badges */}
                 <div>
                   <div className="relative h-52 w-full overflow-hidden bg-slate-900">
+                    {/*
+                      The card image links into the inventory explorer, which is
+                      where a visitor can actually filter, compare and enquire.
+                      It is a link rather than a click handler so it opens in a
+                      new tab, is keyboard reachable, and shows its destination
+                      in the status bar. The badge row is kept above the link so
+                      the block/category labels stay readable instead of becoming
+                      part of the link text.
+                    */}
+                    <Link
+                      href={`/plots?search=${encodeURIComponent(plot.plotNumber || '')}`}
+                      aria-label={`View ${plot.plotNumber || 'plot'} in the inventory explorer`}
+                      className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400"
+                    >
+                      <span className="sr-only">
+                        View {plot.plotNumber || 'plot'} in the inventory explorer
+                      </span>
+                    </Link>
+
                     <img
                       src={plot.image || '/images/faisal-hills-overview.webp'}
                       alt={plot.plotNumber || plot.blockName}
@@ -2295,7 +2434,8 @@ export default function HomeClient({ initialCms }: HomeClientProps) {
               ))}
             </div>
           </div>
-        </section>
+</section>
+
       )}
 
       {/* ========================================================= */}

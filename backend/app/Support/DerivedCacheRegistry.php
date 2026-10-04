@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Cache;
  * Without this, every read representation (full list, each filter permutation,
  * each single record) needs its own hard-coded `Cache::forget()` at every write
  * site, and the moment one is missed the API serves stale inventory.
+ *
+ * Every cache call here is guarded. This registry sits in front of the cache
+ * rather than beside it, so an unguarded failure here propagates into the
+ * request that merely asked for a list of plots — an unwritable cache store
+ * would take the endpoint down rather than just slowing it down.
  */
 final class DerivedCacheRegistry
 {
@@ -41,7 +46,14 @@ final class DerivedCacheRegistry
         }
 
         $keys[] = $key;
-        Cache::put($this->registryKey, $keys, $this->registryTtl);
+
+        try {
+            Cache::put($this->registryKey, $keys, $this->registryTtl);
+        } catch (\Throwable $e) {
+            // Not being able to record the key only costs a later lookup. The
+            // caller still gets its data, so this must not propagate.
+            report($e);
+        }
 
         return true;
     }
@@ -52,15 +64,15 @@ final class DerivedCacheRegistry
      */
     public function flush(string ...$extraKeys): void
     {
-        foreach ($this->all() as $key) {
-            Cache::forget($key);
+        foreach (array_merge($this->all(), $extraKeys, [$this->registryKey]) as $key) {
+            try {
+                Cache::forget($key);
+            } catch (\Throwable $e) {
+                // Keep evicting the rest; one unwritable key must not strand the
+                // others and leave the API serving stale data.
+                report($e);
+            }
         }
-
-        foreach ($extraKeys as $key) {
-            Cache::forget($key);
-        }
-
-        Cache::forget($this->registryKey);
     }
 
     /**
@@ -68,7 +80,15 @@ final class DerivedCacheRegistry
      */
     private function all(): array
     {
-        $keys = Cache::get($this->registryKey, []);
+        try {
+            $keys = Cache::get($this->registryKey, []);
+        } catch (\Throwable $e) {
+            // Treated as "nothing tracked yet": every key gets its own write
+            // attempt, which is the same behaviour as a cold cache.
+            report($e);
+
+            return [];
+        }
 
         return is_array($keys) ? $keys : [];
     }

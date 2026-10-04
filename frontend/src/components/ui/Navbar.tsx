@@ -72,7 +72,47 @@ export default function Navbar() {
   // Scroll visibility & scroll position state
   const [isVisible, setIsVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hasPageError, setHasPageError] = useState(false);
   const lastScrollYRef = useRef(0);
+
+  // Monitor if an error boundary page is active
+  useEffect(() => {
+    const updateErrorState = () => {
+      if (typeof document !== 'undefined') {
+        const errorPresent =
+          document.body.hasAttribute('data-page-error') ||
+          Boolean(document.querySelector('[data-error-boundary]'));
+        setHasPageError(errorPresent);
+      }
+    };
+
+    updateErrorState();
+
+    const handleErrorEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ hasError: boolean }>;
+      setHasPageError(Boolean(customEvent.detail?.hasError));
+    };
+
+    window.addEventListener('page-error-state', handleErrorEvent);
+
+    let observer: MutationObserver | null = null;
+    if (typeof MutationObserver !== 'undefined' && document.body) {
+      observer = new MutationObserver(() => {
+        updateErrorState();
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['data-page-error'],
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    return () => {
+      window.removeEventListener('page-error-state', handleErrorEvent);
+      if (observer) observer.disconnect();
+    };
+  }, [pathname]);
 
   // Auto-close dropdowns when route changes
   useEffect(() => {
@@ -123,7 +163,7 @@ export default function Navbar() {
     pathname === '/faisal-hills-blocks' ||
     pathname?.startsWith('/blocks') ||
     isKnownBlockPage;
-  const isSolidNav = isScrolled || !isDarkHeroPage;
+  const isSolidNav = isScrolled || !isDarkHeroPage || hasPageError;
 
   // Hide main website navbar on Admin / Dashboard / Auth Recovery routes
   if (

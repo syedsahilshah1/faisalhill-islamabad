@@ -4278,6 +4278,19 @@ export default function AdminLoginPage() {
                       </span>
                     </div>
                     <p className="text-slate-700 text-xs font-semibold">Phone: {lead.phone}</p>
+                    {/* Only rendered when captured. Most enquiries arrive with a
+                        phone number only, so a blank row would just add noise. */}
+                    {lead.email && (
+                      <p className="text-slate-700 text-xs font-semibold">
+                        Email:{' '}
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="text-[#7b002c] hover:underline"
+                        >
+                          {lead.email}
+                        </a>
+                      </p>
+                    )}
                     {lead.message && (
                       <p className="text-slate-600 text-xs bg-white p-2 rounded border border-slate-200 mt-1 italic">
                         "{lead.message}"
