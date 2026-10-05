@@ -34,12 +34,13 @@ jobs:
           NEXT_PUBLIC_API_URL: https://api.faisalhillsislamabadfh.com/api
           NEXT_PUBLIC_SITE_URL: https://faisalhillsislamabadfh.com
 
-      - name: 🚀 Deploy Frontend to Hostinger public_html
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-          server-dir: public_html/
-          local-dir: frontend/out/
-          dangerous-clean-slate: false
+      - name: 🚀 Push built files to deploy branch
+        run: |
+          cd frontend/out
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git checkout -b deploy
+          git add -A
+          git commit -m "Deploy: $(date +'%Y-%m-%d %H:%M:%S')"
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git deploy
