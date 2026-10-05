@@ -39,11 +39,30 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
   const { whatsappUrl } = useContactChannels();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const match = window.location.pathname.match(/\/plots\/([^\/]+)/);
-      if (match && match[1]) {
-        setPlotId(match[1]);
-      }
+    if (typeof window === 'undefined') return;
+
+    // Two URL shapes reach this component.
+    //
+    // `/plots/<id>` is the pre-rendered route, but on a static export only the
+    // plots that existed at build time have a file, so anything published later
+    // 404s. `/plots/view/?id=<id>` is a single static page that resolves the plot
+    // in the browser and therefore works for every id without a rebuild.
+    //
+    // The `view` segment must be excluded below: a naive `/plots/([^/]+)` match
+    // would resolve the id to the literal string "view" and quietly show the
+    // wrong plot.
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = params.get('id');
+
+    if (fromQuery) {
+      setPlotId(fromQuery);
+      return;
+    }
+
+    const match = window.location.pathname.match(/\/plots\/([^/]+)\/?$/);
+
+    if (match && match[1] && match[1] !== 'view') {
+      setPlotId(decodeURIComponent(match[1]));
     }
   }, []);
 
@@ -475,7 +494,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
               {similarPlots.map((sp) => (
                 <Link
                   key={sp.id}
-                  href={`/plots/${sp.id}`}
+                  href={`/plots/view/?id=${encodeURIComponent(sp.id)}`}
                   className="bg-white rounded-2xl border border-slate-200/90 shadow-sm card-hover hover-glow-maroon overflow-hidden flex flex-col justify-between group transition-all duration-300 cursor-pointer block text-inherit no-underline"
                 >
                   <div>

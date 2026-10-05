@@ -1501,7 +1501,7 @@ const displayedPlots = useMemo(() => {
                     <span>Book / Inquire</span>
                   </button>
                   <Link
-                    href={`/plots/${plot.id}`}
+                    href={`/plots/view/?id=${encodeURIComponent(plot.id)}`}
                     className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all flex items-center justify-center"
                     title="View Full Plot Specs"
                   >

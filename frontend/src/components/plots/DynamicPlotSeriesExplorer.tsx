@@ -398,7 +398,7 @@ export const DynamicPlotSeriesExplorer: React.FC<DynamicPlotSeriesExplorerProps>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {activeSeries.plots.slice(0, 3).map((plot) => {
-                      const plotDetailUrl = `/plots/${plot.id || plot.plotNumber}`;
+                      const plotDetailUrl = `/plots/view/?id=${encodeURIComponent(plot.id || plot.plotNumber || "")}`;
                       return (
                         <div
                           key={plot.id}

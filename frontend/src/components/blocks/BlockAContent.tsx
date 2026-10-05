@@ -1137,7 +1137,7 @@ export default function BlockAContent() {
 
                     <div className="grid grid-cols-2 gap-1.5">
                       <Link
-                        href={`/plots/${plot.id}`}
+                        href={`/plots/view/?id=${encodeURIComponent(plot.id)}`}
                         className="px-1.5 sm:px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] sm:text-[11px] font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-0.5 sm:gap-1 text-center"
                       >
                         <span>Details</span>

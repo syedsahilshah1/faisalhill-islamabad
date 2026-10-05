@@ -1183,7 +1183,7 @@ export default function BlockCContent() {
                   <div className="p-5 sm:p-6 space-y-4">
                     <div>
                       <Link
-                        href={`/plots/${plot.id}`}
+                        href={`/plots/view/?id=${encodeURIComponent(plot.id)}`}
                         className="font-serif font-bold text-lg text-slate-900 hover:text-[#7b002c] transition-colors block"
                         title="View plot details"
                       >
@@ -1220,7 +1220,7 @@ export default function BlockCContent() {
                 <div className="p-5 sm:p-6 pt-0 space-y-2">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/plots/${plot.id}`}
+                      href={`/plots/view/?id=${encodeURIComponent(plot.id)}`}
                       className="flex-1 py-2.5 bg-[#7b002c] hover:bg-[#9e1245] text-white text-xs font-bold rounded-xl transition-all shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer hover:shadow-md"
                     >
                       <span>View Details</span>
