@@ -82,29 +82,38 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
   }, [querySize, queryCategory, queryBlock, queryQ, queryStatus]);
 
   useEffect(() => {
-    // When the server component already supplied the inventory, the page is
-    // rendered from the prerendered HTML and the initial mount needs no request
-    // at all. Only a client-side navigation into this route has to fetch.
-    if (!initialPlots) {
-      fetchPlots()
-        .then((data) => {
-          setAllPlots(data || []);
-          setIsLoadingPlots(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setIsLoadingPlots(false);
-        });
-    }
+    // The server component embeds a build-time snapshot for the first paint
+    // and for SEO, but a static export cannot revalidate on its own, so the
+    // inventory is refreshed from the live API once the page mounts. When the
+    // API is unreachable fetchPlots() hands back the bundled plotInventoryData
+    // fallback; that reference check keeps the server snapshot on screen instead
+    // of swapping it for the smaller hardcoded list.
+    let cancelled = false;
+    const apply = (data: PlotItem[] | undefined) => {
+      if (Array.isArray(data) && data !== plotInventoryData) {
+        setAllPlots(data);
+      }
+    };
+
+    fetchPlots()
+      .then((data) => {
+        apply(data);
+        if (!cancelled) setIsLoadingPlots(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) setIsLoadingPlots(false);
+      });
 
     const handlePlotsSync = () => {
-      fetchPlots().then((data) => {
-        setAllPlots(data || []);
-      }).catch(console.error);
+      fetchPlots().then(apply).catch(console.error);
     };
 
     window.addEventListener('faisal_plots_updated', handlePlotsSync);
-    return () => window.removeEventListener('faisal_plots_updated', handlePlotsSync);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('faisal_plots_updated', handlePlotsSync);
+    };
   }, [initialPlots]);
 
   // This pass runs six filter chains plus a sort over every plot, and re-renders
