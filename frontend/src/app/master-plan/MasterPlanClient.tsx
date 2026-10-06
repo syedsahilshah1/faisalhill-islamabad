@@ -74,7 +74,7 @@ export default function MasterPlanClient() {
     // A configured file URL downloads directly. The sentinel value
     // (or an empty URL) falls back to the lead-gated modal so the
     // team can still capture a lead before handing over the PDF.
-    if (url && url !== '/faisal-hills-master-plan.pdf') {
+    if (url && url !== '/faisal-hills-master-plan.pdf' && url !== '/FAISAL HILLS MASTER PLAN.pdf') {
       const link = document.createElement('a');
       link.href = url;
       link.download = 'FAISAL HILLS MASTER PLAN.pdf';
@@ -117,7 +117,7 @@ export default function MasterPlanClient() {
       {/* Clean Interactive Deep Zoom Master Plan Viewer */}
       <MasterPlanViewer 
         heightClass="h-[480px] sm:h-[620px] lg:h-[750px]" 
-        imageSrc={cms.viewer.highResImageUrl || cms.viewer.mapImageUrl || '/images/faisal-hills-master-plan-map.webp'}
+        imageSrc="/images/faisal-hills-master-plan-map.webp"
         onDownloadClick={handleDownloadClick}
       />
 
