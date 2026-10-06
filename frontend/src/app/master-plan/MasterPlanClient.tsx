@@ -70,11 +70,21 @@ export default function MasterPlanClient() {
   }, [cms.landmarksAndAvenues.landmarks]);
 
   const handleDownloadClick = () => {
-    if (cms.header.pdfDownloadUrl && cms.header.pdfDownloadUrl !== '/faisal-hills-master-plan.pdf') {
-      window.open(cms.header.pdfDownloadUrl, '_blank');
-    } else {
-      setIsModalOpen(true);
+    const url = cms.header.pdfDownloadUrl;
+    // A configured file URL downloads directly. The sentinel value
+    // (or an empty URL) falls back to the lead-gated modal so the
+    // team can still capture a lead before handing over the PDF.
+    if (url && url !== '/faisal-hills-master-plan.pdf') {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'FAISAL HILLS MASTER PLAN.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
     }
+    setIsModalOpen(true);
   };
 
   return (

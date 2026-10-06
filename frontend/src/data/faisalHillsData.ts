@@ -11499,12 +11499,12 @@ export const initialMasterPlanCMS: MasterPlanCMSData = {
     tag: "Society Navigation & Master Layout",
     h1: "Faisal Hills Master Plan Map",
     leadParagraph: "Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.",
-    pdfDownloadUrl: "/images/faisal-hills-executive-map.webp",
+    pdfDownloadUrl: "/FAISAL HILLS MASTER PLAN.pdf",
     downloadButtonText: "Download High-Res PDF Map"
   },
   viewer: {
-    mapImageUrl: "/images/faisal-hills-executive-map.webp",
-    highResImageUrl: "/images/faisal-hills-executive-map.webp",
+    mapImageUrl: "/images/faisal-hills-master-plan-map.webp",
+    highResImageUrl: "/images/faisal-hills-master-plan-map.webp",
     viewerHeightDesktop: "750px",
     caption: "Official RDA-Sanctioned Town Planning Master Plan of Faisal Hills Islamabad"
   },
