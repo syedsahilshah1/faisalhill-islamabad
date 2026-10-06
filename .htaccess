@@ -2,9 +2,16 @@
     RewriteEngine On
     RewriteBase /
 
-    # Route every request through the Laravel front controller. Because all
-    # traffic is rewritten, application source (backend/, frontend/, .env,
+    # Serve uploaded media directly from the public disk symlink.
+    # Only files that physically exist under /storage/ are served;
+    # every other request still goes through the Laravel front
+    # controller so application source (backend/, frontend/, .env,
     # .git, artisan, composer.json) is never served directly.
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Route every other request through the Laravel front controller.
     RewriteCond %{REQUEST_URI} !^/index\.php$
     RewriteRule ^ index.php [L]
 </IfModule>
