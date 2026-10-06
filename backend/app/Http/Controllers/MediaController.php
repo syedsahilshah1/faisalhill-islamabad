@@ -46,4 +46,33 @@ class MediaController extends Controller
             'url' => $url,
         ], 201)->header('Cache-Control', 'public, max-age='.self::CACHE_TTL.', immutable');
     }
+
+    /**
+     * Stream a stored media file.
+     *
+     * The api document root rewrites every request through the Laravel
+     * front controller, and each deploy wipes the public disk symlink
+     * (it is untracked), so a symlink alone cannot keep uploads
+     * reachable. Streaming the file from the disk root here keeps the
+     * URL returned by MediaStorage::storeImage() working on every
+     * deploy, with or without the symlink.
+     */
+    public function serve(string $path = '')
+    {
+        $root = storage_path('app/public');
+
+        // Resolve the real path and confirm it stays inside the public
+        // disk root, so a crafted segment such as ../../ cannot escape.
+        $resolved = realpath($root.'/'.$path);
+
+        if ($resolved === false
+            || ($resolved !== $root && !str_starts_with($resolved, $root.'/'))
+            || !is_file($resolved)) {
+            abort(404);
+        }
+
+        return response()->file($resolved, [
+            'Cache-Control' => 'public, max-age='.self::CACHE_TTL.', immutable',
+        ]);
+    }
 }
