@@ -713,7 +713,7 @@ const displayedPlots = useMemo(() => {
               <div className="space-y-2 font-sans max-w-xl text-slate-600 text-xs sm:text-sm leading-relaxed mx-auto lg:mx-0">
                 <p>
                   <FormattedText text={cms.chairman.visibleParagraph} />
-                  {!isAboutExpanded && (
+                  {!isAboutExpanded && cms.chairman.expandedParagraph && cms.chairman.expandedParagraph.trim() !== '' && (
                     <button
                       type="button"
                       onClick={() => setIsAboutExpanded(true)}

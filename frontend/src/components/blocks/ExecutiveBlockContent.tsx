@@ -258,6 +258,7 @@ export default function ExecutiveBlockContent() {
                     </div>
                   )}
 
+                  {(cms.overview.expandedParagraph) && (
                   <button
                     type="button"
                     onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
@@ -265,6 +266,7 @@ export default function ExecutiveBlockContent() {
                   >
                     {isOverviewExpanded ? 'See less' : 'See more'}
                   </button>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
@@ -314,20 +316,21 @@ export default function ExecutiveBlockContent() {
                 />
                 <div className="prose max-w-none text-slate-700 text-sm leading-relaxed space-y-3 font-sans">
                   <p>
-                    <FormattedText text={cms.location.leadParagraph || "Executive Block enjoys an unmatched strategic advantage by fronting directly on the National Highway (GT Road N-5). It is situated directly adjacent to Taxila, Multi Gardens B-17, and Islamabad Zone 2."} />
+                    <FormattedText text={cms.location.leadParagraph} />
                   </p>
 
                   {isLocationExpanded && (
                     <div className="space-y-3 animate-fadeIn">
                       <p>
-                        <FormattedText text={cms.location.expandedParagraph1 || "With immediate access to both Islamabad and Rawalpindi via the N-5 corridor and the upcoming direct M-1 Motorway link, Executive Block ensures effortless daily commuting for residents, business professionals, and overseas investors."} />
+                        <FormattedText text={cms.location.expandedParagraph1} />
                       </p>
                       <p>
-                        <FormattedText text={cms.location.expandedParagraph2 || "Surrounded by the scenic Margalla Hills backdrop, the sector delivers both urban commercial vibrancy and tranquil residential ambiance."} />
+                        <FormattedText text={cms.location.expandedParagraph2} />
                       </p>
                     </div>
                   )}
 
+                  {(cms.location.expandedParagraph2) && (
                   <button
                     type="button"
                     onClick={() => setIsLocationExpanded(!isLocationExpanded)}
@@ -335,6 +338,7 @@ export default function ExecutiveBlockContent() {
                   >
                     {isLocationExpanded ? 'See less' : 'See more'}
                   </button>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
@@ -413,7 +417,7 @@ export default function ExecutiveBlockContent() {
                 </div>
 
                 <p className="hidden lg:block text-slate-600 text-sm leading-relaxed">
-                  <FormattedText text={cms.masterPlan.leadParagraph || "The master plan of Executive Block is engineered as an integrated self-sustaining community where commercial zones, schools, and parks sit harmoniously beside luxury residential streets."} />
+                  <FormattedText text={cms.masterPlan.leadParagraph} />
                 </p>
 
                 {/* Action Buttons */}
@@ -456,7 +460,7 @@ export default function ExecutiveBlockContent() {
                 direction="left"
               />
               <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-                <FormattedText text={cms.plotsForSale.leadParagraph || "Explore available residential plots and commercial plazas in Executive Block with transparent pricing, zero dealer markup, and immediate allotment file verification."} />
+                <FormattedText text={cms.plotsForSale.leadParagraph} />
               </p>
             </div>
 
@@ -604,7 +608,7 @@ export default function ExecutiveBlockContent() {
               {cms.resaleDesk.heading || "Want to Sell or Assess Your Executive Block Plot / File?"}
             </h3>
             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl font-sans">
-              <FormattedText text={cms.resaleDesk.paragraph || "Get an instant official market valuation and list your file for thousands of active verified buyers across Islamabad, Rawalpindi, and overseas."} />
+              <FormattedText text={cms.resaleDesk.paragraph} />
             </p>
           </div>
 
@@ -635,7 +639,7 @@ export default function ExecutiveBlockContent() {
                 direction="left"
               />
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                <FormattedText text={cms.facilities.leadParagraph || "Executive Block is planned with world-class facilities and modern municipal infrastructure:"} />
+                <FormattedText text={cms.facilities.leadParagraph} />
               </p>
             </div>
 
@@ -716,7 +720,7 @@ export default function ExecutiveBlockContent() {
                 direction="left"
               />
               <p className="text-slate-600 text-sm">
-                <FormattedText text={cms.whyInvest.leadParagraph || "Why buyers and overseas Pakistanis rank Executive Block as the flagship sector:"} />
+                <FormattedText text={cms.whyInvest.leadParagraph} />
               </p>
             </div>
           </ScrollReveal>
@@ -796,20 +800,21 @@ export default function ExecutiveBlockContent() {
                   </div>
 
                   <p className="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">
-                    <FormattedText text={cms.developmentStatus.leadParagraph || "Development in Executive Block is 100% operational with possession fully delivered. Roads, underground electricity, sewer lines, water supply, and street lighting are fully functional."} />
+                    <FormattedText text={cms.developmentStatus.leadParagraph} />
                   </p>
 
                   {isDevStatusExpanded && (
                     <div className="space-y-4 animate-fadeIn">
                       <p>
-                        <FormattedText text={cms.developmentStatus.expandedParagraph1 || "Roots International School is actively educating students on-site. The structural framework of the 27-storey Faisal Jewel Tower is at an advanced completion stage."} />
+                        <FormattedText text={cms.developmentStatus.expandedParagraph1} />
                       </p>
                       <p>
-                        <FormattedText text={cms.developmentStatus.expandedParagraph2 || "Families are actively residing in constructed luxury houses, while high-profile commercial plazas along the main boulevard are operating brand retail outlets."} />
+                        <FormattedText text={cms.developmentStatus.expandedParagraph2} />
                       </p>
                     </div>
                   )}
 
+                  {(cms.developmentStatus.expandedParagraph2) && (
                   <button
                     type="button"
                     onClick={() => setIsDevStatusExpanded(!isDevStatusExpanded)}
@@ -817,6 +822,7 @@ export default function ExecutiveBlockContent() {
                   >
                     {isDevStatusExpanded ? 'See less' : 'See more'}
                   </button>
+                  )}
                 </div>
 
                 {/* Quick Status Metrics */}
@@ -863,7 +869,7 @@ export default function ExecutiveBlockContent() {
                       {cms.developmentStatus.droneHeading || "Executive Sector On-Ground Progress"}
                     </h4>
                     <p className="text-xs text-slate-300">
-                      <FormattedText text={cms.developmentStatus.droneDesc || "Wide carpeted boulevards, complete utilities, and active on-ground villa construction."} />
+                      <FormattedText text={cms.developmentStatus.droneDesc} />
                     </p>
                   </div>
                 </div>
@@ -885,7 +891,7 @@ export default function ExecutiveBlockContent() {
                 direction="left"
               />
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-3xl font-sans">
-                <FormattedText text={cms.transferProcess.leadParagraph || "Follow these 4 essential points to complete official plot transfer directly at Zedem International:"} />
+                <FormattedText text={cms.transferProcess.leadParagraph} />
               </p>
             </div>
           </ScrollReveal>
@@ -941,7 +947,7 @@ export default function ExecutiveBlockContent() {
                 {cms.transferProcess.bannerHeading || "Need Assistance with Plot Transfer & File Verification?"}
               </h4>
               <p className="text-xs text-rose-100/80 font-sans">
-                <FormattedText text={cms.transferProcess.bannerSubtext || "Our dedicated transfer advisory desk verifies society records and guides you step-by-step."} />
+                <FormattedText text={cms.transferProcess.bannerSubtext} />
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
@@ -1052,7 +1058,7 @@ export default function ExecutiveBlockContent() {
             {cms.scheduleTour.h3 || "Schedule an On-Site Executive Block Tour"}
           </h3>
           <p className="text-rose-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-sans">
-            <FormattedText text={cms.scheduleTour.leadParagraph || "Leave your contact details to receive verified plot listings, latest market rates, and official allotment files directly on WhatsApp."} />
+            <FormattedText text={cms.scheduleTour.leadParagraph} />
           </p>
         </div>
 

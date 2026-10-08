@@ -319,6 +319,7 @@ export default function BlockB1ExtensionContent() {
                     </div>
                   )}
 
+                  {(cms.overview.expandedParagraph1) && (
                   <button
                     type="button"
                     onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
@@ -326,6 +327,7 @@ export default function BlockB1ExtensionContent() {
                   >
                     {isOverviewExpanded ? 'See less' : 'See more'}
                   </button>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
@@ -373,7 +375,7 @@ export default function BlockB1ExtensionContent() {
                 {cms.location.h2 || "Block B-1 Extension Location & Road Connectivity Map"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                <FormattedText text={cms.location.leadParagraph || "Positioned inside the serene interior pocket between Block B, Block A, Block D, and Prime Block:"} />
+                <FormattedText text={cms.location.leadParagraph} />
               </p>
             </div>
           </div>
@@ -453,7 +455,7 @@ export default function BlockB1ExtensionContent() {
                 {cms.masterPlan.h2 || "Faisal Hills Block B1 Extension Master Plan & Cuts"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                <FormattedText text={cms.masterPlan.leadParagraph || "Explore the sector layout, 40ft to 150ft street hierarchy, and demarcated residential plot cuts:"} />
+                <FormattedText text={cms.masterPlan.leadParagraph} />
               </p>
             </div>
           </div>
@@ -570,7 +572,7 @@ export default function BlockB1ExtensionContent() {
                 {cms.priceSchedule.h2 || "B1 Extension Plot Pricing Schedule"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                <FormattedText text={cms.priceSchedule.leadParagraph || "Transparent market rates for resale files and plot cuts in Faisal Hills B1 Extension:"} />
+                <FormattedText text={cms.priceSchedule.leadParagraph} />
               </p>
             </div>
 
@@ -855,7 +857,7 @@ export default function BlockB1ExtensionContent() {
                 {cms.amenities.h2 || "World-Class Amenities in Block B1 Extension"}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                <FormattedText text={cms.amenities.leadParagraph || "Full-scale utilities and community features engineered for peaceful residential living:"} />
+                <FormattedText text={cms.amenities.leadParagraph} />
               </p>
             </div>
 
@@ -1058,7 +1060,7 @@ export default function BlockB1ExtensionContent() {
               {cms.developmentStatus.h2 || "B1 Extension Construction & Handover Roadmap"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              <FormattedText text={cms.developmentStatus.leadParagraph || "Track key milestones from heavy civil grading to upcoming possession handovers:"} />
+              <FormattedText text={cms.developmentStatus.leadParagraph} />
             </p>
           </div>
 
@@ -1111,7 +1113,7 @@ export default function BlockB1ExtensionContent() {
               {cms.whyInvest.h2 || "Why B1 Extension is the #1 Value Opportunity in Faisal Hills"}
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              <FormattedText text={cms.whyInvest.leadParagraph || "Compare 5 Marla benchmark rates across sectors. B1 Extension carries a ~50% entry discount compared to mature sectors, giving early buyers the highest runway for capital appreciation:"} />
+              <FormattedText text={cms.whyInvest.leadParagraph} />
             </p>
           </div>
 
@@ -1143,7 +1145,7 @@ export default function BlockB1ExtensionContent() {
                 {cms.transferProcess.h2 || "How to Book a Resale Plot in B1 Extension"}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-                <FormattedText text={cms.transferProcess.leadParagraph || "Securing a plot follows standard verified procedures at Zedem International head office:"} />
+                <FormattedText text={cms.transferProcess.leadParagraph} />
               </p>
             </div>
 
@@ -1315,7 +1317,7 @@ export default function BlockB1ExtensionContent() {
               {cms.scheduleTour.h3 || "Interested in Faisal Hills B1 Extension?"}
             </h2>
             <p className="text-xs sm:text-sm text-rose-100/90 font-sans leading-relaxed">
-              <FormattedText text={cms.scheduleTour.leadParagraph || "Leave your contact details below to receive current availability, verified resale prices, and on-ground plot verification assistance."} />
+              <FormattedText text={cms.scheduleTour.leadParagraph} />
             </p>
           </div>
 

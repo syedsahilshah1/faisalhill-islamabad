@@ -576,11 +576,11 @@ export default function PrimeBlockContent() {
                   />
                   <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-3 font-sans">
                     <p>
-                      <FormattedText text={cms.overview.visibleParagraph || "Prime Block sits at the front of Faisal Hills, planned along the 225 ft main boulevard that runs from the society's GT Road entrance. Its western side adjoins Block A and the Executive Block, so the society's established commercial area, school and mosque are already next door."} />
+                      <FormattedText text={cms.overview.visibleParagraph} />
                     </p>
 
                     <p>
-                      <FormattedText text={cms.overview.expandedParagraph1 || "The block is planned with carpeted roads, underground utilities, parks, a mosque and its own commercial areas. Because development is still in progress, it suits buyers who want to enter Faisal Hills on an instalment plan and build later, rather than families who need to start construction now."} />
+                      <FormattedText text={cms.overview.expandedParagraph1} />
                       {' '}For ready possession, see{' '}
                       <Link href={cms.overview.blockALinkHref || '/blocks/block-a'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
                         <span>{cms.overview.blockALinkText || 'Block A'}</span>
@@ -593,7 +593,7 @@ export default function PrimeBlockContent() {
                       </Link>.
                     </p>
                     <p>
-                      <FormattedText text={cms.overview.expandedParagraph2 || "Although it is marketed as Faisal Hills Prime Block Islamabad, the society lies in Rawalpindi District near Taxila, with Islamabad reached via the GT Road and Margalla Avenue."} />
+                      <FormattedText text={cms.overview.expandedParagraph2} />
                     </p>
                   </div>
                 </div>
