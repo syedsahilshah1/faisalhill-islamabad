@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+
 
 interface FormattedTextProps {
   text?: string;
@@ -51,10 +51,9 @@ export default function FormattedText({ text, className = '' }: FormattedTextPro
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1 underline decoration-[#7b002c]/40 hover:decoration-[#7b002c] transition-colors"
+            className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5 underline decoration-[#7b002c]/40 hover:decoration-[#7b002c] transition-colors"
           >
-            <span>{label}</span>
-            <ExternalLink className="w-3 h-3 inline-block opacity-70" />
+            {label}
           </a>
         );
       }

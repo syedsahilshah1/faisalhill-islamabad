@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import FormattedText from '@/components/ui/FormattedText';
 import { ShieldCheck, CheckCircle2, ArrowRight, MessageSquare, PhoneCall, FileText, BadgeCheck, AlertCircle, HelpCircle } from 'lucide-react';
 import {
   submitLead,
@@ -114,7 +115,7 @@ export default function FHNocStatusPage() {
               {cms.hero.h1 || "Faisal Hills NOC Status"}
             </h1>
             <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl font-sans">
-              {cms.hero.description}
+              <FormattedText text={cms.hero.description} />
             </p>
           </div>
         </div>
@@ -150,7 +151,7 @@ export default function FHNocStatusPage() {
                   {cms.summaryCard.lopNumber}
                 </code>
                 <p className="text-[11px] text-slate-500 leading-normal pt-1">
-                  {cms.summaryCard.lopDescription}
+                  <FormattedText text={cms.summaryCard.lopDescription} />
                 </p>
               </div>
               <p>{cms.summaryCard.detailedText}</p>
@@ -209,7 +210,7 @@ export default function FHNocStatusPage() {
               {cms.verificationForm.heading}
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed font-sans">
-              {cms.verificationForm.description}
+              <FormattedText text={cms.verificationForm.description} />
             </p>
           </div>
 

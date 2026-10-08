@@ -31,6 +31,7 @@ const ExpandingProjectsShowcase = dynamic(() => import('@/components/ui/Expandin
 const LeadModal = dynamic(() => import('@/components/ui/LeadModal'), { ssr: false });
 const MapDownloadModal = dynamic(() => import('@/components/ui/MapDownloadModal'), { ssr: false });
 const PaymentPlanModal = dynamic(() => import('@/components/ui/PaymentPlanModal'), { ssr: false });
+import FormattedText from '@/components/ui/FormattedText';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import CountUpNumber from '@/components/ui/CountUpNumber';
 import StickyHorizontalBookingSteps from '@/components/ui/StickyHorizontalBookingSteps';
@@ -711,7 +712,7 @@ const displayedPlots = useMemo(() => {
             <ScrollReveal direction="up" delay={150}>
               <div className="space-y-2 font-sans max-w-xl text-slate-600 text-xs sm:text-sm leading-relaxed mx-auto lg:mx-0">
                 <p>
-                  {cms.chairman.visibleParagraph}
+                  <FormattedText text={cms.chairman.visibleParagraph} />
                   {!isAboutExpanded && (
                     <button
                       type="button"
@@ -727,7 +728,7 @@ const displayedPlots = useMemo(() => {
                 {isAboutExpanded && (
                   <div className="space-y-2 animate-fadeIn">
                     <p>
-                      {cms.chairman.expandedParagraph}
+                      <FormattedText text={cms.chairman.expandedParagraph} />
                     </p>
                     <button
                       type="button"
@@ -843,7 +844,7 @@ const displayedPlots = useMemo(() => {
 
               <ScrollReveal direction="up" delay={100}>
                 <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-                  {cms.overview.paragraph}
+                  <FormattedText text={cms.overview.paragraph} />
                 </p>
               </ScrollReveal>
 
@@ -932,7 +933,7 @@ const displayedPlots = useMemo(() => {
               </ScrollReveal>
               <ScrollReveal direction="up" delay={100}>
                 <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-                  {cms.location.p1}
+                  <FormattedText text={cms.location.p1} />
                 </p>
               </ScrollReveal>
               <ScrollReveal direction="up" delay={150}>
@@ -1021,7 +1022,7 @@ const displayedPlots = useMemo(() => {
                 {cms.landmarks.h2 || 'Nearby Landmarks of Faisal Hills'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.landmarks.paragraph}
+                <FormattedText text={cms.landmarks.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -1072,11 +1073,11 @@ const displayedPlots = useMemo(() => {
 
               <ScrollReveal direction="up" delay={100}>
                 <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-                  {cms.masterPlan.paragraph || 'The official RDA-approved master plan of Faisal Hills Islamabad encompasses 11,823.5 kanals across eight well-planned sectors.'}
+                  <FormattedText text={cms.masterPlan.paragraph || 'The official RDA-approved master plan of Faisal Hills Islamabad encompasses 11,823.5 kanals across eight well-planned sectors.'} />
                 </p>
                 {cms.masterPlan.subParagraph ? (
                   <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mt-2.5">
-                    {cms.masterPlan.subParagraph}
+                    <FormattedText text={cms.masterPlan.subParagraph} />
                   </p>
                 ) : null}
               </ScrollReveal>
@@ -1132,7 +1133,7 @@ const displayedPlots = useMemo(() => {
                 {cms.blocksSection.h2 || 'Explore Faisal Hills Blocks & Sectors'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.blocksSection.paragraph}
+                <FormattedText text={cms.blocksSection.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -1151,7 +1152,7 @@ const displayedPlots = useMemo(() => {
                   {cms.blocksSection.supplyHeading || 'Blocks, Possession and Plot Supply'}
                 </h3>
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                  {cms.blocksSection.supplySubline || 'The Faisal Hills master plan has eight blocks. Blocks nearest the GT Road are the most developed; blocks further in are newer, cheaper to enter and mostly sold on installments, but at earlier stages of development.'}
+                  <FormattedText text={cms.blocksSection.supplySubline || 'The Faisal Hills master plan has eight blocks. Blocks nearest the GT Road are the most developed; blocks further in are newer, cheaper to enter and mostly sold on installments, but at earlier stages of development.'} />
                 </p>
               </ScrollReveal>
             </div>
@@ -1208,7 +1209,7 @@ const displayedPlots = useMemo(() => {
                               )}
                             </td>
                             <td className="py-4 px-5 text-slate-600 align-middle max-w-xs leading-relaxed border-r border-slate-200">
-                              {row.profile}
+                              <FormattedText text={row.profile} />
                             </td>
                             <td className="py-4 px-5 align-middle text-center whitespace-nowrap border-r border-slate-200">
                               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">
@@ -1275,7 +1276,7 @@ const displayedPlots = useMemo(() => {
                   return (
                     <div
                       key={row.id || idx}
-                      className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
+                      className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
                     >
                       <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
                         <div>
@@ -1299,7 +1300,7 @@ const displayedPlots = useMemo(() => {
                       </div>
 
                       <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                        {row.profile}
+                        <FormattedText text={row.profile} />
                       </p>
 
                       <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
@@ -1550,7 +1551,7 @@ const displayedPlots = useMemo(() => {
                   {cms.plotsForSale.ratesHeading || 'Plots for Sale in Faisal Hills: Current Rates'}
                 </h3>
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                  {cms.plotsForSale.ratesSubline || 'These are open-market asking prices. What a specific plot fetches depends on its position (corner, park-facing or on a main road), how developed its block is, and whether it is a balloted plot or an unballoted file.'}
+                  <FormattedText text={cms.plotsForSale.ratesSubline || 'These are open-market asking prices. What a specific plot fetches depends on its position (corner, park-facing or on a main road), how developed its block is, and whether it is a balloted plot or an unballoted file.'} />
                 </p>
               </ScrollReveal>
             </div>
@@ -1635,7 +1636,7 @@ const displayedPlots = useMemo(() => {
                 {(cms.plotsForSale.ratesRows || initialHomepageCMS.plotsForSale.ratesRows || []).map((row, idx) => (
                   <div
                     key={row.id || idx}
-                    className="bg-white p-4.5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
+                    className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3"
                   >
                     <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
                       <h4 className="font-serif font-bold text-base text-slate-900">
@@ -1694,7 +1695,7 @@ const displayedPlots = useMemo(() => {
                 {cms.flagships.h2 || 'Faisal Hills High-Rise & Commercial Flagships'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.flagships.paragraph}
+                <FormattedText text={cms.flagships.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -1716,7 +1717,7 @@ const displayedPlots = useMemo(() => {
                 <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="space-y-2">
                     <h3 className="font-serif font-bold text-xl text-slate-900">{cms.flagships.card1.title}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{cms.flagships.card1.desc}</p>
+                    <p className="text-xs text-slate-600 leading-relaxed"><FormattedText text={cms.flagships.card1.desc} /></p>
                   </div>
                   <Link
                     href={cms.flagships.card1.btnHref || '/blocks/faisal-jewel-islamabad'}
@@ -1745,7 +1746,7 @@ const displayedPlots = useMemo(() => {
                 <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="space-y-2">
                     <h3 className="font-serif font-bold text-xl text-slate-900">{cms.flagships.card2.title}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{cms.flagships.card2.desc}</p>
+                    <p className="text-xs text-slate-600 leading-relaxed"><FormattedText text={cms.flagships.card2.desc} /></p>
                   </div>
                   <Link
                     href={cms.flagships.card2.btnHref || '/blocks/hills-walk'}
@@ -1772,7 +1773,7 @@ const displayedPlots = useMemo(() => {
                 {cms.paymentPlan.h2 || 'Faisal Hills Islamabad Payment Plan 2026'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.paymentPlan.paragraph}
+                <FormattedText text={cms.paymentPlan.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -1781,22 +1782,22 @@ const displayedPlots = useMemo(() => {
             <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">01</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card1.title || 'Booking Amount'}</h4>
-              <p className="text-xs text-slate-600">{cms.paymentPlan.card1.desc}</p>
+              <p className="text-xs text-slate-600"><FormattedText text={cms.paymentPlan.card1.desc} /></p>
             </div>
             <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">02</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card2.title || 'Down Payment'}</h4>
-              <p className="text-xs text-slate-600">{cms.paymentPlan.card2.desc}</p>
+              <p className="text-xs text-slate-600"><FormattedText text={cms.paymentPlan.card2.desc} /></p>
             </div>
             <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">03</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card3.title || 'Payment Schedule'}</h4>
-              <p className="text-xs text-slate-600">{cms.paymentPlan.card3.desc}</p>
+              <p className="text-xs text-slate-600"><FormattedText text={cms.paymentPlan.card3.desc} /></p>
             </div>
             <div className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-2 flex flex-col items-center text-center">
               <span className="w-7 h-7 rounded-full bg-[#7b002c]/10 text-[#7b002c] flex items-center justify-center font-bold text-xs">04</span>
               <h4 className="font-serif font-bold text-sm text-slate-900">{cms.paymentPlan.card4.title || 'No Hidden Charges'}</h4>
-              <p className="text-xs text-slate-600">{cms.paymentPlan.card4.desc}</p>
+              <p className="text-xs text-slate-600"><FormattedText text={cms.paymentPlan.card4.desc} /></p>
             </div>
           </div>
 
@@ -1828,7 +1829,7 @@ const displayedPlots = useMemo(() => {
                 {cms.whyInvest.h2 || 'Why Faisal Hills Is a Smart Property Investment in 2026'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.whyInvest.paragraph}
+                <FormattedText text={cms.whyInvest.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -1865,7 +1866,7 @@ const displayedPlots = useMemo(() => {
                 {cms.amenities?.h2 || 'Facilities and Projects: Built and Planned'}
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {cms.amenities?.paragraph || 'Explore the on-ground built reality and upcoming landmark developments across Faisal Hills.'}
+                <FormattedText text={cms.amenities?.paragraph || 'Explore the on-ground built reality and upcoming landmark developments across Faisal Hills.'} />
               </p>
             </div>
 
@@ -2233,7 +2234,7 @@ const displayedPlots = useMemo(() => {
 
             <ScrollReveal direction="up" delay={150}>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans text-center md:text-left">
-                {cms.testimonials.paragraph}
+                <FormattedText text={cms.testimonials.paragraph} />
               </p>
             </ScrollReveal>
           </div>
@@ -2307,7 +2308,7 @@ const displayedPlots = useMemo(() => {
               {cms.infrastructure.h2 || 'Infrastructure of Faisal Hills'}
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-              {cms.infrastructure.paragraph}
+              <FormattedText text={cms.infrastructure.paragraph} />
             </p>
           </div>
 
@@ -2519,7 +2520,7 @@ const displayedPlots = useMemo(() => {
                 {cms.finalCta.h2 || 'Ready to Secure Your Plot in Faisal Hills?'}
               </h2>
               <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-                {cms.finalCta.paragraph}
+                <FormattedText text={cms.finalCta.paragraph} />
               </p>
             </div>
 

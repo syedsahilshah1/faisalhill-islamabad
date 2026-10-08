@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import FormattedText from '@/components/ui/FormattedText';
 import Link from 'next/link';
 import {
   Building2,
@@ -409,7 +410,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
                     {cms.howItWorks.downPaymentCoversTitle}
                   </td>
                   <td className="p-4 text-slate-600 leading-relaxed border border-slate-200">
-                    {cms.howItWorks.downPaymentCoversDesc}
+                    <FormattedText text={cms.howItWorks.downPaymentCoversDesc} />
                   </td>
                 </tr>
                 <tr className="hover:bg-slate-50 transition-colors">
@@ -417,7 +418,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
                     {cms.howItWorks.afterBookingTitle}
                   </td>
                   <td className="p-4 text-slate-600 leading-relaxed border border-slate-200">
-                    {cms.howItWorks.afterBookingDesc}
+                    <FormattedText text={cms.howItWorks.afterBookingDesc} />
                   </td>
                 </tr>
               </tbody>
@@ -525,7 +526,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
           </div>
           <div className="p-6 space-y-2 text-xs sm:text-sm">
             <p className="text-slate-700 leading-relaxed">
-              {cms.primeBlockSchedule.cost5MarlaExample.description}
+              <FormattedText text={cms.primeBlockSchedule.cost5MarlaExample.description} />
             </p>
             <p className="font-bold text-emerald-700 pt-1">
               {cms.primeBlockSchedule.cost5MarlaExample.savingsNote}
@@ -793,7 +794,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
                     {cms.howToPay.missedInstalmentTitle}
                   </td>
                   <td className="p-4 text-slate-600 leading-relaxed border border-slate-200">
-                    {cms.howToPay.missedInstalmentDesc}
+                    <FormattedText text={cms.howToPay.missedInstalmentDesc} />
                   </td>
                 </tr>
 
@@ -802,7 +803,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
                     {cms.howToPay.commercialPlotTitle}
                   </td>
                   <td className="p-4 text-slate-600 leading-relaxed border border-slate-200">
-                    {cms.howToPay.commercialPlotDesc}
+                    <FormattedText text={cms.howToPay.commercialPlotDesc} />
                   </td>
                 </tr>
               </tbody>

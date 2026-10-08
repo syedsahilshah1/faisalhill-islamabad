@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import FormattedText from '@/components/ui/FormattedText';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
@@ -336,7 +337,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
               {cms.growthStages.h2}
             </h2>
             <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-              {cms.growthStages.paragraph}
+              <FormattedText text={cms.growthStages.paragraph} />
             </p>
           </div>
 
@@ -407,7 +408,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
               </h2>
               
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                {cms.blockMap.paragraph}
+                <FormattedText text={cms.blockMap.paragraph} />
               </p>
 
               <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
@@ -981,7 +982,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
               {cms.developmentStatus.infrastructure.h3}
             </h3>
             <p className="text-slate-200 text-xs sm:text-sm leading-relaxed max-w-3xl">
-              {cms.developmentStatus.infrastructure.paragraph}
+              <FormattedText text={cms.developmentStatus.infrastructure.paragraph} />
             </p>
           </div>
 
@@ -1150,7 +1151,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
               {cms.cta.h2}
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              {cms.cta.paragraph}
+              <FormattedText text={cms.cta.paragraph} />
             </p>
           </div>
 

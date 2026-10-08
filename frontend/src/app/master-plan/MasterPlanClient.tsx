@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import FormattedText from '@/components/ui/FormattedText';
 import Link from 'next/link';
 import MasterPlanViewer from '@/components/map/MasterPlanViewer';
 import MapDownloadModal from '@/components/ui/MapDownloadModal';
@@ -100,8 +101,8 @@ export default function MasterPlanClient() {
             {cms.header.h1 || 'Faisal Hills Master Plan Map'}
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans">
-            {cms.header.leadParagraph ||
-              'Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.'}
+            <FormattedText text={cms.header.leadParagraph ||
+              'Explore the officially approved master layout of Faisal Hills. Inspect plot dimensions, road networks, sector avenues, and central commercial boulevards with interactive deep zoom controls up to 1200%.'} />
           </p>
         </div>
 
