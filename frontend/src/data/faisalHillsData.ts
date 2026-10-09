@@ -4080,11 +4080,17 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
     } catch { }
   }
 
-  // Always prefer the live API response. The `_t` cache-buster defeats the
-  // in-process response cache (and any CDN) so dashboard edits are observed
-  // immediately instead of being masked by a stale localStorage value.
+  // Prefer the live API response. On the client we cache-bust with a `_t`
+  // timestamp + no-store so dashboard edits are observed immediately instead
+  // of being masked by a stale localStorage value. On the server/build we keep
+  // `revalidate` (NOT no-store) so Next.js `output:"export"` still prerenders
+  // this route to a static `index.html`.
   try {
-    const res = await safeFetch(`${getApiUrl()}/settings/homepage_cms?_t=${Date.now()}`, { cache: 'no-store' });
+    const isClientFetch = typeof window !== 'undefined';
+    const res = await safeFetch(
+    `${getApiUrl()}/settings/homepage_cms${isClientFetch ? `?_t=${Date.now()}` : ''}`,
+    isClientFetch ? { cache: 'no-store' } : { next: { revalidate: 60 } }
+  );
     if (!res || !res.ok) {
       if (localData) return localData;
       return initialHomepageCMS;
