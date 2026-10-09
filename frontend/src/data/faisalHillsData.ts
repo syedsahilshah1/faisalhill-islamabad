@@ -2945,7 +2945,7 @@ export const defaultContactInfo: ContactInfoData = {
  * root layout alone turned that into two guaranteed uncached backend requests on
  * every page load. The default is now a normal cached read.
  */
-export async function fetchSettingByKey<T>(key: string, forceFresh = false): Promise<T | null> {
+export async function fetchSettingByKey<T>(key: string, forceFresh = (typeof window !== 'undefined')): Promise<T | null> {
   try {
     const url = forceFresh
       ? `${getApiUrl()}/settings/${key}?_t=${Date.now()}`
@@ -3999,6 +3999,12 @@ export const initialHomepageCMS: HomepageCMSData = {
 };
 
 export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
+  // Read any cached value from localStorage. It is used ONLY as an offline
+  // fallback — the live API response is always preferred so that content
+  // edited by another account or device is reflected immediately instead of
+  // being masked by a stale localStorage cache (which previously short-circuited
+  // the API call entirely and downgraded freshly-SSR'd content to stale data).
+  let localData: HomepageCMSData | null = null;
   if (typeof window !== 'undefined') {
     try {
       const stored = localStorage.getItem('faisal_homepage_cms');
@@ -4043,7 +4049,7 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
           masterData.downloadBtnText = 'Download Master Plan';
         }
 
-        return {
+        localData = {
           ...initialHomepageCMS,
           ...parsed,
           hero: heroData,
@@ -4074,11 +4080,18 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
     } catch { }
   }
 
+  // Always prefer the live API response. The `_t` cache-buster defeats the
+  // in-process response cache (and any CDN) so dashboard edits are observed
+  // immediately instead of being masked by a stale localStorage value.
   try {
-    const res = await safeFetch(`${getApiUrl()}/settings/homepage_cms`, { next: { revalidate: 60 } });
-    if (!res || !res.ok) return initialHomepageCMS;
+    const res = await safeFetch(`${getApiUrl()}/settings/homepage_cms?_t=${Date.now()}`, { cache: 'no-store' });
+    if (!res || !res.ok) {
+      if (localData) return localData;
+      return initialHomepageCMS;
+    }
     const data = await res.json();
     if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+      if (localData) return localData;
       return initialHomepageCMS;
     }
     const paymentData = { ...initialHomepageCMS.paymentPlan, ...(data.paymentPlan || {}) };
@@ -4089,13 +4102,22 @@ export async function fetchHomepageCMS(): Promise<HomepageCMSData> {
     if (masterData.downloadBtnText?.includes('(PDF)')) {
       masterData.downloadBtnText = 'Download Master Plan';
     }
-    return {
+    const result = {
       ...initialHomepageCMS,
       ...data,
       paymentPlan: paymentData,
       masterPlan: masterData
     };
+    // Refresh the localStorage cache with the fresh response so offline/fallback
+    // reads never serve stale data.
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faisal_homepage_cms', JSON.stringify(result));
+      } catch { }
+    }
+    return result;
   } catch {
+    if (localData) return localData;
     return initialHomepageCMS;
   }
 }
@@ -4730,7 +4752,7 @@ export async function fetchBlocksPageCMS(): Promise<BlocksPageCMSData> {
 
   const remote = await fetchSettingByKey<BlocksPageCMSData>('faisal_blocks_cms');
   if (remote) {
-    const merged = localData ? mergeBlocksCMS({ ...remote, ...localData }) : mergeBlocksCMS(remote);
+    const merged = localData ? mergeBlocksCMS({ ...localData, ...remote }) : mergeBlocksCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_blocks_cms', JSON.stringify(merged));
@@ -5493,7 +5515,7 @@ export async function fetchPrimeBlockCMS(): Promise<PrimeBlockCMSData> {
 
   const remote = await fetchSettingByKey<PrimeBlockCMSData>('faisal_prime_block_cms');
   if (remote) {
-    const merged = localData ? mergePrimeBlockCMS({ ...remote, ...localData }) : mergePrimeBlockCMS(remote);
+    const merged = localData ? mergePrimeBlockCMS({ ...localData, ...remote }) : mergePrimeBlockCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_prime_block_cms', JSON.stringify(merged));
@@ -6240,7 +6262,7 @@ export async function fetchBlockACMS(): Promise<BlockACMSData> {
 
   const remote = await fetchSettingByKey<BlockACMSData>('faisal_block_a_cms');
   if (remote) {
-    const merged = localData ? mergeBlockACMS({ ...remote, ...localData }) : mergeBlockACMS(remote);
+    const merged = localData ? mergeBlockACMS({ ...localData, ...remote }) : mergeBlockACMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_block_a_cms', JSON.stringify(merged));
@@ -7045,7 +7067,7 @@ export async function fetchBlockBCMS(): Promise<BlockBCMSData> {
 
   const remote = await fetchSettingByKey<BlockBCMSData>('faisal_block_b_cms');
   if (remote) {
-    const merged = localData ? mergeBlockBCMS({ ...remote, ...localData }) : mergeBlockBCMS(remote);
+    const merged = localData ? mergeBlockBCMS({ ...localData, ...remote }) : mergeBlockBCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_block_b_cms', JSON.stringify(merged));
@@ -7851,7 +7873,7 @@ export async function fetchBlockDCMS(): Promise<BlockDCMSData> {
 
   const remote = await fetchSettingByKey<BlockDCMSData>('faisal_block_d_cms');
   if (remote) {
-    const merged = localData ? mergeBlockDCMS({ ...remote, ...localData }) : mergeBlockDCMS(remote);
+    const merged = localData ? mergeBlockDCMS({ ...localData, ...remote }) : mergeBlockDCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_block_d_cms', JSON.stringify(merged));
@@ -9143,7 +9165,7 @@ export async function fetchExecutiveBlockCMS(): Promise<ExecutiveBlockCMSData> {
 
   const remote = await fetchSettingByKey<ExecutiveBlockCMSData>('faisal_executive_block_cms');
   if (remote) {
-    const merged = localData ? mergeExecutiveBlockCMS({ ...remote, ...localData }) : mergeExecutiveBlockCMS(remote);
+    const merged = localData ? mergeExecutiveBlockCMS({ ...localData, ...remote }) : mergeExecutiveBlockCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_executive_block_cms', JSON.stringify(merged));
@@ -9739,7 +9761,7 @@ export async function fetchBlockB1ExtensionCMS(): Promise<BlockB1ExtensionCMSDat
 
   const remote = await fetchSettingByKey<BlockB1ExtensionCMSData>('faisal_block_b1_ext_cms');
   if (remote) {
-    const merged = localData ? mergeBlockB1ExtensionCMS({ ...remote, ...localData }) : mergeBlockB1ExtensionCMS(remote);
+    const merged = localData ? mergeBlockB1ExtensionCMS({ ...localData, ...remote }) : mergeBlockB1ExtensionCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_block_b1_ext_cms', JSON.stringify(merged));
@@ -10371,7 +10393,7 @@ export async function fetchBlockCCMS(): Promise<BlockCCMSData> {
 
   const remote = await fetchSettingByKey<BlockCCMSData>('faisal_block_c_cms');
   if (remote) {
-    const merged = localData ? mergeBlockCCMS({ ...remote, ...localData }) : mergeBlockCCMS(remote);
+    const merged = localData ? mergeBlockCCMS({ ...localData, ...remote }) : mergeBlockCCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_block_c_cms', JSON.stringify(merged));
@@ -10797,7 +10819,7 @@ export async function fetchHillsWalkCMS(): Promise<HillsWalkCMSData> {
 
   const remote = await fetchSettingByKey<HillsWalkCMSData>('faisal_hills_walk_cms');
   if (remote) {
-    const merged = localData ? mergeHillsWalkCMS({ ...remote, ...localData }) : mergeHillsWalkCMS(remote);
+    const merged = localData ? mergeHillsWalkCMS({ ...localData, ...remote }) : mergeHillsWalkCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_hills_walk_cms', JSON.stringify(merged));
@@ -11388,7 +11410,7 @@ export async function fetchFaisalJewelCMS(): Promise<FaisalJewelCMSData> {
 
   const remote = await fetchSettingByKey<FaisalJewelCMSData>('faisal_jewel_cms');
   if (remote) {
-    const merged = localData ? mergeFaisalJewelCMS({ ...remote, ...localData }) : mergeFaisalJewelCMS(remote);
+    const merged = localData ? mergeFaisalJewelCMS({ ...localData, ...remote }) : mergeFaisalJewelCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_jewel_cms', JSON.stringify(merged));
@@ -11705,7 +11727,7 @@ export async function fetchMasterPlanCMS(): Promise<MasterPlanCMSData> {
 
   const remote = await fetchSettingByKey<MasterPlanCMSData>('faisal_master_plan_cms');
   if (remote) {
-    const merged = localData ? mergeMasterPlanCMS({ ...remote, ...localData }) : mergeMasterPlanCMS(remote);
+    const merged = localData ? mergeMasterPlanCMS({ ...localData, ...remote }) : mergeMasterPlanCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_master_plan_cms', JSON.stringify(merged));
@@ -11927,7 +11949,7 @@ export async function fetchNocStatusCMS(): Promise<NocStatusCMSData> {
 
   const remote = await fetchSettingByKey<NocStatusCMSData>('faisal_noc_status_cms');
   if (remote) {
-    const merged = localData ? mergeNocStatusCMS({ ...remote, ...localData }) : mergeNocStatusCMS(remote);
+    const merged = localData ? mergeNocStatusCMS({ ...localData, ...remote }) : mergeNocStatusCMS(remote);
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('faisal_noc_status_cms', JSON.stringify(merged));
