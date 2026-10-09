@@ -356,7 +356,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   <tr key={idx} className="even:bg-slate-50/70 hover:bg-amber-50/50 transition-colors">
                     <td className="py-3.5 px-4 sm:px-6 font-bold text-slate-900 border-r border-slate-200">{row.stage}</td>
                     <td className="py-3.5 px-4 font-semibold text-[#7b002c] border-r border-slate-200">{row.blocks}</td>
-                    <td className="py-3.5 px-4 text-slate-700">{row.meaning}</td>
+                    <td className="py-3.5 px-4 text-slate-700"><FormattedText text={row.meaning} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -374,7 +374,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  <span className="font-bold text-slate-700">What it means: </span>{row.meaning}
+                  <span className="font-bold text-slate-700">What it means: </span><FormattedText text={row.meaning} />
                 </p>
               </div>
             ))}
@@ -990,7 +990,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
             {cms.developmentStatus.infrastructure.cards.map((c, idx) => (
               <div key={idx} className="bg-white/10 p-4 rounded-xl border border-white/10">
                 <div className="text-amber-400 font-bold text-sm">{c.title}</div>
-                <p className="text-xs text-slate-300 mt-1">{c.desc}</p>
+                <div className="text-xs text-slate-300 mt-1"><FormattedText text={c.desc} /></div>
               </div>
             ))}
           </div>
@@ -1028,7 +1028,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   <tr key={idx} className="even:bg-slate-50/70 hover:bg-amber-50/50 transition-colors">
                     <td className="py-3.5 px-4 sm:px-6 font-bold text-slate-900 border-r border-slate-200">{row.goal}</td>
                     <td className="py-3.5 px-4 font-bold text-[#7b002c] border-r border-slate-200">{row.consider}</td>
-                    <td className="py-3.5 px-4 text-slate-700">{row.tradeOff}</td>
+                    <td className="py-3.5 px-4 text-slate-700"><FormattedText text={row.tradeOff} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -1046,7 +1046,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  <span className="font-bold text-slate-700">Trade-off: </span>{row.tradeOff}
+                  <span className="font-bold text-slate-700">Trade-off: </span><FormattedText text={row.tradeOff} />
                 </p>
               </div>
             ))}
@@ -1074,7 +1074,7 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
             {cms.glossary.terms.map((t, idx) => (
               <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1">
                 <div className="font-bold text-[#7b002c] text-sm">{t.term}</div>
-                <p className="text-xs text-slate-600">{t.definition}</p>
+                <div className="text-xs text-slate-600"><FormattedText text={t.definition} /></div>
               </div>
             ))}
           </div>
@@ -1108,9 +1108,9 @@ export default function BlocksClient({ initialHeroImage, initialSeo }: BlocksCli
                   {st.number}
                 </div>
                 <h4 className="font-serif font-bold text-slate-900 text-sm">{st.title}</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {st.desc}
-                </p>
+                <div className="text-xs text-slate-600 leading-relaxed">
+                  <FormattedText text={st.desc} />
+                </div>
               </div>
             ))}
           </div>

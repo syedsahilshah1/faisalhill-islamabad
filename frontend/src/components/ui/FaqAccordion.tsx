@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import FormattedText from '@/components/ui/FormattedText';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 
 export interface FAQItem {
@@ -75,7 +76,7 @@ export default function FaqAccordion({ faqs, items, blockName = 'Faisal Hills' }
               }`}
             >
               <div className="p-5 pl-14 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans bg-slate-50/50">
-                {aText}
+                <FormattedText text={aText} />
               </div>
             </div>
           </div>

@@ -1844,7 +1844,7 @@ const displayedPlots = useMemo(() => {
                       {b.tag && <span className="text-[10px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">{b.tag}</span>}
                     </div>
                     <h3 className="font-serif font-bold text-base text-slate-900">{b.title}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{b.description}</p>
+                    <div className="text-xs text-slate-600 leading-relaxed"><FormattedText text={b.description} /></div>
                   </div>
                 </div>
               </ScrollReveal>
