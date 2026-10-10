@@ -1887,7 +1887,14 @@ export async function fetchSeo(pageSlug: string): Promise<any> {
         og_description: p.ogDescription
       } : null;
     }
-    return await res.json();
+    const data = await res.json();
+    if (data && data.canonical_url && !data.canonical_url.includes('faisalhillsislamabadfh.com')) {
+      try {
+        const urlObj = new URL(data.canonical_url);
+        data.canonical_url = data.canonical_url.replace(urlObj.origin, 'https://faisalhillsislamabadfh.com');
+      } catch(e) {}
+    }
+    return data;
   } catch (e) {
     const p = initialSeoConfig.pages.find(page => page.pageSlug === pageSlug);
     return p ? {
@@ -2766,13 +2773,22 @@ export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
       siteName: data.global?.siteName || data.siteName || initialSeoConfig.siteName,
       defaultMetaDescription: data.global?.defaultMetaDescription || data.defaultMetaDescription || initialSeoConfig.defaultMetaDescription,
       defaultMetaKeywords: data.global?.defaultKeywords || data.defaultKeywords || initialSeoConfig.defaultMetaKeywords,
-      pages: (data.pages || []).map((p: any) => ({
+      pages: (data.pages || []).map((p: any) => {
+        let canon = p.canonical_url || '';
+        // Force the correct domain on any backend canonical URL
+        if (canon && !canon.includes('faisalhillsislamabadfh.com')) {
+          try {
+             const urlObj = new URL(canon);
+             canon = canon.replace(urlObj.origin, 'https://faisalhillsislamabadfh.com');
+          } catch(e) { }
+        }
+        return {
         pageSlug: p.page_slug,
         pageTitle: p.title,
         metaTitle: p.title,
         h1Heading: p.h1_heading || '',
         metaDescription: p.meta_description,
-        canonicalUrl: p.canonical_url || '',
+        canonicalUrl: canon,
         robotsIndex: p.robots_index !== false,
         robotsFollow: p.robots_follow !== false,
         metaKeywords: p.keywords || '',
@@ -2787,7 +2803,8 @@ export async function fetchGlobalSeoSettings(): Promise<GlobalSeoSettings> {
         schemaType: p.schema_type || 'WebPage',
         customSchemaJson: p.custom_schema_json || '',
         author: p.author || 'Faisal Hills Team'
-      }))
+      };
+      })
     };
   } catch (e) {
     return initialSeoConfig;

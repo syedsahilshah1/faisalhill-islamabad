@@ -528,7 +528,7 @@ export default function AdminManagementTab({ token, currentUser }: AdminManageme
                 <input
                   type="email"
                   required
-                  placeholder="e.g. tariq@faisalhills.com"
+                  placeholder="e.g. tariq@faisalhillsislamabadfh.com"
                   value={createForm.email}
                   onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#7b002c] focus:ring-2 focus:ring-[#7b002c]/20"

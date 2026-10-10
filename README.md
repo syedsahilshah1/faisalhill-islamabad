@@ -80,7 +80,7 @@ It is structured as a monorepo:
 
 Access the admin dashboard at: `http://localhost:3000/ubaid/admin/login`
 
-* **Username/Email**: `ubaid` or `ubaid@faisalhills.com`
+* **Username/Email**: `ubaid` or `ubaid@faisalhillsislamabadfh.com`
 * **Password**: `admin123`
 
 You can use the **Quick Demo Login** button on the screen for instant access.

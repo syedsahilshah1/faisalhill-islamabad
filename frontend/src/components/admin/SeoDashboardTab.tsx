@@ -891,14 +891,11 @@ export default function SeoDashboardTab({
                   className="h-44 bg-cover bg-center bg-slate-800 relative"
                   style={{ backgroundImage: `url('${selectedPageSeo.ogImage || '/images/faisal-hills-site-header.webp'}')` }}
                 >
-                  <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                    faisalhillsislamabadfh.com
-                  </span>
                 </div>
 
                 <div className="p-4 space-y-1 bg-white">
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
-                    FAISALHILLS.COM.PK
+                   faisalhillsislamabadfh.com
                   </span>
                   <h5 className="font-bold text-xs sm:text-sm text-slate-900 truncate">
                     {selectedPageSeo.ogTitle || selectedPageSeo.metaTitle || selectedPageSeo.pageTitle}

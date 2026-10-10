@@ -136,5 +136,4 @@ If your Hostinger plan includes Node.js:
 
 Once deployed, access your live Admin Dashboard at:
 - **URL**: `https://faisalhillsislamabadfh.com/ubaid/admin/login`
-- **Username**: `ubaid` or `ubaid@faisalhills.com`
-- **Password**: `admin123`
+

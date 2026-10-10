@@ -109,7 +109,7 @@ export default function ForgotPasswordClient() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@faisalhills.com"
+                  placeholder="admin@faisalhillsislamabadfh.com"
                   className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#7b002c] focus:ring-2 focus:ring-[#7b002c]/20 transition-all"
                 />
               </div>

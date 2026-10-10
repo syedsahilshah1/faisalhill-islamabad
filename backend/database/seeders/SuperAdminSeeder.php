@@ -17,7 +17,7 @@ class SuperAdminSeeder extends Seeder
         $initialPassword = env('SUPER_ADMIN_INITIAL_PASSWORD', 'admin123');
 
         // Delete any old redundant placeholder accounts
-        User::where('email', 'ubaid@faisalhills.com')->delete();
+        User::where('email', 'ubaid@faisalhillsislamabadfh.com')->delete();
 
         $superAdmin = User::where('email', $email)->orWhere('role', 'super_admin')->first();
 
