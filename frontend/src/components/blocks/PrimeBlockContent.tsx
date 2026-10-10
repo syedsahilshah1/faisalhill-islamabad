@@ -673,14 +673,7 @@ export default function PrimeBlockContent() {
                   </ul>
 
                   <p className="text-slate-700 pt-1">
-                    {cms.location?.driveTimesNote || "Drive times quoted online vary widely, so we publish only times our team has measured, with the date and time of day. Full directions are on our"}{' '}
-                    <Link
-                      href={cms.location?.locationPageLinkHref || "/faisal-hills-location"}
-                      className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5"
-                    >
-                      <span>{cms.location?.locationPageLinkText || "Faisal Hills location"}</span>
-                      <span className="text-xs"> (→ location page)</span>
-                    </Link>.
+                    <FormattedText text={cms.location?.driveTimesNote || "Drive times quoted online vary widely, so we publish only times our team has measured, with the date and time of day. Full directions are on our [Faisal Hills location (→ location page)](/faisal-hills-location)."} />
                   </p>
                 </div>
               </div>
@@ -1108,15 +1101,7 @@ export default function PrimeBlockContent() {
                   {cms.paymentPlanSection?.whyDifferentParagraph1 || "The block has been quoted under more than one schedule since launch, and older pages stay online without dates. Plans quoted publicly have included an 18-month plan in 2024, a 3.5-year plan of 14 quarterly instalments at launch in December 2025, a shorter plan of 10 quarterly instalments during 2026, and a 48-month plan of 16 quarterly instalments. One developer-linked page has also described the block as cash payment only."}
                 </p>
                 <p>
-                  {cms.paymentPlanSection?.whyDifferentParagraph2 || "Only the schedule the developer issues for the current month applies to a new booking. If a price looks unusually low, check which plan it came from and when it was published. Our"}{' '}
-                  <Link
-                    href={cms.paymentPlanSection?.paymentPlanLinkHref || "/faisal-hills-payment-plan"}
-                    className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5"
-                  >
-                    <span>{cms.paymentPlanSection?.paymentPlanLinkText || "Faisal Hills payment plan"}</span>
-                    <span className="text-xs"> (→ payment plan page)</span>
-                  </Link>{' '}
-                  carries the society-wide schedule.
+                  <FormattedText text={cms.paymentPlanSection?.whyDifferentParagraph2 || "Only the schedule the developer issues for the current month applies to a new booking. If a price looks unusually low, check which plan it came from and when it was published. Our [Faisal Hills payment plan (→ payment plan page)](/faisal-hills-payment-plan) carries the society-wide schedule."} />
                 </p>
               </div>
             </div>
@@ -1654,14 +1639,7 @@ export default function PrimeBlockContent() {
                   {/* Dated Photographs Notice & Link */}
                   <div className="pt-2">  
                     <p className="text-xs sm:text-sm text-slate-600 font-sans">
-                      {cms.developmentStatusSection?.photoLinkNote || 'Dated photographs of every block are on our'}{' '}
-                      <Link
-                        href={cms.developmentStatusSection?.photoLinkHref || '/gallery'}
-                        className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1 group"
-                      >
-                        <span>{cms.developmentStatusSection?.photoLinkText || 'development updates (→ development page)'}</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                      </Link>.
+                      <FormattedText text={cms.developmentStatusSection?.photoLinkNote || 'Dated photographs of every block are on our [development updates (→ development page)](/gallery).'} />
                     </p>
                   </div>
                 </div>
@@ -1792,14 +1770,7 @@ export default function PrimeBlockContent() {
 
           <div className="pt-1">
             <p className="text-xs sm:text-sm text-slate-600 font-sans">
-              {cms.comparisonSection?.compareLinkNote || 'Every block is compared on our'}{' '}
-              <Link
-                href={cms.comparisonSection?.compareLinkHref || '/faisal-hills-blocks'}
-                className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1 group"
-              >
-                <span>{cms.comparisonSection?.compareLinkText || 'Faisal Hills blocks (→ blocks page)'}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </Link>.
+              <FormattedText text={cms.comparisonSection?.compareLinkNote || 'Every block is compared on our [Faisal Hills blocks (→ blocks page)](/faisal-hills-blocks).'} />
             </p>
           </div>
         </section>
@@ -1940,13 +1911,9 @@ export default function PrimeBlockContent() {
         </ScrollReveal>
 
         <div className="pt-2 text-center sm:text-left">
-          <Link
-            href={cms.exploreOtherBlocksSection?.compareHubHref || '/faisal-hills-blocks'}
-            className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-1.5 text-sm group"
-          >
-            <span>{cms.exploreOtherBlocksSection?.compareHubText || 'Compare all Faisal Hills blocks (→ blocks hub)'}</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          <p className="text-sm">
+            <FormattedText text={cms.exploreOtherBlocksSection?.compareHubText || '[Compare all Faisal Hills blocks (→ blocks hub)](/faisal-hills-blocks)'} />
+          </p>
         </div>
       </section>
 
@@ -2009,10 +1976,7 @@ export default function PrimeBlockContent() {
               {cms.closingSiteVisitSection?.paragraph1 || 'Prime Block is a lower-priced way into an RDA-approved society on GT Road, with an instalment plan and a position beside Block A. It suits long-term buyers and overseas Pakistanis who are comfortable waiting for development. Families who want to build now will be better served by a block with possession.'}
             </p>
             <p>
-              {cms.closingSiteVisitSection?.paragraph2 || 'To check available sizes, corner and park-facing options and the current payment plan,'}{' '}
-              <Link href={cms.closingSiteVisitSection?.contactLinkHref || '/contact'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
-                <span>{cms.closingSiteVisitSection?.contactLinkText || 'contact our sales desk (→ contact page)'}</span>
-              </Link>.
+              <FormattedText text={cms.closingSiteVisitSection?.paragraph2 || 'To check available sizes, corner and park-facing options and the current payment plan, [contact our sales desk (→ contact page)](/contact).'} />
             </p>
           </div>
         </ScrollReveal>
