@@ -313,7 +313,6 @@ export default function MasterPlanViewer({
           >
             <img width='800' height='600' loading='lazy' src={imageSrc}
               alt="Faisal Hills Master Plan Ultra-HD High-Resolution Blueprint"
-              loading="eager"
               decoding="async"
               className="w-full h-full object-contain pointer-events-none select-none block"
               style={{
