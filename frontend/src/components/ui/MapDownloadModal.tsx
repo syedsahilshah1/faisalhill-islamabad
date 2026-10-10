@@ -111,8 +111,7 @@ export default function MapDownloadModal({
               </div>
 
               <div className="relative flex-1 flex items-center justify-center my-auto min-h-[220px] sm:min-h-[300px]">
-                <img
-                  src={mapImageUrl}
+                <img width='800' height='600' loading='lazy' src={mapImageUrl}
                   alt={blockName ? `${blockName} Master Plan` : 'Master Plan Map'}
                   className="max-h-[360px] w-auto max-w-full object-contain rounded-xl shadow-lg"
                 />

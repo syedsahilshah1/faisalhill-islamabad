@@ -555,7 +555,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
               'block-a': '/images/faisal-hills-aerial-panoramic.webp',
               'prime-block': '/images/faisal-hills-drone-view.webp',
               'block-b': '/images/faisal-hills-executive-boulevard.webp',
-              'block-b-extension': '/images/faisal-hills-development-site.webp',
+              'block-b1-extension': '/images/faisal-hills-development-site.webp',
               'block-c': '/images/faisal-hills-arc-monument.webp',
               'block-d': '/images/faisal-hills-overview.webp',
             };
@@ -570,8 +570,7 @@ export default function PaymentPlanClient({ initialCmsData }: PaymentPlanClientP
                 <div>
                   {/* Authentic Block Image Header */}
                   <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-900">
-                    <img
-                      src={imgSrc}
+                    <img width='800' height='600' loading='lazy' src={imgSrc}
                       alt={`${block.blockName} Faisal Hills`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

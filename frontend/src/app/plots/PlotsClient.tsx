@@ -401,8 +401,7 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
                 className="relative h-56 w-full overflow-hidden bg-slate-900 cursor-pointer"
                 title={`Click to view full specs for #${plot.plotNumber}`}
               >
-                <img
-                  src={plot.image}
+                <img width='800' height='600' loading='lazy' src={plot.image}
                   alt={plot.plotNumber}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                 />
@@ -549,7 +548,7 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
                         title={`Click to view full plot specs for ${plot.plotNumber}`}
                       >
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200 group-hover/item:ring-2 group-hover/item:ring-[#7b002c] transition-all">
-                          <img src={plot.image} alt={plot.plotNumber} className="w-full h-full object-cover" />
+                          <img width='800' height='600' loading='lazy' src={plot.image} alt={plot.plotNumber} className="w-full h-full object-cover" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <span className="font-mono font-bold text-xs text-[#7b002c]">#{plot.plotNumber}</span>
@@ -647,8 +646,7 @@ function PlotSearchContent({ initialPlots }: { initialPlots?: PlotItem[] }) {
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-8 relative h-72 sm:h-80 rounded-2xl overflow-hidden bg-slate-900">
-                  <img
-                    src={activePlotForModal.image}
+                  <img width='800' height='600' loading='lazy' src={activePlotForModal.image}
                     alt={activePlotForModal.plotNumber}
                     className="w-full h-full object-cover"
                   />
@@ -779,7 +777,8 @@ export default function PlotsClient({ initialPlots }: { initialPlots?: PlotItem[
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center pt-32">
+        <div className="min-h-screen flex flex-col items-center justify-center pt-32 gap-4">
+          <h1 className="sr-only">Plots for Sale in Faisal Hills</h1>
           <div className="w-8 h-8 border-4 border-[#7b002c] border-t-transparent rounded-full animate-spin" />
         </div>
       }

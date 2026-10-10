@@ -4,7 +4,7 @@ import GalleryClient from './GalleryClient';
 
 export const metadata: Metadata = {
   title: 'On-Site Development & Photo Gallery | Faisal Hills Islamabad',
-  description: 'Explore high-resolution photography and verified development updates of Faisal Hills entrance, main boulevards, monumental architecture, parks, and ongoing construction.',
+  description: 'Explore high-resolution photography and development updates of Faisal Hills entrance, boulevards, architecture, parks, and ongoing construction.',
   keywords: [
     'Faisal Hills Gallery',
     'Faisal Hills Development Photos',

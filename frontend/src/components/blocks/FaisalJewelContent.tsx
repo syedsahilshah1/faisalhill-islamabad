@@ -580,8 +580,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             <ScrollReveal direction="up" delay={100}>
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={showcaseImage}
+                  <img width='800' height='600' loading='lazy' src={showcaseImage}
                     alt="Faisal Jewel 27-Storey Skyscraper Showcase"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -693,8 +692,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             >
               <div>
                 <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={item.image}
+                  <img width='800' height='600' loading='lazy' src={item.image}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -754,8 +752,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
               className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md hover:shadow-xl transition-all cursor-pointer flex-1 flex flex-col justify-center min-h-[380px] p-3"
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
-                <img
-                  src={masterPlanImg}
+                <img width='800' height='600' loading='lazy' src={masterPlanImg}
                   alt="Faisal Jewel Architectural Elevation Blueprint"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -985,8 +982,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
                 <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
                     <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950 block">
-                      <img
-                        src={unit.image}
+                      <img width='800' height='600' loading='lazy' src={unit.image}
                         alt={unit.unitNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
@@ -1138,8 +1134,7 @@ export function FaisalJewelContent({ block }: FaisalJewelContentProps = {}) {
             <ScrollReveal key={idx} direction="up" delay={idx * 40}>
               <div className="rounded-3xl border border-slate-200 overflow-hidden bg-slate-50 flex flex-col justify-between h-full shadow-2xs hover:shadow-md transition-all">
                 <div className="relative h-44 w-full bg-slate-950">
-                  <img
-                    src={item.image}
+                  <img width='800' height='600' loading='lazy' src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover"
                   />

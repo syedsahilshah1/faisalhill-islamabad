@@ -221,8 +221,7 @@ export default function BlockBContent() {
             <ScrollReveal direction="right" delay={100}>
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={cms.overview?.image || "/images/faisal-hills-sports-arena.webp"}
+                  <img width='800' height='600' loading='lazy' src={cms.overview?.image || "/images/faisal-hills-sports-arena.webp"}
                     alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Block B Boulevard and Sports Infrastructure"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -429,8 +428,7 @@ export default function BlockBContent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 w-full rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 relative group">
-            <img
-              src={cms.mapAndMasterPlan?.mapImage || '/images/faisal-hills-master-plan-map-opt.webp'}
+            <img width='800' height='600' loading='lazy' src={cms.mapAndMasterPlan?.mapImage || '/images/faisal-hills-master-plan-map-opt.webp'}
               alt="Faisal Hills Block B map showing sectors, parks, mosques and the main boulevard"
               className="w-full h-auto object-cover max-h-[500px]"
             />
@@ -601,8 +599,7 @@ export default function BlockBContent() {
                     className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
-                    <img
-                      src={plot.image || '/images/faisal-hills-sports-arena.webp'}
+                    <img width='800' height='600' loading='lazy' src={plot.image || '/images/faisal-hills-sports-arena.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1163,7 +1160,7 @@ export default function BlockBContent() {
               {cms.comparisonExtensionSection?.conclusionText || 'If you want a larger plot or possession sooner, Block B is the one to look at.'}
             </span>
             <Link
-              href={cms.comparisonExtensionSection?.extensionLinkHref || '/blocks/block-b-1-ext'}
+              href={cms.comparisonExtensionSection?.extensionLinkHref || '/blocks/block-b1-extension'}
               className="text-[#7b002c] font-bold underline hover:text-[#9e1245] shrink-0"
             >
               {cms.comparisonExtensionSection?.extensionLinkText || 'Block B Extension details'}

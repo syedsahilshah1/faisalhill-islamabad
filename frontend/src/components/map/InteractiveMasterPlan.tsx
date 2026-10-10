@@ -380,8 +380,7 @@ export default function InteractiveMasterPlan({
             onContextMenu={(e) => e.preventDefault()}
           >
             {/* High-Res Master Plan Map Image (No Browser PDF Toolbar, Right-Click Disabled) */}
-            <img
-              src={mapImageSrc}
+            <img width='800' height='600' loading='lazy' src={mapImageSrc}
               alt="Faisal Hills Master Plan Map"
               className="absolute inset-0 w-full h-full object-contain rounded-xl border-0 select-none pointer-events-auto"
               onContextMenu={(e) => e.preventDefault()}

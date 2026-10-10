@@ -603,8 +603,7 @@ export default function PrimeBlockContent() {
             <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
               <ScrollReveal direction="right" delay={80} className="w-full flex-1">
                 <div className="relative min-h-[300px] lg:min-h-[360px] w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-lg group">
-                  <img
-                    src={cms.overview?.image || "/images/faisal-hills-drone-view.webp"}
+                  <img width='800' height='600' loading='lazy' src={cms.overview?.image || "/images/faisal-hills-drone-view.webp"}
                     alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Prime Block On-Ground Development"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -757,8 +756,7 @@ export default function PrimeBlockContent() {
                 className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-between h-full min-h-[440px] p-2 flex-1"
               >
                 <div className="relative w-full h-full min-h-[420px] flex-1 flex items-center justify-center overflow-hidden rounded-2xl bg-slate-950">
-                  <img
-                    src="/images/faisal-hills-master-plan-map.webp"
+                  <img width='800' height='600' loading='lazy' src="/images/faisal-hills-master-plan-map.webp"
                     alt="Faisal Hills Prime Block Master Plan Layout"
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -1118,8 +1116,7 @@ export default function PrimeBlockContent() {
                 className="relative w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 group cursor-pointer shadow-md"
                 title="Click to Open Fullscreen & Zoom Payment Plan"
               >
-                <img
-                  src="/images/faisal-hills-payment-plan-2026.webp"
+                <img width='800' height='600' loading='lazy' src="/images/faisal-hills-payment-plan-2026.webp"
                   alt="Faisal Hills Prime Block Official Payment Plan Schedule & Rates"
                   className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"
                 />
@@ -1226,8 +1223,7 @@ export default function PrimeBlockContent() {
                         href={`/plots?size=${encodeURIComponent(plot.size)}&block=prime-block`}
                         className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                       >
-                        <img
-                          src={plot.image}
+                        <img width='800' height='600' loading='lazy' src={plot.image}
                           alt={displayTitle}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                         />
@@ -1415,8 +1411,7 @@ export default function PrimeBlockContent() {
               <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
                 <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full flex flex-col">
                   <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
-                    <img
-                      src={item.image || primeGalleryItems[idx % primeGalleryItems.length]?.image || '/images/faisal-hills-drone-view.webp'}
+                    <img width='800' height='600' loading='lazy' src={item.image || primeGalleryItems[idx % primeGalleryItems.length]?.image || '/images/faisal-hills-drone-view.webp'}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
@@ -1650,8 +1645,7 @@ export default function PrimeBlockContent() {
             <div className="lg:col-span-5 flex flex-col">
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
                 <div className="relative w-full h-full min-h-[340px] sm:min-h-[420px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
-                  <img
-                    src={cms.developmentStatusSection?.image || '/images/faisal-hills-aerial-panoramic.webp'}
+                  <img width='800' height='600' loading='lazy' src={cms.developmentStatusSection?.image || '/images/faisal-hills-aerial-panoramic.webp'}
                     alt="Faisal Hills Prime Block On-Ground Development Status & Aerial View"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />

@@ -339,8 +339,7 @@ export default function BlockB1ExtensionContent() {
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={cms.overview.photoUrl || blockInfo?.heroImage || '/images/faisal-hills-drone-view.webp'}
+                  <img width='800' height='600' loading='lazy' src={cms.overview.photoUrl || blockInfo?.heroImage || '/images/faisal-hills-drone-view.webp'}
                     alt={cms.overview.photoAlt || blockInfo?.heroImageAlt || 'Faisal Hills Block B1 Extension Sector Overview'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -470,8 +469,7 @@ export default function BlockB1ExtensionContent() {
               className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md hover:shadow-xl transition-all cursor-pointer flex-1 flex flex-col justify-center min-h-[380px] p-3"
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
-                <img
-                  src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-master-plan-map.webp"}
+                <img width='800' height='600' loading='lazy' src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-master-plan-map.webp"}
                   alt="Faisal Hills B1 Extension Master Plan Layout"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -737,8 +735,7 @@ export default function BlockB1ExtensionContent() {
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-b1-extension`}
                       className="relative h-28 min-[400px]:h-36 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     >
-                      <img
-                        src={plot.image || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'}
+                      <img width='800' height='600' loading='lazy' src={plot.image || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />

@@ -187,8 +187,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
             {/* Cover Image */}
             {blog.imageUrl && (
               <div className="h-60 sm:h-96 rounded-2xl overflow-hidden shadow-sm bg-slate-900 shrink-0">
-                <img
-                  src={blog.imageUrl}
+                <img width='800' height='600' loading='lazy' src={blog.imageUrl}
                   alt={blog.imageAlt || blog.title}
                   className="w-full h-full object-cover"
                 />
@@ -376,8 +375,7 @@ export default function BlogDetailClient({ blog, recentBlogs }: BlogDetailClient
                     className="flex gap-3.5 group cursor-pointer"
                   >
                     <div className="w-16 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0 border border-slate-200 relative">
-                      <img 
-                        src={rBlog.imageUrl} 
+                      <img width='800' height='600' loading='lazy' src={rBlog.imageUrl} 
                         alt={rBlog.imageAlt || rBlog.title} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

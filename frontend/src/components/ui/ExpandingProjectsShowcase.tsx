@@ -215,12 +215,10 @@ export default function ExpandingProjectsShowcase({
               aria-label={`Explore ${currentMobileItem.title}`}
               className="absolute inset-0 bg-slate-950 block"
             >
-              <img
-                key={currentMobileItem.id || currentMobileIndex}
+              <img width='800' height='600' loading='lazy' key={currentMobileItem.id || currentMobileIndex}
                 src={currentMobileItem.image}
                 alt={currentMobileItem.title}
                 className="w-full h-full object-cover transition-all duration-700"
-                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
               <span className="sr-only">Explore {currentMobileItem.title}</span>
@@ -311,10 +309,8 @@ export default function ExpandingProjectsShowcase({
               <Link href={item.href || '#'} className="block w-full h-full relative group">
                 {/* Background Image with smooth Zoom & Light Tint */}
                 <div className="absolute inset-0 bg-slate-950 overflow-hidden">
-                  <img
-                    src={item.image}
+                  <img width='800' height='600' loading='lazy' src={item.image}
                     alt={item.title}
-                    loading="lazy"
                     className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
                       isHovered ? 'scale-110 brightness-95' : 'scale-100 brightness-85 group-hover:scale-105'
                     }`}

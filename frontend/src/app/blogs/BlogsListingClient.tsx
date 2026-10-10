@@ -160,8 +160,7 @@ export default function BlogsListingClient({ initialBlogs = [] }: BlogsListingCl
                   href={`/blogs/${blog.slug}`} 
                   className="h-56 bg-slate-900 relative overflow-hidden shrink-0 block cursor-pointer"
                 >
-                  <img
-                    src={blog.imageUrl}
+                  <img width='800' height='600' loading='lazy' src={blog.imageUrl}
                     alt={blog.imageAlt || blog.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

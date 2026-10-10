@@ -61,7 +61,7 @@ const HOMEPAGE_PLOT_CATEGORY_TABS = [
 const getBlockUrl = (blockName: string): string => {  const b = (blockName || '').toLowerCase();
   if (b.includes('executive')) return '/blocks/executive-block';
   if (b.includes('prime')) return '/blocks/prime-block';
-  if (b.includes('gandhara') || b.includes('gandahara')) return '/blocks/gandahara-block';
+  if (b.includes('gandhara') || b.includes('gandahara')) return '/blocks/gandahara';
   if (b.includes('block a') || b.includes('a block')) return '/blocks/block-a';
   if (b.includes('block b') || b.includes('b block')) return '/blocks/block-b';
   if (b.includes('block c') || b.includes('c block')) return '/blocks/block-c';
@@ -865,11 +865,9 @@ const displayedPlots = useMemo(() => {
             <div className="lg:col-span-6">
               <ScrollReveal direction="left" delay={100}>
                 <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[445px] rounded-3xl overflow-hidden shadow-xl border border-slate-200 group">
-                  <img
-                    src={cms.overview.image || '/images/faisal-hills-overview.webp'}
+                  <img width='800' height='600' loading='lazy' src={cms.overview.image || '/images/faisal-hills-overview.webp'}
                     alt={cms.overview.imageAlt || 'Faisal Hills Islamabad aerial view with Margalla Hills backdrop'}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
                   <div className="absolute bottom-4 left-4 right-4 sm:right-auto bg-slate-900/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/20 text-white text-xs font-semibold flex items-center gap-2 shadow-lg">
@@ -1032,8 +1030,7 @@ const displayedPlots = useMemo(() => {
               <ScrollReveal key={lm.id || idx} direction="up" delay={idx * 80}>
                 <div className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
                   <div className="relative h-44 overflow-hidden">
-                    <img
-                      src={lm.image || '/images/landmarks/islamabad-zero-point.webp'}
+                    <img width='800' height='600' loading='lazy' src={lm.image || '/images/landmarks/islamabad-zero-point.webp'}
                       alt={lm.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -1418,8 +1415,7 @@ const displayedPlots = useMemo(() => {
                       </span>
                     </Link>
 
-                    <img
-                      src={plot.image || '/images/faisal-hills-overview.webp'}
+                    <img width='800' height='600' loading='lazy' src={plot.image || '/images/faisal-hills-overview.webp'}
                       alt={plot.plotNumber || plot.blockName}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -1705,8 +1701,7 @@ const displayedPlots = useMemo(() => {
             <ScrollReveal direction="up" delay={100}>
               <div className="rounded-3xl overflow-hidden bg-slate-50 border border-slate-200 shadow-md hover:shadow-xl transition-all group flex flex-col h-full">
                 <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={cms.flagships.card1.image || '/images/faisal-jewels-tower.webp'}
+                  <img width='800' height='600' loading='lazy' src={cms.flagships.card1.image || '/images/faisal-jewels-tower.webp'}
                     alt={cms.flagships.card1.alt || 'Faisal Jewel 27-storey high-rise tower in Faisal Hills Islamabad'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -1734,8 +1729,7 @@ const displayedPlots = useMemo(() => {
             <ScrollReveal direction="up" delay={200}>
               <div className="rounded-3xl overflow-hidden bg-slate-50 border border-slate-200 shadow-md hover:shadow-xl transition-all group flex flex-col h-full">
                 <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={cms.flagships.card2.image || '/images/hills-walk.webp'}
+                  <img width='800' height='600' loading='lazy' src={cms.flagships.card2.image || '/images/hills-walk.webp'}
                     alt={cms.flagships.card2.alt || 'Hills Walk open-air commercial boulevard in Faisal Hills'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -2036,8 +2030,7 @@ const displayedPlots = useMemo(() => {
                     >
                       {/* Top Image Box */}
                       <div className="h-48 relative overflow-hidden bg-slate-100">
-                        <img
-                          src={am.image || '/images/amenities/roads-infrastructure.webp'}
+                        <img width='800' height='600' loading='lazy' src={am.image || '/images/amenities/roads-infrastructure.webp'}
                           alt={am.title}
                           className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                         />
@@ -2114,8 +2107,7 @@ const displayedPlots = useMemo(() => {
                     className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-300 flex flex-col group transition-all duration-300 cursor-pointer"
                   >
                     <div className="h-44 relative overflow-hidden bg-slate-100">
-                      <img
-                        src={am.image || '/images/amenities/roads-infrastructure.webp'}
+                      <img width='800' height='600' loading='lazy' src={am.image || '/images/amenities/roads-infrastructure.webp'}
                         alt={am.title}
                         className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                       />
@@ -2162,8 +2154,7 @@ const displayedPlots = useMemo(() => {
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
             <div className="relative h-60 bg-slate-900">
-              <img
-                src={selectedFacilityModal.image || '/images/amenities/roads-infrastructure.webp'}
+              <img width='800' height='600' loading='lazy' src={selectedFacilityModal.image || '/images/amenities/roads-infrastructure.webp'}
                 alt={selectedFacilityModal.title}
                 className="w-full h-full object-cover"
               />
@@ -2346,8 +2337,7 @@ const displayedPlots = useMemo(() => {
                   className="shrink-0 w-[280px] sm:w-[320px] md:w-[360px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-lg snap-start flex flex-col group transition-all"
                 >
                   <div className="h-48 relative overflow-hidden">
-                    <img
-                      src={item.image || '/images/infrastructure/hills-walk-boulevard.webp'}
+                    <img width='800' height='600' loading='lazy' src={item.image || '/images/infrastructure/hills-walk-boulevard.webp'}
                       alt={item.caption}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -2416,8 +2406,7 @@ const displayedPlots = useMemo(() => {
                   className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-xs hover:shadow-lg transition-all group flex flex-col"
                 >
                   <div className="h-44 relative overflow-hidden">
-                    <img
-                      src={b.imageUrl || '/images/blog-placeholder.webp'}
+                    <img width='800' height='600' loading='lazy' src={b.imageUrl || '/images/blog-placeholder.webp'}
                       alt={b.imageAlt || b.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

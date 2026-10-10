@@ -251,8 +251,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
             
             {/* Plot Featured Image Container */}
             <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-lg border border-slate-200 relative h-[360px] sm:h-[480px]">
-              <img
-                src={currentPlot.image || '/images/faisal-hills-site-header.webp'}
+              <img width='800' height='600' loading='lazy' src={currentPlot.image || '/images/faisal-hills-site-header.webp'}
                 alt={`Plot #${currentPlot.plotNumber} ${currentPlot.blockName}`}
                 className="w-full h-full object-cover"
               />
@@ -499,8 +498,7 @@ export default function PlotDetailClient({ plotId: initialPlotId }: PlotDetailCl
                 >
                   <div>
                     <div className="relative h-44 w-full overflow-hidden bg-slate-900 img-zoom-container">
-                      <img
-                        src={sp.image}
+                      <img width='800' height='600' loading='lazy' src={sp.image}
                         alt={sp.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />

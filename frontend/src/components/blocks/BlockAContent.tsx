@@ -259,7 +259,7 @@ const blockAGalleryItems = [
 const blockATravelTimes = [
   { destination: 'Faisal Hills Main Entrance Gate', time: '1 min', distance: '0.4 km', note: 'Direct access', image: '/images/faisal-hills-arc-gate.webp' },
   { destination: 'HITEC University Taxila', time: '4 mins', distance: '2.8 km', note: 'Via GT Road', image: '/images/roots-international-school-faisal-hills.webp' },
-  { destination: 'Taxila Museum & Gandhara Heritage', time: '6 mins', distance: '4.5 km', note: 'Direct GT Road N-5', image: '/images/faisal-hills-monument.webp' },
+  { destination: 'Taxila Museum & Gandhara Heritage', time: '6 mins', distance: '4.5 km', note: 'Direct GT Road N-5', image: '/images/faisal-hills-monument-entrance.webp' },
   { destination: 'Taxila M-1 Motorway Interchange', time: '9 mins', distance: '8.5 km', note: 'Direct Highway Link', image: '/images/hills-walk-commercial-aerial.webp' },
   { destination: 'Tarnol Morr (Islamabad Entry)', time: '7 mins', distance: '6.2 km', note: 'Twin Cities Node', image: '/images/faisal-hills-executive-sector.webp' },
   { destination: 'New Islamabad International Airport', time: '22 mins', distance: '29 km', note: 'Via M-1 / Cargo Link', image: '/images/faisal-hills-aerial-panoramic.webp' },
@@ -516,8 +516,7 @@ export default function BlockAContent() {
           <div className="lg:col-span-5 w-full flex flex-col justify-between space-y-4">
             <ScrollReveal direction="right" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between group">
-                <img
-                  src={cms.overview.image || "/images/faisal-hills-jamia-mosque.webp"}
+                <img width='800' height='600' loading='lazy' src={cms.overview.image || "/images/faisal-hills-jamia-mosque.webp"}
                   alt={cms.overview.imageAlt || "Block A Grand Jamia Mosque and Resident Community"}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -669,8 +668,7 @@ export default function BlockAContent() {
               <div className="rounded-2xl bg-white border border-slate-200/90 hover:border-rose-300 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group h-full">
                 {/* Image Header Thumbnail */}
                 <div className="relative h-28 w-full bg-slate-950 overflow-hidden">
-                  <img
-                    src={dest.image}
+                  <img width='800' height='600' loading='lazy' src={dest.image}
                     alt={dest.destination}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -710,8 +708,7 @@ export default function BlockAContent() {
                 onClick={() => setIsMapModalOpen(true)}
                 className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md cursor-pointer flex flex-col justify-center min-h-[260px] sm:min-h-[320px] p-2"
               >
-                <img
-                  src={cms.mapAndMasterPlan.mapImage || "/images/faisal-hills-master-plan-map.webp"}
+                <img width='800' height='600' loading='lazy' src={cms.mapAndMasterPlan.mapImage || "/images/faisal-hills-master-plan-map.webp"}
                   alt="Faisal Hills Block A Map showing residential streets, commercial plots and the main boulevard"
                   className="w-full h-auto max-h-[340px] object-contain mx-auto transition-transform duration-500 group-hover:scale-105"
                 />
@@ -1080,8 +1077,7 @@ export default function BlockAContent() {
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=block-a`}
                       className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     >
-                      <img
-                        src={plot.image}
+                      <img width='800' height='600' loading='lazy' src={plot.image}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
@@ -1552,8 +1548,7 @@ export default function BlockAContent() {
               onClick={() => setSelectedGalleryImage(item)}
               className="snap-start shrink-0 w-[240px] sm:w-[300px] lg:w-[340px] group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200 bg-slate-950 flex flex-col justify-end h-[280px] sm:h-[340px] cursor-pointer transition-all duration-300"
             >
-              <img
-                src={item.image}
+              <img width='800' height='600' loading='lazy' src={item.image}
                 alt={item.title}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
               />
@@ -1716,8 +1711,7 @@ export default function BlockAContent() {
               <X className="w-5 h-5" />
             </button>
             <div className="relative aspect-[16/10] w-full bg-black">
-              <img
-                src={selectedGalleryImage.image}
+              <img width='800' height='600' loading='lazy' src={selectedGalleryImage.image}
                 alt={selectedGalleryImage.title}
                 className="w-full h-full object-cover"
               />

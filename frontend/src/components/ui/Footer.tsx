@@ -303,7 +303,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/blocks/gandahara-block" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
+              <Link href="/blocks/gandahara" className="hover:text-white hover:underline transition-all inline-flex items-center gap-1">
                 <ArrowUpRight className="w-3 h-3 text-rose-300" />
                 <span>Gandhara Block</span>
               </Link>

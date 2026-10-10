@@ -41,7 +41,8 @@ export default function PlotViewClient() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+          <h1 className="sr-only">Plot Detail View</h1>
           <Loader2 className="w-6 h-6 animate-spin text-[#7b002c]" />
         </div>
       }

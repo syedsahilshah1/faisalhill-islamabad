@@ -276,8 +276,7 @@ export default function ExecutiveBlockContent() {
           <div className="lg:col-span-5 flex flex-col">
             <ScrollReveal direction="right" delay={100} className="w-full h-full flex flex-col flex-1">
               <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
-                <img
-                  src={cms.overview.photoUrl || blockInfo?.heroImage || "/images/faisal-hills-arc-gate.webp"}
+                <img width='800' height='600' loading='lazy' src={cms.overview.photoUrl || blockInfo?.heroImage || "/images/faisal-hills-arc-gate.webp"}
                   alt={cms.overview.photoAlt || blockInfo?.heroImageAlt || "Faisal Hills Executive Block Monument Entrance Arc Gate"}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                 />
@@ -371,9 +370,9 @@ export default function ExecutiveBlockContent() {
 
         {/* Mobile View: Title First */}
         <div className="block lg:hidden space-y-2">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+          <div className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
             {cms.masterPlan.h2 || "Faisal Hills Executive Block Master Plan"}
-          </h2>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -385,8 +384,7 @@ export default function ExecutiveBlockContent() {
                 onClick={() => setIsMapModalOpen(true)}
                 className="relative rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 group shadow-lg cursor-pointer flex flex-col justify-center min-h-[300px] sm:min-h-[380px] p-2"
               >
-                <img
-                  src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-executive-map.webp"}
+                <img width='800' height='600' loading='lazy' src={cms.masterPlan.mapImageUrl || "/images/faisal-hills-executive-map.webp"}
                   alt="Faisal Hills Executive Block Master Plan Map"
                   className="w-full h-auto max-h-[500px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]"
                 />
@@ -513,8 +511,7 @@ export default function ExecutiveBlockContent() {
                       href={`/plots?size=${encodeURIComponent(plot.size)}&block=executive-block`}
                       className="relative h-28 sm:h-44 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     >
-                      <img
-                        src={plot.image}
+                      <img width='800' height='600' loading='lazy' src={plot.image}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
@@ -681,8 +678,7 @@ export default function ExecutiveBlockContent() {
                 <ScrollReveal direction="pop" delay={(idx % 4) * 60} className="h-full">
                   <div className="bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg hover:border-[#7b002c]/40 transition-all duration-300 group h-full">
                     <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
-                      <img
-                        src={item.image}
+                      <img width='800' height='600' loading='lazy' src={item.image}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
@@ -847,8 +843,7 @@ export default function ExecutiveBlockContent() {
             <div className="lg:col-span-5 flex flex-col">
               <ScrollReveal direction="right" delay={120} className="w-full h-full flex flex-col flex-1">
                 <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] lg:min-h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200 group flex-1">
-                  <img
-                    src={cms.developmentStatus.dronePhotoUrl || "/images/faisal-hills-drone-view.webp"}
+                  <img width='800' height='600' loading='lazy' src={cms.developmentStatus.dronePhotoUrl || "/images/faisal-hills-drone-view.webp"}
                     alt={cms.developmentStatus.dronePhotoAlt || "Faisal Hills Executive Block On-Ground Development Status & Aerial View"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0"
                   />

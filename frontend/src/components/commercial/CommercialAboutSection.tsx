@@ -21,7 +21,7 @@ export const CommercialAboutSection: React.FC = () => {
             <div className="space-y-2">
               <span className="label-caps text-[#7b002c] font-bold block">About Faisal Hills Commercial</span>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-100 pb-2">
-                Prime Commercial Real Estate Engineered for High Footfall & Capital Growth
+                Prime Commercial Real Estate for High Footfall & Growth
               </h2>
             </div>
           </ScrollReveal>

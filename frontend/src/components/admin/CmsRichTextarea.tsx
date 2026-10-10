@@ -44,9 +44,9 @@ export const INTERNAL_ROUTES = [
   { group: 'Society Blocks', label: 'Faisal Jewel 27-Storey Tower', path: '/blocks/faisal-jewel-islamabad' },
 
   { group: 'Society Guides & Tools', label: 'Faisal Hills Homepage', path: '/' },
-  { group: 'Society Guides & Tools', label: 'Plot Prices & Market Rate Analysis', path: '/faisal-hills-plot-prices' },
+  { group: 'Society Guides & Tools', label: 'Plot Prices & Market Rate Analysis', path: '/plots' },
   { group: 'Society Guides & Tools', label: 'Payment Plans (Installment Schedules)', path: '/faisal-hills-payment-plan' },
-  { group: 'Society Guides & Tools', label: 'Master Plan & Block Maps Blueprint', path: '/faisal-hills-master-plan' },
+  { group: 'Society Guides & Tools', label: 'Master Plan & Block Maps Blueprint', path: '/master-plan' },
   { group: 'Society Guides & Tools', label: 'Location & Access Routes (GT Road / M-1)', path: '/faisal-hills-location' },
   { group: 'Society Guides & Tools', label: 'RDA Approved NOC Status Verification', path: '/faisal-hills-noc' },
   { group: 'Society Guides & Tools', label: 'Amenities, Parks & Facilities', path: '/faisal-hills-facilities' },
@@ -308,14 +308,14 @@ export default function CmsRichTextarea({
           </button>
           <button
             type="button"
-            onClick={() => handleQuickInsert('Plot Prices', '/faisal-hills-plot-prices')}
+            onClick={() => handleQuickInsert('Plot Prices', '/plots')}
             className="px-2 py-0.5 rounded-md bg-white hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 font-semibold shrink-0 transition-colors cursor-pointer"
           >
             + [Plot Prices]
           </button>
           <button
             type="button"
-            onClick={() => handleQuickInsert('Master Plan', '/faisal-hills-master-plan')}
+            onClick={() => handleQuickInsert('Master Plan', '/master-plan')}
             className="px-2 py-0.5 rounded-md bg-white hover:bg-[#7b002c] text-slate-700 hover:text-white border border-slate-200 font-semibold shrink-0 transition-colors cursor-pointer"
           >
             + [Master Plan]
@@ -426,7 +426,7 @@ export default function CmsRichTextarea({
                 </label>
                 <input
                   type="text"
-                  placeholder="/blocks/block-a#zn-tower or /faisal-hills-plot-prices"
+                  placeholder="/blocks/block-a#zn-tower or /plots"
                   value={customPath}
                   onChange={(e) => setCustomPath(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#7b002c]"

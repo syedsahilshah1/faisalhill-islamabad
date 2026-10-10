@@ -731,7 +731,7 @@ export default function SeoDashboardTab({
                     />
                     {selectedPageSeo.ogImage && (
                       <div className="w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 bg-slate-100">
-                        <img src={selectedPageSeo.ogImage} alt="OG Preview" className="w-full h-full object-cover" />
+                        <img width='800' height='600' loading='lazy' src={selectedPageSeo.ogImage} alt="OG Preview" className="w-full h-full object-cover" />
                       </div>
                     )}
                   </div>
@@ -1504,7 +1504,7 @@ export default function SeoDashboardTab({
                   }}
                   className="group relative rounded-xl overflow-hidden border border-slate-200 hover:border-[#7b002c] cursor-pointer aspect-video bg-slate-100"
                 >
-                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                  <img width='800' height='600' loading='lazy' src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold">
                     Select Image
                   </div>

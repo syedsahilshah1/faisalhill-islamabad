@@ -326,7 +326,7 @@ export default function AboutUsClient() {
               </h3>
 
               <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl text-slate-900 leading-[1.15]">
-                Introducing Faisal Hills Islamabad — A Community Built for Pakistan&apos;s Future
+                Faisal Hills Islamabad — A Community for Pakistan&apos;s Future
               </h2>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-sans pt-1">
@@ -458,8 +458,7 @@ export default function AboutUsClient() {
             <ScrollReveal key={idx} direction="up" delay={50 * idx}>
               <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xs hover:shadow-xl hover:border-[#7b002c]/30 transition-all overflow-hidden flex flex-col group h-full justify-between">
                 <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={item.image}
+                  <img width='800' height='600' loading='lazy' src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
@@ -581,8 +580,7 @@ export default function AboutUsClient() {
             >
               <div>
                 <div className="relative h-36 min-[400px]:h-44 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src={reason.image}
+                  <img width='800' height='600' loading='lazy' src={reason.image}
                     alt={reason.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
@@ -674,8 +672,7 @@ export default function AboutUsClient() {
             </div>
 
             <div className="md:w-2/5 w-full relative h-48 md:h-56 rounded-2xl overflow-hidden bg-slate-950 shadow-md">
-              <img
-                src={buyerProfiles[selectedProfile].image}
+              <img width='800' height='600' loading='lazy' src={buyerProfiles[selectedProfile].image}
                 alt={buyerProfiles[selectedProfile].title}
                 className="w-full h-full object-cover"
               />

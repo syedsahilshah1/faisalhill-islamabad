@@ -484,8 +484,7 @@ export default function PrimeBlockCmsEditor({
                 <div className="lg:col-span-5 space-y-1.5">
                   <span className="text-[11px] font-semibold text-slate-600 block">Live Card Preview:</span>
                   <div className="min-h-[220px] rounded-2xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-md group">
-                    <img
-                      src={primeCms.overview.image || '/images/faisal-hills-drone-view.webp'}
+                    <img width='800' height='600' loading='lazy' src={primeCms.overview.image || '/images/faisal-hills-drone-view.webp'}
                       alt={primeCms.overview.imageAlt || primeCms.overview.imageTitle || 'Prime Overview Preview'}
                       className="w-full h-56 object-cover"
                       onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}

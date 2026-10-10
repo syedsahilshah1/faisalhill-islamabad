@@ -296,8 +296,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           {value ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={value}
+              <img width='800' height='600' loading='lazy' src={value}
                 // Preview with the real alt text so an editor can hear, or read,
                 // what a screen reader will announce before publishing.
                 alt={alt || label}

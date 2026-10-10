@@ -104,11 +104,9 @@ export default function GalleryClient() {
                 className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
               >
                 <div className="relative h-60 w-full overflow-hidden bg-slate-900">
-                  <img
-                    src={item.image || '/images/gallery/arc-main-gate.webp'}
+                  <img width='800' height='600' loading='lazy' src={item.image || '/images/gallery/arc-main-gate.webp'}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
 
@@ -191,8 +189,7 @@ export default function GalleryClient() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative max-h-[75vh] min-h-[300px] flex items-center justify-center bg-black">
-              <img
-                src={lightboxImage.image || '/images/gallery/arc-main-gate.webp'}
+              <img width='800' height='600' loading='lazy' src={lightboxImage.image || '/images/gallery/arc-main-gate.webp'}
                 alt={lightboxImage.title}
                 className="max-h-[75vh] w-auto max-w-full object-contain mx-auto"
               />

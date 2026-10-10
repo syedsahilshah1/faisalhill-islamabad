@@ -164,8 +164,7 @@ export default function FHLocationPage() {
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
             <h3 className="font-serif text-lg font-bold text-slate-900">Official Location Map</h3>
             <div className="relative overflow-hidden rounded-xl border border-slate-150 aspect-[16/9] bg-slate-100 flex items-center justify-center">
-              <img
-                src="/images/faisal-hills-master-plan-map-preview.webp"
+              <img width='800' height='600' loading='lazy' src="/images/faisal-hills-master-plan-map-preview.webp"
                 alt="Faisal Hills Map Location"
                 className="w-full h-full object-cover"
               />

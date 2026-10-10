@@ -121,7 +121,7 @@ export default function RichTextEditor({
 
     const figureHtml = `
       <figure class="my-4 block text-center">
-        <img src="${selectedImageUrl}" alt="${imageAltText || 'Faisal Hills'}" style="max-width: 100%; height: auto; border-radius: 12px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;" />
+        <img width='800' height='600' loading='lazy' src="${selectedImageUrl}" alt="${imageAltText || 'Faisal Hills'}" style="max-width: 100%; height: auto; border-radius: 12px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;" />
         ${imageAltText ? `<figcaption style="font-size: 11px; color: #64748b; margin-top: 6px; font-style: italic;">${imageAltText}</figcaption>` : ''}
       </figure>
       <p><br></p>
@@ -426,7 +426,7 @@ export default function RichTextEditor({
                           : 'border-slate-200 hover:border-slate-400'
                       }`}
                     >
-                      <img src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
+                      <img width='800' height='600' loading='lazy' src={photo.imageUrl} alt={photo.title} className="w-full h-full object-cover" />
                       {selectedImageUrl === photo.imageUrl && (
                         <div className="absolute top-1 right-1 bg-[#7b002c] text-white p-0.5 rounded-full">
                           <Check className="w-3 h-3" />
@@ -445,7 +445,7 @@ export default function RichTextEditor({
             {selectedImageUrl && (
               <div className="p-2 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
                 <div className="w-20 h-14 rounded-lg overflow-hidden bg-slate-900 shrink-0 border border-slate-300">
-                  <img src={selectedImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <img width='800' height='600' loading='lazy' src={selectedImageUrl} alt="Preview" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-[10px] font-bold uppercase text-emerald-700 block">✓ Ready to Insert</span>

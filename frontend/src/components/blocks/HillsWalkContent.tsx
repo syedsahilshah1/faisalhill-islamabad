@@ -550,8 +550,7 @@ export default function HillsWalkContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white group">
                 <div className="relative h-60 sm:h-72 w-full overflow-hidden bg-slate-950">
-                  <img
-                    src="/images/hills-walk-commercial-aerial.webp"
+                  <img width='800' height='600' loading='lazy' src="/images/hills-walk-commercial-aerial.webp"
                     alt="Faisal Hills Walk Promenade Showcase"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
@@ -674,8 +673,7 @@ export default function HillsWalkContent() {
               className="relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 group shadow-md hover:shadow-xl transition-all cursor-pointer flex-1 flex flex-col justify-center min-h-[380px] p-3"
             >
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-slate-900">
-                <img
-                  src="/images/faisal-hills-master-plan-map.webp"
+                <img width='800' height='600' loading='lazy' src="/images/faisal-hills-master-plan-map.webp"
                   alt="Faisal Hills Walk Master Plan Layout"
                   className="w-full h-auto max-h-[460px] object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -904,8 +902,7 @@ export default function HillsWalkContent() {
                 <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden h-full">
                   <div>
                     <div className="relative h-28 min-[400px]:h-36 sm:h-48 w-full overflow-hidden bg-slate-950 block">
-                      <img
-                        src={plot.image || '/images/hills-walk-commercial-aerial.webp'}
+                      <img width='800' height='600' loading='lazy' src={plot.image || '/images/hills-walk-commercial-aerial.webp'}
                         alt={plot.plotNumber}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
@@ -1050,8 +1047,7 @@ export default function HillsWalkContent() {
             <ScrollReveal key={amenity.id} direction="up" delay={idx * 40}>
               <div className="rounded-3xl border border-slate-200 overflow-hidden bg-slate-50 flex flex-col justify-between h-full shadow-2xs hover:shadow-md transition-all">
                 <div className="relative h-44 w-full bg-slate-950">
-                  <img
-                    src={amenity.image}
+                  <img width='800' height='600' loading='lazy' src={amenity.image}
                     alt={amenity.title}
                     className="w-full h-full object-cover"
                   />

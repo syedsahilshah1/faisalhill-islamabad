@@ -205,8 +205,7 @@ export default function BlockDContent() {
 
           <div className="lg:col-span-5 w-full">
             <div className="relative rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-slate-950 min-h-[260px] sm:min-h-[300px] flex flex-col justify-between group">
-              <img
-                src={cms.overview?.image || "/images/faisal-hills-overview.webp"}
+              <img width='800' height='600' loading='lazy' src={cms.overview?.image || "/images/faisal-hills-overview.webp"}
                 alt={cms.overview?.imageAlt || cms.overview?.imageTitle || "Faisal Hills Block D Aerial Overview"}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -481,8 +480,7 @@ export default function BlockDContent() {
                   <div>
                     {/* Image Banner with Time Badge */}
                     <div className="relative h-40 w-full overflow-hidden bg-slate-900">
-                      <img
-                        src={meta.image}
+                      <img width='800' height='600' loading='lazy' src={meta.image}
                         alt={dest.destination}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -561,8 +559,7 @@ export default function BlockDContent() {
           <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
             <div>
               <div className="relative h-36 w-full overflow-hidden bg-slate-900">
-                <img
-                  src="/images/landmarks/uet-taxila-campus.webp"
+                <img width='800' height='600' loading='lazy' src="/images/landmarks/uet-taxila-campus.webp"
                   alt="UET & COMSATS Universities Taxila"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -592,8 +589,7 @@ export default function BlockDContent() {
           <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
             <div>
               <div className="relative h-36 w-full overflow-hidden bg-slate-900">
-                <img
-                  src="/images/landmarks/wah-cantonment.webp"
+                <img width='800' height='600' loading='lazy' src="/images/landmarks/wah-cantonment.webp"
                   alt="POF Wah Cantt & HIT Industrial Complexes"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -623,8 +619,7 @@ export default function BlockDContent() {
           <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
             <div>
               <div className="relative h-36 w-full overflow-hidden bg-slate-900">
-                <img
-                  src="/images/faisal-hills-medical-complex.webp"
+                <img width='800' height='600' loading='lazy' src="/images/faisal-hills-medical-complex.webp"
                   alt="Margalla Hospital & Medical Centers"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -653,8 +648,7 @@ export default function BlockDContent() {
           <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs hover:shadow-md transition-all group flex flex-col justify-between">
             <div>
               <div className="relative h-36 w-full overflow-hidden bg-slate-900">
-                <img
-                  src="/images/landmarks/taxila-museum-gandhara.webp"
+                <img width='800' height='600' loading='lazy' src="/images/landmarks/taxila-museum-gandhara.webp"
                   alt="Taxila Museum & Gandhara Heritage Sites"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -690,8 +684,7 @@ export default function BlockDContent() {
           {/* Left Column: Blueprint Map Preview Card */}
           <div className="lg:col-span-6 w-full">
             <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-md bg-slate-950 group">
-              <img
-                src={cms.masterPlan?.mapImage || '/images/faisal-hills-master-plan-map-opt.webp'}
+              <img width='800' height='600' loading='lazy' src={cms.masterPlan?.mapImage || '/images/faisal-hills-master-plan-map-opt.webp'}
                 alt="Faisal Hills Block D Master Plan Map Blueprint"
                 className="w-full h-auto object-cover max-h-[420px] group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -1110,8 +1103,7 @@ export default function BlockDContent() {
                     className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
-                    <img
-                      src={plot.image || '/images/faisal-hills-drone-view.webp'}
+                    <img width='800' height='600' loading='lazy' src={plot.image || '/images/faisal-hills-drone-view.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />

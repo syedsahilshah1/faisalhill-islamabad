@@ -63,7 +63,7 @@ const confirmedBlocksList = [
   { name: "Block A", url: `${BASE_URL}/blocks/block-a` },
   { name: "Prime Block", url: `${BASE_URL}/blocks/prime-block` },
   { name: "Block B", url: `${BASE_URL}/blocks/block-b` },
-  { name: "Block B Extension", url: `${BASE_URL}/blocks/block-b-extension` },
+  { name: "Block B Extension", url: `${BASE_URL}/blocks/block-b1-extension` },
   { name: "Block C", url: `${BASE_URL}/blocks/block-c` },
   { name: "Block D", url: `${BASE_URL}/blocks/block-d` }
 ];

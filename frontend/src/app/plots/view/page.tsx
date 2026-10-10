@@ -22,9 +22,7 @@ export const metadata: Metadata = {
   description:
     'Explore verified residential and commercial plots for sale in Faisal Hills Islamabad, with dimensions, pricing and live availability.',
   robots: {
-    // A single page serving every plot via a query string should not compete
-    // with the pre-rendered per-plot pages in search results.
-    index: false,
+    index: true,
     follow: true
   }
 };

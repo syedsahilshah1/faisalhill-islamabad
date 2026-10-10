@@ -181,9 +181,9 @@ export const allBlocksDataset: BlockDetailItem[] = [
     deliveryTimeline: "Possession Available in Parts"
   },
   {
-    id: "block-b-extension",
+    id: "block-b1-extension",
     name: "Block B Extension",
-    slug: "block-b-extension",
+    slug: "block-b1-extension",
     tagline: "Small Hillside Residential Block",
     subtitle: "Affordable Hillside Plots for Value Seekers",
     character: "Small hillside block",

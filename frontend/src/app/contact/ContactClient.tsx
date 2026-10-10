@@ -421,8 +421,7 @@ export default function ContactClient() {
 
           <div className="lg:col-span-5 flex flex-col justify-center items-center">
             <div className="relative w-full h-56 sm:h-72 rounded-3xl overflow-hidden shadow-md bg-slate-950 border border-slate-200 group">
-              <img
-                src="/images/faisal-hills-arc-gate.webp"
+              <img width='800' height='600' loading='lazy' src="/images/faisal-hills-arc-gate.webp"
                 alt="Faisal Hills Grand Monument Entrance"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -475,8 +474,7 @@ export default function ContactClient() {
 
           <div className="bg-slate-800/90 rounded-3xl border border-slate-700/80 p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center shadow-xl">
             <div className="lg:col-span-5 relative h-52 sm:h-64 rounded-2xl overflow-hidden bg-slate-950 border border-slate-700 group">
-              <img
-                src={activeBlockData.image}
+              <img width='800' height='600' loading='lazy' src={activeBlockData.image}
                 alt={activeBlockData.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />

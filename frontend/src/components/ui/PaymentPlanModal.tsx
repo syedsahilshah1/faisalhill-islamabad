@@ -355,8 +355,7 @@ export default function PaymentPlanModal({
                 transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`
               }}
             >
-              <img
-                src={imageSrc}
+              <img width='800' height='600' loading='lazy' src={imageSrc}
                 alt="Faisal Hills Islamabad Official Payment Plan"
                 className="max-w-[95vw] max-h-[82vh] object-contain rounded-xl shadow-2xl pointer-events-none select-none"
                 draggable={false}

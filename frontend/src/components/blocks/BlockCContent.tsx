@@ -688,8 +688,7 @@ export default function BlockCContent() {
             <ScrollReveal direction="up" delay={100}>
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 min-h-[320px] sm:min-h-[360px] flex flex-col justify-between group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={blockInfo?.heroImage || '/images/hills-walk-commercial-aerial.webp'}
+                <img width='800' height='600' loading='lazy' src={blockInfo?.heroImage || '/images/hills-walk-commercial-aerial.webp'}
                   alt={blockInfo?.heroImageAlt || 'Faisal Hills Block C Panoramic View'}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
@@ -902,8 +901,7 @@ export default function BlockCContent() {
               onClick={() => setIsMapModalOpen(true)}
               className="relative rounded-2xl overflow-hidden group cursor-pointer border border-slate-200 aspect-[4/3] bg-slate-950 flex items-center justify-center"
             >
-              <img
-                src="/images/faisal-hills-master-plan-map-opt.webp"
+              <img width='800' height='600' loading='lazy' src="/images/faisal-hills-master-plan-map-opt.webp"
                 alt="Faisal Hills Block C Master Plan"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
               />
@@ -1074,8 +1072,7 @@ export default function BlockCContent() {
                   {/* Image Side */}
                   <div className={`lg:col-span-6 w-full ${!isImageRight ? 'lg:order-1' : 'lg:order-2'}`}>
                     <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-md border border-slate-200 h-52 sm:h-64 lg:h-[340px] bg-slate-950 group/img">
-                      <img
-                        src={amenity.image}
+                      <img width='800' height='600' loading='lazy' src={amenity.image}
                         alt={amenity.title}
                         className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700 ease-out"
                       />
@@ -1145,8 +1142,7 @@ export default function BlockCContent() {
                     className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950 block cursor-pointer group/img"
                     title={`Browse all ${plot.size} plots in inventory`}
                   >
-                    <img
-                      src={plot.image || '/images/faisal-hills-drone-view.webp'}
+                    <img width='800' height='600' loading='lazy' src={plot.image || '/images/faisal-hills-drone-view.webp'}
                       alt={`Plot #${plot.plotNumber} - ${plot.size}`}
                       className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700 ease-out"
                     />

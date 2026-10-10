@@ -1074,7 +1074,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Taxila • Official Real Estate Portal",
       ogDescription: "Interactive plot inventory, master plan, and verified prices for Faisal Hills Executive, Block A, B, C, D & Prime Block.",
       ogImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/",
       author: "Faisal Town Group Real Estate Team"
     },
     {
@@ -1086,7 +1086,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Payment Matrix 2026",
       ogDescription: "Interactive installment calculator & official price schedules for residential and commercial plots.",
       ogImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/payment-plan",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/payment-plan",
       author: "Faisal Town Group Sales Desk"
     },
     {
@@ -1098,7 +1098,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills High-Res Vector Master Map",
       ogDescription: "Locate plots, central parks, Jamia Mosque, and commercial boulevards on our interactive master plan map.",
       ogImage: "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/master-plan",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/master-plan",
       author: "Faisal Hills GIS Mapping Division"
     },
     {
@@ -1110,7 +1110,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Jewel Islamabad • 27-Story Mixed-Use Skyscraper",
       ogDescription: "Faisal Jewel Islamabad: 27-floor mixed-use tower in Faisal Hills. Luxury apartments, commercial shops & 4-star hotel.",
       ogImage: "/faisal-jewel-building.webp",
-      canonicalUrl: "https://faisalhills.com/blocks/faisal-jewel-islamabad",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/faisal-jewel-islamabad",
       author: "Faisal Jewel Development Team"
     },
     {
@@ -1122,7 +1122,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Blocks • All Sectors",
       ogDescription: "Explore all Faisal Hills Blocks Executive, Prime, A, B, C, D Golf. RDA-approved plots near GT Road, Taxila.",
       ogImage: "https://images.unsplash.com/photo-1524813686514-a57563d77965?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/faisal-hills-blocks",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/faisal-hills-blocks",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1134,7 +1134,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Executive Block",
       ogDescription: "RDA-approved plots on Main GT Road. Check location, prices, payment plan, NOC, facilities & investment details.",
       ogImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/executive-block",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/executive-block",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1146,7 +1146,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Block A Prices, Map & Payment Plan",
       ogDescription: "Faisal Hills Block A RDA-approved plots from 5 Marla to 1 Kanal near GT Road. See prices, payment plan, location map and 2026 updates.",
       ogImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/block-a",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/block-a",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1158,7 +1158,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Islamabad B Block | Prices | Map",
       ogDescription: "Faisal Hills Islamabad B Block: RDA-approved plots from 5 Marla to 1 Kanal on the Grand Boulevard near GT Road. Prices, payment plan & 2026 updates.",
       ogImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/block-b",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/block-b",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1170,7 +1170,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills B Extension",
       ogDescription: "Affordable residential plots with high appreciation potential. Check current pricing & progress.",
       ogImage: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/block-b1-extension",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/block-b1-extension",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1182,7 +1182,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Block C – Plots, Prices & Map",
       ogDescription: "Explore Faisal Hills Block C: NOC-approved plots, latest prices, map, amenities & booking process. RDA-approved investment near Islamabad.",
       ogImage: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/block-c",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/block-c",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1194,7 +1194,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills D Block — Prices, Map, Payment Plan & Plots for Sale",
       ogDescription: "Faisal Hills D Block prices, master plan, location map and payment plan. Residential plots from 5 marla to 1 kanal plus commercial, with instalment options.",
       ogImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/block-d",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/block-d",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1206,7 +1206,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Prime Block | Plots & Payment Plan",
       ogDescription: "Explore Faisal Hills Prime Block — premium residential & commercial plots near Islamabad with flexible payment plans, top amenities & RDA approval.",
       ogImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-      canonicalUrl: "https://faisalhills.com/blocks/prime-block",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/prime-block",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1218,7 +1218,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Commercial Plots for Sale",
       ogDescription: "Explore Faisal Hills commercial plots for sale in Taxila, Islamabad. Compare prices & plans.",
       ogImage: "/faisal-jewel-building.webp",
-      canonicalUrl: "https://faisalhills.com/faisal-hills-commercial",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/faisal-hills-commercial",
       author: "Faisal Hills Marketing Team"
     },
     {
@@ -1230,7 +1230,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "About Faisal Hills | Zedem International & Vision",
       ogDescription: "Learn about Faisal Hills Taxila, Zedem International leadership, project milestones, RDA NOC approval.",
       ogImage: "/images/faisal-hills-drone-view.webp",
-      canonicalUrl: "https://faisalhills.com/about-us",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/about-us",
       author: "Faisal Hills Corporate Affairs"
     },
     {
@@ -1242,7 +1242,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Hills Walk Commercial Strip Faisal Hills",
       ogDescription: "European style pedestrian open-air commercial boulevard with retail outlets & cafes.",
       ogImage: "/images/hills-walk-commercial-aerial.webp",
-      canonicalUrl: "https://faisalhills.com/blocks/hills-walk",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blocks/hills-walk",
       author: "Faisal Hills Commercial Desk"
     },
     {
@@ -1254,7 +1254,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills Plots for Sale | Interactive Inventory",
       ogDescription: "Search verified residential and commercial plots for sale in Faisal Hills Islamabad with instant pricing.",
       ogImage: "/images/faisal-hills-glow-park.webp",
-      canonicalUrl: "https://faisalhills.com/plots",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/plots",
       author: "Faisal Hills Sales Desk"
     },
     {
@@ -1266,7 +1266,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Faisal Hills News & Real Estate Blog 2026",
       ogDescription: "Stay updated with Faisal Hills development progress, NOC approvals, and market trends.",
       ogImage: "/images/roots-international-school-faisal-hills.webp",
-      canonicalUrl: "https://faisalhills.com/blogs",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/blogs",
       author: "Faisal Hills Editorial Team"
     },
     {
@@ -1278,7 +1278,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Contact Faisal Hills Official Sales Desk",
       ogDescription: "Get in touch with Faisal Hills official sales desk, helpline, and site office.",
       ogImage: "/images/faisal-hills-arc-gate.webp",
-      canonicalUrl: "https://faisalhills.com/contact",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/contact",
       author: "Faisal Hills Support Team"
     },
     {
@@ -1290,7 +1290,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Terms of Service | Faisal Hills Official Portal",
       ogDescription: "Official terms of service and plot booking policies for Faisal Hills.",
       ogImage: "/images/faisal-hills-arc-gate.webp",
-      canonicalUrl: "https://faisalhills.com/terms-of-service",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/terms-of-service",
       author: "Faisal Hills Legal Department"
     },
     {
@@ -1302,7 +1302,7 @@ export const initialSeoConfig: GlobalSeoSettings = {
       ogTitle: "Privacy Policy | Faisal Hills Official Portal",
       ogDescription: "Privacy Policy and data protection standards for Faisal Hills visitors.",
       ogImage: "/images/faisal-hills-arc-gate.webp",
-      canonicalUrl: "https://faisalhills.com/privacy-policy",
+      canonicalUrl: "https://faisalhillsislamabadfh.com/privacy-policy",
       author: "Faisal Hills Compliance Team"
     }
   ]
@@ -2555,9 +2555,11 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogItem | null> {
       const data = await res.json();
       return mapBlogToCamel(data);
     }
-    return null;
+    const fallback = initialBlogsData.find(b => b.slug === slug || b.id === slug);
+    return fallback || null;
   } catch {
-    return null;
+    const fallback = initialBlogsData.find(b => b.slug === slug || b.id === slug);
+    return fallback || null;
   }
 }
 
@@ -4360,7 +4362,7 @@ export const initialBlocksPageCMS: BlocksPageCMSData = {
       { id: 'block-a', name: 'Block A', slug: 'block-a', character: 'Oldest residential block', approxPlots: '6,000–8,000', plotSizes: '5 Marla – 2 Kanal', howSold: 'Full payment', possession: 'Available' },
       { id: 'prime-block', name: 'Prime Block', slug: 'prime-block', character: 'Newest block', approxPlots: 'Master plan scheduled', plotSizes: '5.55 Marla – 2 Kanal', howSold: 'Installments', possession: 'Not yet' },
       { id: 'block-b', name: 'Block B', slug: 'block-b', character: 'Large residential block', approxPlots: '8,050', plotSizes: '5 Marla – 1 Kanal', howSold: 'Full payment / Resale', possession: 'In parts' },
-      { id: 'block-b-extension', name: 'Block B Extension', slug: 'block-b-extension', character: 'Small hillside block', approxPlots: '650', plotSizes: '5 – 10 Marla', howSold: 'Installments', possession: 'Not yet' },
+      { id: 'block-b1-extension', name: 'Block B Extension', slug: 'block-b1-extension', character: 'Small hillside block', approxPlots: '650', plotSizes: '5 – 10 Marla', howSold: 'Installments', possession: 'Not yet' },
       { id: 'block-c', name: 'Block C', slug: 'block-c', character: 'Large residential block', approxPlots: '8,350', plotSizes: '5 Marla – 1 Kanal', howSold: 'Full payment / Resale', possession: 'In parts' },
       { id: 'block-d', name: 'Block D', slug: 'block-d', character: 'Later addition', approxPlots: '2,350–2,435', plotSizes: '5 Marla – 1 Kanal', howSold: 'Installments', possession: 'Confirm plot-by-plot' }
     ],
@@ -4390,7 +4392,7 @@ export const initialBlocksPageCMS: BlocksPageCMSData = {
       { id: 'block-a', name: 'Block A', borders: 'Executive Block; Prime Block; Block B', access: 'Main boulevard (225 ft)' },
       { id: 'prime-block', name: 'Prime Block', borders: 'Block A', access: 'Planned second GT Road gate / Main boulevard' },
       { id: 'block-b', name: 'Block B', borders: 'Block A; Block C', access: 'Main boulevard' },
-      { id: 'block-b-extension', name: 'Block B Extension', borders: 'Block B', access: 'Connected via Block B' },
+      { id: 'block-b1-extension', name: 'Block B Extension', borders: 'Block B', access: 'Connected via Block B' },
       { id: 'block-c', name: 'Block C', borders: 'Block B; Block D', access: '100 ft main roads' },
       { id: 'block-d', name: 'Block D', borders: 'Block C', access: 'Connected via Block C' }
     ],
@@ -4456,9 +4458,9 @@ export const initialBlocksPageCMS: BlocksPageCMSData = {
       suits: 'Families wanting a quieter residential setting below Block A prices.'
     },
     {
-      id: 'block-b-extension',
+      id: 'block-b1-extension',
       name: 'Block B Extension',
-      slug: 'block-b-extension',
+      slug: 'block-b1-extension',
       tagline: 'Small Hillside Residential Block',
       character: 'Small hillside block',
       badge: 'Hillside Enclave',
@@ -4531,7 +4533,7 @@ export const initialBlocksPageCMS: BlocksPageCMSData = {
       { id: 'block-a', name: 'Block A', fiveMarla: 'PKR 55–70 lakh', oneKanal: 'PKR 1.45–2.25 crore' },
       { id: 'prime-block', name: 'Prime Block', fiveMarla: 'PKR 45–70 lakh', oneKanal: 'PKR 1.75–2.50 crore' },
       { id: 'block-b', name: 'Block B', fiveMarla: 'PKR 40–65 lakh', oneKanal: 'PKR 1.15–1.75 crore' },
-      { id: 'block-b-extension', name: 'Block B Extension', fiveMarla: 'PKR 45–65 lakh', oneKanal: '—' },
+      { id: 'block-b1-extension', name: 'Block B Extension', fiveMarla: 'PKR 45–65 lakh', oneKanal: '—' },
       { id: 'block-c', name: 'Block C', fiveMarla: 'PKR 35–60 lakh', oneKanal: 'PKR 1.20–1.75 crore' },
       { id: 'block-d', name: 'Block D', fiveMarla: 'PKR 40–55 lakh', oneKanal: 'PKR 1.40–2.10 crore' }
     ],
@@ -5814,7 +5816,7 @@ export const initialBlockACMS: BlockACMSData = {
     heading: 'Block A Map and Master Plan',
     subline: 'Official Sector Blueprint & Street Network',
     description: 'The block is laid out around the main boulevard, with residential streets behind it and commercial plots on the wider roads. Use the map to check a plot\'s position, facing and street width before you commit.',
-    roadWidthsNote: 'Reported road widths differ between sources: one describes 120-foot main roads with 40, 50 and 60-foot residential streets, another gives a minimum of 40 feet rising to 110 feet, alongside the 225-foot main boulevard. The society-wide plan is on our [Faisal Hills master plan](/faisal-hills-master-plan).',
+    roadWidthsNote: 'Reported road widths differ between sources: one describes 120-foot main roads with 40, 50 and 60-foot residential streets, another gives a minimum of 40 feet rising to 110 feet, alongside the 225-foot main boulevard. The society-wide plan is on our [Faisal Hills master plan](/master-plan).',
     mapImage: '/images/faisal-hills-master-plan-map.webp',
     pdfDownloadUrl: '/images/faisal-hills-master-plan-map.webp'
   },
@@ -5844,7 +5846,7 @@ export const initialBlockACMS: BlockACMSData = {
       { plotSize: '1 Kanal', publishedBand: 'PKR 1.45 to 2.25 crore', recentAskingPrices: 'Not observed in the current sample' },
       { plotSize: '2 Kanal', publishedBand: 'PKR 2.7 to 3.5 crore', recentAskingPrices: 'PKR 3.1 to 3.2 crore' }
     ],
-    sampleAttribution: 'Asking prices observed in September 2026 across roughly 370 residential listings on a major property portal. Corner, main double road, park-facing and Margalla-facing plots sell above standard plots in the same street. Full block-by-block figures: [Faisal Hills plot prices](/faisal-hills-plot-prices).',
+    sampleAttribution: 'Asking prices observed in September 2026 across roughly 370 residential listings on a major property portal. Corner, main double road, park-facing and Margalla-facing plots sell above standard plots in the same street. Full block-by-block figures: [Faisal Hills plot prices](/plots).',
     lowPriceWarning: 'Treat very low quotes with caution. One widely read price guide puts Block A 5 Marla plots at PKR 30 to 45 lakh, roughly half what the market is currently asking.'
   },
   ratePerSqFtSection: {
@@ -5970,7 +5972,7 @@ export const initialBlockACMS: BlockACMSData = {
       { item: 'Filling station, community club', status: 'Planned & under development' },
       { item: 'Sewerage treatment plant', status: 'Operational' }
     ],
-    statusNote: 'Statuses as last checked. Dated photographs are available on our [development updates](/faisal-hills-development).',
+    statusNote: 'Statuses as last checked. Dated photographs are available on our [development updates](/gallery).',
     arcMonumentNote: 'Arc Monument and Glow Gardens: Several sources, and many Block A listings, place the Arc Monument, a landmark modelled on the Arc de Triomphe, within or beside Block A, alongside a light-display park. Plots advertised as "near Arc Monument" trade on that proximity, so confirm the actual distance on the map.'
   },
   possessionAndBuildingSection: {
@@ -6680,7 +6682,7 @@ export const initialBlockBCMS: BlockBCMSData = {
     ],
     conclusionText: 'If you want a larger plot or possession sooner, Block B is the one to look at.',
     extensionLinkText: 'Block B Extension details (→ Block B Extension page)',
-    extensionLinkHref: '/blocks/block-b-1-ext'
+    extensionLinkHref: '/blocks/block-b1-extension'
   },
   developmentAndFacilitiesSection: {
     heading: 'Development Status and Facilities',

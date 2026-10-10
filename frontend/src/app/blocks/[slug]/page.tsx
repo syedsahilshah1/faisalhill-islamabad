@@ -383,9 +383,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               {heroSubtitle && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <span className="label-caps text-slate-200 tracking-widest block font-bold">{heroSubtitle}</span>
               )}
-              <h1 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
+              <h2 className="font-serif font-bold text-3xl min-[420px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight">
                 {heroTitle}
-              </h1>
+              </h2>
               {heroDesc && block.slug !== 'block-d' && block.slug !== 'block-b' && block.slug !== 'block-c' && block.slug !== 'block-b1-extension' && block.slug !== 'hills-walk' && block.slug !== 'faisal-jewel-islamabad' && block.slug !== 'faisal-jewels' && (
                 <p className="text-slate-200 text-base sm:text-lg leading-relaxed font-sans max-w-2xl">
                   {heroDesc}
@@ -557,8 +557,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
             {block.id === 'faisal-jewels' ? (
               <div className="lg:col-span-5 flex items-center justify-center">
                 <div className="relative w-full max-w-md bg-white p-4 rounded-3xl border border-slate-200 shadow-xl overflow-hidden group">
-                  <img
-                    src="/images/faisal-jewel-building.webp"
+                  <img width='800' height='600' loading='lazy' src="/images/faisal-jewel-building.webp"
                     alt="Faisal Jewel Skyscraper Tower"
                     className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] transition-transform duration-500"
                   />
@@ -572,8 +571,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                   Below is the planned master map for {block.name}. View commercial pockets, residential zones, green belts, and major access roads.
                 </p>
                  <div className="relative overflow-hidden rounded-xl border border-slate-150 aspect-[4/3] bg-slate-100 flex items-center justify-center">
-                  <img
-                    src={block.masterPlanImage || block.heroImage}
+                  <img width='800' height='600' loading='lazy' src={block.masterPlanImage || block.heroImage}
                     alt={`${block.name} Master Plan`}
                     className="w-full h-full object-cover"
                   />
@@ -1970,11 +1968,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                   >
                     {/* Plot Image */}
                     <div className="relative h-48 w-full overflow-hidden bg-slate-900">
-                      <img
-                        src={plot.image || '/images/faisal-hills-executive-sector.webp'}
+                      <img width='800' height='600' loading='lazy' src={plot.image || '/images/faisal-hills-executive-sector.webp'}
                         alt={`Plot ${plot.plotNumber} in ${block.name}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
@@ -2072,11 +2068,9 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
                   >
                     {/* Block Image Thumbnail */}
                     <div className="relative h-28 w-full overflow-hidden bg-slate-900">
-                      <img
-                        src={ob.heroImage || ob.masterPlanImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75'}
+                      <img width='800' height='600' loading='lazy' src={ob.heroImage || ob.masterPlanImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75'}
                         alt={ob.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
                       
@@ -2238,8 +2232,7 @@ export default async function BlockDetailPage({ params }: BlockPageProps) {
               </div>
 
               <div className="lg:col-span-6 relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-900 h-80">
-                <img
-                  src="/faisal-jewel-building.webp"
+                <img width='800' height='600' loading='lazy' src="/faisal-jewel-building.webp"
                   alt="Faisal Jewel Apartment Layout"
                   className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
                 />

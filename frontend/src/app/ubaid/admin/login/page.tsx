@@ -3177,8 +3177,7 @@ export default function AdminLoginPage() {
                     {/* Live Image Preview */}
                     {plotForm.image && (
                       <div className="relative mt-2 w-full h-32 rounded-lg overflow-hidden border border-slate-300 bg-slate-900 shadow-inner">
-                        <img 
-                          src={plotForm.image} 
+                        <img width='800' height='600' loading='lazy' src={plotForm.image} 
                           alt="Plot Preview"
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -3472,8 +3471,7 @@ export default function AdminLoginPage() {
                     {/* Live Image Preview */}
                     {plotForm.image && (
                       <div className="relative mt-2 w-full h-32 rounded-lg overflow-hidden border border-slate-300 bg-slate-900 shadow-inner">
-                        <img 
-                          src={plotForm.image} 
+                        <img width='800' height='600' loading='lazy' src={plotForm.image} 
                           alt="Plot Preview"
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -3694,8 +3692,7 @@ export default function AdminLoginPage() {
                 {newPhotoUrl && (
                   <div className="rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner space-y-2 p-3">
                     <div className="h-44 w-full rounded-lg overflow-hidden relative">
-                      <img
-                        src={newPhotoUrl}
+                      <img width='800' height='600' loading='lazy' src={newPhotoUrl}
                         alt={newPhotoAlt || newPhotoTitle || "Gallery Photo Preview"}
                         className="w-full h-full object-cover"
                         onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
@@ -3747,8 +3744,7 @@ export default function AdminLoginPage() {
               {galleryList.map((photo) => (
                 <div key={photo.id} className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between space-y-3 p-3">
                   <div className="h-44 rounded-xl overflow-hidden bg-slate-900 relative">
-                    <img
-                      src={photo.imageUrl}
+                    <img width='800' height='600' loading='lazy' src={photo.imageUrl}
                       alt={photo.title}
                       className="w-full h-full object-cover"
                     />
@@ -4404,7 +4400,7 @@ export default function AdminLoginPage() {
                     <tr key={blog.id} className="hover:bg-slate-50 transition-colors">
                       <td className="p-4">
                         <div className="w-14 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                          <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover animate-fadeIn" />
+                          <img width='800' height='600' loading='lazy' src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover animate-fadeIn" />
                         </div>
                       </td>
                       <td className="p-4 font-bold text-slate-900 max-w-sm truncate" title={blog.title}>
@@ -4461,7 +4457,7 @@ export default function AdminLoginPage() {
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex items-start gap-3">
                     <div className="w-14 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                      <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
+                      <img width='800' height='600' loading='lazy' src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-900 line-clamp-1">{blog.title}</h4>
@@ -4628,7 +4624,7 @@ export default function AdminLoginPage() {
 
                   {blogImageUrl && (
                     <div className="h-28 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
-                      <img src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                      <img width='800' height='600' loading='lazy' src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
                       <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
                         Cover Preview
                       </span>
@@ -5013,7 +5009,7 @@ export default function AdminLoginPage() {
 
                   {blogImageUrl && (
                     <div className="h-28 rounded-xl overflow-hidden border border-slate-300 relative bg-slate-900 shadow-inner">
-                      <img src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
+                      <img width='800' height='600' loading='lazy' src={blogImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
                       <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
                         Cover Preview
                       </span>
@@ -5825,8 +5821,7 @@ export default function AdminLoginPage() {
                   }}
                   className="group relative rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-[#7b002c] shadow-xs hover:shadow-lg transition-all duration-300 aspect-video bg-slate-900 cursor-pointer text-left"
                 >
-                  <img
-                    src={item.imageUrl}
+                  <img width='800' height='600' loading='lazy' src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />

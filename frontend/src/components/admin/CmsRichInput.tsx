@@ -172,7 +172,7 @@ export default function CmsRichInput({
                 <label className="block font-bold text-slate-700 mb-1">Custom Route (Optional)</label>
                 <input
                   type="text"
-                  placeholder="/blocks/block-a or /faisal-hills-plot-prices"
+                  placeholder="/blocks/block-a or /plots"
                   value={customPath}
                   onChange={(e) => setCustomPath(e.target.value)}
                   className="w-full px-3 py-1.5 bg-slate-50 border rounded-xl text-xs font-mono"
