@@ -50,27 +50,43 @@ export default function TextReveal({
   const words = text.split(' ');
 
   return (
-    <Component ref={ref as any} className={`flex flex-wrap gap-x-2 gap-y-1 ${className}`}>
-      {words.map((word, i) => (
-        <span
-          key={i}
-          style={{
-            transitionDelay: isVisible ? `${i * staggerDelay}ms` : '0ms',
-            transitionDuration: '650ms',
-            transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-          className={`inline-block transition-all transform transform-gpu will-change-[transform,opacity] ${
-            isVisible
-              ? 'opacity-100 translate-x-0 translate-y-0 filter-none'
-              : direction === 'left'
-              ? 'opacity-0 -translate-x-8 filter blur-[2px]'
-              : 'opacity-0 translate-y-6 filter blur-[2px]'
-          }`}
-        >
-          {word}
-        </span>
-      ))}
-    </Component>
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @media (prefers-reduced-motion: reduce) {
+          .text-reveal-word { opacity: 1 !important; transform: none !important; filter: none !important; }
+        }
+      `}} />
+      <noscript>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          .text-reveal-word { opacity: 1 !important; transform: none !important; filter: none !important; }
+        `}} />
+      </noscript>
+      <Component ref={ref as any} className={`flex flex-wrap gap-x-2 gap-y-1 ${className}`}>
+        {words.map((word, i) => (
+          <React.Fragment key={i}>
+            <span
+              style={{
+                transitionDelay: isVisible ? `${i * staggerDelay}ms` : '0ms',
+                transitionDuration: '650ms',
+                transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              className={`text-reveal-word inline-block transition-all transform transform-gpu will-change-[transform,opacity] ${
+                isVisible
+                  ? 'opacity-100 translate-x-0 translate-y-0 filter-none'
+                  : direction === 'left'
+                  ? 'opacity-0 -translate-x-8 filter blur-[2px]'
+                  : 'opacity-0 translate-y-6 filter blur-[2px]'
+              }`}
+            >
+              {word}
+            </span>
+            {i < words.length - 1 && ' '}
+          </React.Fragment>
+        ))}
+      </Component>
+    </>
   );
 }
 

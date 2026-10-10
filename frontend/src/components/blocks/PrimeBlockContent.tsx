@@ -1724,15 +1724,7 @@ export default function PrimeBlockContent() {
                   {cms.possessionAdviceSection?.paragraph1 || 'Published sources disagree here. Some pages describe Prime Block plots as possession-ready for immediate construction, while the same pages describe earthworks still under way, and the society-level material treats the block as an early-stage development.'}
                 </p>
                 <p>
-                  {cms.possessionAdviceSection?.paragraph2 || 'We do not repeat a possession claim we cannot stand behind. Before paying, ask the society office to confirm in writing whether possession is available for your exact plot number, and visit the plot to see its level and access. If you need to build now, a possession block such as'}{' '}
-                  <Link href={cms.possessionAdviceSection?.blockALinkHref || '/blocks/block-a'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
-                    <span>{cms.possessionAdviceSection?.blockALinkText || 'Block A (→ Block A page)'}</span>
-                  </Link>{' '}
-                  is the better choice. Our{' '}
-                  <Link href={cms.possessionAdviceSection?.guideLinkHref || '/blogs/faisal-hills-plot-verification-guide'} className="text-[#7b002c] font-bold hover:underline inline-flex items-center gap-0.5">
-                    <span>{cms.possessionAdviceSection?.guideLinkText || 'plot verification guide (→ buying guide)'}</span>
-                  </Link>{' '}
-                  lists the checks in order.
+                  <FormattedText text={cms.possessionAdviceSection?.paragraph2 || 'We do not repeat a possession claim we cannot stand behind. Before paying, ask the society office to confirm in writing whether possession is available for your exact plot number, and visit the plot to see its level and access. If you need to build now, a possession block such as [Block A (→ Block A page)](/blocks/block-a) is the better choice. Our [plot verification guide (→ buying guide)](/blogs/faisal-hills-plot-verification-guide) lists the checks in order.'} />
                 </p>
               </div>
             </div>
