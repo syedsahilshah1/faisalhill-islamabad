@@ -1,0 +1,13 @@
+User-Agent: *
+Allow: /
+Disallow: /ubaid/admin/*
+Disallow: /admin/*
+Disallow: /api/*
+
+User-Agent: Googlebot
+Allow: /
+Disallow: /ubaid/admin/*
+Disallow: /admin/*
+Disallow: /api/*
+
+Sitemap: https://faisalhillsislamabadfh.com/sitemap.xml

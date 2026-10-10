@@ -1,0 +1,38 @@
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Ensure HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Don't touch /api requests
+    RewriteRule ^api/ - [L]
+
+    # Serve real files directly (css, js, images, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Dynamic Fallback for newly created plots
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^plots/([^/]+)/?$ /plots/plot-a-5m/index.html [L]
+
+    # Dynamic Fallback for newly created blogs
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^blogs/([^/]+)/?$ /blogs/how-to-buy-plot-in-faisal-hills/index.html [L]
+
+    # Handle directory index files (e.g. /about-us -> /about-us/index.html)
+    RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+    RewriteRule ^(.*)/?$ /$1/index.html [L]
+
+    # Handle direct html files (e.g. /about-us -> /about-us.html)
+    RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+    RewriteRule ^(.*)$ /$1.html [L]
+
+    # Fallback to 404 page
+    ErrorDocument 404 /404.html
+</IfModule>
